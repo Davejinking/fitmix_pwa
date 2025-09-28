@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../data/session_repo.dart';
+import '../data/exercise_library_repo.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
+import '../core/constants.dart';
+import '../core/error_handler.dart';
+import 'dart:async';
+import '../models/exercise_set.dart';
 
 class PlanPage extends StatefulWidget {
   final DateTime date;
   final SessionRepo repo;
-  const PlanPage({super.key, required this.date, required this.repo});
+  final ExerciseLibraryRepo exerciseRepo;
+  const PlanPage({super.key, required this.date, required this.repo, required this.exerciseRepo});
 
   @override
   State<PlanPage> createState() => _PlanPageState();
 }
 
 class _PlanPageState extends State<PlanPage> {
+  late Future<Session?> _sessionFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _sessionFuture = widget.repo.get(widget.repo.ymd(widget.date));
+  }
+
   Future<List<Session>> _loadPrev() async {
     final all = await widget.repo.listAll();
     final me = widget.repo.ymd(widget.date);
@@ -20,9 +35,15 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   Future<void> _copyWhole(Session s) async {
-    await widget.repo.copyDay(fromYmd: s.ymd, toYmd: widget.repo.ymd(widget.date));
-    if (!mounted) return;
-    Navigator.pop(context, true);
+    try {
+      await widget.repo.copyDay(fromYmd: s.ymd, toYmd: widget.repo.ymd(widget.date));
+      if (!mounted) return;
+      Navigator.pop(context, true);
+      ErrorHandler.showSuccessSnackBar(context, '운동 기록이 복사되었습니다.');
+    } catch (e) {
+      if (!mounted) return;
+      ErrorHandler.showErrorSnackBar(context, ErrorHandler.getUserFriendlyMessage(e));
+    }
   }
 
   Future<void> _copyPick(Session s) async {
@@ -31,57 +52,65 @@ class _PlanPageState extends State<PlanPage> {
       context: context,
       builder: (ctx) {
         final selected = <int>{};
-        return AlertDialog(
-          title: const Text('운동 선택'),
-          content: SizedBox(
-            width: 300,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: s.exercises.length,
-              itemBuilder: (_, i) {
-                final ex = s.exercises[i];
-                final checked = selected.contains(i);
-                return CheckboxListTile(
-                  value: checked,
-                  onChanged: (v) {
-                    if (v == true) { selected.add(i); } else { selected.remove(i); }
-                    (ctx as Element).markNeedsBuild();
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('운동 선택'),
+              content: SizedBox(
+                width: 300,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: s.exercises.length,
+                  itemBuilder: (_, i) {
+                    final ex = s.exercises[i];
+                    return CheckboxListTile(
+                      value: selected.contains(i),
+                      onChanged: (v) {
+                        setDialogState(() {
+                          if (v == true) { selected.add(i); } else { selected.remove(i); }
+                        });
+                      },
+                      title: Text('${ex.bodyPart} - ${ex.name}'),
+                    );
                   },
-                  title: Text('${ex.bodyPart} - ${ex.name}'),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('취소')),
-            FilledButton(onPressed: () => Navigator.pop(ctx, selected.toList()), child: const Text('가져오기')),
-          ],
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('취소')),
+                FilledButton(onPressed: () => Navigator.pop(ctx, selected.toList()), child: const Text('가져오기')),
+              ],
+            );
+          },
         );
       },
     );
     if (pick == null || pick.isEmpty) return;
-    await widget.repo.copyDay(fromYmd: s.ymd, toYmd: widget.repo.ymd(widget.date), pickIndexes: pick);
-    if (!mounted) return;
-    Navigator.pop(context, true);
+    try {
+      await widget.repo.copyDay(fromYmd: s.ymd, toYmd: widget.repo.ymd(widget.date), pickIndexes: pick);
+      if (!mounted) return;
+      Navigator.pop(context, true);
+      ErrorHandler.showSuccessSnackBar(context, '선택한 운동이 복사되었습니다.');
+    } catch (e) {
+      if (!mounted) return;
+      ErrorHandler.showErrorSnackBar(context, ErrorHandler.getUserFriendlyMessage(e));
+    }
   }
 
   Future<void> _markRest() async {
-    await widget.repo.markRest(widget.repo.ymd(widget.date), rest: true);
-    if (!mounted) return;
-    Navigator.pop(context, true);
+    try {
+      await widget.repo.markRest(widget.repo.ymd(widget.date), rest: true);
+      if (!mounted) return;
+      Navigator.pop(context, true);
+      ErrorHandler.showInfoSnackBar(context, '휴식일로 설정되었습니다.');
+    } catch (e) {
+      if (!mounted) return;
+      ErrorHandler.showErrorSnackBar(context, ErrorHandler.getUserFriendlyMessage(e));
+    }
   }
 
   Future<void> _fromLibrary() async {
-    // 초간단 더미 라이브러리 (추가/수정 가능)
-    const lib = <String, List<String>>{
-      '가슴': ['벤치프레스', '인클라인 덤벨프레스', '체스트 프레스'],
-      '등': ['랫풀다운', '바벨 로우', '시티드 로우'],
-      '어깨': ['사이드 레터럴', '숄더 프레스', '리어 델트 플라이'],
-      '팔': ['바벨 컬', '케이블 푸시다운', '해머 컬'],
-      '하체': ['스쿼트', '레그 프레스', '레그 컬'],
-      '복근': ['크런치', '행잉 레그레이즈', '케이블 크런치'],
-      '유산소': ['싸이클', '런닝머신', '로잉'],
-    };
+    // 저장소에서 라이브러리 가져오기
+    final lib = await widget.exerciseRepo.getLibrary();
 
     final selected = <Exercise>[];
     await showModalBottomSheet<void>(
@@ -113,9 +142,7 @@ class _PlanPageState extends State<PlanPage> {
                                     icon: const Icon(Icons.add),
                                     onPressed: () {
                                       selected.add(Exercise(name: name, bodyPart: entry.key));
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('추가됨: ${entry.key} - $name')),
-                                      );
+                                      ErrorHandler.showInfoSnackBar(context, '추가됨: ${entry.key} - $name');
                                     },
                                   ),
                                 ),
@@ -130,10 +157,17 @@ class _PlanPageState extends State<PlanPage> {
                       const Spacer(),
                       FilledButton(
                         onPressed: () async {
-                          final y = widget.repo.ymd(widget.date);
-                          await widget.repo.put(Session(ymd: y, exercises: selected, isRest: false));
-                          if (mounted) Navigator.pop(ctx);
-                          if (mounted) Navigator.pop(context, true);
+                          try {
+                            final y = widget.repo.ymd(widget.date);
+                            await widget.repo.put(Session(ymd: y, exercises: selected, isRest: false));
+                            if (mounted) Navigator.pop(ctx);
+                            if (mounted) Navigator.pop(context, true);
+                            ErrorHandler.showSuccessSnackBar(context, '운동이 추가되었습니다.');
+                          } catch (e) {
+                            if (mounted) {
+                              ErrorHandler.showErrorSnackBar(context, ErrorHandler.getUserFriendlyMessage(e));
+                            }
+                          }
                         },
                         child: const Text('저장'),
                       ),
@@ -150,54 +184,128 @@ class _PlanPageState extends State<PlanPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ymd = (context.findAncestorWidgetOfExactType<MaterialApp>()?.title ?? '') + widget.repo.ymd(widget.date);
-    // 상단 텍스트만 의미 없이 섞여서 나오는 게 싫어 다이얼로그 타이틀로만 표시
     return Scaffold(
       appBar: AppBar(title: Text('${widget.repo.ymd(widget.date)}')),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: FutureBuilder<Session?>(
+        future: _sessionFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('오류 발생: ${snapshot.error}'));
+          }
+
+          final session = snapshot.data;
+          // 운동 기록이 있으면 ReorderableListView 표시
+          if (session != null && session.isWorkoutDay) {
+            return _buildWorkoutPlanView(session);
+          } else {
+            // 운동 기록이 없으면 운동 만들기 UI 표시
+            return _buildCreatePlanView();
+          }
+        },
+      ),
+    );
+  }
+
+  /// 운동 기록이 있을 때 표시되는 위젯 (드래그 앤 드롭 리스트)
+  Widget _buildWorkoutPlanView(Session session) {
+    return ReorderableListView.builder(
+      padding: const EdgeInsets.all(AppConstants.smallPadding),
+      itemCount: session.exercises.length,
+      itemBuilder: (context, index) {
+        final exercise = session.exercises[index];
+        // 각 항목을 Dismissible로 감싸 스와이프 삭제 기능을 추가합니다.
+        return _buildExerciseTile(session, exercise, index);
+      },
+      onReorder: (oldIndex, newIndex) async {
+        setState(() {
+          if (newIndex > oldIndex) {
+            newIndex -= 1;
+          }
+          final item = session.exercises.removeAt(oldIndex);
+          session.exercises.insert(newIndex, item);
+          HapticFeedback.mediumImpact();
+        });
+        try {
+          await widget.repo.put(session);
+          if (mounted) {
+            ErrorHandler.showInfoSnackBar(context, '순서가 변경되었습니다.');
+          }
+        } catch (e) {
+          if (mounted) {
+            ErrorHandler.showErrorSnackBar(context, '순서 변경 저장에 실패했습니다.');
+          }
+        }
+      },
+    );
+  }
+
+  Widget _buildExerciseTile(Session session, Exercise exercise, int index) {
+    return Dismissible(
+      key: ValueKey(exercise),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      onDismissed: (direction) async {
+        final removedExercise = session.exercises.removeAt(index);
+        final removedIndex = index;
+        setState(() {});
+        await widget.repo.put(session);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${removedExercise.name} 삭제됨'),
+              action: SnackBarAction(
+                label: '실행 취소',
+                onPressed: () {
+                  setState(() => session.exercises.insert(removedIndex, removedExercise));
+                  widget.repo.put(session);
+                },
+              ),
+            ),
+          );
+        }
+      },
+      child: Card(
+        child: ExpansionTile(
+          leading: const Icon(Icons.fitness_center),
+          title: Text(exercise.name),
+          subtitle: Text(exercise.bodyPart),
+          trailing: const Icon(Icons.drag_handle),
           children: [
-            const Text('운동 기록', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${widget.repo.ymd(widget.date)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    const Text('운동을 직접 계획해보세요!'),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        OutlinedButton(
-                          onPressed: () async {
-                            final prev = await _loadPrev();
-                            if (!mounted) return;
-                            await showModalBottomSheet<void>(
-                              context: context,
-                              builder: (ctx) => PrevListSheet(
-                                prev: prev,
-                                onCopyWhole: _copyWhole,
-                                onCopyPick: _copyPick,
-                              ),
-                            );
-                          },
-                          child: const Text('불러오기'),
-                        ),
-                        const SizedBox(width: 12),
-                        FilledButton(onPressed: _fromLibrary, child: const Text('운동 선택하기')),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: _markRest,
-                          child: const Text('전체 휴식'),
-                        ),
-                      ],
-                    ),
-                  ],
+            for (int setIndex = 0; setIndex < exercise.sets.length; setIndex++)
+              _SetRow(
+                key: ObjectKey(exercise.sets[setIndex]), // 각 세트에 고유 키 부여
+                session: session,
+                exercise: exercise,
+                setIndex: setIndex,
+                repo: widget.repo,
+                onSetRemoved: () {
+                  setState(() {
+                    exercise.sets.removeAt(setIndex);
+                  });
+                  widget.repo.put(session);
+                },
+              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.add),
+                  label: const Text('세트 추가'),
+                  onPressed: () {
+                    setState(() {
+                      exercise.sets.add(ExerciseSet());
+                    });
+                    widget.repo.put(session);
+                  },
                 ),
               ),
             ),
@@ -205,6 +313,184 @@ class _PlanPageState extends State<PlanPage> {
         ),
       ),
     );
+  }
+
+  /// 운동 기록이 없을 때 표시되는 위젯
+  Widget _buildCreatePlanView() {
+    return Padding(
+      padding: const EdgeInsets.all(AppConstants.smallPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('운동 기록', style: TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: AppConstants.smallPadding),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppConstants.smallPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${widget.repo.ymd(widget.date)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: AppConstants.smallPadding),
+                  const Text('운동을 직접 계획해보세요!'),
+                  const SizedBox(height: AppConstants.smallPadding),
+                  Row(
+                    children: [
+                      OutlinedButton(
+                        onPressed: () async {
+                          final prev = await _loadPrev();
+                          if (!mounted) return;
+                          await showModalBottomSheet<void>(
+                            context: context,
+                            builder: (ctx) => PrevListSheet(
+                              prev: prev,
+                              onCopyWhole: _copyWhole,
+                              onCopyPick: _copyPick,
+                            ),
+                          );
+                        },
+                        child: const Text('불러오기'),
+                      ),
+                      const SizedBox(width: AppConstants.smallPadding),
+                      FilledButton(onPressed: _fromLibrary, child: const Text('운동 선택하기')),
+                      const Spacer(),
+                      TextButton(onPressed: _markRest, child: const Text('전체 휴식')),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 각 세트의 UI와 상태를 관리하는 StatefulWidget
+class _SetRow extends StatefulWidget {
+  final Session session;
+  final Exercise exercise;
+  final int setIndex;
+  final SessionRepo repo;
+  final VoidCallback onSetRemoved;
+
+  const _SetRow({
+    super.key,
+    required this.session,
+    required this.exercise,
+    required this.setIndex,
+    required this.repo,
+    required this.onSetRemoved,
+  });
+
+  @override
+  State<_SetRow> createState() => _SetRowState();
+}
+
+class _SetRowState extends State<_SetRow> {
+  late final TextEditingController _weightController;
+  late final TextEditingController _repsController;
+  final _debouncer = Debouncer(milliseconds: 500);
+
+  @override
+  void initState() {
+    super.initState();
+    final currentSet = widget.exercise.sets[widget.setIndex];
+    _weightController = TextEditingController(text: currentSet.weight.toString());
+    _repsController = TextEditingController(text: currentSet.reps.toString());
+
+    _weightController.addListener(_onWeightChanged);
+    _repsController.addListener(_onRepsChanged);
+  }
+
+  void _onWeightChanged() {
+    _debouncer.run(() {
+      final newWeight = double.tryParse(_weightController.text) ?? 0.0;
+      if (mounted && widget.exercise.sets[widget.setIndex].weight != newWeight) {
+        widget.exercise.sets[widget.setIndex].weight = newWeight;
+        widget.repo.put(widget.session);
+      }
+    });
+  }
+
+  void _onRepsChanged() {
+    _debouncer.run(() {
+      final newReps = int.tryParse(_repsController.text) ?? 0;
+      if (mounted && widget.exercise.sets[widget.setIndex].reps != newReps) {
+        widget.exercise.sets[widget.setIndex].reps = newReps;
+        widget.repo.put(widget.session);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _weightController.removeListener(_onWeightChanged);
+    _repsController.removeListener(_onRepsChanged);
+    _weightController.dispose();
+    _repsController.dispose();
+    _debouncer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      child: Row(
+        children: [
+          Text('${widget.setIndex + 1}세트', style: const TextStyle(fontWeight: FontWeight.bold)),
+          const Spacer(),
+          SizedBox(
+            width: 80,
+            child: TextField(
+              controller: _weightController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              textAlign: TextAlign.center,
+              decoration: const InputDecoration(labelText: '무게(kg)', isDense: true),
+            ),
+          ),
+          const SizedBox(width: 16),
+          SizedBox(
+            width: 80,
+            child: TextField(
+              controller: _repsController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: const InputDecoration(labelText: '횟수', isDense: true),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+            onPressed: () {
+              if (widget.exercise.sets.length > 1) {
+                widget.onSetRemoved();
+              } else {
+                ErrorHandler.showInfoSnackBar(context, '최소 1개의 세트가 필요합니다.');
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 입력 디바운싱을 위한 헬퍼 클래스
+class Debouncer {
+  final int milliseconds;
+  Timer? _timer;
+
+  Debouncer({required this.milliseconds});
+
+  void run(VoidCallback action) {
+    _timer?.cancel();
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
+  }
+
+  void dispose() {
+    _timer?.cancel();
   }
 }
 
