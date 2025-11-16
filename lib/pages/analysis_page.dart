@@ -240,7 +240,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: BurnFitStyle.primaryBlue.withOpacity(0.2),
+                        color: BurnFitStyle.primaryBlue.withValues(alpha: 0.2),
                       ),
                     ),
                   ],

@@ -88,7 +88,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [BurnFitStyle.primaryBlue.withOpacity(0.8), Colors.black],
+            colors: [BurnFitStyle.primaryBlue.withValues(alpha: 0.8), Colors.black],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -119,7 +119,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                 SlideTransition(
                   position: _slideAnimation,
                   child: Text('오늘의 운동, 내일의 나를 만듭니다.',
-                      style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.8))),
+                      style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.8))),
                 ),
               ],
             ),

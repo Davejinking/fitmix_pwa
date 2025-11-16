@@ -1,0 +1,81 @@
+{
+  "@@locale": "ja",
+  "appName": "FitMix PS0",
+  "greetingWithName": "こんにちは、{name}さん",
+  "@greetingWithName": {
+    "description": "ユーザーへの挨拶",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultUser": "ユーザー",
+  "burnFit": "BURN FIT",
+  "upgrade": "アップグレード",
+  "updateNote": "9月22日アップデートノート",
+  "myGoal": "マイ目標",
+  "createNow": "今すぐ作成",
+  "workoutDaysGoal": "運動日数: {days} / {goal} 日",
+  "@workoutDaysGoal": {
+    "description": "運動日数の目標表示",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "workoutVolumeGoal": "運動ボリューム: {volume} / {goal} kg",
+  "@workoutVolumeGoal": {
+    "description": "運動ボリュームの目標表示",
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "startWorkout": "ワークアウトを開始",
+  "activityTrend": "運動量の変化",
+  "time": "時間",
+  "volume": "ボリューム",
+  "density": "密度",
+  "weeklyAverageVolume": "今週の平均運動ボリュームは{volume}kgです。",
+  "@weeklyAverageVolume": {
+    "description": "週間平均ボリュームテキスト",
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "weeklyComparison": "先週比 {diff}kg",
+  "@weeklyComparison": {
+    "description": "週間比較テキスト",
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
+  "weekdayMon": "月",
+  "weekdayTue": "火",
+  "weekdayWed": "水",
+  "weekdayThu": "木",
+  "weekdayFri": "金",
+  "weekdaySat": "土",
+  "weekdaySun": "日",
+  "home": "ホーム",
+  "calendar": "カレンダー",
+  "library": "ライブラリ",
+  "analysis": "分析",
+  "unknownPage": "不明なページ",
+  "fitMix": "FitMix",
+  "editGoal": "目標を編集"
+}
+

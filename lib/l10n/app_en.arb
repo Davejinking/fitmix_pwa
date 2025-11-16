@@ -1,0 +1,81 @@
+{
+  "@@locale": "en",
+  "appName": "FitMix PS0",
+  "greetingWithName": "Hello, {name}",
+  "@greetingWithName": {
+    "description": "User greeting",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultUser": "User",
+  "burnFit": "BURN FIT",
+  "upgrade": "Upgrade",
+  "updateNote": "September 22 Update Note",
+  "myGoal": "My Goal",
+  "createNow": "Create Now",
+  "workoutDaysGoal": "Workout Days: {days} / {goal} days",
+  "@workoutDaysGoal": {
+    "description": "Workout days goal display",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "workoutVolumeGoal": "Workout Volume: {volume} / {goal} kg",
+  "@workoutVolumeGoal": {
+    "description": "Workout volume goal display",
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "startWorkout": "Start Workout",
+  "activityTrend": "Activity Trend",
+  "time": "Time",
+  "volume": "Volume",
+  "density": "Density",
+  "weeklyAverageVolume": "This week's average workout volume is {volume}kg.",
+  "@weeklyAverageVolume": {
+    "description": "Weekly average volume text",
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "weeklyComparison": "Compared to last week: {diff}kg",
+  "@weeklyComparison": {
+    "description": "Weekly comparison text",
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
+  "weekdayMon": "Mon",
+  "weekdayTue": "Tue",
+  "weekdayWed": "Wed",
+  "weekdayThu": "Thu",
+  "weekdayFri": "Fri",
+  "weekdaySat": "Sat",
+  "weekdaySun": "Sun",
+  "home": "Home",
+  "calendar": "Calendar",
+  "library": "Library",
+  "analysis": "Analysis",
+  "unknownPage": "Unknown Page",
+  "fitMix": "FitMix",
+  "editGoal": "Edit Goal"
+}
+

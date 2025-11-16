@@ -42,7 +42,6 @@ class AppConstants {
       secondary: BurnFitStyle.primaryBlue,
       surface: Color(0xFF1E1E1E),
       onSurface: BurnFitStyle.white,
-      onBackground: BurnFitStyle.white,
     ),
   );
   

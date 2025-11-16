@@ -94,32 +94,45 @@ class _WorkoutPageState extends State<WorkoutPage> {
   }
 
   Future<void> _showRestSettingsDialog() async {
-    final selectedDuration = await showDialog<int>(
+    var selectedDuration = _defaultRestDuration;
+    final result = await showDialog<int>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('휴식 시간 설정'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [30, 60, 90, 120].map((seconds) {
-            return RadioListTile<int>(
-              title: Text('$seconds초'),
-              value: seconds,
-              groupValue: _defaultRestDuration,
-              onChanged: (value) {
-                Navigator.of(context).pop(value);
-              },
-            );
-          }).toList(),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('닫기')),
-        ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return RadioGroup<int>(
+            onChanged: (value) {
+              if (value != null) setState(() => selectedDuration = value);
+            },
+            child: AlertDialog(
+              title: const Text('휴식 시간 설정'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [30, 60, 90, 120].map((seconds) {
+                  return InkWell(
+                    onTap: () {
+                      setState(() => selectedDuration = seconds);
+                      Navigator.of(context).pop(seconds);
+                    },
+                    child: RadioListTile<int>(
+                      title: Text('$seconds초'),
+                      value: seconds,
+                      toggleable: selectedDuration == seconds,
+                    ),
+                  );
+                }).toList(),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('닫기')),
+              ],
+            ),
+          );
+        },
       ),
     );
 
-    if (selectedDuration != null) {
+    if (result != null) {
       setState(() {
-        _defaultRestDuration = selectedDuration;
+        _defaultRestDuration = result;
       });
     }
   }
@@ -243,7 +256,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   Widget _buildRestTimerOverlay() {
     final progress = _restSecondsRemaining! / _defaultRestDuration;
     return Container(
-      color: Colors.black.withOpacity(0.7),
+      color: Colors.black.withValues(alpha: 0.7),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -257,7 +270,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   CircularProgressIndicator(
                     value: progress,
                     strokeWidth: 10,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
                     valueColor: const AlwaysStoppedAnimation<Color>(BurnFitStyle.primaryBlue),
                   ),
                   Center(
@@ -326,7 +339,7 @@ class _SetTileState extends State<_SetTile> {
       alignment: Alignment.center,
       children: [
         ListTile(
-          tileColor: _isCompleted ? Theme.of(context).cardColor.withOpacity(0.5) : null,
+          tileColor: _isCompleted ? Theme.of(context).cardColor.withValues(alpha: 0.5) : null,
           leading: InkWell(
             onTap: () {
               setState(() {

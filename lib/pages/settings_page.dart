@@ -8,10 +8,8 @@ import '../data/session_repo.dart';
 import '../data/auth_repo.dart';
 import '../data/settings_repo.dart';
 import '../main.dart';
-import 'library_page.dart';
 import 'login_page.dart';
 import 'profile_page.dart';
-import 'user_info_form_page.dart';
 
 class SettingsPage extends StatelessWidget {
   final UserRepo userRepo;
@@ -59,34 +57,58 @@ class SettingsPage extends StatelessWidget {
             ),
             title: const Text('화면 모드'),
             onTap: () async {
-              final currentThemeMode = await settingsRepo.getThemeMode();
+              var selectedThemeMode = await settingsRepo.getThemeMode();
               final newThemeMode = await showDialog<ThemeMode>(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('화면 모드 선택'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      RadioListTile<ThemeMode>(
-                        title: const Text('라이트 모드'),
-                        value: ThemeMode.light,
-                        groupValue: currentThemeMode,
-                        onChanged: (value) => Navigator.pop(context, value),
+                builder: (context) => StatefulBuilder(
+                  builder: (context, setState) {
+                    return RadioGroup<ThemeMode>(
+                      onChanged: (value) {
+                        if (value != null) setState(() => selectedThemeMode = value);
+                      },
+                      child: AlertDialog(
+                        title: const Text('화면 모드 선택'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() => selectedThemeMode = ThemeMode.light);
+                                Navigator.pop(context, ThemeMode.light);
+                              },
+                              child: RadioListTile<ThemeMode>(
+                                title: const Text('라이트 모드'),
+                                value: ThemeMode.light,
+                                toggleable: selectedThemeMode == ThemeMode.light,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                setState(() => selectedThemeMode = ThemeMode.dark);
+                                Navigator.pop(context, ThemeMode.dark);
+                              },
+                              child: RadioListTile<ThemeMode>(
+                                title: const Text('다크 모드'),
+                                value: ThemeMode.dark,
+                                toggleable: selectedThemeMode == ThemeMode.dark,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                setState(() => selectedThemeMode = ThemeMode.system);
+                                Navigator.pop(context, ThemeMode.system);
+                              },
+                              child: RadioListTile<ThemeMode>(
+                                title: const Text('시스템 설정'),
+                                value: ThemeMode.system,
+                                toggleable: selectedThemeMode == ThemeMode.system,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      RadioListTile<ThemeMode>(
-                        title: const Text('다크 모드'),
-                        value: ThemeMode.dark,
-                        groupValue: currentThemeMode,
-                        onChanged: (value) => Navigator.pop(context, value),
-                      ),
-                      RadioListTile<ThemeMode>(
-                        title: const Text('시스템 설정'),
-                        value: ThemeMode.system,
-                        groupValue: currentThemeMode,
-                        onChanged: (value) => Navigator.pop(context, value),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               );
               if (newThemeMode != null) {

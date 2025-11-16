@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 8),
                 Text('운동의 모든 것을 한 곳에서',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.8))),
+                    style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.8))),
                 const Spacer(flex: 3),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.person),

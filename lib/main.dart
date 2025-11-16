@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'core/calendar_config.dart';
 import 'core/constants.dart';
 import 'data/session_repo.dart';
 import 'data/exercise_library_repo.dart';
@@ -11,16 +11,7 @@ import 'data/settings_repo.dart';
 import 'data/auth_repo.dart';
 import 'pages/login_page.dart';
 import 'data/user_repo.dart';
-import 'pages/shell_page.dart';
-import 'pages/splash_page.dart'; // ✅ 스플래시 화면 추가
-
-DateTime _atMidnight(DateTime d) => DateTime(d.year, d.month, d.day);
-DateTime _clampDay(DateTime d) {
-  final x = _atMidnight(d);
-  if (x.isBefore(AppConstants.firstDay)) return AppConstants.firstDay;
-  if (x.isAfter(AppConstants.lastDay))  return AppConstants.lastDay;
-  return x;
-}
+import 'pages/splash_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,9 +86,14 @@ class _FitMixAppState extends State<FitMixApp> {
       theme: AppConstants.lightTheme,
       darkTheme: AppConstants.darkTheme,
       themeMode: _themeMode,
-      locale: const Locale('ko', 'KR'),
-      supportedLocales: const [Locale('ko', 'KR'), Locale('ja', 'JP'), Locale('en', 'US')],
+      locale: const Locale('ja', 'JP'), // 🔥 일본어 기본
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+        Locale('ja', 'JP'),
+        Locale('en', 'US'),
+      ],
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

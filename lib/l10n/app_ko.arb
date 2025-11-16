@@ -1,0 +1,159 @@
+{
+  "@@locale": "ko",
+  "appName": "FitMix PS0",
+  "@appName": {
+    "description": "앱 이름"
+  },
+  "greetingWithName": "안녕하세요, {name}님",
+  "@greetingWithName": {
+    "description": "사용자 인사말",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultUser": "사용자",
+  "@defaultUser": {
+    "description": "기본 사용자명"
+  },
+  "burnFit": "BURN FIT",
+  "@burnFit": {
+    "description": "브랜드명"
+  },
+  "upgrade": "업그레이드",
+  "@upgrade": {
+    "description": "업그레이드 버튼"
+  },
+  "updateNote": "9월 22일 업데이트 노트",
+  "@updateNote": {
+    "description": "업데이트 배너 텍스트"
+  },
+  "myGoal": "내 목표",
+  "@myGoal": {
+    "description": "목표 카드 제목"
+  },
+  "createNow": "바로 만들기",
+  "@createNow": {
+    "description": "목표 생성 버튼"
+  },
+  "workoutDaysGoal": "운동 일수: {days} / {goal} 일",
+  "@workoutDaysGoal": {
+    "description": "운동 일수 목표 표시",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "workoutVolumeGoal": "운동 볼륨: {volume} / {goal} kg",
+  "@workoutVolumeGoal": {
+    "description": "운동 볼륨 목표 표시",
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "startWorkout": "운동 시작하기",
+  "@startWorkout": {
+    "description": "운동 시작 버튼"
+  },
+  "activityTrend": "운동량 변화",
+  "@activityTrend": {
+    "description": "활동 추세 카드 제목"
+  },
+  "time": "시간",
+  "@time": {
+    "description": "시간 필터 탭"
+  },
+  "volume": "볼륨",
+  "@volume": {
+    "description": "볼륨 필터 탭"
+  },
+  "density": "밀도",
+  "@density": {
+    "description": "밀도 필터 탭"
+  },
+  "weeklyAverageVolume": "이번 주 평균 운동 볼륨은 {volume}kg 입니다.",
+  "@weeklyAverageVolume": {
+    "description": "주간 평균 볼륨 텍스트",
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "weeklyComparison": "저번 주 대비 {diff}kg",
+  "@weeklyComparison": {
+    "description": "주간 비교 텍스트",
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
+  "weekdayMon": "월",
+  "@weekdayMon": {
+    "description": "요일: 월요일"
+  },
+  "weekdayTue": "화",
+  "@weekdayTue": {
+    "description": "요일: 화요일"
+  },
+  "weekdayWed": "수",
+  "@weekdayWed": {
+    "description": "요일: 수요일"
+  },
+  "weekdayThu": "목",
+  "@weekdayThu": {
+    "description": "요일: 목요일"
+  },
+  "weekdayFri": "금",
+  "@weekdayFri": {
+    "description": "요일: 금요일"
+  },
+  "weekdaySat": "토",
+  "@weekdaySat": {
+    "description": "요일: 토요일"
+  },
+  "weekdaySun": "일",
+  "@weekdaySun": {
+    "description": "요일: 일요일"
+  },
+  "home": "홈",
+  "@home": {
+    "description": "홈 탭"
+  },
+  "calendar": "캘린더",
+  "@calendar": {
+    "description": "캘린더 탭"
+  },
+  "library": "라이브러리",
+  "@library": {
+    "description": "라이브러리 탭"
+  },
+  "analysis": "분석",
+  "@analysis": {
+    "description": "분석 탭"
+  },
+  "unknownPage": "알 수 없는 페이지",
+  "@unknownPage": {
+    "description": "알 수 없는 페이지 에러 메시지"
+  },
+  "fitMix": "FitMix",
+  "@fitMix": {
+    "description": "앱 이름 (짧은 버전)"
+  },
+  "editGoal": "목표 수정",
+  "@editGoal": {
+    "description": "목표 수정 버튼"
+  }
+}
+

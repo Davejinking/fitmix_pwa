@@ -5,6 +5,7 @@ import '../data/settings_repo.dart';
 import '../data/user_repo.dart';
 import '../data/exercise_library_repo.dart';
 import '../core/burn_fit_style.dart';
+import '../core/l10n_extensions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'analysis_page.dart';
 import 'calendar_page.dart';
@@ -57,10 +58,10 @@ class ShellPageState extends State<ShellPage> {
         // 아이템이 4개 이상일 때, 각 아이템의 배경 및 애니메이션 스타일을 고정
         type: BottomNavigationBarType.fixed,
         items: [
-          _buildNavItem('assets/icons/ic_home.svg', '홈', 0),
-          _buildNavItem('assets/icons/ic_calendar.svg', '캘린더', 1),
-          _buildNavItem('assets/icons/ic_library.svg', '라이브러리', 2),
-          _buildNavItem('assets/icons/ic_analysis.svg', '분석', 3),
+          _buildNavItem('assets/icons/ic_home.svg', context.l10n.home, 0),
+          _buildNavItem('assets/icons/ic_calendar.svg', context.l10n.calendar, 1),
+          _buildNavItem('assets/icons/ic_library.svg', context.l10n.library, 2),
+          _buildNavItem('assets/icons/ic_analysis.svg', context.l10n.analysis, 3),
         ],
       ),
     );
@@ -97,17 +98,17 @@ class ShellPageState extends State<ShellPage> {
       case 3:
         return AnalysisPage(repo: widget.sessionRepo, userRepo: widget.userRepo);
       default:
-        return const Center(child: Text('알 수 없는 페이지', style: TextStyle(fontSize: 24)));
+        return Center(child: Text(context.l10n.unknownPage, style: const TextStyle(fontSize: 24)));
     }
   }
 
   String _getPageTitle(int index) {
     switch (index) {
-      case 0: return '홈';
-      case 1: return '캘린더';
-      case 2: return '라이브러리';
-      case 3: return '분석';
-      default: return 'FitMix';
+      case 0: return context.l10n.home;
+      case 1: return context.l10n.calendar;
+      case 2: return context.l10n.library;
+      case 3: return context.l10n.analysis;
+      default: return context.l10n.fitMix;
     }
   }
 }

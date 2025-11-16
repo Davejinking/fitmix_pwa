@@ -9,6 +9,7 @@ import '../data/auth_repo.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../core/burn_fit_style.dart';
+import '../core/l10n_extensions.dart';
 import 'package:shimmer/shimmer.dart';
 import 'user_info_form_page.dart';
 import 'workout_page.dart';
@@ -138,7 +139,7 @@ class _HeaderComponentState extends State<_HeaderComponent> {
                   const SizedBox(width: 12),
                   Flexible(
                     child: Text(
-                      '안녕하세요, ${_currentUser!.displayName ?? '사용자'}님',
+                      context.l10n.greetingWithName(_currentUser!.displayName ?? context.l10n.defaultUser),
                       style: BurnFitStyle.title2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -147,7 +148,7 @@ class _HeaderComponentState extends State<_HeaderComponent> {
               ),
             )
           else
-            const Text('BURN FIT', style: BurnFitStyle.title1),
+            Text(context.l10n.burnFit, style: BurnFitStyle.title1),
           const Spacer(),
           OutlinedButton(
             onPressed: () {
@@ -159,11 +160,10 @@ class _HeaderComponentState extends State<_HeaderComponent> {
               shape: const StadiumBorder(),
               side: const BorderSide(color: BurnFitStyle.mediumGray, width: 1),
             ),
-            child: const Text('업그레이드', style: BurnFitStyle.body),
+            child: Text(context.l10n.upgrade, style: BurnFitStyle.body),
           ),
           const SizedBox(width: 8),
           IconButton(
-            // TODO: ic_settings.svg 아이콘으로 교체
             icon: SvgPicture.asset(
               'assets/icons/ic_settings.svg',
               width: 24,
@@ -276,16 +276,14 @@ class _UpdateBannerCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // TODO: ic_tv.svg 아이콘으로 교체
           SvgPicture.asset('assets/icons/ic_tv.svg', width: 24, colorFilter: const ColorFilter.mode(BurnFitStyle.white, BlendMode.srcIn)),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
-              '9월 22일 업데이트 노트',
+              context.l10n.updateNote,
               style: BurnFitStyle.body.copyWith(color: BurnFitStyle.white),
             ),
           ),
-          // TODO: ic_close.svg 아이콘으로 교체
           SvgPicture.asset('assets/icons/ic_close.svg', width: 24, colorFilter: const ColorFilter.mode(BurnFitStyle.white, BlendMode.srcIn)),
         ],
       ),
@@ -306,9 +304,11 @@ class _MyGoalCard extends StatefulWidget {
 class _MyGoalCardState extends State<_MyGoalCard> {
   // 두 가지 목표에 대한 상태
   double? _daysProgress;
-  String? _daysGoalText;
+  int? _workoutDays;
+  int? _monthlyGoal;
   double? _volumeProgress;
-  String? _volumeGoalText;
+  double? _totalVolume;
+  double? _monthlyVolumeGoal;
 
   bool get _isLoading => _daysProgress == null || _volumeProgress == null;
 
@@ -340,7 +340,8 @@ class _MyGoalCardState extends State<_MyGoalCard> {
     if (mounted) {
       setState(() {
         _daysProgress = (workoutDays / monthlyGoal).clamp(0.0, 1.0);
-        _daysGoalText = '운동 일수: $workoutDays / $monthlyGoal 일';
+        _workoutDays = workoutDays;
+        _monthlyGoal = monthlyGoal;
       });
     }
 
@@ -351,7 +352,8 @@ class _MyGoalCardState extends State<_MyGoalCard> {
     if (mounted) {
       setState(() {
         _volumeProgress = (totalVolume / monthlyVolumeGoal).clamp(0.0, 1.0);
-        _volumeGoalText = '운동 볼륨: ${totalVolume.toStringAsFixed(0)} / ${monthlyVolumeGoal.toStringAsFixed(0)} kg';
+        _totalVolume = totalVolume;
+        _monthlyVolumeGoal = monthlyVolumeGoal;
       });
     }
   }
@@ -371,7 +373,7 @@ class _MyGoalCardState extends State<_MyGoalCard> {
               children: [
                 Row(
                   children: [
-                    const Text('내 목표', style: BurnFitStyle.title2),
+                    Text(context.l10n.myGoal, style: BurnFitStyle.title2),
                     const Spacer(),
                     TextButton(
                       onPressed: () async {
@@ -383,17 +385,17 @@ class _MyGoalCardState extends State<_MyGoalCard> {
                           _loadGoals();
                         }
                       },
-                      child: const Text('바로 만들기', style: TextStyle(color: BurnFitStyle.primaryBlue, fontSize: 17)),
+                      child: Text(context.l10n.editGoal, style: const TextStyle(color: BurnFitStyle.primaryBlue, fontSize: 17)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 // 두 개의 목표를 표시
                 _buildGoalIndicator(
-                    text: _daysGoalText!, progress: _daysProgress!),
+                    text: context.l10n.workoutDaysGoal(_workoutDays!, _monthlyGoal!), progress: _daysProgress!),
                 const SizedBox(height: 16),
                 _buildGoalIndicator(
-                    text: _volumeGoalText!, progress: _volumeProgress!),
+                    text: context.l10n.workoutVolumeGoal(_totalVolume!.toStringAsFixed(0), _monthlyVolumeGoal!.toStringAsFixed(0)), progress: _volumeProgress!),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
@@ -414,7 +416,7 @@ class _MyGoalCardState extends State<_MyGoalCard> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: Text('운동 시작하기', style: BurnFitStyle.body.copyWith(color: BurnFitStyle.white, fontWeight: FontWeight.bold)),
+                  child: Text(context.l10n.startWorkout, style: BurnFitStyle.body.copyWith(color: BurnFitStyle.white, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -441,8 +443,8 @@ class _MyGoalCardState extends State<_MyGoalCard> {
 
   Widget _buildLoadingSkeleton() {
     return Shimmer.fromColors(
-      baseColor: Theme.of(context).colorScheme.surfaceVariant,
-      highlightColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+      baseColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      highlightColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -473,9 +475,9 @@ class _ActivityTrendCard extends StatefulWidget {
 
 class _ActivityTrendCardState extends State<_ActivityTrendCard> {
   List<double>? _weeklyVolumes;
-  String? _summaryText;
-  String? _comparisonText;
-  bool get _isLoading => _weeklyVolumes == null || _summaryText == null || _comparisonText == null;
+  double? _avgThisWeek;
+  double? _diff;
+  bool get _isLoading => _weeklyVolumes == null || _avgThisWeek == null || _diff == null;
 
   @override
   void initState() {
@@ -507,8 +509,8 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
     if (mounted) {
       setState(() {
         _weeklyVolumes = thisWeekVolumes;
-        _summaryText = '이번 주 평균 운동 볼륨은 ${avgThisWeek.toStringAsFixed(0)}kg 입니다.';
-        _comparisonText = '저번 주 대비 ${diff >= 0 ? '+' : ''}${diff.toStringAsFixed(0)}kg';
+        _avgThisWeek = avgThisWeek;
+        _diff = diff;
       });
     }
   }
@@ -541,7 +543,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
               children: [
                 Row(
                   children: [
-                    const Text('운동량 변화', style: BurnFitStyle.title2),
+                    Text(context.l10n.activityTrend, style: BurnFitStyle.title2),
                     const Spacer(),
                     SvgPicture.asset(
                       'assets/icons/ic_arrow_right.svg',
@@ -553,20 +555,20 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                 const SizedBox(height: 24),
                 Row(
                   children: [
-                    _buildFilterTab('시간', isSelected: true),
+                    _buildFilterTab(context.l10n.time, isSelected: true),
                     const SizedBox(width: 8),
-                    _buildFilterTab('볼륨', isSelected: false),
+                    _buildFilterTab(context.l10n.volume, isSelected: false),
                     const SizedBox(width: 8),
-                    _buildFilterTab('밀도', isSelected: false),
+                    _buildFilterTab(context.l10n.density, isSelected: false),
                   ],
                 ),
                 const SizedBox(height: 24),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_summaryText!, style: BurnFitStyle.body),
+                    Text(context.l10n.weeklyAverageVolume(_avgThisWeek!.toStringAsFixed(0)), style: BurnFitStyle.body),
                     const SizedBox(height: 4),
-                    Text(_comparisonText!, style: BurnFitStyle.caption.copyWith(color: BurnFitStyle.primaryBlue)),
+                    Text(context.l10n.weeklyComparison('${_diff! >= 0 ? '+' : ''}${_diff!.toStringAsFixed(0)}'), style: BurnFitStyle.caption.copyWith(color: BurnFitStyle.primaryBlue)),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -583,7 +585,15 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                           sideTitles: SideTitles(
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
-                              final days = ['월', '화', '수', '목', '금', '토', '일'];
+                              final days = [
+                                context.l10n.weekdayMon,
+                                context.l10n.weekdayTue,
+                                context.l10n.weekdayWed,
+                                context.l10n.weekdayThu,
+                                context.l10n.weekdayFri,
+                                context.l10n.weekdaySat,
+                                context.l10n.weekdaySun,
+                              ];
                               return Padding(
                                 padding: const EdgeInsets.only(top: 8),
                                 child: Text(days[value.toInt() % 7]),
@@ -615,8 +625,8 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
 
   Widget _buildLoadingSkeleton() {
     return Shimmer.fromColors(
-      baseColor: Theme.of(context).colorScheme.surfaceVariant,
-      highlightColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+      baseColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      highlightColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
