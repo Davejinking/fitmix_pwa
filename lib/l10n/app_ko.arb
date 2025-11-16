@@ -154,6 +154,40 @@
   "editGoal": "목표 수정",
   "@editGoal": {
     "description": "목표 수정 버튼"
+  },
+  "selectDate": "가는 날",
+  "@selectDate": {
+    "description": "날짜 선택 모달 제목"
+  },
+  "planWorkout": "운동 계획하기",
+  "@planWorkout": {
+    "description": "운동 계획하기 버튼"
+  },
+  "noWorkoutRecords": "운동 기록이 없습니다",
+  "@noWorkoutRecords": {
+    "description": "운동 기록 없음 메시지"
+  },
+  "workoutRecord": "운동 기록",
+  "@workoutRecord": {
+    "description": "운동 기록 카드 제목"
+  },
+  "totalVolume": "총 볼륨: {volume}kg",
+  "@totalVolume": {
+    "description": "총 볼륨 표시",
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "andMore": "외 {count}개",
+  "@andMore": {
+    "description": "추가 항목 개수",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
 

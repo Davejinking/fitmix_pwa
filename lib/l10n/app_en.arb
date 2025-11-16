@@ -76,6 +76,26 @@
   "analysis": "Analysis",
   "unknownPage": "Unknown Page",
   "fitMix": "FitMix",
-  "editGoal": "Edit Goal"
+  "editGoal": "Edit Goal",
+  "selectDate": "Select Date",
+  "planWorkout": "Plan Workout",
+  "noWorkoutRecords": "No workout records",
+  "workoutRecord": "Workout Record",
+  "totalVolume": "Total Volume: {volume}kg",
+  "@totalVolume": {
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "andMore": "and {count} more",
+  "@andMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
 

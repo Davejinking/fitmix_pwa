@@ -247,14 +247,16 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       // 3.1 HeaderComponent
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: BurnFitStyle.darkGrayText),
+          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).textTheme.bodyLarge?.color),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -265,16 +267,23 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 '운동을 시작하기 위해\n필수 정보를 알려주세요.',
-                style: BurnFitStyle.title1,
+                style: BurnFitStyle.title1.copyWith(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  height: 1.3,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
                 '입력 정보는 운동 추천 용도로만 사용합니다.',
-                style: BurnFitStyle.body.copyWith(color: BurnFitStyle.secondaryGrayText),
+                style: BurnFitStyle.body.copyWith(
+                  color: isDark ? Colors.grey[400] : BurnFitStyle.secondaryGrayText,
+                  fontSize: 15,
+                ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               // UserInfoForm
               _FormInputTextField(label: '몸무게 *', hint: '몸무게를 입력해 주세요.', controller: _weightController, onTap: _showWeightPicker),
               const SizedBox(height: 16),
@@ -285,38 +294,58 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
               _FormInputTextField(label: '성별 *', hint: '성별을 알려주세요.', controller: _genderController, onTap: _showGenderPicker),
               const Spacer(),
               // NextButton
-              ElevatedButton(
-                onPressed: _isFormComplete
-                    ? () async {
-                        // 기존 프로필을 불러와서 덮어쓰기 (목표값 유지)
-                        final existingProfile = await widget.userRepo.getUserProfile();
-                        final newProfile = UserProfile(
-                          weight: _weight!,
-                          height: _height!,
-                          birthDate: _birthDate!,
-                          gender: _gender!,
-                          monthlyWorkoutGoal: existingProfile?.monthlyWorkoutGoal ?? 20,
-                          monthlyVolumeGoal: existingProfile?.monthlyVolumeGoal ?? 100000.0,
-                          profileImage: existingProfile?.profileImage,
-                        );
-                        try {
-                          await widget.userRepo.saveUserProfile(newProfile);
-                          if (mounted) Navigator.pop(context, true); // 성공 시 true 반환
-                        } catch (e) {
-                          ErrorHandler.showErrorSnackBar(context, '정보 저장에 실패했습니다.');
-                        }
-                      } : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: BurnFitStyle.primaryBlue,
-                  disabledBackgroundColor: BurnFitStyle.lightGray,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: _isFormComplete
+                      ? [
+                          BoxShadow(
+                            color: BurnFitStyle.primaryBlue.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : [],
                 ),
-                child: Text(
-                  '다음',
-                  style: BurnFitStyle.body.copyWith(
-                    color: _isFormComplete ? BurnFitStyle.white : BurnFitStyle.secondaryGrayText,
-                    fontWeight: FontWeight.bold,
+                child: ElevatedButton(
+                  onPressed: _isFormComplete
+                      ? () async {
+                          // 기존 프로필을 불러와서 덮어쓰기 (목표값 유지)
+                          final existingProfile = await widget.userRepo.getUserProfile();
+                          final newProfile = UserProfile(
+                            weight: _weight!,
+                            height: _height!,
+                            birthDate: _birthDate!,
+                            gender: _gender!,
+                            monthlyWorkoutGoal: existingProfile?.monthlyWorkoutGoal ?? 20,
+                            monthlyVolumeGoal: existingProfile?.monthlyVolumeGoal ?? 100000.0,
+                            profileImage: existingProfile?.profileImage,
+                          );
+                          try {
+                            await widget.userRepo.saveUserProfile(newProfile);
+                            if (mounted) Navigator.pop(context, true); // 성공 시 true 반환
+                          } catch (e) {
+                            if (mounted) {
+                              ErrorHandler.showErrorSnackBar(context, '정보 저장에 실패했습니다.');
+                            }
+                          }
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: BurnFitStyle.primaryBlue,
+                    disabledBackgroundColor: Colors.grey[300],
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    '다음',
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: _isFormComplete ? Colors.white : Colors.grey[500],
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
               ),
@@ -343,25 +372,64 @@ class _FormInputTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasValue = controller.text.isNotEmpty;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: BurnFitStyle.caption.copyWith(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          readOnly: true,
-          onTap: onTap,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: BurnFitStyle.body.copyWith(color: BurnFitStyle.secondaryGrayText),
-            filled: true,
-            fillColor: BurnFitStyle.lightGray,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.grey[300] : BurnFitStyle.darkGrayText,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? Colors.grey[850] : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasValue 
+                ? BurnFitStyle.primaryBlue.withOpacity(0.3)
+                : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
+              width: 1.5,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            boxShadow: [
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+            ],
+          ),
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            onTap: onTap,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: isDark ? Colors.white : BurnFitStyle.darkGrayText,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                fontSize: 16,
+                color: isDark ? Colors.grey[600] : Colors.grey[400],
+              ),
+              filled: false,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              suffixIcon: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: isDark ? Colors.grey[600] : Colors.grey[400],
+              ),
+            ),
           ),
         ),
       ],

@@ -110,4 +110,26 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get editGoal => '목표 수정';
+
+  @override
+  String get selectDate => '가는 날';
+
+  @override
+  String get planWorkout => '운동 계획하기';
+
+  @override
+  String get noWorkoutRecords => '운동 기록이 없습니다';
+
+  @override
+  String get workoutRecord => '운동 기록';
+
+  @override
+  String totalVolume(String volume) {
+    return '총 볼륨: ${volume}kg';
+  }
+
+  @override
+  String andMore(int count) {
+    return '외 $count개';
+  }
 }

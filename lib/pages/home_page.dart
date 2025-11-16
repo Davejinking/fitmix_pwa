@@ -4,20 +4,18 @@ import '../data/session_repo.dart';
 import '../data/user_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/exercise_library_repo.dart';
-import '../models/user_profile.dart';
 import '../data/auth_repo.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import '../models/user_profile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../core/burn_fit_style.dart';
 import '../core/l10n_extensions.dart';
 import 'package:shimmer/shimmer.dart';
 import 'user_info_form_page.dart';
 import 'workout_page.dart';
-import 'profile_page.dart';
 import 'upgrade_page.dart';
 import '../models/session.dart';
-import 'settings_page.dart';
 import 'shell_page.dart';
+import './settings_page.dart';
 
 class HomePage extends StatelessWidget {
   final SessionRepo sessionRepo;
@@ -35,28 +33,27 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 2. 화면 컴포넌트 계층 구조
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 3.1 HeaderComponent
-            _HeaderComponent(
-                userRepo: userRepo,
-                exerciseRepo: exerciseRepo,
-                settingsRepo: settingsRepo,
-                sessionRepo: sessionRepo,
-                authRepo: authRepo),
-            // 3.2 BodyComponent
-            Expanded(
-              child: _BodyComponent(
-                sessionRepo: sessionRepo,
-                userRepo: userRepo,
-              ),
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          // 헤더를 SliverAppBar로 변경
+          SliverToBoxAdapter(
+            child: _HeaderComponent(
+              userRepo: userRepo,
+              exerciseRepo: exerciseRepo,
+              settingsRepo: settingsRepo,
+              sessionRepo: sessionRepo,
+              authRepo: authRepo,
             ),
-          ],
-        ),
+          ),
+          // 본문 콘텐츠
+          SliverToBoxAdapter(
+            child: _BodyComponent(
+              sessionRepo: sessionRepo,
+              userRepo: userRepo,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -82,74 +79,34 @@ class _HeaderComponent extends StatefulWidget {
 }
 
 class _HeaderComponentState extends State<_HeaderComponent> {
-  GoogleSignInAccount? _currentUser;
-  UserProfile? _userProfile;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  void _loadUserData() async {
-    // AuthRepo와 UserRepo를 통해 사용자 정보를 가져옵니다.
-    final user = widget.authRepo.currentUser;
-    final profile = await widget.userRepo.getUserProfile();
-    if (mounted) {
-      setState(() {
-        _currentUser = user;
-        _userProfile = profile;
-      });
-    }
-  }
-
-  ImageProvider? get _profileImage {
-    if (_userProfile?.profileImage != null) {
-      return MemoryImage(_userProfile!.profileImage!);
-    }
-    if (_currentUser?.photoUrl != null) {
-      return NetworkImage(_currentUser!.photoUrl!);
-    }
-    return null;
-  }
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Row(
         children: [
-          if (_currentUser != null)
-            InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ProfilePage(
-                    userRepo: widget.userRepo,
-                    authRepo: widget.authRepo,
-                  ),
-                )).then((_) => _loadUserData()); // 프로필 수정 후 돌아오면 데이터 새로고침
-              },
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: _profileImage,
-                    radius: 20,
-                    onBackgroundImageError: (_, __) {}, // 이미지 로드 실패 시 에러 방지
-                    child: _profileImage == null ? const Icon(Icons.person) : null,
-                  ),
-                  const SizedBox(width: 12),
-                  Flexible(
-                    child: Text(
-                      context.l10n.greetingWithName(_currentUser!.displayName ?? context.l10n.defaultUser),
-                      style: BurnFitStyle.title2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            Text(context.l10n.burnFit, style: BurnFitStyle.title1),
+          // FitMix 로고
+          Text(
+            context.l10n.fitMix,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: BurnFitStyle.primaryBlue,
+              letterSpacing: 0.5,
+            ),
+          ),
           const Spacer(),
+          // 업그레이드 버튼
           OutlinedButton(
             onPressed: () {
               Navigator.of(context).push(
@@ -159,28 +116,33 @@ class _HeaderComponentState extends State<_HeaderComponent> {
             style: OutlinedButton.styleFrom(
               shape: const StadiumBorder(),
               side: const BorderSide(color: BurnFitStyle.mediumGray, width: 1),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             ),
             child: Text(context.l10n.upgrade, style: BurnFitStyle.body),
           ),
           const SizedBox(width: 8),
+          // 설정 아이콘
           IconButton(
-            icon: SvgPicture.asset(
-              'assets/icons/ic_settings.svg',
-              width: 24,
-              colorFilter: ColorFilter.mode(Theme.of(context).iconTheme.color!, BlendMode.srcIn),
+            icon: const Icon(
+              Icons.settings_outlined,
+              size: 24,
+              color: BurnFitStyle.darkGrayText,
             ),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => SettingsPage(
-                      userRepo: widget.userRepo,
-                      exerciseRepo: widget.exerciseRepo,
-                      settingsRepo: widget.settingsRepo,
-                      sessionRepo: widget.sessionRepo,
-                      authRepo: widget.authRepo),
+                    userRepo: widget.userRepo,
+                    exerciseRepo: widget.exerciseRepo,
+                    settingsRepo: widget.settingsRepo,
+                    sessionRepo: widget.sessionRepo,
+                    authRepo: widget.authRepo,
+                  ),
                 ),
               );
             },
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
           ),
         ],
       ),

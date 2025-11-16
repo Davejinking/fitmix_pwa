@@ -110,4 +110,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get editGoal => '目標を編集';
+
+  @override
+  String get selectDate => '行く日';
+
+  @override
+  String get planWorkout => 'ワークアウトを計画';
+
+  @override
+  String get noWorkoutRecords => '運動記録がありません';
+
+  @override
+  String get workoutRecord => '運動記録';
+
+  @override
+  String totalVolume(String volume) {
+    return '総ボリューム: ${volume}kg';
+  }
+
+  @override
+  String andMore(int count) {
+    return '他 $count個';
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -15,8 +16,8 @@ import 'pages/splash_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('ko_KR');
-  Intl.defaultLocale = 'ko_KR';
+  await initializeDateFormatting('ja_JP');
+  Intl.defaultLocale = 'ja_JP';
 
   final sessionRepo = HiveSessionRepo();
   await sessionRepo.init();
@@ -66,7 +67,7 @@ class FitMixApp extends StatefulWidget {
 }
 
 class _FitMixAppState extends State<FitMixApp> {
-  late ThemeMode _themeMode;
+  ThemeMode _themeMode = ThemeMode.system;
 
   @override
   void initState() {
@@ -75,8 +76,12 @@ class _FitMixAppState extends State<FitMixApp> {
   }
 
   Future<void> _loadTheme() async {
-    _themeMode = await widget.settingsRepo.getThemeMode();
-    setState(() {});
+    final themeMode = await widget.settingsRepo.getThemeMode();
+    if (mounted) {
+      setState(() {
+        _themeMode = themeMode;
+      });
+    }
   }
 
   @override
@@ -98,7 +103,8 @@ class _FitMixAppState extends State<FitMixApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: widget.isLoggedIn
+      home: kDebugMode
+          // 디버그 모드: 로그인 여부와 상관없이 바로 SplashPage 진입
           ? SplashPage(
               sessionRepo: widget.sessionRepo,
               exerciseRepo: widget.exerciseRepo,
@@ -106,13 +112,22 @@ class _FitMixAppState extends State<FitMixApp> {
               settingsRepo: widget.settingsRepo,
               authRepo: widget.authRepo,
             )
-          : LoginPage(
-              sessionRepo: widget.sessionRepo,
-              exerciseRepo: widget.exerciseRepo,
-              userRepo: widget.userRepo,
-              settingsRepo: widget.settingsRepo,
-              authRepo: widget.authRepo,
-            ),
+          // 릴리즈/프로파일 모드: 기존 로직 유지
+          : (widget.isLoggedIn
+              ? SplashPage(
+                  sessionRepo: widget.sessionRepo,
+                  exerciseRepo: widget.exerciseRepo,
+                  userRepo: widget.userRepo,
+                  settingsRepo: widget.settingsRepo,
+                  authRepo: widget.authRepo,
+                )
+              : LoginPage(
+                  sessionRepo: widget.sessionRepo,
+                  exerciseRepo: widget.exerciseRepo,
+                  userRepo: widget.userRepo,
+                  settingsRepo: widget.settingsRepo,
+                  authRepo: widget.authRepo,
+                )),
     );
   }
 }

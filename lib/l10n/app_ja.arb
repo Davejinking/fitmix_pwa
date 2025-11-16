@@ -76,6 +76,26 @@
   "analysis": "分析",
   "unknownPage": "不明なページ",
   "fitMix": "FitMix",
-  "editGoal": "目標を編集"
+  "editGoal": "目標を編集",
+  "selectDate": "行く日",
+  "planWorkout": "ワークアウトを計画",
+  "noWorkoutRecords": "運動記録がありません",
+  "workoutRecord": "運動記録",
+  "totalVolume": "総ボリューム: {volume}kg",
+  "@totalVolume": {
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "andMore": "他 {count}個",
+  "@andMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
 

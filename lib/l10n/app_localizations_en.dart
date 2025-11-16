@@ -110,4 +110,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editGoal => 'Edit Goal';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get planWorkout => 'Plan Workout';
+
+  @override
+  String get noWorkoutRecords => 'No workout records';
+
+  @override
+  String get workoutRecord => 'Workout Record';
+
+  @override
+  String totalVolume(String volume) {
+    return 'Total Volume: ${volume}kg';
+  }
+
+  @override
+  String andMore(int count) {
+    return 'and $count more';
+  }
 }

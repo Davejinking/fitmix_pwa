@@ -114,8 +114,42 @@ class _LibraryPageState extends State<LibraryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<Map<String, List<String>>>(
+    return SafeArea(
+      child: Column(
+        children: [
+          // 헤더
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'ライブラリ',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, size: 24),
+                  onPressed: () => _showEditDialog(),
+                ),
+              ],
+            ),
+          ),
+          // 본문
+          Expanded(
+            child: FutureBuilder<Map<String, List<String>>>(
         future: _libraryFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -158,9 +192,8 @@ class _LibraryPageState extends State<LibraryPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showEditDialog(),
-        child: const Icon(Icons.add),
+      ),
+        ],
       ),
     );
   }

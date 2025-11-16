@@ -79,8 +79,37 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<_AnalysisData>(
+    return SafeArea(
+      child: Column(
+        children: [
+          // 헤더
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Row(
+              children: [
+                Text(
+                  '分析',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 본문
+          Expanded(
+            child: FutureBuilder<_AnalysisData>(
         future: _analysisDataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -111,6 +140,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
             ),
           );
         },
+      ),
+      ),
+        ],
       ),
     );
   }

@@ -285,6 +285,42 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'목표 수정'**
   String get editGoal;
+
+  /// 날짜 선택 모달 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'가는 날'**
+  String get selectDate;
+
+  /// 운동 계획하기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 계획하기'**
+  String get planWorkout;
+
+  /// 운동 기록 없음 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 기록이 없습니다'**
+  String get noWorkoutRecords;
+
+  /// 운동 기록 카드 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 기록'**
+  String get workoutRecord;
+
+  /// 총 볼륨 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'총 볼륨: {volume}kg'**
+  String totalVolume(String volume);
+
+  /// 추가 항목 개수
+  ///
+  /// In ko, this message translates to:
+  /// **'외 {count}개'**
+  String andMore(int count);
 }
 
 class _AppLocalizationsDelegate

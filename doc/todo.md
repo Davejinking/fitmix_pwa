@@ -28,7 +28,7 @@
 - [ ] Navigator push/pop 안전화
 - [ ] showDialog / SnackBar / ScaffoldMessenger 호출부 점검
 - [ ] workout_page.dart 반영
-- [ ] settings_page.dart 반영
+- [x] settings_page.dart 반영 (2024-11-16)
 - [ ] analysis_page.dart 반영
 - [ ] library_page.dart 반영
 - [ ] profile_page.dart 반영
@@ -60,6 +60,7 @@ Navigator.of(context).push(...);
 - [x] deprecated 경고 제거 (workout_page.dart)
 - [x] 기존 동작 유지 확인
 - [x] 테스트 완료
+- [x] settings_page.dart 불필요한 import 제거 (2024-11-16)
 
 ### 2-2. 코드 스타일 정리
 
@@ -361,8 +362,9 @@ Navigator.of(context).push(...);
 ## 📊 진행 상황 요약
 
 ### PS0 클린업
-- 완료: 2/22 (9%)
+- 완료: 3/22 (14%)
 - 진행 중: BuildContext Async Gaps
+- 최근 완료: settings_page.dart 정리 (2024-11-16)
 
 ### i18n
 - 완료: 2/10 (20%)
@@ -379,6 +381,22 @@ Navigator.of(context).push(...);
 ### Social 기능
 - 완료: 0/30 (0%)
 - 대기 중: 기획 확정
+
+---
+
+## 🎯 오늘 완료 (2024-11-16)
+
+### UI/UX 개선
+- [x] main.dart _themeMode 초기화 에러 수정 (LateInitializationError 해결)
+- [x] settings_page.dart 불필요한 import 3개 제거
+- [x] settings_page.dart BuildContext async gap 수정
+- [x] 캘린더 "오늘" 버튼 선택 상태 로직 개선
+  - 오늘 날짜 선택 시: 파란색 강조
+  - 다른 날짜 선택 시: 회색 표시
+
+### 코드 품질
+- [x] flutter analyze 에러 0개 유지
+- [x] 경고 30개 (기능 영향 없음, info/warning만)
 
 ---
 
