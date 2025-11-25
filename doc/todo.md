@@ -412,7 +412,41 @@ Navigator.of(context).push(...);
 
 ---
 
-## 🎯 오늘 완료 (2024-11-16)
+## 🎯 최근 완료
+
+### 2024-11-25: 라이브러리 페이지 카테고리 구조 개편 ✅
+
+**메인 탭 개편:**
+- [x] 부위와 주요 목적 기반 탭 구성
+  - 즐겨찾기, 가슴, 등, 하체, 어깨, 팔, 복근, 유산소, 스트레칭, 전신
+  - '기타' 탭 삭제, '스트레칭' 탭 추가
+  - 전신 탭에 기존 역도 포함
+
+**서브 필터 추가:**
+- [x] 장비 선택 FilterChips 구현
+  - 전체, 맨몸, 머신, 바벨, 덤벨, 케이블, 밴드
+  - 알약 모양 디자인 (선택 시 파란색 테두리)
+  - 탭 바로 아래 가로 스크롤 배치
+
+**데이터 구조 개선:**
+- [x] ExerciseDB 모델에 getter 추가
+  - `targetPart`: 운동 부위 (한국어)
+  - `equipmentType`: 장비 타입 (한국어)
+  - bodyPart와 equipment 명확히 구분
+
+**i18n 완료:**
+- [x] 20개 새로운 키 추가 (ko, en, ja)
+  - 탭 이름: favorites, chest, back, legs, shoulders, arms, abs, cardio, stretching, fullBody
+  - 장비 필터: all, bodyweight, machine, barbell, dumbbell, cable, band
+  - UI 텍스트: searchExercise, noExercises, retry
+- [x] 모든 하드코딩 텍스트 제거
+
+**작동 방식:**
+- 예: '가슴' 탭 + '맨몸' 필터 → 푸쉬업 등 맨몸 가슴 운동만 표시
+- 필터 변경 시 즉시 목록 업데이트
+- 즐겨찾기 탭은 북마크된 운동만 표시 (TODO)
+
+### 2024-11-16: PS0 클린업 완료 🎉
 
 ### UI/UX 개선
 - [x] main.dart _themeMode 초기화 에러 수정 (LateInitializationError 해결)

@@ -157,9 +157,18 @@ class HiveSessionRepo implements SessionRepo {
   Future<List<Session>> getWorkoutSessions() async {
     try {
       final allSessions = await listAll();
-      return allSessions.where((session) => session.isWorkoutDay).toList();
+      final workoutSessions = allSessions.where((session) {
+        try {
+          return session.isWorkoutDay;
+        } catch (e) {
+          print('⚠️ 세션 확인 중 오류: ${session.ymd}, $e');
+          return false;
+        }
+      }).toList();
+      return workoutSessions;
     } catch (e) {
-      throw Exception('운동 세션 조회 중 오류가 발생했습니다: $e');
+      print('❌ 운동 세션 조회 중 오류: $e');
+      return [];
     }
   }
 }

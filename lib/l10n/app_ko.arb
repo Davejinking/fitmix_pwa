@@ -497,6 +497,110 @@
   "minOneSet": "최소 1개의 세트가 필요합니다.",
   "@minOneSet": {
     "description": "최소 세트 경고"
+  },
+  "favorites": "즐겨찾기",
+  "@favorites": {
+    "description": "즐겨찾기 탭"
+  },
+  "chest": "가슴",
+  "@chest": {
+    "description": "가슴 부위"
+  },
+  "back": "등",
+  "@back": {
+    "description": "등 부위"
+  },
+  "legs": "하체",
+  "@legs": {
+    "description": "하체 부위"
+  },
+  "shoulders": "어깨",
+  "@shoulders": {
+    "description": "어깨 부위"
+  },
+  "arms": "팔",
+  "@arms": {
+    "description": "팔 부위"
+  },
+  "abs": "복근",
+  "@abs": {
+    "description": "복근 부위"
+  },
+  "cardio": "유산소",
+  "@cardio": {
+    "description": "유산소 운동"
+  },
+  "stretching": "스트레칭",
+  "@stretching": {
+    "description": "스트레칭"
+  },
+  "fullBody": "전신",
+  "@fullBody": {
+    "description": "전신 운동"
+  },
+  "all": "전체",
+  "@all": {
+    "description": "전체 필터"
+  },
+  "bodyweight": "맨몸",
+  "@bodyweight": {
+    "description": "맨몸 운동"
+  },
+  "machine": "머신",
+  "@machine": {
+    "description": "머신 장비"
+  },
+  "barbell": "바벨",
+  "@barbell": {
+    "description": "바벨 장비"
+  },
+  "dumbbell": "덤벨",
+  "@dumbbell": {
+    "description": "덤벨 장비"
+  },
+  "cable": "케이블",
+  "@cable": {
+    "description": "케이블 장비"
+  },
+  "band": "밴드",
+  "@band": {
+    "description": "밴드 장비"
+  },
+  "searchExercise": "찾으시는 운동을 검색해보세요.",
+  "@searchExercise": {
+    "description": "운동 검색 힌트"
+  },
+  "noExercises": "운동이 없습니다.",
+  "@noExercises": {
+    "description": "운동 없음 메시지"
+  },
+  "retry": "다시 시도",
+  "@retry": {
+    "description": "다시 시도 버튼"
+  },
+  "addCustomExercise": "커스텀 운동 추가",
+  "@addCustomExercise": {
+    "description": "커스텀 운동 추가 버튼"
+  },
+  "customExerciseName": "운동 이름",
+  "@customExerciseName": {
+    "description": "커스텀 운동 이름 입력"
+  },
+  "selectBodyPart": "부위 선택",
+  "@selectBodyPart": {
+    "description": "부위 선택 레이블"
+  },
+  "selectEquipment": "장비 선택",
+  "@selectEquipment": {
+    "description": "장비 선택 레이블"
+  },
+  "add": "추가",
+  "@add": {
+    "description": "추가 버튼"
+  },
+  "pleaseEnterExerciseName": "운동 이름을 입력해주세요.",
+  "@pleaseEnterExerciseName": {
+    "description": "운동 이름 입력 요청"
   }
 }
 

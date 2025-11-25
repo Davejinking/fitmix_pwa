@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/constants.dart';
+import '../core/theme_notifier.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/user_repo.dart';
 import '../data/session_repo.dart';
@@ -29,48 +30,17 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  ThemeMode _currentThemeMode = ThemeMode.system;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadThemeMode();
-  }
-
-  Future<void> _loadThemeMode() async {
-    final themeMode = await widget.settingsRepo.getThemeMode();
-    if (mounted) {
-      setState(() {
-        _currentThemeMode = themeMode;
-      });
-    }
-  }
-
-  String _getThemeModeLabel(ThemeMode mode, AppLocalizations l10n) {
-    switch (mode) {
-      case ThemeMode.system:
-        return l10n.systemSetting;
-      case ThemeMode.light:
-        return l10n.light;
-      case ThemeMode.dark:
-        return l10n.dark;
-    }
-  }
+  // 테마 관련 코드 제거 - 다크 모드로 고정
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
         children: [
-          ListTile(
-            leading: const Icon(Icons.palette_outlined),
-            title: Text(l10n.theme),
-            subtitle: Text(_getThemeModeLabel(_currentThemeMode, l10n)),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
-          ),
+          // 테마 설정 제거 - 다크 모드로 고정
           ListTile(
             leading: const Icon(Icons.person_outline),
             title: Text(l10n.profile),

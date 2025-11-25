@@ -23,12 +23,12 @@ class FMBottomNav extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
-      selectedItemColor: selectedItemColor ?? Colors.white,
-      unselectedItemColor: unselectedItemColor ?? Colors.white70,
+      selectedItemColor: selectedItemColor ?? const Color(0xFF007AFF), // 스카이 블루
+      unselectedItemColor: unselectedItemColor ?? const Color(0xFF8E8E93), // 어두운 회색
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
-      elevation: 8,
-      backgroundColor: backgroundColor ?? const Color(0xFF1F1F1F),
+      elevation: 0,
+      backgroundColor: backgroundColor ?? const Color(0xFF1E1E1E),
       selectedFontSize: 12,
       unselectedFontSize: 12,
       items: items.map((item) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../core/burn_fit_style.dart';
 import '../../data/exercise_library_repo.dart';
 import '../../data/session_repo.dart';
 import '../../models/session.dart';
@@ -29,7 +28,7 @@ class DayTimelineList extends StatelessWidget {
       valueListenable: selectedEvents,
       builder: (context, sessions, _) {
         return Container(
-          color: const Color(0xFFF5F5F5),
+          color: const Color(0xFF121212),
           child: sessions.isEmpty || !sessions.first.isWorkoutDay
               ? _buildEmptyState(context)
               : _buildSessionList(context, sessions),
@@ -46,29 +45,29 @@ class DayTimelineList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.fitness_center,
               size: 64,
-              color: Colors.grey[300],
+              color: Color(0xFF2C2C2E),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               DateFormat.MMMEd().format(selectedDay),
               style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: BurnFitStyle.darkGrayText,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFFFFFFFF),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.noWorkoutRecords,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
-                color: Colors.grey[600],
+                color: Color(0xFFAAAAAA),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
@@ -84,15 +83,16 @@ class DayTimelineList extends StatelessWidget {
               icon: const Icon(Icons.add),
               label: Text(l10n.planWorkout),
               style: ElevatedButton.styleFrom(
-                backgroundColor: BurnFitStyle.primaryBlue,
-                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xFF007AFF),
+                foregroundColor: const Color(0xFFFFFFFF),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
-                  vertical: 14,
+                  vertical: 16,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
+                elevation: 0,
               ),
             ),
           ],
@@ -132,18 +132,11 @@ class _WorkoutSessionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,15 +148,15 @@ class _WorkoutSessionCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: BurnFitStyle.primaryBlue.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xFF007AFF).withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
                       Icons.fitness_center,
-                      color: BurnFitStyle.primaryBlue,
-                      size: 20,
+                      color: Color(0xFF007AFF),
+                      size: 22,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -173,16 +166,16 @@ class _WorkoutSessionCard extends StatelessWidget {
                       Text(
                         l10n.workoutRecord,
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: BurnFitStyle.darkGrayText,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFFFFFFFF),
                         ),
                       ),
                       Text(
                         l10n.totalVolume(session.totalVolume.toStringAsFixed(0)),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFFAAAAAA),
                         ),
                       ),
                     ],
@@ -190,7 +183,7 @@ class _WorkoutSessionCard extends StatelessWidget {
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.edit, size: 20),
+                icon: const Icon(Icons.edit, size: 22, color: Color(0xFF007AFF)),
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -207,48 +200,60 @@ class _WorkoutSessionCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Divider(height: 1),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          const Divider(height: 1, color: Color(0xFF2C2C2E)),
+          const SizedBox(height: 16),
           // 운동 목록
-          ...session.exercises.take(3).map((exercise) {
+          ...session.exercises.map((exercise) {
+            // 세트 정보 요약 (예: 4세트, 최고 80kg x 6회)
+            final setCount = exercise.sets.length;
+            final maxWeightSet = exercise.sets.reduce((a, b) => 
+              a.weight > b.weight ? a : b
+            );
+            final setInfo = '$setCount세트 • 최고 ${maxWeightSet.weight.toStringAsFixed(0)}kg × ${maxWeightSet.reps}회';
+            
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 12),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 4,
-                    height: 4,
+                    width: 5,
+                    height: 5,
+                    margin: const EdgeInsets.only(top: 6),
                     decoration: const BoxDecoration(
-                      color: BurnFitStyle.primaryBlue,
+                      color: Color(0xFF007AFF),
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      '${exercise.name} - ${exercise.bodyPart}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: BurnFitStyle.darkGrayText,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          exercise.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFFFFFFF),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          setInfo,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFFAAAAAA),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             );
           }),
-          if (session.exercises.length > 3)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                l10n.andMore(session.exercises.length - 3),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ),
         ],
       ),
     );

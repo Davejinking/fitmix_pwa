@@ -9,7 +9,7 @@ import '../widgets/common/fm_bottom_nav.dart';
 import 'analysis_page.dart';
 import 'calendar_page.dart';
 import 'home_page.dart';
-import 'library_page.dart';
+import 'library_page_v2.dart';
 
 class ShellPage extends StatefulWidget {
   final SessionRepo sessionRepo;
@@ -52,9 +52,7 @@ class ShellPageState extends State<ShellPage> {
         repo: widget.sessionRepo,
         exerciseRepo: widget.exerciseRepo,
       ),
-      LibraryPage(
-        exerciseRepo: widget.exerciseRepo,
-      ),
+      const LibraryPageV2(),
       AnalysisPage(
         repo: widget.sessionRepo,
         userRepo: widget.userRepo,
@@ -69,7 +67,7 @@ class ShellPageState extends State<ShellPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFF121212), // 다크 모드 배경 고정
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,

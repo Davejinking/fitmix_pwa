@@ -348,4 +348,82 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get minOneSet => '최소 1개의 세트가 필요합니다.';
+
+  @override
+  String get favorites => '즐겨찾기';
+
+  @override
+  String get chest => '가슴';
+
+  @override
+  String get back => '등';
+
+  @override
+  String get legs => '하체';
+
+  @override
+  String get shoulders => '어깨';
+
+  @override
+  String get arms => '팔';
+
+  @override
+  String get abs => '복근';
+
+  @override
+  String get cardio => '유산소';
+
+  @override
+  String get stretching => '스트레칭';
+
+  @override
+  String get fullBody => '전신';
+
+  @override
+  String get all => '전체';
+
+  @override
+  String get bodyweight => '맨몸';
+
+  @override
+  String get machine => '머신';
+
+  @override
+  String get barbell => '바벨';
+
+  @override
+  String get dumbbell => '덤벨';
+
+  @override
+  String get cable => '케이블';
+
+  @override
+  String get band => '밴드';
+
+  @override
+  String get searchExercise => '찾으시는 운동을 검색해보세요.';
+
+  @override
+  String get noExercises => '운동이 없습니다.';
+
+  @override
+  String get retry => '다시 시도';
+
+  @override
+  String get addCustomExercise => '커스텀 운동 추가';
+
+  @override
+  String get customExerciseName => '운동 이름';
+
+  @override
+  String get selectBodyPart => '부위 선택';
+
+  @override
+  String get selectEquipment => '장비 선택';
+
+  @override
+  String get add => '추가';
+
+  @override
+  String get pleaseEnterExerciseName => '운동 이름을 입력해주세요.';
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'burn_fit_style.dart';
 
 /// 앱 전체에서 사용되는 상수들을 중앙 관리
 class AppConstants {
@@ -17,31 +16,46 @@ class AppConstants {
   static const double defaultPadding = 16.0;
   static const double smallPadding = 8.0;
   static const double largePadding = 24.0;
-  static const double cardElevation = 2.0;
+  static const double cardElevation = 0.0;
   static const double progressBarHeight = 8.0;
+  static const double cardRadius = 16.0; // 통일된 카드 모서리
 
-  // 테마
-  static final ThemeData lightTheme = ThemeData(
-    brightness: Brightness.light,
-    fontFamily: 'Pretendard',
-    useMaterial3: false,
-    scaffoldBackgroundColor: BurnFitStyle.white,
-    cardColor: BurnFitStyle.lightGray,
-    colorSchemeSeed: BurnFitStyle.primaryBlue,
-  );
-
+  // Apple HIG 스타일 다크 테마
+  static const Color primaryColor = Color(0xFF007AFF); // 스카이 블루
+  static const Color accentColor = Color(0xFFCCFF00); // 네온 라임 (선택적 사용)
+  static const Color backgroundColor = Color(0xFF121212); // 다크 배경
+  static const Color cardColor = Color(0xFF1E1E1E); // 카드 배경
+  static const Color textPrimary = Color(0xFFFFFFFF); // 흰색 텍스트
+  static const Color textSecondary = Color(0xFFAAAAAA); // 회색 텍스트
+  
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     fontFamily: 'Pretendard',
     useMaterial3: false,
-    scaffoldBackgroundColor: const Color(0xFF121212), // 다크 모드 기본 배경색
-    cardColor: const Color(0xFF1E1E1E), // 다크 모드 카드 배경색
-    dividerColor: Colors.grey[800],
+    scaffoldBackgroundColor: backgroundColor,
+    cardColor: cardColor,
+    dividerColor: const Color(0xFF2C2C2E),
     colorScheme: const ColorScheme.dark(
-      primary: BurnFitStyle.primaryBlue,
-      secondary: BurnFitStyle.primaryBlue,
-      surface: Color(0xFF1E1E1E),
-      onSurface: BurnFitStyle.white,
+      primary: primaryColor,
+      secondary: primaryColor,
+      surface: cardColor,
+      onSurface: textPrimary,
+      surfaceContainerHighest: backgroundColor,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundColor,
+      foregroundColor: textPrimary,
+      elevation: 0,
+    ),
+    cardTheme: CardThemeData(
+      color: cardColor,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(cardRadius)),
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: textPrimary),
+      bodyMedium: TextStyle(color: textPrimary),
+      titleLarge: TextStyle(color: textPrimary, fontWeight: FontWeight.bold),
     ),
   );
   

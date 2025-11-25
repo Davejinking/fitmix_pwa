@@ -13,11 +13,13 @@ import 'data/auth_repo.dart';
 import 'pages/login_page.dart';
 import 'data/user_repo.dart';
 import 'pages/splash_page.dart';
+import 'utils/dummy_data_generator.dart';
+import 'models/session.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('ja_JP');
-  Intl.defaultLocale = 'ja_JP';
+  await initializeDateFormatting('ko_KR');
+  Intl.defaultLocale = 'ko_KR';
 
   final sessionRepo = HiveSessionRepo();
   await sessionRepo.init();
@@ -32,6 +34,33 @@ Future<void> main() async {
   await settingsRepo.init();
 
   final authRepo = GoogleAuthRepo();
+
+  // 디버그 모드에서만 더미 데이터 생성
+  if (kDebugMode) {
+    try {
+      final dummyGenerator = DummyDataGenerator(sessionRepo);
+      // 기존 더미 데이터가 있는지 확인
+      final sessions = await sessionRepo.getWorkoutSessions();
+      print('📊 현재 저장된 운동 세션: ${sessions.length}개');
+      
+      if (sessions.isEmpty) {
+        print('🏋️ 더미 운동 데이터 생성 중...');
+        await dummyGenerator.generateLastWeekWorkouts();
+        
+        // 생성 확인
+        final newSessions = await sessionRepo.getWorkoutSessions();
+        print('✅ 더미 데이터 생성 완료! (${newSessions.length}개 세션)');
+        for (var session in newSessions) {
+          final volume = session.totalVolume;
+          print('  - ${session.ymd}: ${session.exercises.length}개 운동, 볼륨: ${volume.toStringAsFixed(0)}kg');
+        }
+      } else {
+        print('ℹ️ 이미 운동 데이터가 존재합니다.');
+      }
+    } catch (e) {
+      print('❌ 더미 데이터 생성 실패: $e');
+    }
+  }
 
   // 사용자 프로필이 있는지 확인하여 첫 화면 결정
   final userProfile = await userRepo.getUserProfile();
@@ -67,31 +96,20 @@ class FitMixApp extends StatefulWidget {
 }
 
 class _FitMixAppState extends State<FitMixApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
   @override
   void initState() {
     super.initState();
-    _loadTheme();
-  }
-
-  Future<void> _loadTheme() async {
-    final themeMode = await widget.settingsRepo.getThemeMode();
-    if (mounted) {
-      setState(() {
-        _themeMode = themeMode;
-      });
-    }
+    // 다크 모드로 고정, 테마 로드 불필요
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: AppConstants.appName,
-      theme: AppConstants.lightTheme,
+      theme: AppConstants.darkTheme, // 다크 모드로 고정
       darkTheme: AppConstants.darkTheme,
-      themeMode: _themeMode,
-      locale: const Locale('ja', 'JP'), // 🔥 일본어 기본
+      themeMode: ThemeMode.dark, // 항상 다크 모드
+      locale: const Locale('ko', 'KR'), // 한국어 기본
       supportedLocales: const [
         Locale('ko', 'KR'),
         Locale('ja', 'JP'),

@@ -348,4 +348,82 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get minOneSet => '最低1セット必要です。';
+
+  @override
+  String get favorites => 'お気に入り';
+
+  @override
+  String get chest => '胸';
+
+  @override
+  String get back => '背中';
+
+  @override
+  String get legs => '下半身';
+
+  @override
+  String get shoulders => '肩';
+
+  @override
+  String get arms => '腕';
+
+  @override
+  String get abs => '腹筋';
+
+  @override
+  String get cardio => '有酸素';
+
+  @override
+  String get stretching => 'ストレッチ';
+
+  @override
+  String get fullBody => '全身';
+
+  @override
+  String get all => '全て';
+
+  @override
+  String get bodyweight => '自重';
+
+  @override
+  String get machine => 'マシン';
+
+  @override
+  String get barbell => 'バーベル';
+
+  @override
+  String get dumbbell => 'ダンベル';
+
+  @override
+  String get cable => 'ケーブル';
+
+  @override
+  String get band => 'バンド';
+
+  @override
+  String get searchExercise => '運動を検索してください。';
+
+  @override
+  String get noExercises => '運動がありません。';
+
+  @override
+  String get retry => '再試行';
+
+  @override
+  String get addCustomExercise => 'カスタム運動追加';
+
+  @override
+  String get customExerciseName => '運動名';
+
+  @override
+  String get selectBodyPart => '部位選択';
+
+  @override
+  String get selectEquipment => '器具選択';
+
+  @override
+  String get add => '追加';
+
+  @override
+  String get pleaseEnterExerciseName => '運動名を入力してください。';
 }

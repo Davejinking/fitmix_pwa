@@ -351,4 +351,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get minOneSet => 'At least 1 set required.';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get chest => 'Chest';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get legs => 'Legs';
+
+  @override
+  String get shoulders => 'Shoulders';
+
+  @override
+  String get arms => 'Arms';
+
+  @override
+  String get abs => 'Abs';
+
+  @override
+  String get cardio => 'Cardio';
+
+  @override
+  String get stretching => 'Stretching';
+
+  @override
+  String get fullBody => 'Full Body';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get bodyweight => 'Bodyweight';
+
+  @override
+  String get machine => 'Machine';
+
+  @override
+  String get barbell => 'Barbell';
+
+  @override
+  String get dumbbell => 'Dumbbell';
+
+  @override
+  String get cable => 'Cable';
+
+  @override
+  String get band => 'Band';
+
+  @override
+  String get searchExercise => 'Search for exercises.';
+
+  @override
+  String get noExercises => 'No exercises found.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get addCustomExercise => 'Add Custom Exercise';
+
+  @override
+  String get customExerciseName => 'Exercise Name';
+
+  @override
+  String get selectBodyPart => 'Select Body Part';
+
+  @override
+  String get selectEquipment => 'Select Equipment';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get pleaseEnterExerciseName => 'Please enter exercise name.';
 }

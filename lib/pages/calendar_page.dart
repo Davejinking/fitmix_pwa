@@ -23,6 +23,7 @@ class _CalendarPageState extends State<CalendarPage> {
   
   // 데이터
   List<Session> _workoutSessions = [];
+  Set<String> _workoutDates = {}; // 운동한 날짜들
   late final ValueNotifier<List<Session>> _selectedEvents;
 
   @override
@@ -33,12 +34,22 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Future<void> _loadWorkoutSessions() async {
-    final sessions = await widget.repo.getWorkoutSessions();
-    if (mounted) {
-      setState(() {
-        _workoutSessions = sessions;
-      });
-      _selectedEvents.value = _getEventsForDay(_selectedDay);
+    try {
+      final sessions = await widget.repo.getWorkoutSessions();
+      print('📅 캘린더: ${sessions.length}개의 운동 세션 로드됨');
+      for (var session in sessions) {
+        print('  - ${session.ymd}: ${session.exercises.length}개 운동');
+      }
+      if (mounted) {
+        setState(() {
+          _workoutSessions = sessions;
+          _workoutDates = sessions.map((s) => s.ymd).toSet();
+        });
+        _selectedEvents.value = _getEventsForDay(_selectedDay);
+        print('📅 운동 날짜: $_workoutDates');
+      }
+    } catch (e) {
+      print('❌ 운동 세션 로드 실패: $e');
     }
   }
 
@@ -65,46 +76,50 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
-          child: Column(
-            children: [
-              // 월 헤더
-              MonthHeader(
-                focusedDay: _focusedDay,
-                selectedDay: _selectedDay,
-                onDateSelected: (date) {
-                  _onDaySelected(date);
-                },
-                repo: widget.repo,
-                exerciseRepo: widget.exerciseRepo,
-              ),
-              // 주간 스트립
-              WeekStrip(
-                focusedDay: _focusedDay,
-                selectedDay: _selectedDay,
-                onDaySelected: _onDaySelected,
-                onWeekChanged: (newWeekStart) {
-                  setState(() {
-                    _focusedDay = newWeekStart;
-                    _selectedDay = newWeekStart;
-                  });
-                  _selectedEvents.value = _getEventsForDay(_selectedDay);
-                },
-              ),
-              // 타임라인 리스트
-              Expanded(
-                child: DayTimelineList(
+    return Container(
+      color: const Color(0xFF121212),
+      child: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Column(
+              children: [
+                // 월 헤더
+                MonthHeader(
+                  focusedDay: _focusedDay,
                   selectedDay: _selectedDay,
-                  selectedEvents: _selectedEvents,
+                  onDateSelected: (date) {
+                    _onDaySelected(date);
+                  },
                   repo: widget.repo,
                   exerciseRepo: widget.exerciseRepo,
-                  topPadding: 0,
                 ),
-              ),
-            ],
+                // 주간 스트립
+                WeekStrip(
+                  focusedDay: _focusedDay,
+                  selectedDay: _selectedDay,
+                  onDaySelected: _onDaySelected,
+                  workoutDates: _workoutDates,
+                  onWeekChanged: (newWeekStart) {
+                    setState(() {
+                      _focusedDay = newWeekStart;
+                      _selectedDay = newWeekStart;
+                    });
+                    _selectedEvents.value = _getEventsForDay(_selectedDay);
+                  },
+                ),
+                // 타임라인 리스트
+                Expanded(
+                  child: DayTimelineList(
+                    selectedDay: _selectedDay,
+                    selectedEvents: _selectedEvents,
+                    repo: widget.repo,
+                    exerciseRepo: widget.exerciseRepo,
+                    topPadding: 0,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -717,6 +717,162 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'최소 1개의 세트가 필요합니다.'**
   String get minOneSet;
+
+  /// 즐겨찾기 탭
+  ///
+  /// In ko, this message translates to:
+  /// **'즐겨찾기'**
+  String get favorites;
+
+  /// 가슴 부위
+  ///
+  /// In ko, this message translates to:
+  /// **'가슴'**
+  String get chest;
+
+  /// 등 부위
+  ///
+  /// In ko, this message translates to:
+  /// **'등'**
+  String get back;
+
+  /// 하체 부위
+  ///
+  /// In ko, this message translates to:
+  /// **'하체'**
+  String get legs;
+
+  /// 어깨 부위
+  ///
+  /// In ko, this message translates to:
+  /// **'어깨'**
+  String get shoulders;
+
+  /// 팔 부위
+  ///
+  /// In ko, this message translates to:
+  /// **'팔'**
+  String get arms;
+
+  /// 복근 부위
+  ///
+  /// In ko, this message translates to:
+  /// **'복근'**
+  String get abs;
+
+  /// 유산소 운동
+  ///
+  /// In ko, this message translates to:
+  /// **'유산소'**
+  String get cardio;
+
+  /// 스트레칭
+  ///
+  /// In ko, this message translates to:
+  /// **'스트레칭'**
+  String get stretching;
+
+  /// 전신 운동
+  ///
+  /// In ko, this message translates to:
+  /// **'전신'**
+  String get fullBody;
+
+  /// 전체 필터
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get all;
+
+  /// 맨몸 운동
+  ///
+  /// In ko, this message translates to:
+  /// **'맨몸'**
+  String get bodyweight;
+
+  /// 머신 장비
+  ///
+  /// In ko, this message translates to:
+  /// **'머신'**
+  String get machine;
+
+  /// 바벨 장비
+  ///
+  /// In ko, this message translates to:
+  /// **'바벨'**
+  String get barbell;
+
+  /// 덤벨 장비
+  ///
+  /// In ko, this message translates to:
+  /// **'덤벨'**
+  String get dumbbell;
+
+  /// 케이블 장비
+  ///
+  /// In ko, this message translates to:
+  /// **'케이블'**
+  String get cable;
+
+  /// 밴드 장비
+  ///
+  /// In ko, this message translates to:
+  /// **'밴드'**
+  String get band;
+
+  /// 운동 검색 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'찾으시는 운동을 검색해보세요.'**
+  String get searchExercise;
+
+  /// 운동 없음 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'운동이 없습니다.'**
+  String get noExercises;
+
+  /// 다시 시도 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시도'**
+  String get retry;
+
+  /// 커스텀 운동 추가 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'커스텀 운동 추가'**
+  String get addCustomExercise;
+
+  /// 커스텀 운동 이름 입력
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 이름'**
+  String get customExerciseName;
+
+  /// 부위 선택 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'부위 선택'**
+  String get selectBodyPart;
+
+  /// 장비 선택 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'장비 선택'**
+  String get selectEquipment;
+
+  /// 추가 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'추가'**
+  String get add;
+
+  /// 운동 이름 입력 요청
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 이름을 입력해주세요.'**
+  String get pleaseEnterExerciseName;
 }
 
 class _AppLocalizationsDelegate
