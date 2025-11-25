@@ -47,14 +47,25 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
     // Hive Box<List<String>>을 Map<String, List<String>>으로 변환
     final map = <String, List<String>>{};
     for (var key in _box.keys) {
-      map[key as String] = _box.get(key)!;
+      try {
+        final value = _box.get(key);
+        if (value != null) {
+          // value가 List인지 확인
+          if (value is List) {
+            map[key as String] = value.map((e) => e.toString()).toList();
+          }
+        }
+      } catch (e) {
+        print('Error loading exercise library for key $key: $e');
+      }
     }
     return map;
   }
 
   @override
   Future<void> addExercise(String bodyPart, String exerciseName) async {
-    final exercises = _box.get(bodyPart, defaultValue: [])!;
+    final value = _box.get(bodyPart, defaultValue: [])!;
+    final exercises = List<String>.from(value);
     if (!exercises.contains(exerciseName)) {
       exercises.add(exerciseName);
       await _box.put(bodyPart, exercises);
@@ -64,14 +75,16 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
   @override
   Future<void> updateExercise(String oldBodyPart, String oldExerciseName, String newBodyPart, String newExerciseName) async {
     // 1. 기존 운동 삭제
-    final oldExercises = _box.get(oldBodyPart);
-    if (oldExercises != null) {
+    final oldValue = _box.get(oldBodyPart);
+    if (oldValue != null) {
+      final oldExercises = List<String>.from(oldValue);
       oldExercises.remove(oldExerciseName);
       await _box.put(oldBodyPart, oldExercises);
     }
 
     // 2. 새 운동 추가
-    final newExercises = _box.get(newBodyPart, defaultValue: [])!;
+    final newValue = _box.get(newBodyPart, defaultValue: [])!;
+    final newExercises = List<String>.from(newValue);
     if (!newExercises.contains(newExerciseName)) {
       newExercises.add(newExerciseName);
       await _box.put(newBodyPart, newExercises);
@@ -80,8 +93,9 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
 
   @override
   Future<void> deleteExercise(String bodyPart, String exerciseName) async {
-    final exercises = _box.get(bodyPart);
-    if (exercises != null) {
+    final value = _box.get(bodyPart);
+    if (value != null) {
+      final exercises = List<String>.from(value);
       exercises.remove(exerciseName);
       await _box.put(bodyPart, exercises);
     }
