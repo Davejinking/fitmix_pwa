@@ -5,6 +5,7 @@ import '../core/burn_fit_style.dart';
 import '../core/error_handler.dart';
 import '../data/user_repo.dart';
 import '../models/user_profile.dart';
+import '../l10n/app_localizations.dart';
 
 class UserInfoFormPage extends StatefulWidget {
   final UserRepo userRepo;
@@ -97,7 +98,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('취소', style: TextStyle(color: BurnFitStyle.secondaryGrayText)),
+                      child: Text(AppLocalizations.of(context).cancel, style: const TextStyle(color: BurnFitStyle.secondaryGrayText)),
                     ),
                     Text(title, style: BurnFitStyle.body.copyWith(fontWeight: FontWeight.bold)),
                     TextButton(
@@ -123,9 +124,10 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
     int selectedKg = _weight?.floor() ?? 70;
     int selectedGram = ((_weight ?? 70.0) * 10).remainder(10).toInt();
 
+    final l10n = AppLocalizations.of(context);
     _showPicker(
       context: context,
-      title: '몸무게를 입력해 주세요.',
+      title: l10n.enterWeight,
       picker: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -248,6 +250,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
     
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -268,7 +271,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                '운동을 시작하기 위해\n필수 정보를 알려주세요.',
+                l10n.requiredInfo,
                 style: BurnFitStyle.title1.copyWith(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -285,9 +288,9 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
               ),
               const SizedBox(height: 40),
               // UserInfoForm
-              _FormInputTextField(label: '몸무게 *', hint: '몸무게를 입력해 주세요.', controller: _weightController, onTap: _showWeightPicker),
+              _FormInputTextField(label: l10n.weightLabel, hint: l10n.enterWeight, controller: _weightController, onTap: _showWeightPicker),
               const SizedBox(height: 16),
-              _FormInputTextField(label: '키 *', hint: '키를 입력해 주세요.', controller: _heightController, onTap: _showHeightPicker),
+              _FormInputTextField(label: l10n.heightLabel, hint: l10n.enterHeight, controller: _heightController, onTap: _showHeightPicker),
               const SizedBox(height: 16),
               _FormInputTextField(label: '생년월일 *', hint: '생년월일을 입력해 주세요.', controller: _birthDateController, onTap: _showDatePicker),
               const SizedBox(height: 16),
@@ -326,7 +329,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
                             if (mounted) Navigator.pop(context, true); // 성공 시 true 반환
                           } catch (e) {
                             if (mounted) {
-                              ErrorHandler.showErrorSnackBar(context, '정보 저장에 실패했습니다.');
+                              ErrorHandler.showErrorSnackBar(context, l10n.saveInfoFailed);
                             }
                           }
                         }

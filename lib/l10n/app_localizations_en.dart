@@ -287,4 +287,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoutConfirm => 'Do you want to logout?';
+
+  @override
+  String get loginWithGoogle => 'Sign in with Google';
+
+  @override
+  String get enterWeight => 'Please enter your weight.';
+
+  @override
+  String get enterHeight => 'Please enter your height.';
+
+  @override
+  String get requiredInfo =>
+      'Please provide required information\\nto start your workout.';
+
+  @override
+  String get weightLabel => 'Weight *';
+
+  @override
+  String get heightLabel => 'Height *';
+
+  @override
+  String get saveInfoFailed => 'Failed to save information.';
+
+  @override
+  String get import => 'Import';
+
+  @override
+  String added(String text) {
+    return 'Added: $text';
+  }
+
+  @override
+  String get exerciseAdded => 'Exercise added.';
+
+  @override
+  String get reorderSaveFailed => 'Failed to save reorder.';
+
+  @override
+  String deleted(String name) {
+    return '$name deleted';
+  }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get addSet => 'Add Set';
+
+  @override
+  String get planYourWorkout => 'Plan your workout!';
+
+  @override
+  String setNumber(int number) {
+    return 'Set $number';
+  }
+
+  @override
+  String get weightKg => 'Weight(kg)';
+
+  @override
+  String get reps => 'Reps';
+
+  @override
+  String get minOneSet => 'At least 1 set required.';
 }

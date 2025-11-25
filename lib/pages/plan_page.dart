@@ -6,6 +6,7 @@ import '../models/session.dart';
 import '../models/exercise.dart';
 import '../core/constants.dart';
 import '../core/error_handler.dart';
+import '../l10n/app_localizations.dart';
 import 'dart:async';
 import '../models/exercise_set.dart';
 
@@ -52,6 +53,7 @@ class _PlanPageState extends State<PlanPage> {
       context: context,
       builder: (ctx) {
         final selected = <int>{};
+        final dialogL10n = AppLocalizations.of(ctx);
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -76,8 +78,8 @@ class _PlanPageState extends State<PlanPage> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('취소')),
-                FilledButton(onPressed: () => Navigator.pop(ctx, selected.toList()), child: const Text('가져오기')),
+                TextButton(onPressed: () => Navigator.pop(ctx), child: Text(dialogL10n.cancel)),
+                FilledButton(onPressed: () => Navigator.pop(ctx, selected.toList()), child: Text(dialogL10n.import)),
               ],
             );
           },
@@ -109,6 +111,7 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   Future<void> _fromLibrary() async {
+    final l10n = AppLocalizations.of(context);
     // 저장소에서 라이브러리 가져오기
     final lib = await widget.exerciseRepo.getLibrary();
 
@@ -142,7 +145,7 @@ class _PlanPageState extends State<PlanPage> {
                                     icon: const Icon(Icons.add),
                                     onPressed: () {
                                       selected.add(Exercise(name: name, bodyPart: entry.key));
-                                      ErrorHandler.showInfoSnackBar(context, '추가됨: ${entry.key} - $name');
+                                      ErrorHandler.showInfoSnackBar(context, l10n.added('${entry.key} - $name'));
                                     },
                                   ),
                                 ),
@@ -162,14 +165,14 @@ class _PlanPageState extends State<PlanPage> {
                             await widget.repo.put(Session(ymd: y, exercises: selected, isRest: false));
                             if (mounted) Navigator.pop(ctx);
                             if (mounted) Navigator.pop(context, true);
-                            ErrorHandler.showSuccessSnackBar(context, '운동이 추가되었습니다.');
+                            ErrorHandler.showSuccessSnackBar(context, l10n.exerciseAdded);
                           } catch (e) {
                             if (mounted) {
                               ErrorHandler.showErrorSnackBar(context, ErrorHandler.getUserFriendlyMessage(e));
                             }
                           }
                         },
-                        child: const Text('저장'),
+                        child: Text(l10n.save),
                       ),
                     ],
                   ),
@@ -234,7 +237,7 @@ class _PlanPageState extends State<PlanPage> {
           }
         } catch (e) {
           if (mounted) {
-            ErrorHandler.showErrorSnackBar(context, '순서 변경 저장에 실패했습니다.');
+            ErrorHandler.showErrorSnackBar(context, AppLocalizations.of(context).reorderSaveFailed);
           }
         }
       },
@@ -260,9 +263,9 @@ class _PlanPageState extends State<PlanPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${removedExercise.name} 삭제됨'),
+              content: Text(AppLocalizations.of(context).deleted(removedExercise.name)),
               action: SnackBarAction(
-                label: '실행 취소',
+                label: AppLocalizations.of(context).undo,
                 onPressed: () {
                   setState(() => session.exercises.insert(removedIndex, removedExercise));
                   widget.repo.put(session);
@@ -299,7 +302,7 @@ class _PlanPageState extends State<PlanPage> {
                 alignment: Alignment.centerRight,
                 child: FilledButton.icon(
                   icon: const Icon(Icons.add),
-                  label: const Text('세트 추가'),
+                  label: Text(AppLocalizations.of(context).addSet),
                   onPressed: () {
                     setState(() {
                       exercise.sets.add(ExerciseSet());
@@ -332,7 +335,7 @@ class _PlanPageState extends State<PlanPage> {
                 children: [
                   Text(widget.repo.ymd(widget.date), style: const TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: AppConstants.smallPadding),
-                  const Text('운동을 직접 계획해보세요!'),
+                  Text(AppLocalizations.of(context).planYourWorkout),
                   const SizedBox(height: AppConstants.smallPadding),
                   Row(
                     children: [
@@ -440,7 +443,7 @@ class _SetRowState extends State<_SetRow> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Row(
         children: [
-          Text('${widget.setIndex + 1}세트', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(AppLocalizations.of(context).setNumber(widget.setIndex + 1), style: const TextStyle(fontWeight: FontWeight.bold)),
           const Spacer(),
           SizedBox(
             width: 80,
@@ -448,7 +451,7 @@ class _SetRowState extends State<_SetRow> {
               controller: _weightController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               textAlign: TextAlign.center,
-              decoration: const InputDecoration(labelText: '무게(kg)', isDense: true),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context).weightKg, isDense: true),
             ),
           ),
           const SizedBox(width: 16),
@@ -458,7 +461,7 @@ class _SetRowState extends State<_SetRow> {
               controller: _repsController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              decoration: const InputDecoration(labelText: '횟수', isDense: true),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context).reps, isDense: true),
             ),
           ),
           IconButton(
@@ -467,7 +470,7 @@ class _SetRowState extends State<_SetRow> {
               if (widget.exercise.sets.length > 1) {
                 widget.onSetRemoved();
               } else {
-                ErrorHandler.showInfoSnackBar(context, '최소 1개의 세트가 필요합니다.');
+                ErrorHandler.showInfoSnackBar(context, AppLocalizations.of(context).minOneSet);
               }
             },
           ),

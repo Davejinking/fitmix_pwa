@@ -285,4 +285,67 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get logoutConfirm => 'ログアウトしますか？';
+
+  @override
+  String get loginWithGoogle => 'Googleでログイン';
+
+  @override
+  String get enterWeight => '体重を入力してください。';
+
+  @override
+  String get enterHeight => '身長を入力してください。';
+
+  @override
+  String get requiredInfo => 'ワークアウトを始めるために\\n必須情報を教えてください。';
+
+  @override
+  String get weightLabel => '体重 *';
+
+  @override
+  String get heightLabel => '身長 *';
+
+  @override
+  String get saveInfoFailed => '情報保存に失敗しました。';
+
+  @override
+  String get import => 'インポート';
+
+  @override
+  String added(String text) {
+    return '追加: $text';
+  }
+
+  @override
+  String get exerciseAdded => '運動が追加されました。';
+
+  @override
+  String get reorderSaveFailed => '順序変更の保存に失敗しました。';
+
+  @override
+  String deleted(String name) {
+    return '$name 削除';
+  }
+
+  @override
+  String get undo => '元に戻す';
+
+  @override
+  String get addSet => 'セット追加';
+
+  @override
+  String get planYourWorkout => 'ワークアウトを計画しましょう！';
+
+  @override
+  String setNumber(int number) {
+    return '$numberセット';
+  }
+
+  @override
+  String get weightKg => '重量(kg)';
+
+  @override
+  String get reps => '回数';
+
+  @override
+  String get minOneSet => '最低1セット必要です。';
 }

@@ -285,4 +285,67 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get logoutConfirm => '로그아웃 하시겠습니까?';
+
+  @override
+  String get loginWithGoogle => 'Google로 로그인';
+
+  @override
+  String get enterWeight => '몸무게를 입력해 주세요.';
+
+  @override
+  String get enterHeight => '키를 입력해 주세요.';
+
+  @override
+  String get requiredInfo => '운동을 시작하기 위해\\n필수 정보를 알려주세요.';
+
+  @override
+  String get weightLabel => '몸무게 *';
+
+  @override
+  String get heightLabel => '키 *';
+
+  @override
+  String get saveInfoFailed => '정보 저장에 실패했습니다.';
+
+  @override
+  String get import => '가져오기';
+
+  @override
+  String added(String text) {
+    return '추가됨: $text';
+  }
+
+  @override
+  String get exerciseAdded => '운동이 추가되었습니다.';
+
+  @override
+  String get reorderSaveFailed => '순서 변경 저장에 실패했습니다.';
+
+  @override
+  String deleted(String name) {
+    return '$name 삭제됨';
+  }
+
+  @override
+  String get undo => '실행 취소';
+
+  @override
+  String get addSet => '세트 추가';
+
+  @override
+  String get planYourWorkout => '운동을 직접 계획해보세요!';
+
+  @override
+  String setNumber(int number) {
+    return '$number세트';
+  }
+
+  @override
+  String get weightKg => '무게(kg)';
+
+  @override
+  String get reps => '횟수';
+
+  @override
+  String get minOneSet => '최소 1개의 세트가 필요합니다.';
 }

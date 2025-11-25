@@ -406,6 +406,97 @@
   "logoutConfirm": "로그아웃 하시겠습니까?",
   "@logoutConfirm": {
     "description": "로그아웃 확인 메시지"
+  },
+  "loginWithGoogle": "Google로 로그인",
+  "@loginWithGoogle": {
+    "description": "Google 로그인 버튼"
+  },
+  "enterWeight": "몸무게를 입력해 주세요.",
+  "@enterWeight": {
+    "description": "몸무게 입력 안내"
+  },
+  "enterHeight": "키를 입력해 주세요.",
+  "@enterHeight": {
+    "description": "키 입력 안내"
+  },
+  "requiredInfo": "운동을 시작하기 위해\\n필수 정보를 알려주세요.",
+  "@requiredInfo": {
+    "description": "필수 정보 입력 안내"
+  },
+  "weightLabel": "몸무게 *",
+  "@weightLabel": {
+    "description": "몸무게 레이블"
+  },
+  "heightLabel": "키 *",
+  "@heightLabel": {
+    "description": "키 레이블"
+  },
+  "saveInfoFailed": "정보 저장에 실패했습니다.",
+  "@saveInfoFailed": {
+    "description": "정보 저장 실패 메시지"
+  },
+  "import": "가져오기",
+  "@import": {
+    "description": "가져오기 버튼"
+  },
+  "added": "추가됨: {text}",
+  "@added": {
+    "description": "추가 완료 메시지",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseAdded": "운동이 추가되었습니다.",
+  "@exerciseAdded": {
+    "description": "운동 추가 완료 메시지"
+  },
+  "reorderSaveFailed": "순서 변경 저장에 실패했습니다.",
+  "@reorderSaveFailed": {
+    "description": "순서 변경 실패 메시지"
+  },
+  "deleted": "{name} 삭제됨",
+  "@deleted": {
+    "description": "삭제 완료 메시지",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "실행 취소",
+  "@undo": {
+    "description": "실행 취소 버튼"
+  },
+  "addSet": "세트 추가",
+  "@addSet": {
+    "description": "세트 추가 버튼"
+  },
+  "planYourWorkout": "운동을 직접 계획해보세요!",
+  "@planYourWorkout": {
+    "description": "운동 계획 안내"
+  },
+  "setNumber": "{number}세트",
+  "@setNumber": {
+    "description": "세트 번호",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "weightKg": "무게(kg)",
+  "@weightKg": {
+    "description": "무게 입력 레이블"
+  },
+  "reps": "횟수",
+  "@reps": {
+    "description": "횟수 입력 레이블"
+  },
+  "minOneSet": "최소 1개의 세트가 필요합니다.",
+  "@minOneSet": {
+    "description": "최소 세트 경고"
   }
 }
 

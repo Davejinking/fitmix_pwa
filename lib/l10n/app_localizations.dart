@@ -603,6 +603,120 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'로그아웃 하시겠습니까?'**
   String get logoutConfirm;
+
+  /// Google 로그인 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'Google로 로그인'**
+  String get loginWithGoogle;
+
+  /// 몸무게 입력 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'몸무게를 입력해 주세요.'**
+  String get enterWeight;
+
+  /// 키 입력 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'키를 입력해 주세요.'**
+  String get enterHeight;
+
+  /// 필수 정보 입력 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'운동을 시작하기 위해\\n필수 정보를 알려주세요.'**
+  String get requiredInfo;
+
+  /// 몸무게 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'몸무게 *'**
+  String get weightLabel;
+
+  /// 키 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'키 *'**
+  String get heightLabel;
+
+  /// 정보 저장 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'정보 저장에 실패했습니다.'**
+  String get saveInfoFailed;
+
+  /// 가져오기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'가져오기'**
+  String get import;
+
+  /// 추가 완료 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'추가됨: {text}'**
+  String added(String text);
+
+  /// 운동 추가 완료 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'운동이 추가되었습니다.'**
+  String get exerciseAdded;
+
+  /// 순서 변경 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'순서 변경 저장에 실패했습니다.'**
+  String get reorderSaveFailed;
+
+  /// 삭제 완료 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'{name} 삭제됨'**
+  String deleted(String name);
+
+  /// 실행 취소 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'실행 취소'**
+  String get undo;
+
+  /// 세트 추가 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'세트 추가'**
+  String get addSet;
+
+  /// 운동 계획 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'운동을 직접 계획해보세요!'**
+  String get planYourWorkout;
+
+  /// 세트 번호
+  ///
+  /// In ko, this message translates to:
+  /// **'{number}세트'**
+  String setNumber(int number);
+
+  /// 무게 입력 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'무게(kg)'**
+  String get weightKg;
+
+  /// 횟수 입력 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'횟수'**
+  String get reps;
+
+  /// 최소 세트 경고
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 1개의 세트가 필요합니다.'**
+  String get minOneSet;
 }
 
 class _AppLocalizationsDelegate

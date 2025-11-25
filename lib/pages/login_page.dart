@@ -5,6 +5,7 @@ import '../data/session_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/auth_repo.dart';
 import '../data/user_repo.dart';
+import '../l10n/app_localizations.dart';
 import 'splash_page.dart';
 import 'user_info_form_page.dart';
 
@@ -102,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
                   icon: const Text('G'), // Placeholder for Google Icon
-                  label: const Text('Google로 로그인'),
+                  label: Text(AppLocalizations.of(context).loginWithGoogle),
                   onPressed: () {
                     _setLoading(true);
                     widget.authRepo.signIn().then((account) async {

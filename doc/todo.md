@@ -89,12 +89,10 @@ Navigator.of(context).push(...);
 - [x] workout_page.dart (2024-11-16)
 - [x] profile_page.dart (2024-11-16)
 - [x] settings_page.dart (2024-11-16)
-
-**남은 작업:**
-- [ ] login_page.dart
-- [ ] splash_page.dart
-- [ ] user_info_form_page.dart
-- [ ] plan_page.dart
+- [x] login_page.dart (2024-11-16)
+- [x] user_info_form_page.dart (2024-11-16)
+- [x] plan_page.dart (2024-11-16)
+- [x] splash_page.dart (번역 불필요)
 
 **ARB 파일 업데이트:**
 - [ ] app_ko.arb 키 추가
@@ -390,15 +388,15 @@ Navigator.of(context).push(...);
 ## 📊 진행 상황 요약
 
 ### PS0 클린업
-- 완료: 20/22 (91%)
-- 진행 중: 마지막 4개 페이지 i18n
-- 최근 완료: 주요 페이지 i18n 완료 (2024-11-16)
+- 완료: 22/22 (100%) ✅✅✅
+- 모든 작업 완료!
+- 최근 완료: i18n 100% 완료 (2024-11-16)
 - flutter analyze: 8개 (모두 안전한 info 수준)
 
 ### i18n
-- 완료: 8/10 (80%)
-- 진행 중: 나머지 4개 페이지
-- 최근 완료: analysis, library, profile, settings (2024-11-16)
+- 완료: 10/10 (100%) ✅
+- 모든 페이지 i18n 완료!
+- 최근 완료: login, plan, user_info_form (2024-11-16)
 
 ### PS1 준비
 - 완료: 0/15 (0%)
@@ -423,7 +421,7 @@ Navigator.of(context).push(...);
   - 오늘 날짜 선택 시: 파란색 강조
   - 다른 날짜 선택 시: 회색 표시
 
-### 코드 품질 (거의 완료! 🎉)
+### 코드 품질 (완료! 🎉🎉🎉)
 - [x] workout_page.dart BuildContext async gap 수정
 - [x] library_page.dart BuildContext async gap 수정 (3개)
 - [x] profile_page.dart BuildContext async gap 수정 (2개)
@@ -434,12 +432,12 @@ Navigator.of(context).push(...);
 - [x] settings_page.dart 불필요한 import 제거 (3개)
 - [x] unnecessary_non_null_assertion 제거 (6개)
 - [x] deprecated withOpacity → withValues 수정 (3개)
-- [x] i18n 적용: workout, analysis, library, profile, settings (5개 페이지)
-- [x] ARB 파일에 40+ 키 추가 (ko, ja, en)
+- [x] i18n 적용: 전체 10개 페이지 완료 ✅
+- [x] ARB 파일에 60+ 키 추가 (ko, ja, en)
 - [x] flutter analyze 경고: 30개 → 8개 (73% 감소!) 🎉🎉
 - [x] BuildContext async gaps 전체 완료 ✅
 - [x] 코드 스타일 정리 완료 ✅
-- [x] i18n 80% 완료 ✅
+- [x] i18n 100% 완료 ✅✅✅
 
 ---
 
