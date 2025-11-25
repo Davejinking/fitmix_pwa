@@ -157,6 +157,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get skipRest => 'Skip Rest';
 
   @override
+  String get restTimer => 'Rest Timer';
+
+  @override
+  String get adjustRestTime => 'Adjust Rest Time';
+
+  @override
+  String get workoutDuration => 'Workout Duration';
+
+  @override
+  String get restTimeRemaining => 'Rest Time Remaining';
+
+  @override
   String seconds(int count) {
     return '${count}s';
   }

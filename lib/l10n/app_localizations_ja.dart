@@ -155,6 +155,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get skipRest => '休憩をスキップ';
 
   @override
+  String get restTimer => '休憩タイマー';
+
+  @override
+  String get adjustRestTime => '休憩時間調整';
+
+  @override
+  String get workoutDuration => 'ワークアウト時間';
+
+  @override
+  String get restTimeRemaining => '休憩時間残り';
+
+  @override
   String seconds(int count) {
     return '$count秒';
   }

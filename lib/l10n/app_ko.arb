@@ -217,6 +217,22 @@
   "@skipRest": {
     "description": "휴식 건너뛰기 버튼"
   },
+  "restTimer": "휴식 타이머",
+  "@restTimer": {
+    "description": "휴식 타이머 제목"
+  },
+  "adjustRestTime": "휴식 시간 조절",
+  "@adjustRestTime": {
+    "description": "휴식 시간 조절 다이얼로그 제목"
+  },
+  "workoutDuration": "운동 시간",
+  "@workoutDuration": {
+    "description": "전체 운동 시간 레이블"
+  },
+  "restTimeRemaining": "휴식 시간 남음",
+  "@restTimeRemaining": {
+    "description": "휴식 시간 남음 레이블"
+  },
   "seconds": "{count}초",
   "@seconds": {
     "description": "초 단위",

@@ -364,6 +364,30 @@ abstract class AppLocalizations {
   /// **'휴식 건너뛰기'**
   String get skipRest;
 
+  /// 휴식 타이머 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식 타이머'**
+  String get restTimer;
+
+  /// 휴식 시간 조절 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식 시간 조절'**
+  String get adjustRestTime;
+
+  /// 전체 운동 시간 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 시간'**
+  String get workoutDuration;
+
+  /// 휴식 시간 남음 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식 시간 남음'**
+  String get restTimeRemaining;
+
   /// 초 단위
   ///
   /// In ko, this message translates to:

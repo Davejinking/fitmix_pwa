@@ -10,18 +10,27 @@ class ExerciseSet extends HiveObject {
   @HiveField(1)
   int reps;
 
-  ExerciseSet({this.weight = 0.0, this.reps = 0});
+  @HiveField(2)
+  bool isCompleted;
+
+  ExerciseSet({
+    this.weight = 0.0,
+    this.reps = 0,
+    this.isCompleted = false,
+  });
 
   ExerciseSet copyWith({
     double? weight,
     int? reps,
+    bool? isCompleted,
   }) {
     return ExerciseSet(
       weight: weight ?? this.weight,
       reps: reps ?? this.reps,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
   @override
-  String toString() => 'Set(weight: $weight, reps: $reps)';
+  String toString() => 'Set(weight: $weight, reps: $reps, completed: $isCompleted)';
 }

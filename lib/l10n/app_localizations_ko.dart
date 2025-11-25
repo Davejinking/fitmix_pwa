@@ -155,6 +155,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get skipRest => '휴식 건너뛰기';
 
   @override
+  String get restTimer => '휴식 타이머';
+
+  @override
+  String get adjustRestTime => '휴식 시간 조절';
+
+  @override
+  String get workoutDuration => '운동 시간';
+
+  @override
+  String get restTimeRemaining => '휴식 시간 남음';
+
+  @override
   String seconds(int count) {
     return '$count초';
   }
