@@ -7,6 +7,7 @@ import '../core/error_handler.dart';
 import '../data/auth_repo.dart';
 import '../data/user_repo.dart';
 import '../models/user_profile.dart';
+import '../l10n/app_localizations.dart';
 import 'user_info_form_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -107,6 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _showPhotoOptions() async {
+    final l10n = AppLocalizations.of(context);
     await showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -115,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('갤러리에서 사진 선택'),
+                title: Text(l10n.selectFromGallery),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImage();
@@ -124,7 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
               if (_userProfile?.profileImage != null)
                 ListTile(
                   leading: const Icon(Icons.delete, color: Colors.red),
-                  title: const Text('사진 삭제', style: TextStyle(color: Colors.red)),
+                  title: Text(l10n.deletePhoto, style: const TextStyle(color: Colors.red)),
                   onTap: () {
                     Navigator.of(context).pop();
                     _deleteImage();
@@ -139,8 +141,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('프로필')),
+      appBar: AppBar(title: Text(l10n.profile)),
       body: _userProfile == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -187,13 +190,14 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         const SizedBox(height: 16),
-        Text(_googleUser?.displayName ?? '게스트', style: BurnFitStyle.title2),
+        Text(_googleUser?.displayName ?? AppLocalizations.of(context).guest, style: BurnFitStyle.title2),
         Text(_googleUser?.email ?? '', style: BurnFitStyle.caption),
       ],
     );
   }
 
   Widget _buildBodyInfoCard() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -203,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('신체 정보', style: BurnFitStyle.title2),
+                Text(l10n.bodyInfo, style: BurnFitStyle.title2),
                 TextButton(
                   onPressed: () async {
                     final result = await Navigator.of(context).push(
@@ -211,14 +215,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                     if (result == true) _loadData(); // 수정 완료 후 데이터 다시 로드
                   },
-                  child: const Text('수정'),
+                  child: Text(l10n.edit),
                 ),
               ],
             ),
             const Divider(height: 24),
-            Text('키: ${_userProfile!.height} cm', style: BurnFitStyle.body),
+            Text(l10n.height(_userProfile!.height.toString()), style: BurnFitStyle.body),
             const SizedBox(height: 8),
-            Text('몸무게: ${_userProfile!.weight} kg', style: BurnFitStyle.body),
+            Text(l10n.weight(_userProfile!.weight.toString()), style: BurnFitStyle.body),
           ],
         ),
       ),
@@ -226,17 +230,18 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildGoalSettingCard() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('운동 목표', style: BurnFitStyle.title2),
+            Text(l10n.workoutGoal, style: BurnFitStyle.title2),
             const Divider(height: 24),
             Row(
               children: [
-                const Expanded(child: Text('월별 운동 일수', style: BurnFitStyle.body)),
+                Expanded(child: Text(l10n.monthlyWorkoutDays, style: BurnFitStyle.body)),
                 SizedBox(
                   width: 80,
                   child: TextField(
@@ -254,7 +259,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Expanded(child: Text('월별 총 볼륨', style: BurnFitStyle.body)),
+                Expanded(child: Text(l10n.monthlyTotalVolume, style: BurnFitStyle.body)),
                 SizedBox(
                   width: 120,
                   child: TextField(
@@ -274,7 +279,7 @@ class _ProfilePageState extends State<ProfilePage> {
               alignment: Alignment.centerRight,
               child: FilledButton(
                 onPressed: _saveGoal,
-                child: const Text('목표 저장'),
+                child: Text(l10n.saveGoal),
               ),
             ),
           ],

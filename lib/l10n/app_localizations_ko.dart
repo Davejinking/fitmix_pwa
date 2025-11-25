@@ -161,4 +161,128 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get close => '닫기';
+
+  @override
+  String get volumeByBodyPart => '부위별 총 볼륨';
+
+  @override
+  String get monthlyWorkoutTime => '월별 총 운동 시간';
+
+  @override
+  String get noAnalysisData => '분석할 운동 기록이 없습니다.';
+
+  @override
+  String errorOccurred(String error) {
+    return '오류 발생: $error';
+  }
+
+  @override
+  String hours(String count) {
+    return '$count 시간';
+  }
+
+  @override
+  String get addExercise => '운동 추가';
+
+  @override
+  String get editExercise => '운동 수정';
+
+  @override
+  String get exerciseName => '운동 이름';
+
+  @override
+  String get cancel => '취소';
+
+  @override
+  String get save => '저장';
+
+  @override
+  String get deleteExercise => '운동 삭제';
+
+  @override
+  String deleteExerciseConfirm(String name) {
+    return '\'$name\' 운동을 삭제하시겠습니까?';
+  }
+
+  @override
+  String get saveFailed => '저장에 실패했습니다.';
+
+  @override
+  String get deleteFailed => '삭제에 실패했습니다.';
+
+  @override
+  String get libraryEmpty => '운동 라이브러리가 비어있습니다.';
+
+  @override
+  String get profile => '프로필';
+
+  @override
+  String get bodyInfo => '신체 정보';
+
+  @override
+  String get edit => '수정';
+
+  @override
+  String height(String value) {
+    return '키: $value cm';
+  }
+
+  @override
+  String weight(String value) {
+    return '몸무게: $value kg';
+  }
+
+  @override
+  String get workoutGoal => '운동 목표';
+
+  @override
+  String get monthlyWorkoutDays => '월별 운동 일수';
+
+  @override
+  String get monthlyTotalVolume => '월별 총 볼륨';
+
+  @override
+  String get saveGoal => '목표 저장';
+
+  @override
+  String get selectFromGallery => '갤러리에서 사진 선택';
+
+  @override
+  String get deletePhoto => '사진 삭제';
+
+  @override
+  String get guest => '게스트';
+
+  @override
+  String get settings => '설정';
+
+  @override
+  String get appearance => '외관';
+
+  @override
+  String get theme => '테마';
+
+  @override
+  String get systemSetting => '시스템 설정';
+
+  @override
+  String get light => '라이트';
+
+  @override
+  String get dark => '다크';
+
+  @override
+  String get account => '계정';
+
+  @override
+  String get appInfo => '앱 정보';
+
+  @override
+  String get version => '버전';
+
+  @override
+  String get logout => '로그아웃';
+
+  @override
+  String get logoutConfirm => '로그아웃 하시겠습니까?';
 }

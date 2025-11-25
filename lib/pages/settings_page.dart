@@ -5,6 +5,7 @@ import '../data/user_repo.dart';
 import '../data/session_repo.dart';
 import '../data/auth_repo.dart';
 import '../data/settings_repo.dart';
+import '../l10n/app_localizations.dart';
 import 'profile_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -45,33 +46,34 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  String _getThemeModeLabel(ThemeMode mode) {
+  String _getThemeModeLabel(ThemeMode mode, AppLocalizations l10n) {
     switch (mode) {
       case ThemeMode.system:
-        return 'システム';
+        return l10n.systemSetting;
       case ThemeMode.light:
-        return 'ライト';
+        return l10n.light;
       case ThemeMode.dark:
-        return 'ダーク';
+        return l10n.dark;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
         children: [
           ListTile(
             leading: const Icon(Icons.palette_outlined),
-            title: const Text('テーマ'),
-            subtitle: Text(_getThemeModeLabel(_currentThemeMode)),
+            title: Text(l10n.theme),
+            subtitle: Text(_getThemeModeLabel(_currentThemeMode, l10n)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.person_outline),
-            title: const Text('プロフィール'),
+            title: Text(l10n.profile),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.of(context).push(
@@ -86,7 +88,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ListTile(
             leading: const Icon(Icons.info_outline),
-            title: const Text('バージョン'),
+            title: Text(l10n.version),
             subtitle: Text(AppConstants.appVersion),
             onTap: () {},
           ),

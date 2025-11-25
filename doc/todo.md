@@ -82,13 +82,15 @@ Navigator.of(context).push(...);
 - [x] shell_page.dart
 - [x] doc/i18n_guideline.md 작성
 
-**진행 중:**
+**완료:**
 - [x] calendar_page.dart (위젯에서 처리됨)
-- [ ] analysis_page.dart
-- [ ] library_page.dart
+- [x] analysis_page.dart (2024-11-16)
+- [x] library_page.dart (2024-11-16)
 - [x] workout_page.dart (2024-11-16)
-- [ ] profile_page.dart
-- [ ] settings_page.dart
+- [x] profile_page.dart (2024-11-16)
+- [x] settings_page.dart (2024-11-16)
+
+**남은 작업:**
 - [ ] login_page.dart
 - [ ] splash_page.dart
 - [ ] user_info_form_page.dart
@@ -388,15 +390,15 @@ Navigator.of(context).push(...);
 ## 📊 진행 상황 요약
 
 ### PS0 클린업
-- 완료: 18/22 (82%)
-- 진행 중: i18n 번역
-- 최근 완료: 코드 스타일 정리 완료 (2024-11-16)
-- 남은 8개 경고는 모두 안전하게 처리된 info 수준
+- 완료: 20/22 (91%)
+- 진행 중: 마지막 4개 페이지 i18n
+- 최근 완료: 주요 페이지 i18n 완료 (2024-11-16)
+- flutter analyze: 8개 (모두 안전한 info 수준)
 
 ### i18n
-- 완료: 4/10 (40%)
-- 진행 중: 나머지 페이지 번역
-- 최근 완료: workout_page.dart (2024-11-16)
+- 완료: 8/10 (80%)
+- 진행 중: 나머지 4개 페이지
+- 최근 완료: analysis, library, profile, settings (2024-11-16)
 
 ### PS1 준비
 - 완료: 0/15 (0%)
@@ -432,10 +434,12 @@ Navigator.of(context).push(...);
 - [x] settings_page.dart 불필요한 import 제거 (3개)
 - [x] unnecessary_non_null_assertion 제거 (6개)
 - [x] deprecated withOpacity → withValues 수정 (3개)
-- [x] workout_page.dart i18n 적용 완료
-- [x] flutter analyze 경고: 30개 → 8개 (22개 감소!) 🎉🎉
+- [x] i18n 적용: workout, analysis, library, profile, settings (5개 페이지)
+- [x] ARB 파일에 40+ 키 추가 (ko, ja, en)
+- [x] flutter analyze 경고: 30개 → 8개 (73% 감소!) 🎉🎉
 - [x] BuildContext async gaps 전체 완료 ✅
-- [x] 코드 스타일 정리 거의 완료 ✅
+- [x] 코드 스타일 정리 완료 ✅
+- [x] i18n 80% 완료 ✅
 
 ---
 

@@ -161,4 +161,128 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get close => '閉じる';
+
+  @override
+  String get volumeByBodyPart => '部位別総ボリューム';
+
+  @override
+  String get monthlyWorkoutTime => '月別総運動時間';
+
+  @override
+  String get noAnalysisData => '分析する運動記録がありません。';
+
+  @override
+  String errorOccurred(String error) {
+    return 'エラー発生: $error';
+  }
+
+  @override
+  String hours(String count) {
+    return '$count 時間';
+  }
+
+  @override
+  String get addExercise => '運動追加';
+
+  @override
+  String get editExercise => '運動修正';
+
+  @override
+  String get exerciseName => '運動名';
+
+  @override
+  String get cancel => 'キャンセル';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get deleteExercise => '運動削除';
+
+  @override
+  String deleteExerciseConfirm(String name) {
+    return '\'$name\' 運動を削除しますか？';
+  }
+
+  @override
+  String get saveFailed => '保存に失敗しました。';
+
+  @override
+  String get deleteFailed => '削除に失敗しました。';
+
+  @override
+  String get libraryEmpty => '運動ライブラリが空です。';
+
+  @override
+  String get profile => 'プロフィール';
+
+  @override
+  String get bodyInfo => '身体情報';
+
+  @override
+  String get edit => '修正';
+
+  @override
+  String height(String value) {
+    return '身長: $value cm';
+  }
+
+  @override
+  String weight(String value) {
+    return '体重: $value kg';
+  }
+
+  @override
+  String get workoutGoal => '運動目標';
+
+  @override
+  String get monthlyWorkoutDays => '月別運動日数';
+
+  @override
+  String get monthlyTotalVolume => '月別総ボリューム';
+
+  @override
+  String get saveGoal => '目標保存';
+
+  @override
+  String get selectFromGallery => 'ギャラリーから写真選択';
+
+  @override
+  String get deletePhoto => '写真削除';
+
+  @override
+  String get guest => 'ゲスト';
+
+  @override
+  String get settings => '設定';
+
+  @override
+  String get appearance => '外観';
+
+  @override
+  String get theme => 'テーマ';
+
+  @override
+  String get systemSetting => 'システム設定';
+
+  @override
+  String get light => 'ライト';
+
+  @override
+  String get dark => 'ダーク';
+
+  @override
+  String get account => 'アカウント';
+
+  @override
+  String get appInfo => 'アプリ情報';
+
+  @override
+  String get version => 'バージョン';
+
+  @override
+  String get logout => 'ログアウト';
+
+  @override
+  String get logoutConfirm => 'ログアウトしますか？';
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/constants.dart';
 import '../core/error_handler.dart';
 import '../data/exercise_library_repo.dart';
+import '../l10n/app_localizations.dart';
 
 class LibraryPage extends StatefulWidget {
   final ExerciseLibraryRepo exerciseRepo;
@@ -28,6 +29,7 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Future<void> _showEditDialog({String? oldBodyPart, String? oldExerciseName}) async {
+    final l10n = AppLocalizations.of(context);
     final isEditing = oldBodyPart != null && oldExerciseName != null;
     final nameController = TextEditingController(text: oldExerciseName ?? '');
     String selectedBodyPart = oldBodyPart ?? AppConstants.bodyParts.first;
@@ -36,7 +38,7 @@ class _LibraryPageState extends State<LibraryPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(isEditing ? '운동 수정' : '운동 추가'),
+          title: Text(isEditing ? l10n.editExercise : l10n.addExercise),
           content: StatefulBuilder(
             builder: (context, setState) {
               return Column(
@@ -44,7 +46,7 @@ class _LibraryPageState extends State<LibraryPage> {
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: '운동 이름'),
+                    decoration: InputDecoration(labelText: l10n.exerciseName),
                   ),
                   DropdownButton<String>(
                     value: selectedBodyPart,
@@ -66,7 +68,7 @@ class _LibraryPageState extends State<LibraryPage> {
             },
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('취소')),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
             FilledButton(
               onPressed: () async {
                 final newName = nameController.text.trim();
@@ -83,11 +85,11 @@ class _LibraryPageState extends State<LibraryPage> {
                   }
                 } catch (e) {
                   if (context.mounted) {
-                    ErrorHandler.showErrorSnackBar(context, '저장에 실패했습니다.');
+                    ErrorHandler.showErrorSnackBar(context, l10n.saveFailed);
                   }
                 }
               },
-              child: const Text('저장'),
+              child: Text(l10n.save),
             ),
           ],
         );
@@ -100,10 +102,11 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Future<void> _deleteExercise(String bodyPart, String exerciseName) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await ErrorHandler.showConfirmDialog(
       context,
-      '운동 삭제',
-      '\'$exerciseName\' 운동을 삭제하시겠습니까?',
+      l10n.deleteExercise,
+      l10n.deleteExerciseConfirm(exerciseName),
     );
 
     if (confirmed && mounted) {
@@ -112,7 +115,7 @@ class _LibraryPageState extends State<LibraryPage> {
         _loadLibrary();
       } catch (e) {
         if (mounted) {
-          ErrorHandler.showErrorSnackBar(context, '삭제에 실패했습니다.');
+          ErrorHandler.showErrorSnackBar(context, l10n.deleteFailed);
         }
       }
     }
@@ -162,10 +165,10 @@ class _LibraryPageState extends State<LibraryPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('오류: ${snapshot.error}'));
+            return Center(child: Text(AppLocalizations.of(context).errorOccurred(snapshot.error.toString())));
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('운동 라이브러리가 비어있습니다.'));
+            return Center(child: Text(AppLocalizations.of(context).libraryEmpty));
           }
 
           final library = snapshot.data!;

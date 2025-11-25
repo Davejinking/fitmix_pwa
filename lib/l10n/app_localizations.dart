@@ -375,6 +375,234 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'닫기'**
   String get close;
+
+  /// 부위별 볼륨 차트 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'부위별 총 볼륨'**
+  String get volumeByBodyPart;
+
+  /// 월별 운동 시간 차트 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'월별 총 운동 시간'**
+  String get monthlyWorkoutTime;
+
+  /// 분석 데이터 없음 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'분석할 운동 기록이 없습니다.'**
+  String get noAnalysisData;
+
+  /// 오류 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'오류 발생: {error}'**
+  String errorOccurred(String error);
+
+  /// 시간 단위
+  ///
+  /// In ko, this message translates to:
+  /// **'{count} 시간'**
+  String hours(String count);
+
+  /// 운동 추가 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 추가'**
+  String get addExercise;
+
+  /// 운동 수정 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 수정'**
+  String get editExercise;
+
+  /// 운동 이름 입력 필드
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 이름'**
+  String get exerciseName;
+
+  /// 취소 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get cancel;
+
+  /// 저장 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get save;
+
+  /// 운동 삭제 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 삭제'**
+  String get deleteExercise;
+
+  /// 운동 삭제 확인 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'\'{name}\' 운동을 삭제하시겠습니까?'**
+  String deleteExerciseConfirm(String name);
+
+  /// 저장 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'저장에 실패했습니다.'**
+  String get saveFailed;
+
+  /// 삭제 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제에 실패했습니다.'**
+  String get deleteFailed;
+
+  /// 라이브러리 비어있음 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 라이브러리가 비어있습니다.'**
+  String get libraryEmpty;
+
+  /// 프로필 페이지 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'프로필'**
+  String get profile;
+
+  /// 신체 정보 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'신체 정보'**
+  String get bodyInfo;
+
+  /// 수정 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'수정'**
+  String get edit;
+
+  /// 키 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'키: {value} cm'**
+  String height(String value);
+
+  /// 몸무게 표시
+  ///
+  /// In ko, this message translates to:
+  /// **'몸무게: {value} kg'**
+  String weight(String value);
+
+  /// 운동 목표 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 목표'**
+  String get workoutGoal;
+
+  /// 월별 운동 일수 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'월별 운동 일수'**
+  String get monthlyWorkoutDays;
+
+  /// 월별 총 볼륨 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'월별 총 볼륨'**
+  String get monthlyTotalVolume;
+
+  /// 목표 저장 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'목표 저장'**
+  String get saveGoal;
+
+  /// 갤러리 선택 옵션
+  ///
+  /// In ko, this message translates to:
+  /// **'갤러리에서 사진 선택'**
+  String get selectFromGallery;
+
+  /// 사진 삭제 옵션
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 삭제'**
+  String get deletePhoto;
+
+  /// 게스트 사용자
+  ///
+  /// In ko, this message translates to:
+  /// **'게스트'**
+  String get guest;
+
+  /// 설정 페이지 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get settings;
+
+  /// 외관 섹션
+  ///
+  /// In ko, this message translates to:
+  /// **'외관'**
+  String get appearance;
+
+  /// 테마 설정
+  ///
+  /// In ko, this message translates to:
+  /// **'테마'**
+  String get theme;
+
+  /// 시스템 설정 옵션
+  ///
+  /// In ko, this message translates to:
+  /// **'시스템 설정'**
+  String get systemSetting;
+
+  /// 라이트 테마
+  ///
+  /// In ko, this message translates to:
+  /// **'라이트'**
+  String get light;
+
+  /// 다크 테마
+  ///
+  /// In ko, this message translates to:
+  /// **'다크'**
+  String get dark;
+
+  /// 계정 섹션
+  ///
+  /// In ko, this message translates to:
+  /// **'계정'**
+  String get account;
+
+  /// 앱 정보 섹션
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 정보'**
+  String get appInfo;
+
+  /// 버전 레이블
+  ///
+  /// In ko, this message translates to:
+  /// **'버전'**
+  String get version;
+
+  /// 로그아웃 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃'**
+  String get logout;
+
+  /// 로그아웃 확인 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃 하시겠습니까?'**
+  String get logoutConfirm;
 }
 
 class _AppLocalizationsDelegate

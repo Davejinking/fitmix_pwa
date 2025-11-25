@@ -163,4 +163,128 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get volumeByBodyPart => 'Volume by Body Part';
+
+  @override
+  String get monthlyWorkoutTime => 'Monthly Workout Time';
+
+  @override
+  String get noAnalysisData => 'No workout data to analyze.';
+
+  @override
+  String errorOccurred(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String hours(String count) {
+    return '$count hours';
+  }
+
+  @override
+  String get addExercise => 'Add Exercise';
+
+  @override
+  String get editExercise => 'Edit Exercise';
+
+  @override
+  String get exerciseName => 'Exercise Name';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get deleteExercise => 'Delete Exercise';
+
+  @override
+  String deleteExerciseConfirm(String name) {
+    return 'Delete \'$name\' exercise?';
+  }
+
+  @override
+  String get saveFailed => 'Failed to save.';
+
+  @override
+  String get deleteFailed => 'Failed to delete.';
+
+  @override
+  String get libraryEmpty => 'Exercise library is empty.';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get bodyInfo => 'Body Info';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String height(String value) {
+    return 'Height: $value cm';
+  }
+
+  @override
+  String weight(String value) {
+    return 'Weight: $value kg';
+  }
+
+  @override
+  String get workoutGoal => 'Workout Goal';
+
+  @override
+  String get monthlyWorkoutDays => 'Monthly Workout Days';
+
+  @override
+  String get monthlyTotalVolume => 'Monthly Total Volume';
+
+  @override
+  String get saveGoal => 'Save Goal';
+
+  @override
+  String get selectFromGallery => 'Select from Gallery';
+
+  @override
+  String get deletePhoto => 'Delete Photo';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get systemSetting => 'System Setting';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get dark => 'Dark';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get appInfo => 'App Info';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get logoutConfirm => 'Do you want to logout?';
 }

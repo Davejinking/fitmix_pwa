@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../core/burn_fit_style.dart';
 import '../data/session_repo.dart';
 import '../data/user_repo.dart';
+import '../l10n/app_localizations.dart';
 
 class AnalysisPage extends StatefulWidget {
   final SessionRepo repo;
@@ -116,10 +117,10 @@ class _AnalysisPageState extends State<AnalysisPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('오류 발생: ${snapshot.error}'));
+            return Center(child: Text(AppLocalizations.of(context).errorOccurred(snapshot.error.toString())));
           }
           if (!snapshot.hasData || snapshot.data!.volumeByBodyPart.isEmpty) {
-            return const Center(child: Text('분석할 운동 기록이 없습니다.'));
+            return Center(child: Text(AppLocalizations.of(context).noAnalysisData));
           }
 
           final analysisData = snapshot.data!;
@@ -148,10 +149,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
   }
 
   Widget _buildVolumePieChart(Map<String, double> volumeData, double totalVolume) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('부위별 총 볼륨', style: BurnFitStyle.title2),
+        Text(l10n.volumeByBodyPart, style: BurnFitStyle.title2),
         const SizedBox(height: 24),
         SizedBox(
           height: 300,
@@ -224,10 +226,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
           return FlSpot(index.toDouble(), durationData.values.elementAt(index));
         });
 
+        final l10n = AppLocalizations.of(context);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('월별 총 운동 시간', style: BurnFitStyle.title2),
+            Text(l10n.monthlyWorkoutTime, style: BurnFitStyle.title2),
             const SizedBox(height: 24),
             SizedBox(
               height: 200,
@@ -281,7 +284,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((spot) {
                           return LineTooltipItem(
-                            '${spot.y.toStringAsFixed(1)} 시간',
+                            l10n.hours(spot.y.toStringAsFixed(1)),
                             const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           );
                         }).toList();

@@ -229,6 +229,183 @@
   "close": "닫기",
   "@close": {
     "description": "닫기 버튼"
+  },
+  "volumeByBodyPart": "부위별 총 볼륨",
+  "@volumeByBodyPart": {
+    "description": "부위별 볼륨 차트 제목"
+  },
+  "monthlyWorkoutTime": "월별 총 운동 시간",
+  "@monthlyWorkoutTime": {
+    "description": "월별 운동 시간 차트 제목"
+  },
+  "noAnalysisData": "분석할 운동 기록이 없습니다.",
+  "@noAnalysisData": {
+    "description": "분석 데이터 없음 메시지"
+  },
+  "errorOccurred": "오류 발생: {error}",
+  "@errorOccurred": {
+    "description": "오류 메시지",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "hours": "{count} 시간",
+  "@hours": {
+    "description": "시간 단위",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "addExercise": "운동 추가",
+  "@addExercise": {
+    "description": "운동 추가 다이얼로그 제목"
+  },
+  "editExercise": "운동 수정",
+  "@editExercise": {
+    "description": "운동 수정 다이얼로그 제목"
+  },
+  "exerciseName": "운동 이름",
+  "@exerciseName": {
+    "description": "운동 이름 입력 필드"
+  },
+  "cancel": "취소",
+  "@cancel": {
+    "description": "취소 버튼"
+  },
+  "save": "저장",
+  "@save": {
+    "description": "저장 버튼"
+  },
+  "deleteExercise": "운동 삭제",
+  "@deleteExercise": {
+    "description": "운동 삭제 다이얼로그 제목"
+  },
+  "deleteExerciseConfirm": "'{name}' 운동을 삭제하시겠습니까?",
+  "@deleteExerciseConfirm": {
+    "description": "운동 삭제 확인 메시지",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "saveFailed": "저장에 실패했습니다.",
+  "@saveFailed": {
+    "description": "저장 실패 메시지"
+  },
+  "deleteFailed": "삭제에 실패했습니다.",
+  "@deleteFailed": {
+    "description": "삭제 실패 메시지"
+  },
+  "libraryEmpty": "운동 라이브러리가 비어있습니다.",
+  "@libraryEmpty": {
+    "description": "라이브러리 비어있음 메시지"
+  },
+  "profile": "프로필",
+  "@profile": {
+    "description": "프로필 페이지 제목"
+  },
+  "bodyInfo": "신체 정보",
+  "@bodyInfo": {
+    "description": "신체 정보 섹션 제목"
+  },
+  "edit": "수정",
+  "@edit": {
+    "description": "수정 버튼"
+  },
+  "height": "키: {value} cm",
+  "@height": {
+    "description": "키 표시",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "weight": "몸무게: {value} kg",
+  "@weight": {
+    "description": "몸무게 표시",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "workoutGoal": "운동 목표",
+  "@workoutGoal": {
+    "description": "운동 목표 섹션 제목"
+  },
+  "monthlyWorkoutDays": "월별 운동 일수",
+  "@monthlyWorkoutDays": {
+    "description": "월별 운동 일수 레이블"
+  },
+  "monthlyTotalVolume": "월별 총 볼륨",
+  "@monthlyTotalVolume": {
+    "description": "월별 총 볼륨 레이블"
+  },
+  "saveGoal": "목표 저장",
+  "@saveGoal": {
+    "description": "목표 저장 버튼"
+  },
+  "selectFromGallery": "갤러리에서 사진 선택",
+  "@selectFromGallery": {
+    "description": "갤러리 선택 옵션"
+  },
+  "deletePhoto": "사진 삭제",
+  "@deletePhoto": {
+    "description": "사진 삭제 옵션"
+  },
+  "guest": "게스트",
+  "@guest": {
+    "description": "게스트 사용자"
+  },
+  "settings": "설정",
+  "@settings": {
+    "description": "설정 페이지 제목"
+  },
+  "appearance": "외관",
+  "@appearance": {
+    "description": "외관 섹션"
+  },
+  "theme": "테마",
+  "@theme": {
+    "description": "테마 설정"
+  },
+  "systemSetting": "시스템 설정",
+  "@systemSetting": {
+    "description": "시스템 설정 옵션"
+  },
+  "light": "라이트",
+  "@light": {
+    "description": "라이트 테마"
+  },
+  "dark": "다크",
+  "@dark": {
+    "description": "다크 테마"
+  },
+  "account": "계정",
+  "@account": {
+    "description": "계정 섹션"
+  },
+  "appInfo": "앱 정보",
+  "@appInfo": {
+    "description": "앱 정보 섹션"
+  },
+  "version": "버전",
+  "@version": {
+    "description": "버전 레이블"
+  },
+  "logout": "로그아웃",
+  "@logout": {
+    "description": "로그아웃 버튼"
+  },
+  "logoutConfirm": "로그아웃 하시겠습니까?",
+  "@logoutConfirm": {
+    "description": "로그아웃 확인 메시지"
   }
 }
 
