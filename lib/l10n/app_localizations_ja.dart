@@ -132,4 +132,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String andMore(int count) {
     return '他 $count個';
   }
+
+  @override
+  String get todayWorkout => '今日のワークアウト';
+
+  @override
+  String get restTimeSetting => '休憩時間設定';
+
+  @override
+  String get endWorkout => 'ワークアウト終了';
+
+  @override
+  String get endWorkoutConfirm => 'ワークアウトを終了して記録を保存しますか？';
+
+  @override
+  String get endAndSaveWorkout => 'ワークアウト終了・保存';
+
+  @override
+  String get noWorkoutPlan => '今日のワークアウト計画がありません。\\nカレンダーで先に計画を立ててください。';
+
+  @override
+  String get skipRest => '休憩をスキップ';
+
+  @override
+  String seconds(int count) {
+    return '$count秒';
+  }
+
+  @override
+  String get close => '閉じる';
 }

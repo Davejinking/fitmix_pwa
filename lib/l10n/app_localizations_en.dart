@@ -132,4 +132,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String andMore(int count) {
     return 'and $count more';
   }
+
+  @override
+  String get todayWorkout => 'Today\'s Workout';
+
+  @override
+  String get restTimeSetting => 'Rest Time Setting';
+
+  @override
+  String get endWorkout => 'End Workout';
+
+  @override
+  String get endWorkoutConfirm =>
+      'Do you want to end the workout and save the record?';
+
+  @override
+  String get endAndSaveWorkout => 'End & Save Workout';
+
+  @override
+  String get noWorkoutPlan =>
+      'No workout plan for today.\\nPlease create a plan in the calendar first.';
+
+  @override
+  String get skipRest => 'Skip Rest';
+
+  @override
+  String seconds(int count) {
+    return '${count}s';
+  }
+
+  @override
+  String get close => 'Close';
 }

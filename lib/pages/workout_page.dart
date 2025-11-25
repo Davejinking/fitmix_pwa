@@ -6,6 +6,7 @@ import '../core/burn_fit_style.dart';
 import '../core/error_handler.dart';
 import '../data/session_repo.dart';
 import '../models/session.dart';
+import '../l10n/app_localizations.dart';
 
 class WorkoutPage extends StatefulWidget {
   final SessionRepo sessionRepo;
@@ -72,10 +73,11 @@ class _WorkoutPageState extends State<WorkoutPage> {
   }
 
   Future<void> _endWorkout(Session session) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await ErrorHandler.showConfirmDialog(
       context,
-      '운동 종료',
-      '운동을 종료하고 기록을 저장하시겠습니까?',
+      l10n.endWorkout,
+      l10n.endWorkoutConfirm,
     );
 
     if (confirmed && mounted) {
@@ -96,6 +98,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   }
 
   Future<void> _showRestSettingsDialog() async {
+    final l10n = AppLocalizations.of(context);
     var selectedDuration = _defaultRestDuration;
     final result = await showDialog<int>(
       context: context,
@@ -106,7 +109,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
               if (value != null) setState(() => selectedDuration = value);
             },
             child: AlertDialog(
-              title: const Text('휴식 시간 설정'),
+              title: Text(l10n.restTimeSetting),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [30, 60, 90, 120].map((seconds) {
@@ -116,7 +119,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       Navigator.of(context).pop(seconds);
                     },
                     child: RadioListTile<int>(
-                      title: Text('$seconds초'),
+                      title: Text(l10n.seconds(seconds)),
                       value: seconds,
                       toggleable: selectedDuration == seconds,
                     ),
@@ -124,7 +127,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                 }).toList(),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('닫기')),
+                TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.close)),
               ],
             ),
           );
@@ -141,9 +144,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('오늘의 운동'),
+        title: Text(l10n.todayWorkout),
         centerTitle: true,
         backgroundColor: BurnFitStyle.primaryBlue,
         foregroundColor: BurnFitStyle.white,
@@ -151,7 +155,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
           IconButton(
             icon: const Icon(Icons.timer_outlined),
             onPressed: _showRestSettingsDialog,
-            tooltip: '휴식 시간 설정',
+            tooltip: l10n.restTimeSetting,
           ),
         ],
       ),
@@ -184,11 +188,11 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data == null || !snapshot.data!.isWorkoutDay) {
-                      return const Center(
+                      return Center(
                         child: Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            '오늘의 운동 계획이 없습니다.\n캘린더에서 먼저 계획을 세워주세요.',
+                            l10n.noWorkoutPlan,
                             textAlign: TextAlign.center,
                             style: BurnFitStyle.body,
                           ),
@@ -210,7 +214,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                 backgroundColor: BurnFitStyle.warningRed,
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                               ),
-                              child: const Text('운동 종료 및 저장', style: TextStyle(color: Colors.white)),
+                              child: Text(l10n.endAndSaveWorkout, style: const TextStyle(color: Colors.white)),
                             ),
                           );
                         }
@@ -292,7 +296,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   _restSecondsRemaining = null;
                 });
               },
-              child: const Text('휴식 건너뛰기'),
+              child: Text(AppLocalizations.of(context).skipRest),
             ),
           ],
         ),

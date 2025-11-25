@@ -132,4 +132,33 @@ class AppLocalizationsKo extends AppLocalizations {
   String andMore(int count) {
     return '외 $count개';
   }
+
+  @override
+  String get todayWorkout => '오늘의 운동';
+
+  @override
+  String get restTimeSetting => '휴식 시간 설정';
+
+  @override
+  String get endWorkout => '운동 종료';
+
+  @override
+  String get endWorkoutConfirm => '운동을 종료하고 기록을 저장하시겠습니까?';
+
+  @override
+  String get endAndSaveWorkout => '운동 종료 및 저장';
+
+  @override
+  String get noWorkoutPlan => '오늘의 운동 계획이 없습니다.\\n캘린더에서 먼저 계획을 세워주세요.';
+
+  @override
+  String get skipRest => '휴식 건너뛰기';
+
+  @override
+  String seconds(int count) {
+    return '$count초';
+  }
+
+  @override
+  String get close => '닫기';
 }

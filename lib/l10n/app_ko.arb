@@ -188,6 +188,47 @@
         "type": "int"
       }
     }
+  },
+  "todayWorkout": "오늘의 운동",
+  "@todayWorkout": {
+    "description": "오늘의 운동 페이지 제목"
+  },
+  "restTimeSetting": "휴식 시간 설정",
+  "@restTimeSetting": {
+    "description": "휴식 시간 설정 다이얼로그 제목"
+  },
+  "endWorkout": "운동 종료",
+  "@endWorkout": {
+    "description": "운동 종료 다이얼로그 제목"
+  },
+  "endWorkoutConfirm": "운동을 종료하고 기록을 저장하시겠습니까?",
+  "@endWorkoutConfirm": {
+    "description": "운동 종료 확인 메시지"
+  },
+  "endAndSaveWorkout": "운동 종료 및 저장",
+  "@endAndSaveWorkout": {
+    "description": "운동 종료 버튼"
+  },
+  "noWorkoutPlan": "오늘의 운동 계획이 없습니다.\\n캘린더에서 먼저 계획을 세워주세요.",
+  "@noWorkoutPlan": {
+    "description": "운동 계획 없음 메시지"
+  },
+  "skipRest": "휴식 건너뛰기",
+  "@skipRest": {
+    "description": "휴식 건너뛰기 버튼"
+  },
+  "seconds": "{count}초",
+  "@seconds": {
+    "description": "초 단위",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "close": "닫기",
+  "@close": {
+    "description": "닫기 버튼"
   }
 }
 

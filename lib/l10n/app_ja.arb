@@ -96,6 +96,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "todayWorkout": "今日のワークアウト",
+  "restTimeSetting": "休憩時間設定",
+  "endWorkout": "ワークアウト終了",
+  "endWorkoutConfirm": "ワークアウトを終了して記録を保存しますか？",
+  "endAndSaveWorkout": "ワークアウト終了・保存",
+  "noWorkoutPlan": "今日のワークアウト計画がありません。\\nカレンダーで先に計画を立ててください。",
+  "skipRest": "休憩をスキップ",
+  "seconds": "{count}秒",
+  "close": "閉じる"
 }
-

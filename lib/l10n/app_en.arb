@@ -96,6 +96,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "todayWorkout": "Today's Workout",
+  "restTimeSetting": "Rest Time Setting",
+  "endWorkout": "End Workout",
+  "endWorkoutConfirm": "Do you want to end the workout and save the record?",
+  "endAndSaveWorkout": "End & Save Workout",
+  "noWorkoutPlan": "No workout plan for today.\\nPlease create a plan in the calendar first.",
+  "skipRest": "Skip Rest",
+  "seconds": "{count}s",
+  "close": "Close"
 }
-

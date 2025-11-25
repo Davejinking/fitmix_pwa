@@ -300,7 +300,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
                   boxShadow: _isFormComplete
                       ? [
                           BoxShadow(
-                            color: BurnFitStyle.primaryBlue.withOpacity(0.3),
+                            color: BurnFitStyle.primaryBlue.withValues(alpha: 0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -393,14 +393,14 @@ class _FormInputTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: hasValue 
-                ? BurnFitStyle.primaryBlue.withOpacity(0.3)
+                ? BurnFitStyle.primaryBlue.withValues(alpha: 0.3)
                 : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
               width: 1.5,
             ),
             boxShadow: [
               if (!isDark)
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),

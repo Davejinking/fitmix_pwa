@@ -83,10 +83,10 @@ Navigator.of(context).push(...);
 - [x] doc/i18n_guideline.md 작성
 
 **진행 중:**
-- [ ] calendar_page.dart
+- [x] calendar_page.dart (위젯에서 처리됨)
 - [ ] analysis_page.dart
 - [ ] library_page.dart
-- [ ] workout_page.dart
+- [x] workout_page.dart (2024-11-16)
 - [ ] profile_page.dart
 - [ ] settings_page.dart
 - [ ] login_page.dart
@@ -388,13 +388,14 @@ Navigator.of(context).push(...);
 ## 📊 진행 상황 요약
 
 ### PS0 클린업
-- 완료: 10/22 (45%)
-- 진행 중: 코드 스타일 정리
-- 최근 완료: BuildContext Async Gaps 전체 완료 ✅ (2024-11-16)
+- 완료: 15/22 (68%)
+- 진행 중: i18n 번역
+- 최근 완료: 코드 스타일 정리 + i18n 적용 (2024-11-16)
 
 ### i18n
-- 완료: 2/10 (20%)
+- 완료: 4/10 (40%)
 - 진행 중: 나머지 페이지 번역
+- 최근 완료: workout_page.dart (2024-11-16)
 
 ### PS1 준비
 - 완료: 0/15 (0%)
@@ -426,7 +427,10 @@ Navigator.of(context).push(...);
 - [x] settings_page.dart BuildContext async gap 수정
 - [x] analysis_page.dart 불필요한 문자열 보간 제거
 - [x] workout_page.dart 불필요한 문자열 보간 제거
-- [x] flutter analyze 경고: 30개 → 22개 (8개 감소)
+- [x] unnecessary_non_null_assertion 제거 (6개)
+- [x] deprecated withOpacity → withValues 수정 (3개)
+- [x] workout_page.dart i18n 적용 완료
+- [x] flutter analyze 경고: 30개 → 13개 (17개 감소!) 🎉
 - [x] BuildContext async gaps 전체 완료 ✅
 
 ---

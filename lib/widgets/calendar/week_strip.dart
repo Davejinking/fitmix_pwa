@@ -29,7 +29,7 @@ class WeekStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     
     // 현재 주의 시작일 (월요일)
     final startOfWeek = focusedDay.subtract(

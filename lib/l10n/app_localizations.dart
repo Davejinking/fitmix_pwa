@@ -321,6 +321,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'외 {count}개'**
   String andMore(int count);
+
+  /// 오늘의 운동 페이지 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘의 운동'**
+  String get todayWorkout;
+
+  /// 휴식 시간 설정 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식 시간 설정'**
+  String get restTimeSetting;
+
+  /// 운동 종료 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 종료'**
+  String get endWorkout;
+
+  /// 운동 종료 확인 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'운동을 종료하고 기록을 저장하시겠습니까?'**
+  String get endWorkoutConfirm;
+
+  /// 운동 종료 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 종료 및 저장'**
+  String get endAndSaveWorkout;
+
+  /// 운동 계획 없음 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘의 운동 계획이 없습니다.\\n캘린더에서 먼저 계획을 세워주세요.'**
+  String get noWorkoutPlan;
+
+  /// 휴식 건너뛰기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식 건너뛰기'**
+  String get skipRest;
+
+  /// 초 단위
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}초'**
+  String seconds(int count);
+
+  /// 닫기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'닫기'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate

@@ -89,7 +89,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
             const SizedBox(height: 16),
             // 타이틀
             Text(
-              AppLocalizations.of(context)!.selectDate,
+              AppLocalizations.of(context).selectDate,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -207,7 +207,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                       ),
                       calendarBuilders: CalendarBuilders(
                         dowBuilder: (context, day) {
-                          final l10n = AppLocalizations.of(context)!;
+                          final l10n = AppLocalizations.of(context);
                           final weekdays = [
                             l10n.weekdaySun,
                             l10n.weekdayMon,
@@ -263,7 +263,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                     ),
                   ),
                   child: Text(
-                    AppLocalizations.of(context)!.planWorkout,
+                    AppLocalizations.of(context).planWorkout,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
