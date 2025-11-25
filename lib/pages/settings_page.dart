@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import '../core/constants.dart';
-import '../core/error_handler.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/user_repo.dart';
 import '../data/session_repo.dart';
 import '../data/auth_repo.dart';
 import '../data/settings_repo.dart';
-import '../main.dart';
-import 'login_page.dart';
 import 'profile_page.dart';
 
 class SettingsPage extends StatefulWidget {

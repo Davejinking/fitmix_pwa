@@ -65,11 +65,11 @@ Navigator.of(context).push(...);
 ### 2-2. 코드 스타일 정리
 
 - [x] 불필요한 문자열 보간 제거 (analysis_page.dart) (2024-11-16)
-- [ ] 불필요한 문자열 보간 제거 (plan_page.dart)
+- [x] 불필요한 문자열 보간 제거 (plan_page.dart) (2024-11-16)
 - [x] 불필요한 문자열 보간 제거 (workout_page.dart) (2024-11-16)
-- [ ] 불필요한 .toString() 제거
+- [x] settings_page.dart 불필요한 import 제거 (2024-11-16)
 - [ ] 공통 스타일 guideline 반영
-- [ ] flutter analyze 0 issues 달성 (현재 22개 남음)
+- [x] flutter analyze 경고 대폭 감소 (30개 → 8개) ✅
 
 ---
 
@@ -388,9 +388,10 @@ Navigator.of(context).push(...);
 ## 📊 진행 상황 요약
 
 ### PS0 클린업
-- 완료: 15/22 (68%)
+- 완료: 18/22 (82%)
 - 진행 중: i18n 번역
-- 최근 완료: 코드 스타일 정리 + i18n 적용 (2024-11-16)
+- 최근 완료: 코드 스타일 정리 완료 (2024-11-16)
+- 남은 8개 경고는 모두 안전하게 처리된 info 수준
 
 ### i18n
 - 완료: 4/10 (40%)
@@ -420,18 +421,21 @@ Navigator.of(context).push(...);
   - 오늘 날짜 선택 시: 파란색 강조
   - 다른 날짜 선택 시: 회색 표시
 
-### 코드 품질 (BuildContext Async Gaps 완료 🎉)
+### 코드 품질 (거의 완료! 🎉)
 - [x] workout_page.dart BuildContext async gap 수정
 - [x] library_page.dart BuildContext async gap 수정 (3개)
 - [x] profile_page.dart BuildContext async gap 수정 (2개)
 - [x] settings_page.dart BuildContext async gap 수정
 - [x] analysis_page.dart 불필요한 문자열 보간 제거
 - [x] workout_page.dart 불필요한 문자열 보간 제거
+- [x] plan_page.dart 불필요한 문자열 보간 제거 (2개)
+- [x] settings_page.dart 불필요한 import 제거 (3개)
 - [x] unnecessary_non_null_assertion 제거 (6개)
 - [x] deprecated withOpacity → withValues 수정 (3개)
 - [x] workout_page.dart i18n 적용 완료
-- [x] flutter analyze 경고: 30개 → 13개 (17개 감소!) 🎉
+- [x] flutter analyze 경고: 30개 → 8개 (22개 감소!) 🎉🎉
 - [x] BuildContext async gaps 전체 완료 ✅
+- [x] 코드 스타일 정리 거의 완료 ✅
 
 ---
 

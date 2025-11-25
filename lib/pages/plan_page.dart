@@ -185,7 +185,7 @@ class _PlanPageState extends State<PlanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.repo.ymd(widget.date)}')),
+      appBar: AppBar(title: Text(widget.repo.ymd(widget.date))),
       body: FutureBuilder<Session?>(
         future: _sessionFuture,
         builder: (context, snapshot) {
@@ -330,7 +330,7 @@ class _PlanPageState extends State<PlanPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${widget.repo.ymd(widget.date)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(widget.repo.ymd(widget.date), style: const TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: AppConstants.smallPadding),
                   const Text('운동을 직접 계획해보세요!'),
                   const SizedBox(height: AppConstants.smallPadding),
