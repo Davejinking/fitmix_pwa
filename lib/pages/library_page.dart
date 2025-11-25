@@ -78,9 +78,13 @@ class _LibraryPageState extends State<LibraryPage> {
                   } else {
                     await widget.exerciseRepo.addExercise(selectedBodyPart, newName);
                   }
-                  Navigator.pop(context, true);
+                  if (context.mounted) {
+                    Navigator.pop(context, true);
+                  }
                 } catch (e) {
-                  ErrorHandler.showErrorSnackBar(context, '저장에 실패했습니다.');
+                  if (context.mounted) {
+                    ErrorHandler.showErrorSnackBar(context, '저장에 실패했습니다.');
+                  }
                 }
               },
               child: const Text('저장'),
@@ -102,12 +106,14 @@ class _LibraryPageState extends State<LibraryPage> {
       '\'$exerciseName\' 운동을 삭제하시겠습니까?',
     );
 
-    if (confirmed) {
+    if (confirmed && mounted) {
       try {
         await widget.exerciseRepo.deleteExercise(bodyPart, exerciseName);
         _loadLibrary();
       } catch (e) {
-        ErrorHandler.showErrorSnackBar(context, '삭제에 실패했습니다.');
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(context, '삭제에 실패했습니다.');
+        }
       }
     }
   }

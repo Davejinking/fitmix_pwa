@@ -27,10 +27,10 @@
 - [ ] async 함수에서 await 이후 mounted/context.mounted 체크 추가
 - [ ] Navigator push/pop 안전화
 - [ ] showDialog / SnackBar / ScaffoldMessenger 호출부 점검
-- [ ] workout_page.dart 반영
+- [x] workout_page.dart 반영 (2024-11-16)
 - [x] settings_page.dart 반영 (2024-11-16)
 - [ ] analysis_page.dart 반영
-- [ ] library_page.dart 반영
+- [x] library_page.dart 반영 (2024-11-16)
 - [ ] profile_page.dart 반영
 - [ ] user_info_form_page.dart 반영
 - [ ] login_page.dart 반영
@@ -388,9 +388,9 @@ Navigator.of(context).push(...);
 ## 📊 진행 상황 요약
 
 ### PS0 클린업
-- 완료: 3/22 (14%)
+- 완료: 5/22 (23%)
 - 진행 중: BuildContext Async Gaps
-- 최근 완료: settings_page.dart 정리 (2024-11-16)
+- 최근 완료: workout_page.dart, library_page.dart (2024-11-16)
 
 ### i18n
 - 완료: 2/10 (20%)

@@ -81,8 +81,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
     if (confirmed && mounted) {
       session.durationInSeconds = _seconds;
       await widget.sessionRepo.put(session);
-      // 캘린더 탭(1)으로 이동
-      Navigator.of(context).pop(1);
+      if (mounted) {
+        // 캘린더 탭(1)으로 이동
+        Navigator.of(context).pop(1);
+      }
     }
   }
 
@@ -275,7 +277,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   ),
                   Center(
                     child: Text(
-                      '${_restSecondsRemaining}',
+                      '$_restSecondsRemaining',
                       style: const TextStyle(fontSize: 48, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
