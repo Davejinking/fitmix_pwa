@@ -80,14 +80,16 @@ class _ProfilePageState extends State<ProfilePage> {
     // Pick an image.
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    if (image != null) {
+    if (image != null && mounted) {
       final Uint8List imageBytes = await image.readAsBytes();
-      if (_userProfile != null) {
+      if (_userProfile != null && mounted) {
         setState(() {
           _userProfile!.profileImage = imageBytes;
         });
         await widget.userRepo.saveUserProfile(_userProfile!);
-        ErrorHandler.showSuccessSnackBar(context, '프로필 사진이 변경되었습니다.');
+        if (mounted) {
+          ErrorHandler.showSuccessSnackBar(context, '프로필 사진이 변경되었습니다.');
+        }
       }
     }
   }
@@ -98,7 +100,9 @@ class _ProfilePageState extends State<ProfilePage> {
         _userProfile!.profileImage = null;
       });
       await widget.userRepo.saveUserProfile(_userProfile!);
-      ErrorHandler.showInfoSnackBar(context, '프로필 사진이 삭제되었습니다.');
+      if (mounted) {
+        ErrorHandler.showInfoSnackBar(context, '프로필 사진이 삭제되었습니다.');
+      }
     }
   }
 

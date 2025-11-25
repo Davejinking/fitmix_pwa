@@ -250,7 +250,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                             final month = int.parse(durationData.keys.elementAt(index).substring(5, 7));
                             return Padding(
                               padding: const EdgeInsets.only(top: 8.0),
-                              child: Text('${month}월'),
+                              child: Text('$month월'),
                             );
                           }
                           return const Text('');
