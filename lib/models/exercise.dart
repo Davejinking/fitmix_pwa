@@ -15,10 +15,22 @@ class Exercise extends HiveObject {
   @HiveField(2)
   List<ExerciseSet> sets;
 
+  @HiveField(3)
+  int eccentricSeconds; // Lowering duration (e.g., 4s)
+
+  @HiveField(4)
+  int concentricSeconds; // Lifting duration (e.g., 2s)
+
+  @HiveField(5)
+  bool isTempoEnabled; // Toggle for tempo mode
+
   Exercise({
     required this.name,
     required this.bodyPart,
     List<ExerciseSet>? sets,
+    this.eccentricSeconds = 4,
+    this.concentricSeconds = 2,
+    this.isTempoEnabled = false,
   }) : sets = sets ?? [ExerciseSet()];
 
   /// Exercise 객체를 복사하여 새로운 인스턴스를 생성합니다.
@@ -26,11 +38,17 @@ class Exercise extends HiveObject {
     String? name,
     String? bodyPart,
     List<ExerciseSet>? sets,
+    int? eccentricSeconds,
+    int? concentricSeconds,
+    bool? isTempoEnabled,
   }) {
     return Exercise(
       name: name ?? this.name,
       bodyPart: bodyPart ?? this.bodyPart,
       sets: sets ?? this.sets.map((s) => s.copyWith()).toList(),
+      eccentricSeconds: eccentricSeconds ?? this.eccentricSeconds,
+      concentricSeconds: concentricSeconds ?? this.concentricSeconds,
+      isTempoEnabled: isTempoEnabled ?? this.isTempoEnabled,
     );
   }
 

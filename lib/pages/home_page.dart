@@ -9,9 +9,8 @@ import '../models/user_profile.dart';
 import '../core/l10n_extensions.dart';
 import 'package:shimmer/shimmer.dart';
 import 'user_info_form_page.dart';
-import 'workout_page.dart';
+import 'plan_page.dart';
 import '../models/session.dart';
-import 'shell_page.dart';
 import './settings_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -52,6 +51,7 @@ class HomePage extends StatelessWidget {
             child: _BodyComponent(
               sessionRepo: sessionRepo,
               userRepo: userRepo,
+              exerciseRepo: exerciseRepo,
             ),
           ),
         ],
@@ -148,8 +148,9 @@ class _HeaderComponentState extends State<_HeaderComponent> {
 class _BodyComponent extends StatefulWidget {
   final SessionRepo sessionRepo;
   final UserRepo userRepo;
+  final ExerciseLibraryRepo exerciseRepo;
 
-  const _BodyComponent({required this.sessionRepo, required this.userRepo});
+  const _BodyComponent({required this.sessionRepo, required this.userRepo, required this.exerciseRepo});
 
   @override
   State<_BodyComponent> createState() => _BodyComponentState();
@@ -192,8 +193,8 @@ class _BodyComponentState extends State<_BodyComponent> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     final cards = [
-      _MyGoalCard(sessionRepo: widget.sessionRepo, userRepo: widget.userRepo),
-      _ActivityTrendCard(sessionRepo: widget.sessionRepo),
+      _MyGoalCard(sessionRepo: widget.sessionRepo, userRepo: widget.userRepo, exerciseRepo: widget.exerciseRepo),
+      _ActivityTrendCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
     ];
 
     return SingleChildScrollView(
@@ -223,8 +224,9 @@ class _BodyComponentState extends State<_BodyComponent> with SingleTickerProvide
 class _MyGoalCard extends StatefulWidget {
   final SessionRepo sessionRepo;
   final UserRepo userRepo;
+  final ExerciseLibraryRepo exerciseRepo;
 
-  const _MyGoalCard({required this.sessionRepo, required this.userRepo});
+  const _MyGoalCard({required this.sessionRepo, required this.userRepo, required this.exerciseRepo});
 
   @override
   State<_MyGoalCard> createState() => _MyGoalCardState();
@@ -340,16 +342,15 @@ class _MyGoalCardState extends State<_MyGoalCard> {
                 const SizedBox(height: 28),
                 ElevatedButton(
                   onPressed: () async {
-                    final result = await Navigator.of(context).push<int>(
+                    await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => WorkoutPage(sessionRepo: widget.sessionRepo),
+                        builder: (context) => PlanPage(
+                          date: DateTime.now(),
+                          repo: widget.sessionRepo,
+                          exerciseRepo: widget.exerciseRepo,
+                        ),
                       ),
                     );
-
-                    if (result == 1 && context.mounted) {
-                      final shellState = context.findAncestorStateOfType<ShellPageState>();
-                      shellState?.onItemTapped(1);
-                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF007AFF),
@@ -423,7 +424,8 @@ class _MyGoalCardState extends State<_MyGoalCard> {
 
 class _ActivityTrendCard extends StatefulWidget {
   final SessionRepo sessionRepo;
-  const _ActivityTrendCard({required this.sessionRepo});
+  final ExerciseLibraryRepo exerciseRepo;
+  const _ActivityTrendCard({required this.sessionRepo, required this.exerciseRepo});
 
   @override
   State<_ActivityTrendCard> createState() => _ActivityTrendCardState();
@@ -731,16 +733,15 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () async {
-                  final result = await Navigator.of(context).push<int>(
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => WorkoutPage(sessionRepo: widget.sessionRepo),
+                      builder: (context) => PlanPage(
+                        date: DateTime.now(),
+                        repo: widget.sessionRepo,
+                        exerciseRepo: widget.exerciseRepo,
+                      ),
                     ),
                   );
-
-                  if (result == 1 && context.mounted) {
-                    final shellState = context.findAncestorStateOfType<ShellPageState>();
-                    shellState?.onItemTapped(1);
-                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF007AFF),
