@@ -8,7 +8,7 @@ import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../core/error_handler.dart';
 import '../widgets/tempo_settings_modal.dart';
-import '../services/tempo_metronome_service.dart';
+import '../services/rhythm_engine.dart';
 
 /// 운동 계획 페이지 - 완전 리팩토링 버전
 class PlanPage extends StatefulWidget {
@@ -673,12 +673,12 @@ class ExerciseCard extends StatefulWidget {
 class _ExerciseCardState extends State<ExerciseCard> {
   final TextEditingController _memoController = TextEditingController();
   bool _isExpanded = true; // Default: Open
-  final TempoMetronomeService _tempoService = TempoMetronomeService();
+  RhythmEngine? _rhythmEngine;
 
   @override
   void dispose() {
     _memoController.dispose();
-    _tempoService.dispose();
+    _rhythmEngine?.dispose();
     super.dispose();
   }
 
@@ -1034,55 +1034,132 @@ class _ExerciseCardState extends State<ExerciseCard> {
   }
 
   Widget _buildFooterActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
+    return Column(
       children: [
-        TextButton.icon(
-          onPressed: () {
-            if (widget.exercise.sets.isNotEmpty) {
-              setState(() {
-                widget.exercise.sets.removeLast();
-              });
-              widget.onUpdate();
-            }
-          },
-          icon: const Icon(Icons.remove, size: 16),
-          label: const Text('세트 삭제', style: TextStyle(fontSize: 13)),
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.grey[500],
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        // 템포 시작 버튼 (운동 시작 후 + 템포 활성화 시)
+        if (widget.isWorkoutStarted && widget.exercise.isTempoEnabled) ...[
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _startTempoSet,
+              icon: const Icon(Icons.play_arrow, size: 20),
+              label: Text(
+                '템포 시작 (${widget.exercise.eccentricSeconds}/${widget.exercise.concentricSeconds}s)',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2196F3),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
+              ),
+            ),
           ),
-        ),
-        Container(
-          width: 1,
-          height: 20,
-          color: Colors.grey[700],
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-        ),
-        TextButton.icon(
-          onPressed: () {
-            setState(() {
-              if (widget.exercise.sets.isNotEmpty) {
-                final lastSet = widget.exercise.sets.last;
-                widget.exercise.sets.add(ExerciseSet(
-                  weight: lastSet.weight,
-                  reps: lastSet.reps,
-                ));
-              } else {
-                widget.exercise.sets.add(ExerciseSet());
-              }
-            });
-            widget.onUpdate();
-          },
-          icon: const Icon(Icons.add, size: 16),
-          label: const Text('세트 추가', style: TextStyle(fontSize: 13)),
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF2196F3),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          ),
+          const SizedBox(height: 12),
+        ],
+        
+        // 세트 추가/삭제 버튼
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton.icon(
+              onPressed: () {
+                if (widget.exercise.sets.isNotEmpty) {
+                  setState(() {
+                    widget.exercise.sets.removeLast();
+                  });
+                  widget.onUpdate();
+                }
+              },
+              icon: const Icon(Icons.remove, size: 16),
+              label: const Text('세트 삭제', style: TextStyle(fontSize: 13)),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.grey[500],
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              ),
+            ),
+            Container(
+              width: 1,
+              height: 20,
+              color: Colors.grey[700],
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+            ),
+            TextButton.icon(
+              onPressed: () {
+                setState(() {
+                  if (widget.exercise.sets.isNotEmpty) {
+                    final lastSet = widget.exercise.sets.last;
+                    widget.exercise.sets.add(ExerciseSet(
+                      weight: lastSet.weight,
+                      reps: lastSet.reps,
+                    ));
+                  } else {
+                    widget.exercise.sets.add(ExerciseSet());
+                  }
+                });
+                widget.onUpdate();
+              },
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('세트 추가', style: TextStyle(fontSize: 13)),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF2196F3),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              ),
+            ),
+          ],
         ),
       ],
     );
+  }
+
+  void _startTempoSet() async {
+    // 완료되지 않은 첫 번째 세트 찾기
+    final nextSetIndex = widget.exercise.sets.indexWhere((set) => !set.isCompleted);
+    if (nextSetIndex == -1) {
+      // 모든 세트 완료됨
+      return;
+    }
+
+    final nextSet = widget.exercise.sets[nextSetIndex];
+    if (nextSet.reps == 0) {
+      // 횟수가 설정되지 않음
+      ErrorHandler.showInfoSnackBar(context, '먼저 목표 횟수를 입력하세요');
+      return;
+    }
+
+    // RhythmEngine 초기화 및 시작
+    _rhythmEngine?.dispose();
+    _rhythmEngine = RhythmEngine(
+      upSeconds: widget.exercise.concentricSeconds,
+      downSeconds: widget.exercise.eccentricSeconds,
+      targetReps: nextSet.reps,
+      onRepComplete: (currentRep) {
+        // 진행 상황 표시 (선택사항)
+        print('Rep $currentRep completed');
+      },
+      onSetComplete: () {
+        // 세트 자동 완료
+        if (mounted) {
+          setState(() {
+            nextSet.isCompleted = true;
+          });
+          widget.onUpdate();
+          // 휴식 타이머 시작
+          if (widget.onSetCompleted != null) {
+            widget.onSetCompleted!(true);
+          }
+        }
+      },
+    );
+    
+    await _rhythmEngine!.init();
+    await _rhythmEngine!.startWorkout();
   }
 }
 

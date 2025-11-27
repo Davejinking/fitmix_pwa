@@ -17,10 +17,17 @@ class TempoMetronomeService {
   }
   
   Future<void> _initTts() async {
-    await _tts.setLanguage("ko-KR");
-    await _tts.setSpeechRate(0.5);
-    await _tts.setVolume(1.0);
-    await _tts.setPitch(1.0);
+    try {
+      await _tts.setLanguage("en-US");
+      await _tts.setSpeechRate(0.8); // 더 빠르게
+      await _tts.setVolume(1.0);
+      await _tts.setPitch(1.0);
+      
+      // 웹 환경 설정
+      await _tts.awaitSpeakCompletion(false); // 비동기로 처리
+    } catch (e) {
+      print('TTS init error: $e');
+    }
   }
   
   /// 템포 세트 시작
@@ -63,7 +70,7 @@ class TempoMetronomeService {
       // Phase 3: Completion
       if (_isRunning) {
         await _playCompletionSound();
-        await _tts.speak("세트 완료");
+        await _tts.speak("SET COMPLETE");
         HapticFeedback.heavyImpact();
         onSetComplete?.call();
       }
@@ -72,72 +79,91 @@ class TempoMetronomeService {
     }
   }
   
-  /// 카운트다운 (3, 2, 1, 시작)
+  /// 빠른 카운트다운 (3, 2, 1, GO!)
   Future<void> _countdown() async {
-    for (int i = 3; i > 0; i--) {
-      await _tts.speak("$i");
-      HapticFeedback.lightImpact();
-      await Future.delayed(const Duration(milliseconds: 800));
-    }
-    await _tts.speak("시작");
-    HapticFeedback.mediumImpact();
-    await Future.delayed(const Duration(milliseconds: 500));
-  }
-  
-  /// Eccentric Phase (내리는 동작)
-  Future<void> _eccentricPhase(int seconds) async {
-    for (int i = 0; i < seconds; i++) {
-      if (!_isRunning) break;
-      await _playLowPitchBeep();
-      await Future.delayed(const Duration(seconds: 1));
+    try {
+      // 3, 2, 1 카운트다운
+      for (int i = 3; i > 0; i--) {
+        await _tts.speak("$i");
+        HapticFeedback.lightImpact();
+        await Future.delayed(const Duration(milliseconds: 600)); // 더 빠르게
+      }
+      // GO!
+      await _tts.speak("GO");
+      HapticFeedback.heavyImpact();
+      await Future.delayed(const Duration(milliseconds: 400));
+    } catch (e) {
+      print('Countdown error: $e');
     }
   }
   
-  /// Concentric Phase (올리는 동작)
+  /// Concentric Phase (올리는 동작) - "UP!"
   Future<void> _concentricPhase(int seconds) async {
-    await _playHighPitchBeep();
-    HapticFeedback.mediumImpact();
-    await Future.delayed(Duration(seconds: seconds));
+    try {
+      // "UP!" 커맨드
+      await _tts.speak("UP");
+      HapticFeedback.mediumImpact();
+      
+      // 매초 햅틱 피드백
+      for (int i = 0; i < seconds; i++) {
+        if (!_isRunning) break;
+        await Future.delayed(const Duration(seconds: 1));
+        HapticFeedback.selectionClick();
+      }
+    } catch (e) {
+      print('Concentric phase error: $e');
+    }
   }
   
-  /// 반복 횟수 음성 안내
+  /// Eccentric Phase (내리는 동작) - "DOWN!" + 카운트다운
+  Future<void> _eccentricPhase(int seconds) async {
+    try {
+      // "DOWN!" 커맨드
+      await _tts.speak("DOWN");
+      HapticFeedback.lightImpact();
+      
+      // 역순 카운트다운: 4, 3, 2, 1
+      for (int i = seconds; i > 0; i--) {
+        if (!_isRunning) break;
+        await Future.delayed(const Duration(milliseconds: 800));
+        await _tts.speak("$i");
+        HapticFeedback.selectionClick();
+      }
+    } catch (e) {
+      print('Eccentric phase error: $e');
+    }
+  }
+  
+  /// 반복 횟수 음성 안내 (영어)
   Future<void> _announceRep(int rep) async {
-    final repText = _getKoreanNumber(rep);
+    final repText = _getEnglishNumber(rep);
     await _tts.speak(repText);
-  }
-  
-  /// 낮은 음 비프 (Eccentric)
-  Future<void> _playLowPitchBeep() async {
-    HapticFeedback.selectionClick();
-    // TODO: 실제 오디오 파일 재생
-    // await _audioPlayer.play(AssetSource('sounds/low_beep.mp3'));
-  }
-  
-  /// 높은 음 비프 (Concentric)
-  Future<void> _playHighPitchBeep() async {
-    HapticFeedback.mediumImpact();
-    // TODO: 실제 오디오 파일 재생
-    // await _audioPlayer.play(AssetSource('sounds/high_beep.mp3'));
   }
   
   /// 완료 사운드
   Future<void> _playCompletionSound() async {
-    HapticFeedback.heavyImpact();
-    // TODO: 실제 오디오 파일 재생
-    // await _audioPlayer.play(AssetSource('sounds/complete.mp3'));
+    try {
+      // 3번 햅틱으로 완료 신호
+      for (int i = 0; i < 3; i++) {
+        HapticFeedback.heavyImpact();
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
+    } catch (e) {
+      print('Completion sound error: $e');
+    }
   }
   
-  /// 한글 숫자 변환
-  String _getKoreanNumber(int number) {
-    const koreanNumbers = [
-      '', '하나', '둘', '셋', '넷', '다섯',
-      '여섯', '일곱', '여덟', '아홉', '열',
-      '열하나', '열둘', '열셋', '열넷', '열다섯',
-      '열여섯', '열일곱', '열여덟', '열아홉', '스물'
+  /// 영어 숫자 변환
+  String _getEnglishNumber(int number) {
+    const englishNumbers = [
+      '', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE',
+      'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN',
+      'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN',
+      'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN', 'TWENTY'
     ];
     
-    if (number < koreanNumbers.length) {
-      return koreanNumbers[number];
+    if (number < englishNumbers.length) {
+      return englishNumbers[number];
     }
     return number.toString();
   }
