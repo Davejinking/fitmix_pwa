@@ -8,7 +8,6 @@ import 'package:audioplayers/audioplayers.dart';
 class RhythmEngine {
   final FlutterTts _tts = FlutterTts();
   final AudioPlayer _beepPlayer = AudioPlayer();
-  final AudioPlayer _tickPlayer = AudioPlayer();
   
   // Settings
   final int upSeconds;
@@ -32,15 +31,22 @@ class RhythmEngine {
   Future<void> init() async {
     try {
       // 1. Configure TTS for English (Sharp & Fast)
-      await _tts.setLanguage("en-US");
-      await _tts.setSpeechRate(0.7); // Faster
+      // Enforce English for consistency ("Optimization")
+      var isGood = await _tts.isLanguageAvailable("en-US");
+      if (isGood == true) {
+         await _tts.setLanguage("en-US");
+      } else {
+         // Fallback to English generic if US not available, or just hope for the best
+         await _tts.setLanguage("en");
+      }
+
+      await _tts.setSpeechRate(0.6); // Slightly slower for clear commands
       await _tts.setVolume(1.0);
       await _tts.setPitch(1.0);
-      await _tts.awaitSpeakCompletion(false); // Non-blocking
+      await _tts.awaitSpeakCompletion(false); // Non-blocking for precise timing
       
       // 2. Configure Audio Players for Low Latency
       await _beepPlayer.setPlayerMode(PlayerMode.lowLatency);
-      await _tickPlayer.setPlayerMode(PlayerMode.lowLatency);
       
       print('✅ Rhythm Engine initialized');
     } catch (e) {
@@ -52,7 +58,6 @@ class RhythmEngine {
     _isPlaying = false;
     _tts.stop();
     _beepPlayer.stop();
-    _tickPlayer.stop();
   }
   
   Future<void> startWorkout() async {
@@ -67,20 +72,21 @@ class RhythmEngine {
       for (int rep = 1; rep <= targetReps; rep++) {
         if (!_isPlaying) break;
         
-        // 1. UP Phase
+        // 1. UP Phase (Concentric)
         await _upPhase();
         
-        // 2. DOWN Phase
+        // 2. DOWN Phase (Eccentric)
         await _downPhase();
         
         // 3. Announce Rep
         await _announceRep(rep);
         onRepComplete?.call(rep);
         
-        // Short pause between reps
-        if (rep < targetReps) {
-          await Future.delayed(const Duration(milliseconds: 500));
-        }
+        // Short pause between reps?
+        // Usually immediately into next rep or short breath.
+        // User said: "One!" -> Repeat.
+        // Let's add a tiny buffer so "One" doesn't overlap with next "Up" too much
+        await Future.delayed(const Duration(milliseconds: 500));
       }
       
       // --- PHASE 3: Completion ---
@@ -95,58 +101,61 @@ class RhythmEngine {
     }
   }
   
-  /// F1 스타일 시작 시퀀스
+  /// F1 Style Start Sequence
+  /// "3... 2... 1... GO!"
   Future<void> _f1StartSequence() async {
-    // 3개의 짧은 비프
+    // "Ready?" logic could go here, but "3, 2, 1" is standard.
+
+    // 3, 2, 1
     for (int i = 3; i > 0; i--) {
       if (!_isPlaying) return;
       
-      await _tts.speak("$i");
-      await _playBeep(isShort: true);
-      HapticFeedback.lightImpact();
+      // Speak number
+      _tts.speak("$i");
       
-      await Future.delayed(const Duration(milliseconds: 800));
+      // Beep
+      _playBeep(isShort: true);
+      HapticFeedback.selectionClick();
+
+      await Future.delayed(const Duration(seconds: 1));
     }
     
     // GO!
     if (!_isPlaying) return;
-    await _tts.speak("GO");
-    await _playBeep(isShort: false);
+    _tts.speak("GO");
+    _playBeep(isShort: false);
     HapticFeedback.heavyImpact();
     
-    await Future.delayed(const Duration(milliseconds: 600));
+    // Give a moment for "GO" to be heard before starting movement time
+    // But usually "GO" is the start signal.
+    // So we don't wait too long.
+    await Future.delayed(const Duration(milliseconds: 500));
   }
   
-  /// UP Phase (Concentric) - With ticking metronome
+  /// UP Phase (Concentric) - Quiet Focus
   Future<void> _upPhase() async {
     if (!_isPlaying) return;
     
-    // "UP!" command
-    await _tts.speak("UP");
+    // "UP!" command marks the START of the 2s phase
+    _tts.speak("UP");
     HapticFeedback.mediumImpact();
     
-    // Tick every second
-    for (int t = 0; t < upSeconds; t++) {
-      if (!_isPlaying) break;
-      await Future.delayed(const Duration(seconds: 1));
-      _playTick(); // Metronome tick
-    }
+    // Wait for the duration (Silence)
+    // awaitSpeakCompletion is false, so this runs concurrently with speech.
+    // The duration is from the START of "UP".
+    await Future.delayed(Duration(seconds: upSeconds));
   }
   
-  /// DOWN Phase (Eccentric) - With ticking metronome
+  /// DOWN Phase (Eccentric) - Quiet Focus
   Future<void> _downPhase() async {
     if (!_isPlaying) return;
     
-    // "DOWN!" command
-    await _tts.speak("DOWN");
+    // "DOWN!" command marks the START of the 4s phase
+    _tts.speak("DOWN");
     HapticFeedback.lightImpact();
     
-    // Tick every second
-    for (int t = 0; t < downSeconds; t++) {
-      if (!_isPlaying) break;
-      await Future.delayed(const Duration(seconds: 1));
-      _playTick(); // Metronome tick
-    }
+    // Wait for the duration (Silence)
+    await Future.delayed(Duration(seconds: downSeconds));
   }
   
   /// Rep count announcement
@@ -154,8 +163,8 @@ class RhythmEngine {
     if (!_isPlaying) return;
     
     final repText = _getEnglishNumber(rep);
-    await _tts.speak(repText);
-    await Future.delayed(const Duration(milliseconds: 300));
+    _tts.speak(repText);
+    // No need for specific haptic here, maybe light?
   }
   
   /// Completion
@@ -169,33 +178,20 @@ class RhythmEngine {
     }
   }
   
-  /// 비프 사운드 재생
-  Future<void> _playBeep({required bool isShort}) async {
+  /// Play Beep Sound
+  void _playBeep({required bool isShort}) {
     try {
-      // 웹에서는 간단한 햅틱으로 대체
+      // Haptic backup
       if (isShort) {
         HapticFeedback.selectionClick();
       } else {
         HapticFeedback.heavyImpact();
       }
       
-      // TODO: 실제 오디오 파일이 있으면 재생
-      // await _beepPlayer.play(AssetSource(isShort ? 'audio/short_beep.mp3' : 'audio/long_beep.mp3'));
+      // If we had assets, we would play them here.
+      // _beepPlayer.play(...)
     } catch (e) {
       print('Beep error: $e');
-    }
-  }
-  
-  /// 틱 사운드 재생 (메트로놈 클릭)
-  void _playTick() {
-    try {
-      // SystemSound click for metronome tick
-      SystemSound.play(SystemSoundType.click);
-      HapticFeedback.selectionClick();
-    } catch (e) {
-      // Fallback to haptic only
-      HapticFeedback.selectionClick();
-      print('Tick sound error: $e');
     }
   }
   
@@ -217,6 +213,5 @@ class RhythmEngine {
   void dispose() {
     stop();
     _beepPlayer.dispose();
-    _tickPlayer.dispose();
   }
 }
