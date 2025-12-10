@@ -2,17 +2,26 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'audio_recorder_service.dart';
+
+enum RhythmMode {
+  tts,    // English TTS (Current)
+  sfx,    // Sound Effects (Ding/Chime)
+  voice,  // Recorded Voice
+  beep,   // Tactile + Simple Beeps
+}
 
 /// High-Precision Rhythm Engine
-/// Low-latency audio metronome for tempo training
 class RhythmEngine {
   final FlutterTts _tts = FlutterTts();
-  final AudioPlayer _beepPlayer = AudioPlayer();
+  final AudioPlayer _sfxPlayer = AudioPlayer();
+  final AudioRecorderService _recorderService = AudioRecorderService();
   
   // Settings
   final int upSeconds;
   final int downSeconds;
   final int targetReps;
+  final RhythmMode mode; // Selected Mode
   
   bool _isPlaying = false;
   
@@ -24,31 +33,29 @@ class RhythmEngine {
     required this.upSeconds,
     required this.downSeconds,
     required this.targetReps,
+    this.mode = RhythmMode.tts,
     this.onRepComplete,
     this.onSetComplete,
   });
   
   Future<void> init() async {
     try {
-      // 1. Configure TTS for English (Sharp & Fast)
-      // Enforce English for consistency ("Optimization")
-      var isGood = await _tts.isLanguageAvailable("en-US");
-      if (isGood == true) {
-         await _tts.setLanguage("en-US");
-      } else {
-         // Fallback to English generic if US not available, or just hope for the best
-         await _tts.setLanguage("en");
-      }
-
-      await _tts.setSpeechRate(0.6); // Slightly slower for clear commands
+      // 1. Configure TTS (Even if not used mainly, keep it ready)
+      await _tts.setLanguage("en-US");
+      await _tts.setSpeechRate(0.6);
       await _tts.setVolume(1.0);
       await _tts.setPitch(1.0);
-      await _tts.awaitSpeakCompletion(false); // Non-blocking for precise timing
+      await _tts.awaitSpeakCompletion(false);
+
+      // 2. Configure SFX Player
+      await _sfxPlayer.setPlayerMode(PlayerMode.lowLatency);
       
-      // 2. Configure Audio Players for Low Latency
-      await _beepPlayer.setPlayerMode(PlayerMode.lowLatency);
+      // 3. Init Recorder Service (for playback path resolution)
+      if (mode == RhythmMode.voice) {
+        await _recorderService.init();
+      }
       
-      print('✅ Rhythm Engine initialized');
+      print('✅ Rhythm Engine initialized (Mode: $mode)');
     } catch (e) {
       print('❌ Rhythm Engine init error: $e');
     }
@@ -57,7 +64,7 @@ class RhythmEngine {
   void stop() {
     _isPlaying = false;
     _tts.stop();
-    _beepPlayer.stop();
+    _sfxPlayer.stop();
   }
   
   Future<void> startWorkout() async {
@@ -65,27 +72,23 @@ class RhythmEngine {
     _isPlaying = true;
     
     try {
-      // --- PHASE 1: F1 Start Sequence ---
-      await _f1StartSequence();
+      // --- PHASE 1: Start Sequence ---
+      await _startSequence();
       
       // --- PHASE 2: Rep Loop ---
       for (int rep = 1; rep <= targetReps; rep++) {
         if (!_isPlaying) break;
         
-        // 1. UP Phase (Concentric)
+        // 1. UP Phase
         await _upPhase();
         
-        // 2. DOWN Phase (Eccentric)
+        // 2. DOWN Phase
         await _downPhase();
         
         // 3. Announce Rep
         await _announceRep(rep);
         onRepComplete?.call(rep);
         
-        // Short pause between reps?
-        // Usually immediately into next rep or short breath.
-        // User said: "One!" -> Repeat.
-        // Let's add a tiny buffer so "One" doesn't overlap with next "Up" too much
         await Future.delayed(const Duration(milliseconds: 500));
       }
       
@@ -101,101 +104,174 @@ class RhythmEngine {
     }
   }
   
-  /// F1 Style Start Sequence
-  /// "3... 2... 1... GO!"
-  Future<void> _f1StartSequence() async {
-    // "Ready?" logic could go here, but "3, 2, 1" is standard.
-
-    // 3, 2, 1
+  /// Start Sequence: "3, 2, 1, GO"
+  Future<void> _startSequence() async {
     for (int i = 3; i > 0; i--) {
       if (!_isPlaying) return;
       
-      // Speak number
-      _tts.speak("$i");
-      
-      // Beep
-      _playBeep(isShort: true);
+      await _playCue(i.toString()); // "3", "2", "1"
       HapticFeedback.selectionClick();
-
       await Future.delayed(const Duration(seconds: 1));
     }
     
-    // GO!
     if (!_isPlaying) return;
-    _tts.speak("GO");
-    _playBeep(isShort: false);
+    await _playCue("GO");
     HapticFeedback.heavyImpact();
-    
-    // Give a moment for "GO" to be heard before starting movement time
-    // But usually "GO" is the start signal.
-    // So we don't wait too long.
     await Future.delayed(const Duration(milliseconds: 500));
   }
   
-  /// UP Phase (Concentric) - Quiet Focus
+  /// UP Phase
   Future<void> _upPhase() async {
     if (!_isPlaying) return;
     
-    // "UP!" command marks the START of the 2s phase
-    _tts.speak("UP");
+    await _playCue("UP");
     HapticFeedback.mediumImpact();
-    
-    // Wait for the duration (Silence)
-    // awaitSpeakCompletion is false, so this runs concurrently with speech.
-    // The duration is from the START of "UP".
     await Future.delayed(Duration(seconds: upSeconds));
   }
   
-  /// DOWN Phase (Eccentric) - Quiet Focus
+  /// DOWN Phase
   Future<void> _downPhase() async {
     if (!_isPlaying) return;
     
-    // "DOWN!" command marks the START of the 4s phase
-    _tts.speak("DOWN");
+    await _playCue("DOWN");
     HapticFeedback.lightImpact();
-    
-    // Wait for the duration (Silence)
     await Future.delayed(Duration(seconds: downSeconds));
   }
   
-  /// Rep count announcement
+  /// Rep Announcement
   Future<void> _announceRep(int rep) async {
     if (!_isPlaying) return;
     
-    final repText = _getEnglishNumber(rep);
-    _tts.speak(repText);
-    // No need for specific haptic here, maybe light?
+    // For Voice Mode, we might not have all numbers recorded.
+    // Try to play recorded "1", "2"... if fails, fallback to TTS or SFX?
+    // User requested "Chime/Ding" for SFX mode.
+
+    await _playCue(rep.toString(), isRep: true);
   }
   
   /// Completion
   Future<void> _completion() async {
-    await _tts.speak("SET COMPLETE");
-    
-    // Triple haptic
+    await _playCue("COMPLETE");
     for (int i = 0; i < 3; i++) {
       HapticFeedback.heavyImpact();
       await Future.delayed(const Duration(milliseconds: 200));
     }
   }
   
-  /// Play Beep Sound
-  void _playBeep({required bool isShort}) {
+  /// Unified Cue Player
+  Future<void> _playCue(String cue, {bool isRep = false}) async {
     try {
-      // Haptic backup
-      if (isShort) {
-        HapticFeedback.selectionClick();
-      } else {
-        HapticFeedback.heavyImpact();
+      switch (mode) {
+        case RhythmMode.tts:
+          await _playTTS(cue, isRep);
+          break;
+
+        case RhythmMode.voice:
+          bool played = false;
+          // Try to play recorded file
+          if (await _recorderService.hasRecording(cue)) {
+             await _recorderService.playRecording(cue);
+             played = true;
+          } else if (isRep) {
+             // Fallback for missing rep numbers: Play simple beep or "Count"?
+             // Let's just beep if number is missing
+             await _playBeep(isShort: true);
+             played = true;
+          }
+
+          if (!played) {
+            // Fallback to TTS if critical cue (like "UP"/"DOWN") is missing?
+            // Or silent. Let's do TTS fallback for safety.
+            await _playTTS(cue, isRep);
+          }
+          break;
+
+        case RhythmMode.sfx:
+          await _playSFX(cue, isRep);
+          break;
+
+        case RhythmMode.beep:
+          await _playBeepCue(cue, isRep);
+          break;
       }
-      
-      // If we had assets, we would play them here.
-      // _beepPlayer.play(...)
     } catch (e) {
-      print('Beep error: $e');
+      print('PlayCue error: $e');
     }
   }
+
+  // --- Mode Implementations ---
+
+  /// TTS Implementation (Original)
+  Future<void> _playTTS(String cue, bool isRep) async {
+    if (isRep) {
+       // Convert numeric string to int if possible
+       int? val = int.tryParse(cue);
+       if (val != null) {
+         await _tts.speak(_getEnglishNumber(val));
+         return;
+       }
+    }
+    await _tts.speak(cue);
+  }
   
-  /// English number conversion
+  /// SFX Implementation (Chime/Ding)
+  Future<void> _playSFX(String cue, bool isRep) async {
+    // Ideally play different sound assets.
+    // Since we don't have assets yet, we'll use SystemSound or Fallback TTS for START/STOP
+    // and just Beeps for Counts.
+
+    // START/GO: High Beep
+    // UP: Rising Tone (Simulated by high pitch beep)
+    // DOWN: Falling Tone (Simulated by low pitch beep)
+    // REP: Chime (Simulated by SystemSound.click or similar)
+
+    if (isRep) {
+      // Rep completed: Ding!
+       // Use SystemSound.play(SystemSoundType.click) or just a nice beep?
+       // Let's use TTS "Ding" hack or just silence + Haptic?
+       // User wanted "Ding!". Without asset, best is Haptic.
+       // Or use TTS to say "Ding"? No.
+       // Let's assume user will add assets later.
+       // For now, I'll use a placeholder behavior: Heavy Haptic.
+       SystemSound.play(SystemSoundType.click);
+       return;
+    }
+
+    if (cue == "UP") {
+      // Rising sound
+      SystemSound.play(SystemSoundType.click);
+    } else if (cue == "DOWN") {
+      // Falling sound
+      SystemSound.play(SystemSoundType.click);
+    } else if (cue == "GO") {
+      SystemSound.play(SystemSoundType.click);
+    } else {
+      // Countdown numbers
+      HapticFeedback.selectionClick();
+    }
+  }
+
+  /// Beep Implementation (Tactile)
+  Future<void> _playBeepCue(String cue, bool isRep) async {
+    if (isRep) {
+      HapticFeedback.heavyImpact(); // Strong pulse for count
+    } else if (cue == "UP") {
+      HapticFeedback.mediumImpact();
+    } else if (cue == "DOWN") {
+      HapticFeedback.lightImpact();
+    } else {
+      HapticFeedback.selectionClick();
+    }
+    // No sound, just haptics mostly, or minimal system clicks
+    if (cue == "GO" || cue == "COMPLETE") {
+       SystemSound.play(SystemSoundType.click);
+    }
+  }
+
+  Future<void> _playBeep({required bool isShort}) async {
+    HapticFeedback.selectionClick();
+  }
+
   String _getEnglishNumber(int number) {
     const numbers = [
       '', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE',
@@ -203,15 +279,13 @@ class RhythmEngine {
       'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN',
       'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN', 'TWENTY'
     ];
-    
-    if (number < numbers.length) {
-      return numbers[number];
-    }
+    if (number < numbers.length) return numbers[number];
     return number.toString();
   }
-  
+
   void dispose() {
     stop();
-    _beepPlayer.dispose();
+    _sfxPlayer.dispose();
+    _recorderService.dispose();
   }
 }

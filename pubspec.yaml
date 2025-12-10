@@ -45,6 +45,9 @@ dependencies:
   flutter_tts: ^4.2.0
   audioplayers: ^6.1.0
   audio_session: ^0.1.21
+  record: ^5.1.0
+  path_provider: ^2.1.2
+  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:

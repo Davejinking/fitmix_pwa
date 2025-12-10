@@ -674,6 +674,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
   final TextEditingController _memoController = TextEditingController();
   bool _isExpanded = true; // Default: Open
   RhythmEngine? _rhythmEngine;
+  RhythmMode _currentMode = RhythmMode.tts; // Default
 
   @override
   void dispose() {
@@ -689,9 +690,15 @@ class _ExerciseCardState extends State<ExerciseCard> {
       isScrollControlled: true,
       builder: (context) => TempoSettingsModal(
         exercise: widget.exercise,
+        initialMode: _currentMode,
         onUpdate: () {
           setState(() {});
           widget.onUpdate();
+        },
+        onModeChanged: (mode) {
+          setState(() {
+            _currentMode = mode;
+          });
         },
       ),
     );
@@ -1139,6 +1146,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
       upSeconds: widget.exercise.concentricSeconds,
       downSeconds: widget.exercise.eccentricSeconds,
       targetReps: nextSet.reps,
+      mode: _currentMode, // Pass Selected Mode
       onRepComplete: (currentRep) {
         // 진행 상황 표시 (선택사항)
         print('Rep $currentRep completed');
