@@ -2,12 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:confetti/confetti.dart';
 import '../core/burn_fit_style.dart';
 import '../core/error_handler.dart';
 import '../data/session_repo.dart';
 import '../models/session.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/workout/rest_timer_panel.dart';
+import '../widgets/workout/set_tile.dart';
 
 class WorkoutPage extends StatefulWidget {
   final SessionRepo sessionRepo;
@@ -204,15 +205,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
     return '$hours:$minutes:$seconds';
   }
 
-  String _formatRestTime(int totalSeconds) {
-    final minutes = totalSeconds ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (minutes > 0) {
-      return '$minutes:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '$seconds';
-  }
-
   Future<void> _endWorkout(Session session) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await ErrorHandler.showConfirmDialog(
@@ -308,7 +300,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
                     final session = snapshot.data!;
                     return ListView.builder(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.fromLTRB(8, 8, 8, _isResting ? 280 : 8),
                       itemCount: session.exercises.length + 1, // 마지막에 종료 버튼 추가
                       itemBuilder: (context, index) {
                         if (index == session.exercises.length) {
@@ -353,7 +345,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                             children: List.generate(exercise.sets.length, (setIndex) {
                               final set = exercise.sets[setIndex];
                               final setKey = 'exercise_${index}_set_$setIndex';
-                              return _SetTile(
+                              return SetTile(
                                 key: ValueKey(setKey),
                                 setKey: setKey,
                                 setIndex: setIndex,
@@ -393,266 +385,16 @@ class _WorkoutPageState extends State<WorkoutPage> {
             ],
           ),
           // 3. 휴식 타이머 플로팅 패널 (하단)
-          if (_isResting) _buildRestTimerPanel(),
+          if (_isResting)
+            RestTimerPanel(
+              restSecondsRemaining: _restSecondsRemaining!,
+              defaultRestDuration: _defaultRestDuration,
+              onCancel: _cancelRestTimer,
+              onAdjustTime: _adjustRestTime,
+              onTimePickerTap: _showRestTimePicker,
+            ),
         ],
       ),
-    );
-  }
-
-  // 3. 휴식 타이머 UI - 하단 플로팅 패널 (Apple 스타일)
-  Widget _buildRestTimerPanel() {
-    final l10n = AppLocalizations.of(context);
-    final progress = _restSecondsRemaining! / _defaultRestDuration;
-    
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E), // 어두운 회색 배경
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // 타이머 헤더
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.restTimer,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFAAAAAA),
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Color(0xFFAAAAAA), size: 22),
-                  onPressed: _cancelRestTimer,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // 타이머 디스플레이 + 컨트롤
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // -10초 버튼
-                TextButton(
-                  onPressed: () => _adjustRestTime(-10),
-                  style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFF007AFF),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  child: const Text(
-                    '-10',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                // 타이머 숫자 (탭하면 직접 입력)
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _showRestTimePicker,
-                    child: Column(
-                      children: [
-                        Text(
-                          _formatRestTime(_restSecondsRemaining!),
-                          style: const TextStyle(
-                            fontSize: 56,
-                            fontWeight: FontWeight.w900, // 아주 굵게
-                            color: Colors.white,
-                            fontFamily: 'monospace',
-                            letterSpacing: -2,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.restTimeRemaining,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFFAAAAAA),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // +30초 버튼
-                TextButton(
-                  onPressed: () => _adjustRestTime(30),
-                  style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFF007AFF),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  child: const Text(
-                    '+30',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // 진행 바 (파란색이 차오르는 느낌)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 8,
-                backgroundColor: Colors.grey[800], // 어두운 회색 트랙
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF007AFF)), // 파란색 진행
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SetTile extends StatefulWidget {
-  final String setKey;
-  final int setIndex;
-  final double weight;
-  final int reps;
-  final bool isCompleted;
-  final bool isLastSet;
-  final Function(bool isCompleted) onSetCompleted;
-
-  const _SetTile({
-    super.key,
-    required this.setKey,
-    required this.setIndex,
-    required this.weight,
-    required this.reps,
-    required this.isCompleted,
-    required this.isLastSet,
-    required this.onSetCompleted,
-  });
-
-  @override
-  State<_SetTile> createState() => _SetTileState();
-}
-
-class _SetTileState extends State<_SetTile> {
-  late bool _isCompleted;
-  late ConfettiController _confettiController;
-
-  @override
-  void initState() {
-    super.initState();
-    _isCompleted = widget.isCompleted;
-    _confettiController = ConfettiController(duration: const Duration(seconds: 1));
-  }
-
-  @override
-  void dispose() {
-    _confettiController.dispose();
-    super.dispose();
-  }
-
-  void _toggleCompletion() {
-    setState(() {
-      _isCompleted = !_isCompleted;
-      if (_isCompleted) {
-        _confettiController.play();
-        HapticFeedback.mediumImpact();
-      }
-      // 부모에게 완료 상태 전달
-      widget.onSetCompleted(_isCompleted);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        ListTile(
-          tileColor: _isCompleted ? Theme.of(context).cardColor.withValues(alpha: 0.5) : null,
-          leading: InkWell(
-            onTap: _toggleCompletion,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: _isCompleted ? const Color(0xFF007AFF) : Colors.grey,
-                  width: 2,
-                ),
-                color: _isCompleted ? const Color(0xFF007AFF) : Colors.transparent,
-              ),
-              child: _isCompleted
-                  ? const Icon(Icons.check, color: Colors.white, size: 20)
-                  : Center(
-                      child: Text(
-                        '${widget.setIndex + 1}',
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.bodySmall?.color,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-            ),
-          ),
-          title: Text(
-            '${widget.weight} kg × ${widget.reps} 회',
-            style: TextStyle(
-              decoration: _isCompleted ? TextDecoration.lineThrough : null,
-              color: _isCompleted ? BurnFitStyle.secondaryGrayText : null,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          trailing: widget.isLastSet
-              ? Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF007AFF).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Text(
-                    '마지막',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF007AFF),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                )
-              : null,
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: ConfettiWidget(
-            confettiController: _confettiController,
-            blastDirectionality: BlastDirectionality.explosive,
-            shouldLoop: false,
-            colors: const [Colors.green, Colors.blue, Colors.pink, Colors.orange, Colors.purple],
-          ),
-        ),
-      ],
     );
   }
 }
