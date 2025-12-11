@@ -13,9 +13,9 @@ enum RhythmMode {
 
 /// High-Precision Rhythm Engine
 class RhythmEngine {
-  final FlutterTts _tts = FlutterTts();
-  final AudioPlayer _sfxPlayer = AudioPlayer();
-  final AudioRecorderService _recorderService = AudioRecorderService();
+  final FlutterTts _tts;
+  final AudioPlayer _sfxPlayer;
+  final AudioRecorderService _recorderService;
   
   // Settings
   final int upSeconds;
@@ -36,7 +36,12 @@ class RhythmEngine {
     this.mode = RhythmMode.tts,
     this.onRepComplete,
     this.onSetComplete,
-  });
+    FlutterTts? tts,
+    AudioPlayer? sfxPlayer,
+    AudioRecorderService? recorderService,
+  }) : _tts = tts ?? FlutterTts(),
+       _sfxPlayer = sfxPlayer ?? AudioPlayer(),
+       _recorderService = recorderService ?? AudioRecorderService();
   
   Future<void> init() async {
     try {
