@@ -37,7 +37,9 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> {
     'COMPLETE': '세트 완료 "Complete"'
   };
 
-  String? _recordingCue;
+  // State
+  String? _selectedCue; // Currently selected item
+  bool _isRecording = false; // Is global recording active?
   Set<String> _existingRecordings = {};
 
   @override
@@ -45,6 +47,11 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> {
     super.initState();
     _service.init();
     _checkExisting();
+
+    // Auto-select first item
+    if (_cues.isNotEmpty) {
+      _selectedCue = _cues.first;
+    }
   }
 
   Future<void> _checkExisting() async {
@@ -61,21 +68,22 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> {
     }
   }
 
-  Future<void> _toggleRecording(String cue) async {
-    if (_recordingCue == cue) {
+  Future<void> _toggleRecording() async {
+    final cue = _selectedCue;
+    if (cue == null) return;
+
+    if (_isRecording) {
       // Stop
       await _service.stopRecording();
       setState(() {
-        _recordingCue = null;
+        _isRecording = false;
       });
       await _checkExisting();
       HapticFeedback.lightImpact();
     } else {
-      if (_recordingCue != null) return; // Already recording another
-
       // Start
       setState(() {
-        _recordingCue = cue;
+        _isRecording = true;
       });
       await _service.startRecording(cue);
       HapticFeedback.heavyImpact();
@@ -83,107 +91,192 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> {
   }
 
   Future<void> _play(String cue) async {
-    if (_recordingCue != null) return;
+    if (_isRecording) return;
     await _service.playRecording(cue);
   }
 
   Future<void> _delete(String cue) async {
+    if (_isRecording) return;
     await _service.deleteRecording(cue);
     await _checkExisting();
     HapticFeedback.mediumImpact();
   }
 
+  void _selectCue(String cue) {
+    if (_isRecording) return; // Prevent changing while recording
+    setState(() {
+      _selectedCue = cue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('나만의 보이스 녹음'),
-        backgroundColor: const Color(0xFF121212),
-        foregroundColor: Colors.white,
+        title: const Text(
+          '나만의 보이스 녹음',
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black87),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _cues.length,
-        itemBuilder: (context, index) {
-          final cue = _cues[index];
-          final isRecording = _recordingCue == cue;
-          final hasRecording = _existingRecordings.contains(cue);
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // List Area
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              itemCount: _cues.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final cue = _cues[index];
+                final isSelected = _selectedCue == cue;
+                final hasRecording = _existingRecordings.contains(cue);
 
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E),
-              borderRadius: BorderRadius.circular(12),
-              border: isRecording
-                  ? Border.all(color: Colors.redAccent, width: 2)
-                  : null,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _cueNames[cue] ?? cue,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                // Use Material to ensure ink splash is visible
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _selectCue(cue),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.grey[100] : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? Colors.black : Colors.grey[200]!,
+                          width: isSelected ? 2 : 1,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ]
+                            : [],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        child: Row(
+                          children: [
+                            // Status Dot
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: hasRecording ? const Color(0xFF4CAF50) : Colors.grey[300],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+
+                            // Text
+                            Expanded(
+                              child: Text(
+                                _cueNames[cue] ?? cue,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+
+                            // Actions (Play/Delete)
+                            if (hasRecording) ...[
+                              IconButton(
+                                icon: const Icon(Icons.play_circle_outline_rounded),
+                                color: Colors.black87,
+                                onPressed: () => _play(cue),
+                                constraints: const BoxConstraints(),
+                                padding: EdgeInsets.zero,
+                              ),
+                              if (isSelected) ...[
+                                const SizedBox(width: 12),
+                                 IconButton(
+                                  icon: const Icon(Icons.delete_outline_rounded),
+                                  color: Colors.grey,
+                                  onPressed: () => _delete(cue),
+                                  constraints: const BoxConstraints(),
+                                  padding: EdgeInsets.zero,
+                                ),
+                              ]
+                            ]
+                          ],
                         ),
                       ),
-                      if (hasRecording)
-                        const Text(
-                          '녹음됨',
-                          style: TextStyle(
-                            color: Color(0xFF4CAF50),
-                            fontSize: 12,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-
-                // Play Button
-                if (hasRecording && !isRecording)
-                  IconButton(
-                    icon: const Icon(Icons.play_arrow),
-                    color: Colors.white,
-                    onPressed: () => _play(cue),
-                  ),
-
-                // Record Button
-                GestureDetector(
-                  onTap: () => _toggleRecording(cue),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isRecording
-                          ? Colors.redAccent
-                          : const Color(0xFF2C2C2C),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isRecording ? Icons.stop : Icons.mic,
-                      color: Colors.white,
-                      size: 20,
                     ),
                   ),
-                ),
+                );
+              },
+            ),
+          ),
 
-                // Delete Button
-                if (hasRecording && !isRecording)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    color: Colors.grey[600],
-                    onPressed: () => _delete(cue),
-                  ),
+          // Bottom Control Area
+          Container(
+            width: double.infinity, // Ensure full width
+            padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 30),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
               ],
             ),
-          );
-        },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Selected Cue Indicator
+                if (_selectedCue != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Text(
+                      _isRecording ? '녹음 중: ${_cueNames[_selectedCue!]}' : '선택됨: ${_cueNames[_selectedCue!]}',
+                      style: TextStyle(
+                        color: _isRecording ? Colors.redAccent : Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+
+                // Main Record Button
+                GestureDetector(
+                  onTap: _toggleRecording,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: _isRecording ? Colors.redAccent : Colors.black,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: (_isRecording ? Colors.redAccent : Colors.black).withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      _isRecording ? Icons.stop_rounded : Icons.mic_rounded,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
