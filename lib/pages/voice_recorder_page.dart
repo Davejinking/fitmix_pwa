@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/audio_recorder_service.dart';
@@ -13,6 +14,7 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
   final AudioRecorderService _service = AudioRecorderService();
   late AnimationController _animationController;
   late Animation<double> _animation;
+  Timer? _recordingTimer;
 
   // List of cues to record
   final List<String> _cues = [
@@ -81,13 +83,7 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
 
   Future<void> _toggleRecording(String cue) async {
     if (_recordingCue == cue) {
-      // Stop
-      await _service.stopRecording();
-      setState(() {
-        _recordingCue = null;
-      });
-      await _checkExisting();
-      HapticFeedback.lightImpact();
+      _stopRecordingManually();
     } else {
       if (_recordingCue != null) return; // Already recording another
 
@@ -97,7 +93,26 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
       });
       await _service.startRecording(cue);
       HapticFeedback.heavyImpact();
+
+      // Auto-stop after 2 seconds
+      _recordingTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted && _recordingCue == cue) {
+          _stopRecordingManually();
+        }
+      });
     }
+  }
+
+  Future<void> _stopRecordingManually() async {
+    _recordingTimer?.cancel();
+    await _service.stopRecording();
+    if (mounted) {
+      setState(() {
+        _recordingCue = null;
+      });
+    }
+    await _checkExisting();
+    HapticFeedback.lightImpact();
   }
 
   Future<void> _play(String cue) async {
@@ -121,14 +136,27 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: _cues.length,
-            itemBuilder: (context, index) {
-              final cue = _cues[index];
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            color: Colors.white.withOpacity(0.05),
+            child: const Text(
+              "⚠ 짧은 구령을 위해 녹음은 2초 후 자동 종료됩니다.",
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _cues.length,
+                  itemBuilder: (context, index) {
+                    final cue = _cues[index];
               final isRecording = _recordingCue == cue;
               final hasRecording = _existingRecordings.contains(cue);
 
@@ -218,35 +246,50 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
                         // Record Button
                         GestureDetector(
                           onTap: () => _toggleRecording(cue),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isRecording
-                                  ? Colors.redAccent.withOpacity(0.2)
-                                  : const Color(0xFF2C2C2C),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isRecording
-                                    ? Colors.redAccent
-                                    : Colors.white.withOpacity(0.2),
-                                width: 2
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              if (isRecording)
+                                SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: CircularProgressIndicator(
+                                    value: null, // Indeterminate or could be tween
+                                    strokeWidth: 3,
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: isRecording
+                                      ? Colors.redAccent.withOpacity(0.2)
+                                      : const Color(0xFF2C2C2C),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isRecording
+                                        ? Colors.transparent
+                                        : Colors.white.withOpacity(0.2),
+                                    width: 2
+                                  ),
+                                  boxShadow: isRecording
+                                      ? [
+                                          BoxShadow(
+                                            color: Colors.redAccent.withOpacity(0.4),
+                                            blurRadius: _animation.value,
+                                            spreadRadius: 1,
+                                          )
+                                        ]
+                                      : [],
+                                ),
+                                child: Icon(
+                                  isRecording ? Icons.stop_rounded : Icons.mic_rounded,
+                                  color: isRecording ? Colors.redAccent : Colors.white,
+                                  size: 24,
+                                ),
                               ),
-                              boxShadow: isRecording
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.redAccent.withOpacity(0.4),
-                                        blurRadius: _animation.value,
-                                        spreadRadius: 1,
-                                      )
-                                    ]
-                                  : [],
-                            ),
-                            child: Icon(
-                              isRecording ? Icons.stop_rounded : Icons.mic_rounded,
-                              color: isRecording ? Colors.redAccent : Colors.white,
-                              size: 24,
-                            ),
+                            ],
                           ),
                         ),
 
@@ -265,9 +308,12 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
                   ],
                 ),
               );
-            },
-          );
-        }
+                  },
+                );
+              }
+            ),
+          ),
+        ],
       ),
     );
   }
