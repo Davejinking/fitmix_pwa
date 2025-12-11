@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'audio_recorder_service.dart';
+import '../utils/sound_generator.dart';
 
 enum RhythmMode {
   tts,    // English TTS (Current)
@@ -16,6 +18,11 @@ class RhythmEngine {
   final FlutterTts _tts = FlutterTts();
   final AudioPlayer _sfxPlayer = AudioPlayer();
   final AudioRecorderService _recorderService = AudioRecorderService();
+
+  // Generated Sound Paths
+  String? _highBeepPath;
+  String? _lowBeepPath;
+  String? _dingPath;
   
   // Settings
   final int upSeconds;
@@ -49,12 +56,32 @@ class RhythmEngine {
 
       // 2. Configure SFX Player
       await _sfxPlayer.setPlayerMode(PlayerMode.lowLatency);
-      
+
       // 3. Init Recorder Service (for playback path resolution)
       if (mode == RhythmMode.voice) {
         await _recorderService.init();
       }
       
+      // 4. Generate Sounds if needed
+      if (mode != RhythmMode.tts) {
+        _highBeepPath = await SoundGenerator.generateTone(
+          filename: 'high_beep.wav',
+          frequency: 880, // A5
+          duration: 0.15,
+        );
+        _lowBeepPath = await SoundGenerator.generateTone(
+          filename: 'low_beep.wav',
+          frequency: 440, // A4
+          duration: 0.15,
+        );
+        _dingPath = await SoundGenerator.generateTone(
+          filename: 'ding.wav',
+          frequency: 1200, // High Ding
+          duration: 0.3,
+          volume: 0.7,
+        );
+      }
+
       print('✅ Rhythm Engine initialized (Mode: $mode)');
     } catch (e) {
       print('❌ Rhythm Engine init error: $e');
@@ -141,11 +168,6 @@ class RhythmEngine {
   /// Rep Announcement
   Future<void> _announceRep(int rep) async {
     if (!_isPlaying) return;
-    
-    // For Voice Mode, we might not have all numbers recorded.
-    // Try to play recorded "1", "2"... if fails, fallback to TTS or SFX?
-    // User requested "Chime/Ding" for SFX mode.
-
     await _playCue(rep.toString(), isRep: true);
   }
   
@@ -172,17 +194,13 @@ class RhythmEngine {
           if (await _recorderService.hasRecording(cue)) {
              await _recorderService.playRecording(cue);
              played = true;
-          } else if (isRep) {
-             // Fallback for missing rep numbers: Play simple beep or "Count"?
-             // Let's just beep if number is missing
-             await _playBeep(isShort: true);
-             played = true;
           }
 
           if (!played) {
-            // Fallback to TTS if critical cue (like "UP"/"DOWN") is missing?
-            // Or silent. Let's do TTS fallback for safety.
-            await _playTTS(cue, isRep);
+            // Fallback for voice: if recorded cue is missing, use Beeps (not TTS)
+            // unless it's a critical word like "UP/DOWN/GO".
+            // Actually, playing Beeps is safer than TTS mixing in weirdly.
+            await _playSFX(cue, isRep);
           }
           break;
 
@@ -214,47 +232,40 @@ class RhythmEngine {
     await _tts.speak(cue);
   }
   
-  /// SFX Implementation (Chime/Ding)
+  /// SFX Implementation (Generated WAVs)
   Future<void> _playSFX(String cue, bool isRep) async {
-    // Ideally play different sound assets.
-    // Since we don't have assets yet, we'll use SystemSound or Fallback TTS for START/STOP
-    // and just Beeps for Counts.
-
-    // START/GO: High Beep
-    // UP: Rising Tone (Simulated by high pitch beep)
-    // DOWN: Falling Tone (Simulated by low pitch beep)
-    // REP: Chime (Simulated by SystemSound.click or similar)
-
     if (isRep) {
       // Rep completed: Ding!
-       // Use SystemSound.play(SystemSoundType.click) or just a nice beep?
-       // Let's use TTS "Ding" hack or just silence + Haptic?
-       // User wanted "Ding!". Without asset, best is Haptic.
-       // Or use TTS to say "Ding"? No.
-       // Let's assume user will add assets later.
-       // For now, I'll use a placeholder behavior: Heavy Haptic.
-       SystemSound.play(SystemSoundType.click);
-       return;
+      if (_dingPath != null) {
+        await _sfxPlayer.play(DeviceFileSource(_dingPath!));
+      }
+      return;
     }
 
+    // Commands
     if (cue == "UP") {
-      // Rising sound
-      SystemSound.play(SystemSoundType.click);
+      // High pitch
+      if (_highBeepPath != null) await _sfxPlayer.play(DeviceFileSource(_highBeepPath!));
     } else if (cue == "DOWN") {
-      // Falling sound
-      SystemSound.play(SystemSoundType.click);
+      // Low pitch
+      if (_lowBeepPath != null) await _sfxPlayer.play(DeviceFileSource(_lowBeepPath!));
     } else if (cue == "GO") {
-      SystemSound.play(SystemSoundType.click);
+       // High Ding
+       if (_dingPath != null) await _sfxPlayer.play(DeviceFileSource(_dingPath!));
     } else {
-      // Countdown numbers
-      HapticFeedback.selectionClick();
+      // Countdown numbers: Short Beep (Low)
+      if (_lowBeepPath != null) await _sfxPlayer.play(DeviceFileSource(_lowBeepPath!));
     }
   }
 
-  /// Beep Implementation (Tactile)
+  /// Beep Implementation (Tactile + Simple Beeps)
   Future<void> _playBeepCue(String cue, bool isRep) async {
+    // Play sounds too! (User requested sound)
+    await _playSFX(cue, isRep);
+
+    // Add Haptics
     if (isRep) {
-      HapticFeedback.heavyImpact(); // Strong pulse for count
+      HapticFeedback.heavyImpact();
     } else if (cue == "UP") {
       HapticFeedback.mediumImpact();
     } else if (cue == "DOWN") {
@@ -262,13 +273,14 @@ class RhythmEngine {
     } else {
       HapticFeedback.selectionClick();
     }
-    // No sound, just haptics mostly, or minimal system clicks
-    if (cue == "GO" || cue == "COMPLETE") {
-       SystemSound.play(SystemSoundType.click);
-    }
   }
 
   Future<void> _playBeep({required bool isShort}) async {
+    if (isShort) {
+       if (_lowBeepPath != null) await _sfxPlayer.play(DeviceFileSource(_lowBeepPath!));
+    } else {
+       if (_highBeepPath != null) await _sfxPlayer.play(DeviceFileSource(_highBeepPath!));
+    }
     HapticFeedback.selectionClick();
   }
 
