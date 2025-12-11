@@ -16,7 +16,7 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
 
   // List of cues to record
   final List<String> _cues = [
-    '3', '2', '1', 'GO',
+    'COUNTDOWN_3', 'COUNTDOWN_2', 'COUNTDOWN_1', 'GO',
     'UP', 'DOWN',
     '1', '2', '3', '4', '5',
     'REST', 'COMPLETE'
@@ -24,9 +24,9 @@ class _VoiceRecorderPageState extends State<VoiceRecorderPage> with SingleTicker
 
   // Map to store friendly names for cues
   final Map<String, String> _cueNames = {
-    '3': '카운트다운 "3"',
-    '2': '카운트다운 "2"',
-    '1': '카운트다운 "1"',
+    'COUNTDOWN_3': '카운트다운 "3"',
+    'COUNTDOWN_2': '카운트다운 "2"',
+    'COUNTDOWN_1': '카운트다운 "1"',
     'GO': '시작 "Go!"',
     'UP': '올리기 "Up!"',
     'DOWN': '내리기 "Down!"',

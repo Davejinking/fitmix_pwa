@@ -15,9 +15,9 @@ enum RhythmMode {
 
 /// High-Precision Rhythm Engine
 class RhythmEngine {
-  final FlutterTts _tts = FlutterTts();
-  final AudioPlayer _sfxPlayer = AudioPlayer();
-  final AudioRecorderService _recorderService = AudioRecorderService();
+  final FlutterTts _tts;
+  final AudioPlayer _sfxPlayer;
+  final AudioRecorderService _recorderService;
 
   // Generated Sound Paths
   String? _highBeepPath;
@@ -43,7 +43,12 @@ class RhythmEngine {
     this.mode = RhythmMode.tts,
     this.onRepComplete,
     this.onSetComplete,
-  });
+    FlutterTts? tts,
+    AudioPlayer? sfxPlayer,
+    AudioRecorderService? recorderService,
+  })  : _tts = tts ?? FlutterTts(),
+        _sfxPlayer = sfxPlayer ?? AudioPlayer(),
+        _recorderService = recorderService ?? AudioRecorderService();
   
   Future<void> init() async {
     try {
@@ -136,7 +141,7 @@ class RhythmEngine {
     for (int i = 3; i > 0; i--) {
       if (!_isPlaying) return;
       
-      await _playCue(i.toString()); // "3", "2", "1"
+      await _playCue("COUNTDOWN_$i"); // "COUNTDOWN_3", "COUNTDOWN_2", "COUNTDOWN_1"
       HapticFeedback.selectionClick();
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -229,6 +234,14 @@ class RhythmEngine {
          return;
        }
     }
+
+    // Handle Countdown keys (e.g. "COUNTDOWN_3" -> speak "3")
+    if (cue.startsWith("COUNTDOWN_")) {
+      final numberStr = cue.split('_').last;
+      await _tts.speak(numberStr);
+      return;
+    }
+
     await _tts.speak(cue);
   }
   
