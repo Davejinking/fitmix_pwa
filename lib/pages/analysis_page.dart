@@ -586,7 +586,6 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () {
-                    // TODO: 라이브러리 페이지로 이동하여 해당 부위 운동 표시
                     Navigator.of(context).pushNamed('/library', arguments: weakest);
                   },
                   icon: const Icon(Icons.fitness_center, size: 18),
@@ -720,7 +719,6 @@ class _AnalysisPageState extends State<AnalysisPage> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                // TODO: 라이브러리 페이지로 이동하여 첫 번째 약점 부위 표시
                 Navigator.of(context).pushNamed('/library', arguments: weakPoints.first);
               },
               icon: const Icon(Icons.add_circle_outline, size: 20),

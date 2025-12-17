@@ -13,6 +13,7 @@ import 'data/auth_repo.dart';
 import 'pages/login_page.dart';
 import 'data/user_repo.dart';
 import 'pages/splash_page.dart';
+import 'pages/library_page_v2.dart';
 import 'utils/dummy_data_generator.dart';
 import 'models/session.dart';
 
@@ -121,6 +122,9 @@ class _FitMixAppState extends State<FitMixApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      routes: {
+        '/library': (context) => const LibraryPageV2(),
+      },
       home: kDebugMode
           // 디버그 모드: 로그인 여부와 상관없이 바로 SplashPage 진입
           ? SplashPage(
