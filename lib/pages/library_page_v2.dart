@@ -57,6 +57,24 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   // 북마크된 운동 ID
   final Set<String> _bookmarkedIds = {};
 
+  bool _isInitArgHandled = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitArgHandled) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is String) {
+        final targetKey = _mapBodyPartToTabKey(args);
+        final index = _mainTabKeys.indexOf(targetKey);
+        if (index != -1) {
+          _tabController.animateTo(index);
+        }
+      }
+      _isInitArgHandled = true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -233,6 +251,21 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       final equipmentEn = _getEquipmentEn(_selectedEquipmentKey);
       _filteredExercises = _exercises.where((ex) => ex.equipment == equipmentEn).toList();
     }
+  }
+
+  String _mapBodyPartToTabKey(String koPart) {
+    const map = {
+      '가슴': 'chest',
+      '등': 'back',
+      '하체': 'legs',
+      '어깨': 'shoulders',
+      '팔': 'arms',
+      '복근': 'abs',
+      '유산소': 'cardio',
+      '스트레칭': 'stretching',
+      '전신': 'fullBody',
+    };
+    return map[koPart] ?? 'chest';
   }
 
   String _getEquipmentEn(String key) {
