@@ -1,539 +1,148 @@
-# FitMix TODO List
+# Lifto TODO List
 
-**프로젝트:** FitMix PS0 → PS1 전환 준비  
+**프로젝트:** Lifto (구 FitMix)  
 **작성일:** 2024-11-16  
-**최종 업데이트:** 2024-11-16
+**최종 업데이트:** 2024-12-28
 
 ---
 
 ## 📋 소개
 
-이 문서는 FitMix 프로젝트의 전체 TODO 항목을 관리합니다.
-- PS0: 현재 로컬 전용 버전 (Hive 기반)
-- PS1: Supabase 연동 버전 (동기화 지원)
-- PS2: 유료 기능 및 Tier 시스템
-- Social: 소셜 기능 및 3대 중량 인증 시스템
-
-각 항목은 체크박스로 관리되며, 완료 시 `[x]`로 표시합니다.
+Lifto는 듀오링고 스타일의 게이미피케이션을 적용한 운동 기록 앱입니다.
+- 템포 모드: TTS/비프음/무음 + 햅틱 피드백
+- 게이미피케이션: XP, 레벨, 리그, 파워, 업적
+- 스트릭: 연속 운동 일수 추적
 
 ---
 
-## ✅ 1. PS0 클린업
+## ✅ 완료된 기능 (2024-12-28)
 
-### 1-1. BuildContext Async Gaps (20개)
+### 핵심 기능
+- [x] 운동 기록 (세트, 무게, 횟수)
+- [x] 운동 라이브러리 (873개 운동)
+- [x] 주간 캘린더 + 운동 계획
+- [x] 템포 모드 (TTS/Beep/Silent)
+- [x] 템포 카운트다운 모달
+- [x] 햅틱 피드백 (DOWN: 더블, UP: 싱글, 완료: 트리플)
+- [x] 휴식 타이머 (프리셋 + 직접 입력)
+- [x] 운동 중 캘린더 숨김 (UX 개선)
+- [x] 운동 중 뒤로가기 확인 다이얼로그
 
-**목표:** async 함수에서 BuildContext 사용 시 안전성 확보
+### 게이미피케이션
+- [x] XP/레벨 시스템
+- [x] 리그 시스템 (브론즈→마스터)
+- [x] 파워 시스템 (운동으로 획득)
+- [x] 파워 상점 (스트릭 프리즈, 주간 리포트)
+- [x] 업적/뱃지 시스템 (12개)
+- [x] 스트릭 카드
 
-- [x] async 함수에서 await 이후 mounted/context.mounted 체크 추가 (2024-11-16)
-- [x] Navigator push/pop 안전화 (2024-11-16)
-- [x] showDialog / SnackBar / ScaffoldMessenger 호출부 점검 (2024-11-16)
-- [x] workout_page.dart 반영 (2024-11-16)
-- [x] settings_page.dart 반영 (2024-11-16)
-- [x] analysis_page.dart 반영 (2024-11-16)
-- [x] library_page.dart 반영 (2024-11-16)
-- [x] profile_page.dart 반영 (2024-11-16)
-- [ ] user_info_form_page.dart 반영 (deprecated만 남음)
-- [ ] login_page.dart 반영 (이미 처리됨)
-- [ ] plan_page.dart 반영 (이미 처리됨)
-- [x] 전체 BuildContext async gaps 수정 완료 ✅
+### UI/UX
+- [x] 온보딩 화면 (4페이지)
+- [x] 홈 화면 개선 (스트릭, 오늘의 운동, 업적, XP)
+- [x] YouTube 스타일 하단 네비게이션
+- [x] 다크 테마
+- [x] i18n (한국어, 영어, 일본어)
 
-**참고 패턴:**
-```dart
-// Before
-await someAsyncFunction();
-Navigator.of(context).push(...);
+### 브랜딩
+- [x] 앱 이름 변경: FitMix → Lifto
+- [x] 로고 텍스트 업데이트
 
-// After
-await someAsyncFunction();
-if (!mounted) return;
-Navigator.of(context).push(...);
+---
+
+## 🚀 다음 구현 목표
+
+### Phase 1: 런칭 준비 (1주)
+- [ ] iOS 앱스토어 등록 준비
+  - [ ] 앱 아이콘 디자인
+  - [ ] 스크린샷 준비
+  - [ ] 앱 설명 작성
+  - [ ] 개인정보 처리방침
+- [ ] 버그 수정 및 안정화
+- [ ] 성능 최적화
+
+### Phase 2: 사용자 확보 (1-3개월)
+- [ ] 마케팅
+  - [ ] 헬스 커뮤니티 홍보
+  - [ ] 인스타/유튜브 쇼츠
+- [ ] 사용자 피드백 수집
+- [ ] 리텐션 분석
+
+### Phase 3: 기능 확장 (3-6개월)
+- [ ] 클라우드 동기화 (Supabase)
+- [ ] 소셜 기능 (친구, 리그 대결)
+- [ ] AI 운동 코칭
+- [ ] 3대운동 증량 프로그램
+
+---
+
+## 📁 주요 파일 구조
+
+```
+lib/
+├── main.dart                    # 앱 진입점 (LiftoApp)
+├── core/
+│   ├── constants.dart           # 앱 상수 (appName: Lifto)
+│   └── error_handler.dart       # 에러 처리
+├── data/
+│   ├── session_repo.dart        # 운동 세션 저장소
+│   ├── settings_repo.dart       # 설정 저장소
+│   └── exercise_library_repo.dart # 운동 라이브러리
+├── models/
+│   ├── session.dart             # 운동 세션 모델
+│   ├── exercise.dart            # 운동 모델
+│   ├── exercise_set.dart        # 세트 모델
+│   ├── gamification.dart        # XP/레벨/리그/파워 모델
+│   └── achievement.dart         # 업적 모델
+├── services/
+│   ├── tempo_controller.dart    # 템포 모드 컨트롤러
+│   ├── gamification_service.dart # 게이미피케이션 서비스
+│   └── achievement_service.dart # 업적 서비스
+├── pages/
+│   ├── home_page.dart           # 홈 화면
+│   ├── plan_page.dart           # 운동 계획/기록
+│   ├── splash_page.dart         # 스플래시
+│   ├── onboarding_page.dart     # 온보딩
+│   ├── achievements_page.dart   # 업적 페이지
+│   └── power_shop_page.dart     # 파워 상점
+├── widgets/
+│   ├── tempo_settings_modal.dart    # 템포 설정 모달
+│   └── tempo_countdown_modal.dart   # 템포 카운트다운 모달
+└── l10n/
+    ├── app_ko.arb               # 한국어
+    ├── app_en.arb               # 영어
+    └── app_ja.arb               # 일본어
 ```
 
 ---
 
-## ✅ 2. Deprecated / 스타일 정리
+## 🎯 수익화 계획
 
-### 2-1. RadioGroup 마이그레이션
+### 목표: 월 1천만원
+- 구독자 1,000명 × 월 9,900원
 
-- [x] RadioListTile → RadioGroup 변경
-- [x] deprecated 경고 제거 (settings_page.dart)
-- [x] deprecated 경고 제거 (workout_page.dart)
-- [x] 기존 동작 유지 확인
-- [x] 테스트 완료
-- [x] settings_page.dart 불필요한 import 제거 (2024-11-16)
+### 전략
+1. **무료로 습관 만들기** - 핵심 기능 무료
+2. **데이터로 락인** - 운동 기록 축적
+3. **프리미엄으로 전환** - Pro 구독
 
-### 2-2. 코드 스타일 정리
-
-- [x] 불필요한 문자열 보간 제거 (analysis_page.dart) (2024-11-16)
-- [x] 불필요한 문자열 보간 제거 (plan_page.dart) (2024-11-16)
-- [x] 불필요한 문자열 보간 제거 (workout_page.dart) (2024-11-16)
-- [x] settings_page.dart 불필요한 import 제거 (2024-11-16)
-- [ ] 공통 스타일 guideline 반영
-- [x] flutter analyze 경고 대폭 감소 (30개 → 8개) ✅
+### Pro 구독 기능 (예정)
+- AI 운동 코칭
+- 상세 분석 리포트
+- 3대운동 증량 프로그램
+- 광고 제거
+- 클라우드 백업
 
 ---
 
-## ✅ 3. i18n 최종 정리
+## 📊 KPI 목표
 
-### 3-1. 화면 번역 적용
-
-**완료:**
-- [x] home_page.dart
-- [x] shell_page.dart
-- [x] doc/i18n_guideline.md 작성
-
-**완료:**
-- [x] calendar_page.dart (위젯에서 처리됨)
-- [x] analysis_page.dart (2024-11-16)
-- [x] library_page.dart (2024-11-16)
-- [x] workout_page.dart (2024-11-16)
-- [x] profile_page.dart (2024-11-16)
-- [x] settings_page.dart (2024-11-16)
-- [x] login_page.dart (2024-11-16)
-- [x] user_info_form_page.dart (2024-11-16)
-- [x] plan_page.dart (2024-11-16)
-- [x] splash_page.dart (번역 불필요)
-
-**ARB 파일 업데이트:**
-- [ ] app_ko.arb 키 추가
-- [ ] app_en.arb 키 추가
-- [ ] app_ja.arb 키 추가
-- [ ] i18n 키 네이밍 규칙 준수 확인
-
-### 3-2. locale 구조 개선
-
-- [ ] SettingsRepo에 preferredLocale 저장 기능 추가
-- [ ] MaterialApp.locale 연동
-- [ ] 언어 선택 UI 시안 작성
-- [ ] 언어 변경 시 앱 재시작 없이 반영
-- [ ] 시스템 언어 자동 감지 옵션
+| 단계 | 기간 | MAU | 의미 |
+|------|------|-----|------|
+| 생존 | 1개월 | 100명 | 앱이 작동함 증명 |
+| 검증 | 3개월 | 1,000명 | PMF 확인 |
+| 성장 | 6개월 | 5,000명 | 입소문 시작 |
+| 수익화 | 12개월 | 10,000명 | 구독 모델 도입 |
 
 ---
 
-## ✅ 4. PS1 준비 (Supabase 연동 설계)
-
-### 4-1. DB 스키마 설계
-
-- [ ] profiles 테이블 스키마 정의
-  - user_id (UUID, PK)
-  - display_name, email, profile_image_url
-  - height, weight, monthly_workout_goal, monthly_volume_goal
-  - created_at, updated_at
-- [ ] workout_sessions 테이블 스키마 정의
-  - session_id (UUID, PK)
-  - user_id (FK)
-  - ymd (date), total_volume, is_workout_day
-  - created_at, updated_at
-- [ ] workout_sets 테이블 스키마 정의
-  - set_id (UUID, PK)
-  - session_id (FK)
-  - exercise_id (FK)
-  - set_number, weight, reps, is_completed
-  - created_at
-- [ ] exercises 테이블 스키마 정의
-  - exercise_id (UUID, PK)
-  - name_ko, name_en, name_ja
-  - category, muscle_group
-  - is_custom, user_id (nullable)
-- [ ] sync_logs 테이블 스키마 정의 (옵션)
-  - log_id (UUID, PK)
-  - user_id (FK)
-  - sync_type, status, error_message
-  - synced_at
-- [ ] doc/db_schema_v1.md 생성
-- [ ] RLS (Row Level Security) 정책 정의
-- [ ] 인덱스 최적화 계획
-
-### 4-2. Sync 설계 (Hive ↔ Supabase)
-
-- [ ] 동기화 시점 정의
-  - 앱 시작 시
-  - 운동 종료 시
-  - 수동 동기화 버튼
-  - 백그라운드 주기적 동기화
-- [ ] 충돌 정책 확정 (LWW - Last Write Wins)
-- [ ] 네트워크 오류 처리
-  - 재시도 로직
-  - 오프라인 큐
-  - 사용자 알림
-- [ ] 동기화 상태 UI 설계
-- [ ] doc/sync_policy.md 작성
-- [ ] 동기화 테스트 시나리오 작성
-
-### 4-3. Supabase 설정
-
-- [ ] Supabase 프로젝트 생성
-- [ ] 환경 변수 설정 (.env)
-- [ ] supabase_flutter 패키지 추가
-- [ ] 인증 플로우 구현
-  - Google Sign-In 연동
-  - 게스트 → 회원 전환
-- [ ] 초기 데이터 마이그레이션 스크립트
-
----
-
-## ✅ 5. PS2 대비 (Feature Flags / Tier)
-
-### 5-1. Tier 정의
-
-- [ ] tier_free 기능 정의
-  - 기본 운동 기록
-  - 로컬 저장
-  - 기본 통계
-- [ ] tier_basic 기능 정의
-  - 클라우드 동기화
-  - 무제한 운동 기록
-  - 고급 통계
-- [ ] tier_pro 기능 정의
-  - AI 운동 추천
-  - 소셜 기능
-  - 3대 중량 인증
-  - 프리미엄 테마
-
-### 5-2. Feature Flag 시스템
-
-- [ ] Feature Flag 매핑표 작성
-- [ ] FeatureFlagRepo 구현
-- [ ] UI에서 Feature Flag 체크 로직 추가
-- [ ] 업그레이드 유도 UI 설계
-- [ ] doc/feature_flags.md 생성
-
-### 5-3. 결제 시스템
-
-- [ ] 결제 라우팅 플로우 초안
-- [ ] 인앱 결제 패키지 선정 (in_app_purchase)
-- [ ] 구독 관리 UI 설계
-- [ ] 영수증 검증 로직
-- [ ] 환불 정책 문서화
-
----
-
-## 🌟 6. Social / 3대 중량(PR) 인증 기능 (초안)
-
-### 6-1. 인증(PR) 기록 시스템
-
-- [ ] bench/squat/dead 전용 lift_records 테이블 설계
-  - record_id (UUID, PK)
-  - user_id (FK)
-  - lift_type (bench/squat/deadlift)
-  - weight, reps, estimated_1rm
-  - recorded_at, is_verified
-- [ ] 1RM 자동 계산 룰 정의
-  - Epley 공식: 1RM = weight × (1 + reps/30)
-  - Brzycki 공식: 1RM = weight × (36/(37-reps))
-  - 사용자 선택 옵션
-- [ ] PR 갱신 시 "인증 카드" 자동 생성
-- [ ] PR 기록 시 애니메이션/모션 플로우 설계
-  - 축하 애니메이션 (confetti)
-  - 사운드 효과
-  - 햅틱 피드백
-- [ ] PR 히스토리 조회 UI
-
-### 6-2. 인증 카드(Instagram 감성) UI
-
-- [ ] PR 카드 기본 템플릿 디자인
-  - 카드 크기: 1080x1920 (Instagram Story 비율)
-  - 레이아웃: 상단 프로필, 중앙 PR 정보, 하단 날짜
-- [ ] 배경 디자인 옵션
-  - 그라데이션 (블루 → 퍼플)
-  - 블러 효과
-  - 운동 머신 라인아트
-  - 사용자 업로드 이미지
-- [ ] 텍스트 스타일
-  - "오늘의 PR" 헤더
-  - "새로운 3대 합계" 강조
-  - 폰트: 굵은 산세리프
-- [ ] 공유용 이미지 Export 기능
-  - PNG 저장
-  - 갤러리 저장
-  - SNS 직접 공유
-
-### 6-3. 피드(FEED) / 타임라인 기능
-
-- [ ] posts 테이블 설계
-  - post_id (UUID, PK)
-  - user_id (FK)
-  - content_text, post_type (workout/pr/story)
-  - like_count, comment_count
-  - created_at, updated_at
-- [ ] post_assets 테이블 설계 (이미지/영상 업로드)
-  - asset_id (UUID, PK)
-  - post_id (FK)
-  - asset_url, asset_type (image/video)
-  - order_index
-- [ ] 하루 PR/운동 요약 자동 포스팅 옵션
-- [ ] Like(🔥), 댓글, 저장 기능 설계
-  - likes 테이블
-  - comments 테이블
-  - saved_posts 테이블
-- [ ] 피드 UI 구현
-  - 무한 스크롤
-  - 이미지 캐싱
-  - 좋아요 애니메이션
-
-### 6-4. 스토리(Story) 기능 (인스타 느낌)
-
-- [ ] stories 테이블 설계
-  - story_id (UUID, PK)
-  - user_id (FK)
-  - story_type (workout_start/workout_end/pr)
-  - asset_url, expires_at (24시간)
-- [ ] 운동 시작 → 스토리 자동 생성
-  - "운동 시작!" 템플릿
-  - 시작 시간 표시
-- [ ] 운동 종료 → "오늘 성과 요약" 스토리 생성
-  - 총 볼륨, 운동 시간
-  - PR 갱신 여부
-- [ ] GIF 배경 + 텍스트 + PR 자동 배치
-- [ ] 스토리 24시간 유지 또는 개인 기록 저장 옵션
-- [ ] 스토리 뷰어 UI
-  - 좌우 스와이프
-  - 진행 바
-  - 자동 재생
-
-### 6-5. 랭킹 시스템
-
-- [ ] 3대 총합 합산 로직 설계
-  - bench + squat + deadlift 1RM 합계
-  - 체급별 분류 (선택)
-- [ ] 랭킹 카테고리
-  - 전체 랭킹
-  - 지역별 랭킹
-  - 헬스장별 랭킹
-  - 친구 랭킹
-- [ ] 인증 배지 시스템
-  - 300kg 클럽
-  - 400kg 클럽
-  - 500kg 클럽
-  - 600kg+ 엘리트
-- [ ] 월간 랭킹 리셋 룰
-- [ ] 랭킹 UI 구현
-  - 리더보드
-  - 내 순위 표시
-  - 배지 표시
-
-### 6-6. PR 중량 인증 기능 (Later / Post-GA)
-
-- [ ] PR 중량 인증 v1 설계 및 구현 (PS2+)
-- [ ] 인증 전용 카메라 도입
-  - 앱 내부에서만 촬영 (갤러리 업로드 금지)
-  - 30초 고정 촬영, 해상도 720p 이하로 제한
-  - 촬영 종료 시 RAW 영상 파일을 로컬 디스크에 즉시 저장
-- [ ] PR 영상 상태 관리 (Model/RLS 설계)
-  - 상태 플래그 도입: `local_raw_only`, `upload_pending`, `upload_failed`, `uploaded`
-  - RAW 파일은 업로드 성공 전까지 절대 삭제하지 않는 정책
-- [ ] 업로드 큐 & 재시도 구조
-  - Supabase Storage 업로드를 큐 기반으로 처리
-  - 네트워크/서버 에러 시 `upload_failed`로 표시 + 수동/자동 재시도 버튼 제공
-  - 앱 재실행 시 미완료 업로드(PR 영상) 목록을 복구해서 안내
-- [ ] PR 모드 전용 UX
-  - "PR 모드" 진입 플로우 분리 (일반 세트 기록과 별도)
-  - 촬영 전 체크리스트/안전 안내 (부상 위험, 스폿터, 바벨/플레이트 프레임 인 등)
-  - 3초 카운트다운 후 자동 촬영 시작
-  - 촬영 중 가이드 오버레이 (바벨/플레이트/몸통 위치 가이드)
-- [ ] PR 기록 정책 정리
-  - 영상 없는 PR은 개인 기록용으로만 저장 (`unverified`)
-  - 랭킹/배지/공개 인증에는 `uploaded + verified` 상태만 집계
-- [ ] v2 이후 확장 아이디어 (선택)
-  - 30초 RAW에서 10~15초 구간만 잘라 쓰는 인증용 클립 트리밍 기능
-  - AI/운영자용 검증 뷰 (슬로우 재생, 프레임 단위 확인 등)
-
-### 6-7. 기존 FitMix와 통합 여부 검토
-
-- [ ] Social 기능을 탭 하나로 추가할지 결정
-  - 장점: 통합된 경험
-  - 단점: 앱 복잡도 증가
-- [ ] 또는 "프로필 페이지 확장" 구조로 넣을지 결정
-  - 장점: 기존 구조 유지
-  - 단점: 접근성 낮음
-- [ ] 향후 서비스 분리 필요 여부 검토
-  - FitMix (운동 기록)
-  - FitMix Social (소셜 기능)
-- [ ] 아키텍처 결정 문서 작성
-
----
-
-## 🔍 7. 유지관리
-
-### 7-1. 코드 품질
-
-- [ ] flutter analyze 정기 실행 (주 1회)
-- [ ] deprecated 항목 TODO 자동 반영
-- [ ] 린트 규칙 100% 준수
-- [ ] 코드 리뷰 체크리스트 작성
-
-### 7-2. 문서화
-
-- [ ] Kiro TODO → todo.md 싱크 유지
-- [ ] release note 템플릿 작성 (doc/release_notes.md)
-- [ ] API 문서 자동 생성 (dartdoc)
-- [ ] 개발자 가이드 작성
-
-### 7-3. 테스트
-
-- [ ] 단위 테스트 커버리지 50% 이상
-- [ ] 위젯 테스트 주요 화면
-- [ ] 통합 테스트 시나리오 작성
-- [ ] CI/CD 파이프라인 구축
-
-### 7-4. 성능 최적화
-
-- [ ] 앱 시작 시간 측정 및 개선
-- [ ] 메모리 사용량 프로파일링
-- [ ] 이미지 최적화 (압축, 캐싱)
-- [ ] 데이터베이스 쿼리 최적화
-
----
-
-## 📊 진행 상황 요약
-
-### PS0 클린업
-- 완료: 22/22 (100%) ✅✅✅
-- 모든 작업 완료!
-- 최근 완료: i18n 100% 완료 (2024-11-16)
-- flutter analyze: 8개 (모두 안전한 info 수준)
-
-### i18n
-- 완료: 10/10 (100%) ✅
-- 모든 페이지 i18n 완료!
-- 최근 완료: login, plan, user_info_form (2024-11-16)
-
-### PS1 준비
-- 완료: 0/15 (0%)
-- 대기 중: DB 스키마 설계
-
-### PS2 대비
-- 완료: 0/10 (0%)
-- 대기 중: Tier 정의
-
-### Social 기능
-- 완료: 0/30 (0%)
-- 대기 중: 기획 확정
-
----
-
-## 🎯 최근 완료
-
-### 2024-11-26: 타이머 시스템 전면 개편 및 Apple 스타일 디자인 ✅
-
-**타이머 시스템 구현:**
-- [x] 전체 운동 시간 타이머 (Global Timer) 구현
-  - 운동 시작 시 자동 시작, 상단에 크게 표시
-  - 화면 이동해도 계속 작동
-  - 운동 종료 시 자동 저장
-- [x] 자동 휴식 타이머 (Auto-Rest Timer) 구현
-  - 세트 체크 시 자동 90초 타이머 시작
-  - 체크 해제 시 타이머 즉시 취소
-  - 마지막 세트는 타이머 발동 안 함
-- [x] 휴식 타이머 UI (하단 플로팅 패널)
-  - Apple 스타일 어두운 회색 배경
-  - 큰 흰색 타이머 숫자 (56px, FontWeight.w900)
-  - 파란색 TextButton (-10초, +30초)
-  - 타이머 숫자 탭하여 직접 시간 설정
-  - 파란색 진행 바
-
-**디자인 개선:**
-- [x] 운동 종료 버튼 리디자인 (OutlinedButton 스타일)
-- [x] ExerciseSet 모델에 isCompleted 필드 추가
-- [x] 다국어 지원 추가 (타이머 관련 키)
-
-**TODO: 추가 개선 필요**
-- [ ] 타이머와 운동 레이아웃 연동 개선
-  - 휴식 타이머 표시 시 운동 리스트 스크롤 문제
-  - 타이머 패널과 운동 카드 간격 조정
-  - 세트 입력 UI와 타이머 UI 간 상호작용 개선
-- [ ] 휴식 타이머 완료 시 알림 강화
-  - 소리 효과 추가
-  - 진동 패턴 개선
-  - 완료 애니메이션 추가
-- [ ] 타이머 설정 UI 개선
-  - 기본 휴식 시간 설정 메뉴
-  - 운동별 휴식 시간 커스터마이징
-- [ ] 운동 기록 입력 UX 개선
-  - 무게/횟수 입력 시 키보드 최적화
-  - 이전 세트 값 자동 복사 기능
-  - 세트 추가/삭제 버튼 개선
-
-### 2024-11-25: 라이브러리 페이지 카테고리 구조 개편 ✅
-
-**메인 탭 개편:**
-- [x] 부위와 주요 목적 기반 탭 구성
-  - 즐겨찾기, 가슴, 등, 하체, 어깨, 팔, 복근, 유산소, 스트레칭, 전신
-  - '기타' 탭 삭제, '스트레칭' 탭 추가
-  - 전신 탭에 기존 역도 포함
-
-**서브 필터 추가:**
-- [x] 장비 선택 FilterChips 구현
-  - 전체, 맨몸, 머신, 바벨, 덤벨, 케이블, 밴드
-  - 알약 모양 디자인 (선택 시 파란색 테두리)
-  - 탭 바로 아래 가로 스크롤 배치
-
-**데이터 구조 개선:**
-- [x] ExerciseDB 모델에 getter 추가
-  - `targetPart`: 운동 부위 (한국어)
-  - `equipmentType`: 장비 타입 (한국어)
-  - bodyPart와 equipment 명확히 구분
-
-**i18n 완료:**
-- [x] 20개 새로운 키 추가 (ko, en, ja)
-  - 탭 이름: favorites, chest, back, legs, shoulders, arms, abs, cardio, stretching, fullBody
-  - 장비 필터: all, bodyweight, machine, barbell, dumbbell, cable, band
-  - UI 텍스트: searchExercise, noExercises, retry
-- [x] 모든 하드코딩 텍스트 제거
-
-**작동 방식:**
-- 예: '가슴' 탭 + '맨몸' 필터 → 푸쉬업 등 맨몸 가슴 운동만 표시
-- 필터 변경 시 즉시 목록 업데이트
-- 즐겨찾기 탭은 북마크된 운동만 표시 (TODO)
-
-### 2024-11-16: PS0 클린업 완료 🎉
-
-### UI/UX 개선
-- [x] main.dart _themeMode 초기화 에러 수정 (LateInitializationError 해결)
-- [x] settings_page.dart 불필요한 import 3개 제거
-- [x] 캘린더 "오늘" 버튼 선택 상태 로직 개선
-  - 오늘 날짜 선택 시: 파란색 강조
-  - 다른 날짜 선택 시: 회색 표시
-
-### 코드 품질 (완료! 🎉🎉🎉)
-- [x] workout_page.dart BuildContext async gap 수정
-- [x] library_page.dart BuildContext async gap 수정 (3개)
-- [x] profile_page.dart BuildContext async gap 수정 (2개)
-- [x] settings_page.dart BuildContext async gap 수정
-- [x] analysis_page.dart 불필요한 문자열 보간 제거
-- [x] workout_page.dart 불필요한 문자열 보간 제거
-- [x] plan_page.dart 불필요한 문자열 보간 제거 (2개)
-- [x] settings_page.dart 불필요한 import 제거 (3개)
-- [x] unnecessary_non_null_assertion 제거 (6개)
-- [x] deprecated withOpacity → withValues 수정 (3개)
-- [x] i18n 적용: 전체 10개 페이지 완료 ✅
-- [x] ARB 파일에 60+ 키 추가 (ko, ja, en)
-- [x] flutter analyze 경고: 30개 → 8개 (73% 감소!) 🎉🎉
-- [x] BuildContext async gaps 전체 완료 ✅
-- [x] 코드 스타일 정리 완료 ✅
-- [x] i18n 100% 완료 ✅✅✅
-
----
-
-## 📝 메모
-
-### 우선순위
-1. **High:** PS0 클린업 (BuildContext, i18n)
-2. **Medium:** PS1 준비 (Supabase 연동)
-3. **Low:** PS2, Social 기능 (장기 계획)
-
-### 다음 스프린트 목표
-- [ ] BuildContext Async Gaps 완료
-- [ ] i18n 50% 완료
-- [ ] DB 스키마 v1 확정
-
-### 참고 링크
-- [Flutter 공식 문서](https://docs.flutter.dev/)
-- [Supabase 문서](https://supabase.com/docs)
-- [i18n 가이드라인](./i18n_guideline.md)
-- [마이그레이션 보고서](./i18n_migration_report.md)
-
----
-
-**마지막 업데이트:** 2024-11-26  
-**다음 리뷰:** 2024-12-03
+**마지막 업데이트:** 2024-12-28
