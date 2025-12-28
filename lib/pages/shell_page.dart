@@ -7,7 +7,7 @@ import '../data/exercise_library_repo.dart';
 import '../core/l10n_extensions.dart';
 import '../widgets/common/fm_bottom_nav.dart';
 import 'analysis_page.dart';
-import 'plan_page.dart';
+import 'calendar_page.dart';
 import 'home_page.dart';
 import 'library_page_v2.dart';
 
@@ -48,8 +48,7 @@ class ShellPageState extends State<ShellPage> {
         settingsRepo: widget.settingsRepo,
         authRepo: widget.authRepo,
       ),
-      PlanPage(
-        date: DateTime.now(),
+      CalendarPage(
         repo: widget.sessionRepo,
         exerciseRepo: widget.exerciseRepo,
       ),
