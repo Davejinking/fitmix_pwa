@@ -7,6 +7,7 @@ import '../core/error_handler.dart';
 import '../data/session_repo.dart';
 import '../models/session.dart';
 import '../l10n/app_localizations.dart';
+import '../services/tempo_controller.dart';
 import '../widgets/workout/rest_timer_panel.dart';
 import '../widgets/workout/set_tile.dart';
 
@@ -33,12 +34,30 @@ class _WorkoutPageState extends State<WorkoutPage> {
   
   // 휴식 타이머를 트리거한 세트 추적 (체크 해제 시 타이머 취소용)
   String? _activeRestSetKey;
+  
+  // 3. Tempo Controller
+  TempoController? _tempoController;
+  bool _isTempoRunning = false;
 
   @override
   void initState() {
     super.initState();
     _sessionFuture = widget.sessionRepo.get(widget.sessionRepo.ymd(DateTime.now()));
     _startGlobalTimer();
+    _initTempoController();
+  }
+
+  Future<void> _initTempoController() async {
+    _tempoController = TempoController();
+    await _tempoController!.init();
+    
+    _tempoController!.onStateChange = () {
+      if (mounted) setState(() {});
+    };
+    
+    _tempoController!.onComplete = () {
+      if (mounted) setState(() => _isTempoRunning = false);
+    };
   }
 
   // 1. 전체 운동 시간 타이머 시작
@@ -195,6 +214,22 @@ class _WorkoutPageState extends State<WorkoutPage> {
     );
   }
 
+  Future<void> _startTempoGuidance(
+    int reps,
+    int eccentricSec,
+    int concentricSec,
+  ) async {
+    if (_isTempoRunning || _tempoController == null) return;
+
+    setState(() => _isTempoRunning = true);
+
+    await _tempoController!.start(
+      reps: reps,
+      downSeconds: eccentricSec,
+      upSeconds: concentricSec,
+    );
+  }
+
   bool get _isResting => _restSecondsRemaining != null && _restSecondsRemaining! > 0;
 
   String _formatDuration(int totalSeconds) {
@@ -227,6 +262,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   void dispose() {
     _globalTimer?.cancel();
     _restTimer?.cancel();
+    _tempoController?.dispose();
     super.dispose();
   }
 
@@ -353,25 +389,27 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                 reps: set.reps,
                                 isCompleted: set.isCompleted,
                                 isLastSet: setIndex == exercise.sets.length - 1,
+                                isTempoEnabled: exercise.isTempoEnabled,
+                                eccentricSeconds: exercise.eccentricSeconds,
+                                concentricSeconds: exercise.concentricSeconds,
                                 onSetCompleted: (isCompleted) {
                                   // 세트 완료 상태를 Session에 저장
                                   set.isCompleted = isCompleted;
                                   
                                   if (isCompleted) {
-                                    print('✅ 세트 완료: $setKey, 마지막 세트: ${setIndex == exercise.sets.length - 1}');
                                     // 2. 체크 시 자동 휴식 타이머 시작
                                     if (setIndex < exercise.sets.length - 1) {
-                                      print('🔔 휴식 타이머 시작: $setKey');
                                       _startRestTimer(setKey);
                                     }
                                   } else {
-                                    print('❌ 세트 체크 해제: $setKey');
                                     // 체크 해제 시 타이머 취소
                                     if (_activeRestSetKey == setKey) {
-                                      print('⏹️ 휴식 타이머 취소');
                                       _cancelRestTimer();
                                     }
                                   }
+                                },
+                                onTempoStart: (reps, eccentricSec, concentricSec) {
+                                  _startTempoGuidance(reps, eccentricSec, concentricSec);
                                 },
                               );
                             }),

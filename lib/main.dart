@@ -66,7 +66,7 @@ Future<void> main() async {
   // 사용자 프로필이 있는지 확인하여 첫 화면 결정
   final userProfile = await userRepo.getUserProfile();
 
-  runApp(FitMixApp(
+  runApp(LiftoApp(
     sessionRepo: sessionRepo,
     exerciseRepo: exerciseRepo,
     userRepo: userRepo,
@@ -76,14 +76,14 @@ Future<void> main() async {
   ));
 }
 
-class FitMixApp extends StatefulWidget {
+class LiftoApp extends StatefulWidget {
   final SessionRepo sessionRepo;
   final ExerciseLibraryRepo exerciseRepo;
   final UserRepo userRepo;
   final SettingsRepo settingsRepo;
   final AuthRepo authRepo;
   final bool isLoggedIn;
-  const FitMixApp(
+  const LiftoApp(
       {super.key,
       required this.sessionRepo,
       required this.exerciseRepo,
@@ -93,10 +93,10 @@ class FitMixApp extends StatefulWidget {
       required this.isLoggedIn});
 
   @override
-  State<FitMixApp> createState() => _FitMixAppState();
+  State<LiftoApp> createState() => _LiftoAppState();
 }
 
-class _FitMixAppState extends State<FitMixApp> {
+class _LiftoAppState extends State<LiftoApp> {
   @override
   void initState() {
     super.initState();

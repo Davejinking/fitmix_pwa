@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'FitMix PS0';
+  String get appName => 'Lifto';
 
   @override
   String greetingWithName(String name) {
@@ -106,7 +106,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unknownPage => 'Unknown Page';
 
   @override
-  String get fitMix => 'FitMix';
+  String get fitMix => 'Lifto';
 
   @override
   String get editGoal => 'Edit Goal';

@@ -7,6 +7,7 @@ import '../data/settings_repo.dart';
 import '../data/auth_repo.dart';
 import '../data/user_repo.dart';
 import 'shell_page.dart';
+import 'onboarding_page.dart';
 
 class SplashPage extends StatefulWidget {
   final SessionRepo sessionRepo;
@@ -47,7 +48,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     );
 
     _controller.forward();
-    _navigateToHome();
+    _navigateToNext();
   }
 
   @override
@@ -56,30 +57,69 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  void _navigateToHome() {
-    // 2초 후 메인 화면으로 페이드 전환
-    Future.delayed(const Duration(milliseconds: 2000), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => ShellPage(
-              sessionRepo: widget.sessionRepo,
-              exerciseRepo: widget.exerciseRepo,
-              userRepo: widget.userRepo,
-              settingsRepo: widget.settingsRepo,
-              authRepo: widget.authRepo,
-            ),
-            transitionDuration: const Duration(milliseconds: 600),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-          ),
-        );
-      }
-    });
+  void _navigateToNext() async {
+    await Future.delayed(const Duration(milliseconds: 2000));
+    if (!mounted) return;
+
+    // 온보딩 완료 여부 확인
+    final isOnboardingComplete = await widget.settingsRepo.isOnboardingComplete();
+
+    if (!mounted) return;
+
+    if (isOnboardingComplete) {
+      _goToShell();
+    } else {
+      _goToOnboarding();
+    }
+  }
+
+  void _goToOnboarding() {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => OnboardingPage(
+          settingsRepo: widget.settingsRepo,
+          onComplete: () {
+            Navigator.of(context).pushReplacement(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => ShellPage(
+                  sessionRepo: widget.sessionRepo,
+                  exerciseRepo: widget.exerciseRepo,
+                  userRepo: widget.userRepo,
+                  settingsRepo: widget.settingsRepo,
+                  authRepo: widget.authRepo,
+                ),
+                transitionDuration: const Duration(milliseconds: 400),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            );
+          },
+        ),
+        transitionDuration: const Duration(milliseconds: 400),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
+  }
+
+  void _goToShell() {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => ShellPage(
+          sessionRepo: widget.sessionRepo,
+          exerciseRepo: widget.exerciseRepo,
+          userRepo: widget.userRepo,
+          settingsRepo: widget.settingsRepo,
+          authRepo: widget.authRepo,
+        ),
+        transitionDuration: const Duration(milliseconds: 600),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
   }
 
   @override
@@ -102,7 +142,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               ),
               const SizedBox(height: 24),
               const Text(
-                'FitMix',
+                'Lifto',
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.w700,

@@ -11,6 +11,10 @@ class SetTile extends StatefulWidget {
   final bool isCompleted;
   final bool isLastSet;
   final Function(bool isCompleted) onSetCompleted;
+  final bool isTempoEnabled;
+  final int eccentricSeconds;
+  final int concentricSeconds;
+  final Function(int reps, int eccentricSec, int concentricSec)? onTempoStart;
 
   const SetTile({
     super.key,
@@ -21,6 +25,10 @@ class SetTile extends StatefulWidget {
     required this.isCompleted,
     required this.isLastSet,
     required this.onSetCompleted,
+    this.isTempoEnabled = false,
+    this.eccentricSeconds = 3,
+    this.concentricSeconds = 1,
+    this.onTempoStart,
   });
 
   @override
@@ -30,6 +38,7 @@ class SetTile extends StatefulWidget {
 class _SetTileState extends State<SetTile> {
   late bool _isCompleted;
   late ConfettiController _confettiController;
+  bool _isTempoRunning = false;
 
   @override
   void initState() {
@@ -54,6 +63,24 @@ class _SetTileState extends State<SetTile> {
       // 부모에게 완료 상태 전달
       widget.onSetCompleted(_isCompleted);
     });
+  }
+
+  Future<void> _startTempoGuidance() async {
+    if (_isTempoRunning) return;
+
+    setState(() => _isTempoRunning = true);
+
+    try {
+      widget.onTempoStart?.call(
+        widget.reps,
+        widget.eccentricSeconds,
+        widget.concentricSeconds,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isTempoRunning = false);
+      }
+    }
   }
 
   @override
@@ -97,8 +124,29 @@ class _SetTileState extends State<SetTile> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          trailing: widget.isLastSet
-              ? Container(
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.isTempoEnabled && !_isTempoRunning)
+                Tooltip(
+                  message: '템포 가이드 시작',
+                  child: IconButton(
+                    icon: const Icon(Icons.headphones, color: Color(0xFF2196F3)),
+                    onPressed: _startTempoGuidance,
+                    iconSize: 20,
+                  ),
+                ),
+              if (_isTempoRunning)
+                const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
+                  ),
+                ),
+              if (widget.isLastSet && !widget.isTempoEnabled)
+                Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFF007AFF).withValues(alpha: 0.2),
@@ -112,8 +160,9 @@ class _SetTileState extends State<SetTile> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                )
-              : null,
+                ),
+            ],
+          ),
         ),
         Align(
           alignment: Alignment.center,

@@ -6,12 +6,15 @@ abstract class SettingsRepo {
   Future<void> init();
   Future<ThemeMode> getThemeMode();
   Future<void> saveThemeMode(ThemeMode themeMode);
+  Future<bool> isOnboardingComplete();
+  Future<void> setOnboardingComplete(bool complete);
   Future<void> clearAllData();
 }
 
 class HiveSettingsRepo implements SettingsRepo {
   static const String boxName = 'settings';
   static const String themeModeKey = 'theme_mode';
+  static const String onboardingCompleteKey = 'onboarding_complete';
   late Box<String> _box;
 
   @override
@@ -38,6 +41,17 @@ class HiveSettingsRepo implements SettingsRepo {
   @override
   Future<void> saveThemeMode(ThemeMode themeMode) async {
     await _box.put(themeModeKey, themeMode.name);
+  }
+
+  @override
+  Future<bool> isOnboardingComplete() async {
+    final value = _box.get(onboardingCompleteKey, defaultValue: 'false');
+    return value == 'true';
+  }
+
+  @override
+  Future<void> setOnboardingComplete(bool complete) async {
+    await _box.put(onboardingCompleteKey, complete.toString());
   }
 
   @override

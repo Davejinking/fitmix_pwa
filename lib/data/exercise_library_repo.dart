@@ -13,7 +13,7 @@ abstract class ExerciseLibraryRepo {
 
 class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
   static const String boxName = 'exercise_library';
-  late Box<List<String>> _box;
+  late Box _box;
 
   @override
   Future<void> init() async {
@@ -25,9 +25,9 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
     }
 
     if (Hive.isBoxOpen(boxName)) {
-      _box = Hive.box<List<String>>(boxName);
+      _box = Hive.box(boxName);
     } else {
-      _box = await Hive.openBox<List<String>>(boxName);
+      _box = await Hive.openBox(boxName);
     }
 
     // 박스가 비어있으면 기본값으로 채움
@@ -44,19 +44,15 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
 
   @override
   Future<Map<String, List<String>>> getLibrary() async {
-    // Hive Box<List<String>>을 Map<String, List<String>>으로 변환
     final map = <String, List<String>>{};
     for (var key in _box.keys) {
       try {
         final value = _box.get(key);
-        if (value != null) {
-          // value가 List인지 확인
-          if (value is List) {
-            map[key as String] = value.map((e) => e.toString()).toList();
-          }
+        if (value != null && value is List) {
+          map[key as String] = List<String>.from(value.map((e) => e.toString()));
         }
       } catch (e) {
-        print('Error loading exercise library for key $key: $e');
+        // 에러 무시
       }
     }
     return map;
@@ -64,8 +60,8 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
 
   @override
   Future<void> addExercise(String bodyPart, String exerciseName) async {
-    final value = _box.get(bodyPart, defaultValue: [])!;
-    final exercises = List<String>.from(value);
+    final value = _box.get(bodyPart);
+    final exercises = value != null ? List<String>.from(value) : <String>[];
     if (!exercises.contains(exerciseName)) {
       exercises.add(exerciseName);
       await _box.put(bodyPart, exercises);
@@ -83,8 +79,8 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
     }
 
     // 2. 새 운동 추가
-    final newValue = _box.get(newBodyPart, defaultValue: [])!;
-    final newExercises = List<String>.from(newValue);
+    final newValue = _box.get(newBodyPart);
+    final newExercises = newValue != null ? List<String>.from(newValue) : <String>[];
     if (!newExercises.contains(newExerciseName)) {
       newExercises.add(newExerciseName);
       await _box.put(newBodyPart, newExercises);

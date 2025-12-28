@@ -8,7 +8,8 @@ import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../core/error_handler.dart';
 import '../widgets/tempo_settings_modal.dart';
-import '../services/rhythm_engine.dart';
+import '../widgets/tempo_countdown_modal.dart';
+import '../services/tempo_controller.dart';
 
 /// 운동 계획 페이지 - 완전 리팩토링 버전
 class PlanPage extends StatefulWidget {
@@ -41,6 +42,7 @@ class _PlanPageState extends State<PlanPage> {
   int _elapsedSeconds = 0;
   int _restSeconds = 0;
   bool _restTimerRunning = false;
+  int _defaultRestDuration = 90; // 기본 휴식 시간
 
   @override
   void initState() {
@@ -119,20 +121,78 @@ class _PlanPageState extends State<PlanPage> {
     super.dispose();
   }
 
+  Future<bool> _onWillPop() async {
+    if (!_isWorkoutStarted) return true;
+    
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text(
+          '운동 종료',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          '운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.',
+          style: TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('계속하기'),
+          ),
+          TextButton(
+            onPressed: () {
+              _finishWorkout();
+              Navigator.pop(context, true);
+            },
+            child: const Text('종료', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        title: const Text('운동 계획'),
+    return PopScope(
+      canPop: !_isWorkoutStarted,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
         backgroundColor: const Color(0xFF121212),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          // 1. Top: Compact Weekly Calendar
-          _buildCompactWeeklyCalendar(),
+        appBar: AppBar(
+          title: const Text('운동 계획'),
+          backgroundColor: const Color(0xFF121212),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () async {
+              if (_isWorkoutStarted) {
+                final shouldPop = await _onWillPop();
+                if (shouldPop && context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ),
+        body: Column(
+          children: [
+            // 1. Top: 운동 중이면 간단한 날짜 표시, 아니면 캘린더
+            if (_isWorkoutStarted)
+              _buildWorkoutDateHeader()
+            else
+              _buildCompactWeeklyCalendar(),
           
           // 2. Middle: Exercise List
           Expanded(
@@ -148,6 +208,7 @@ class _PlanPageState extends State<PlanPage> {
       bottomNavigationBar: _isWorkoutStarted
           ? _buildLiveWorkoutBar()
           : _buildActionBar(),
+      ),
     );
   }
 
@@ -246,6 +307,92 @@ class _PlanPageState extends State<PlanPage> {
               final nextWeek = _focusedDate.add(const Duration(days: 7));
               _onWeekChanged(nextWeek);
               _onDateSelected(nextWeek);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 운동 중일 때 표시되는 간단한 날짜 헤더
+  Widget _buildWorkoutDateHeader() {
+    final weekDays = ['월', '화', '수', '목', '금', '토', '일'];
+    final dayName = weekDays[_selectedDate.weekday - 1];
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2196F3).withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+              Icons.fitness_center,
+              color: Color(0xFF2196F3),
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${_selectedDate.month}월 ${_selectedDate.day}일 ($dayName) 운동 중',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${_currentSession?.exercises.length ?? 0}개 운동',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[400],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 캘린더 보기 버튼 (필요시 펼치기)
+          IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.grey, size: 20),
+            onPressed: () {
+              // 운동 종료 확인 없이 캘린더만 잠시 보여주기
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: const Color(0xFF1E1E1E),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (context) => Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        '운동 중에는 날짜를 변경할 수 없습니다',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('확인'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
           ),
         ],
@@ -500,7 +647,7 @@ class _PlanPageState extends State<PlanPage> {
 
   void _onSetChecked(bool value) {
     if (value && _isWorkoutStarted) {
-      _startRestTimer(90);
+      _startRestTimer(_defaultRestDuration);
     }
   }
 
@@ -525,6 +672,174 @@ class _PlanPageState extends State<PlanPage> {
         }
       }
     });
+  }
+
+  void _showRestTimeSettings() {
+    final TextEditingController timeController = TextEditingController(
+      text: _defaultRestDuration.toString(),
+    );
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 헤더
+              Row(
+                children: [
+                  const Icon(Icons.timer, color: Color(0xFF2196F3)),
+                  const SizedBox(width: 8),
+                  const Text(
+                    '휴식 시간 설정',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (_restTimerRunning)
+                    TextButton(
+                      onPressed: () {
+                        _restTimer?.cancel();
+                        setState(() => _restTimerRunning = false);
+                        Navigator.pop(context);
+                      },
+                      child: const Text('타이머 취소', style: TextStyle(color: Colors.redAccent)),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              
+              // 직접 입력
+              Row(
+                children: [
+                  // -10초 버튼
+                  IconButton(
+                    onPressed: () {
+                      int current = int.tryParse(timeController.text) ?? 90;
+                      current = (current - 10).clamp(10, 600);
+                      timeController.text = current.toString();
+                      setModalState(() {});
+                    },
+                    icon: const Icon(Icons.remove_circle_outline, color: Colors.white, size: 32),
+                  ),
+                  // 입력 필드
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C2C2C),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: timeController,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '초',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // +10초 버튼
+                  IconButton(
+                    onPressed: () {
+                      int current = int.tryParse(timeController.text) ?? 90;
+                      current = (current + 10).clamp(10, 600);
+                      timeController.text = current.toString();
+                      setModalState(() {});
+                    },
+                    icon: const Icon(Icons.add_circle_outline, color: Colors.white, size: 32),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              // 프리셋 버튼들
+              Row(
+                children: [60, 90, 120, 180].map((sec) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          timeController.text = sec.toString();
+                          setModalState(() {});
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.grey[600]!),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                        child: Text(
+                          sec >= 60 ? '${sec ~/ 60}분${sec % 60 > 0 ? '${sec % 60}초' : ''}' : '$sec초',
+                          style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              
+              // 확인 버튼
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final newDuration = int.tryParse(timeController.text) ?? 90;
+                    setState(() {
+                      _defaultRestDuration = newDuration.clamp(10, 600);
+                      if (_restTimerRunning) {
+                        _restSeconds = _defaultRestDuration;
+                      }
+                    });
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2196F3),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: const Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   String _formatTime(int seconds) {
@@ -554,63 +869,66 @@ class _PlanPageState extends State<PlanPage> {
             // Left Side (Timer Info) - Flex 4
             Expanded(
               flex: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2C2C2C),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "REST",
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Color(0xFF2196F3),
-                            fontWeight: FontWeight.w600,
+              child: GestureDetector(
+                onTap: _showRestTimeSettings,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2C2C2C),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _restTimerRunning ? "휴식" : "휴식",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: _restTimerRunning ? const Color(0xFF4CAF50) : Colors.grey[500],
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        Text(
-                          _restTimerRunning ? "$_restSeconds s" : "OFF",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 16,
+                          Text(
+                            _restTimerRunning ? "$_restSeconds s" : "${_defaultRestDuration}s",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: _restTimerRunning ? const Color(0xFF4CAF50) : Colors.grey[400],
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      width: 1,
-                      height: 40,
-                      color: Colors.grey[700],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "TIME",
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[500],
-                            fontWeight: FontWeight.w600,
+                        ],
+                      ),
+                      Container(
+                        width: 1,
+                        height: 40,
+                        color: Colors.grey[700],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "TIME",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        Text(
-                          _formatTime(_elapsedSeconds),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 16,
+                          Text(
+                            _formatTime(_elapsedSeconds),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -673,13 +991,13 @@ class ExerciseCard extends StatefulWidget {
 class _ExerciseCardState extends State<ExerciseCard> {
   final TextEditingController _memoController = TextEditingController();
   bool _isExpanded = true; // Default: Open
-  RhythmEngine? _rhythmEngine;
-  RhythmMode _currentMode = RhythmMode.tts; // Default
+  TempoController? _tempoController;
+  TempoMode _currentMode = TempoMode.beep; // Default
 
   @override
   void dispose() {
     _memoController.dispose();
-    _rhythmEngine?.dispose();
+    _tempoController?.dispose();
     super.dispose();
   }
 
@@ -847,24 +1165,72 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 color: Color(0xFF34C759), // iOS Green
                 size: 28,
               )
-            else if (!_isExpanded)
-              // 📊 In Progress: Blue Badge (Only when collapsed)
-              Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2196F3).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '$completedSets / $totalSets SET',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF2196F3),
-                    fontWeight: FontWeight.bold,
+            else ...[
+              // 템포 버튼 (항상 표시, 탭하면 설정 열림)
+              GestureDetector(
+                onTap: () => _showTempoSettings(),
+                child: Container(
+                  margin: const EdgeInsets.only(right: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: widget.exercise.isTempoEnabled
+                        ? const Color(0xFF2196F3).withValues(alpha: 0.2)
+                        : Colors.transparent,
+                    border: Border.all(
+                      color: widget.exercise.isTempoEnabled
+                          ? const Color(0xFF2196F3)
+                          : Colors.grey[600]!,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.music_note,
+                        size: 12,
+                        color: widget.exercise.isTempoEnabled
+                            ? const Color(0xFF2196F3)
+                            : Colors.grey[400],
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        widget.exercise.isTempoEnabled
+                            ? '${widget.exercise.eccentricSeconds}/${widget.exercise.concentricSeconds}s'
+                            : '템포',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: widget.exercise.isTempoEnabled
+                              ? const Color(0xFF2196F3)
+                              : Colors.grey[400],
+                          fontWeight: widget.exercise.isTempoEnabled
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+              // 📊 In Progress: Blue Badge (Only when collapsed)
+              if (!_isExpanded)
+                Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2196F3).withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$completedSets / $totalSets SET',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF2196F3),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
             const SizedBox(width: 8),
             // Chevron Icon (Toggle Indicator)
             Icon(
@@ -887,69 +1253,6 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey[500],
-                ),
-              ),
-              const Spacer(),
-              // Tempo Button
-              GestureDetector(
-                onTap: () {
-                  _showTempoSettings();
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: widget.exercise.isTempoEnabled
-                        ? const Color(0xFF2196F3).withValues(alpha: 0.2)
-                        : Colors.transparent,
-                    border: Border.all(
-                      color: widget.exercise.isTempoEnabled
-                          ? const Color(0xFF2196F3)
-                          : Colors.grey[700]!,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.music_note,
-                        size: 12,
-                        color: widget.exercise.isTempoEnabled
-                            ? const Color(0xFF2196F3)
-                            : Colors.grey[400],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.exercise.isTempoEnabled
-                            ? '${widget.exercise.eccentricSeconds}/${widget.exercise.concentricSeconds}s'
-                            : '템포',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: widget.exercise.isTempoEnabled
-                              ? const Color(0xFF2196F3)
-                              : Colors.grey[400],
-                          fontWeight: widget.exercise.isTempoEnabled
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[700]!),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '최근 기록',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[400],
-                  ),
                 ),
               ),
             ],
@@ -1140,34 +1443,47 @@ class _ExerciseCardState extends State<ExerciseCard> {
       return;
     }
 
-    // RhythmEngine 초기화 및 시작
-    _rhythmEngine?.dispose();
-    _rhythmEngine = RhythmEngine(
-      upSeconds: widget.exercise.concentricSeconds,
-      downSeconds: widget.exercise.eccentricSeconds,
-      targetReps: nextSet.reps,
-      mode: _currentMode, // Pass Selected Mode
-      onRepComplete: (currentRep) {
-        // 진행 상황 표시 (선택사항)
-        print('Rep $currentRep completed');
-      },
-      onSetComplete: () {
-        // 세트 자동 완료
-        if (mounted) {
-          setState(() {
-            nextSet.isCompleted = true;
-          });
-          widget.onUpdate();
-          // 휴식 타이머 시작
-          if (widget.onSetCompleted != null) {
-            widget.onSetCompleted!(true);
-          }
-        }
-      },
-    );
+    // TempoController 초기화 및 시작
+    _tempoController?.dispose();
+    _tempoController = TempoController();
+    _tempoController!.mode = _currentMode;
     
-    await _rhythmEngine!.init();
-    await _rhythmEngine!.startWorkout();
+    await _tempoController!.init();
+    
+    // 모달 표시 후 템포 시작
+    if (mounted) {
+      showTempoCountdownModal(
+        context: context,
+        controller: _tempoController!,
+        totalReps: nextSet.reps,
+        downSeconds: widget.exercise.eccentricSeconds,
+        upSeconds: widget.exercise.concentricSeconds,
+        onComplete: () {
+          // 세트 자동 완료
+          if (mounted) {
+            setState(() {
+              nextSet.isCompleted = true;
+            });
+            widget.onUpdate();
+            // 휴식 타이머 시작
+            if (widget.onSetCompleted != null) {
+              widget.onSetCompleted!(true);
+            }
+          }
+        },
+        onCancel: () {
+          // 취소 시 컨트롤러 정리
+          _tempoController?.stop();
+        },
+      );
+      
+      // 모달이 표시된 후 템포 시작
+      await _tempoController!.start(
+        reps: nextSet.reps,
+        downSeconds: widget.exercise.eccentricSeconds,
+        upSeconds: widget.exercise.concentricSeconds,
+      );
+    }
   }
 }
 
@@ -1285,29 +1601,39 @@ class _SetRowGridState extends State<_SetRowGrid> {
           Expanded(
             flex: 2,
             child: Center(
-              child: Transform.scale(
-                scale: 0.85,
-                child: Checkbox(
-                  value: set.isCompleted,
-                  onChanged: widget.isWorkoutStarted
-                      ? (value) {
+              child: widget.isWorkoutStarted
+                  // 운동 중: 체크박스 (세트 완료)
+                  ? Transform.scale(
+                      scale: 0.85,
+                      child: Checkbox(
+                        value: set.isCompleted,
+                        onChanged: (value) {
                           final isChecked = value ?? false;
                           setState(() {
                             set.isCompleted = isChecked;
                           });
                           widget.onUpdate();
-                          // Rest Timer 트리거
                           if (isChecked && widget.onSetCompleted != null) {
                             widget.onSetCompleted!(isChecked);
                           }
-                        }
-                      : null, // 운동 시작 전에는 비활성화
-                  activeColor: const Color(0xFF2196F3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
+                        },
+                        activeColor: const Color(0xFF2196F3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    )
+                  // 운동 시작 전: 삭제 버튼
+                  : IconButton(
+                      onPressed: widget.onDelete,
+                      icon: const Icon(
+                        Icons.remove_circle_outline,
+                        color: Colors.redAccent,
+                        size: 22,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
             ),
           ),
         ],

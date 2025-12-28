@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "FitMix PS0",
+  "appName": "Lifto",
   "greetingWithName": "Hello, {name}",
   "@greetingWithName": {
     "description": "User greeting",
@@ -75,7 +75,7 @@
   "library": "Library",
   "analysis": "Analysis",
   "unknownPage": "Unknown Page",
-  "fitMix": "FitMix",
+  "fitMix": "Lifto",
   "editGoal": "Edit Goal",
   "selectDate": "Select Date",
   "planWorkout": "Plan Workout",

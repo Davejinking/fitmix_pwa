@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                 const Spacer(flex: 2),
                 const Icon(Icons.fitness_center, size: 80, color: Colors.white),
                 const SizedBox(height: 16),
-                const Text('FitMix',
+                const Text('Lifto',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 40,

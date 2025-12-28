@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// 앱 이름
   ///
   /// In ko, this message translates to:
-  /// **'FitMix PS0'**
+  /// **'Lifto'**
   String get appName;
 
   /// 사용자 인사말
@@ -277,7 +277,7 @@ abstract class AppLocalizations {
   /// 앱 이름 (짧은 버전)
   ///
   /// In ko, this message translates to:
-  /// **'FitMix'**
+  /// **'Lifto'**
   String get fitMix;
 
   /// 목표 수정 버튼

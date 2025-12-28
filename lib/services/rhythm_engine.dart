@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'audio_recorder_service.dart';
 import '../utils/sound_generator.dart';
 
 enum RhythmMode {
   tts,    // English TTS (Current)
   sfx,    // Sound Effects (Ding/Chime)
-  voice,  // Recorded Voice
   beep,   // Tactile + Simple Beeps
 }
 
@@ -17,7 +14,6 @@ enum RhythmMode {
 class RhythmEngine {
   final FlutterTts _tts;
   final AudioPlayer _sfxPlayer;
-  final AudioRecorderService _recorderService;
 
   // Generated Sound Paths
   String? _highBeepPath;
@@ -45,10 +41,8 @@ class RhythmEngine {
     this.onSetComplete,
     FlutterTts? tts,
     AudioPlayer? sfxPlayer,
-    AudioRecorderService? recorderService,
   })  : _tts = tts ?? FlutterTts(),
-        _sfxPlayer = sfxPlayer ?? AudioPlayer(),
-        _recorderService = recorderService ?? AudioRecorderService();
+        _sfxPlayer = sfxPlayer ?? AudioPlayer();
   
   Future<void> init() async {
     try {
@@ -61,13 +55,8 @@ class RhythmEngine {
 
       // 2. Configure SFX Player
       await _sfxPlayer.setPlayerMode(PlayerMode.lowLatency);
-
-      // 3. Init Recorder Service (for playback path resolution)
-      if (mode == RhythmMode.voice) {
-        await _recorderService.init();
-      }
       
-      // 4. Generate Sounds if needed
+      // 3. Generate Sounds if needed
       if (mode != RhythmMode.tts) {
         _highBeepPath = await SoundGenerator.generateTone(
           filename: 'high_beep.wav',
@@ -193,22 +182,6 @@ class RhythmEngine {
           await _playTTS(cue, isRep);
           break;
 
-        case RhythmMode.voice:
-          bool played = false;
-          // Try to play recorded file
-          if (await _recorderService.hasRecording(cue)) {
-             await _recorderService.playRecording(cue);
-             played = true;
-          }
-
-          if (!played) {
-            // Fallback for voice: if recorded cue is missing, use Beeps (not TTS)
-            // unless it's a critical word like "UP/DOWN/GO".
-            // Actually, playing Beeps is safer than TTS mixing in weirdly.
-            await _playSFX(cue, isRep);
-          }
-          break;
-
         case RhythmMode.sfx:
           await _playSFX(cue, isRep);
           break;
@@ -311,6 +284,5 @@ class RhythmEngine {
   void dispose() {
     stop();
     _sfxPlayer.dispose();
-    _recorderService.dispose();
   }
 }

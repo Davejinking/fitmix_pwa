@@ -1,6 +1,6 @@
 {
   "@@locale": "ko",
-  "appName": "FitMix PS0",
+  "appName": "Lifto",
   "@appName": {
     "description": "앱 이름"
   },
@@ -147,7 +147,7 @@
   "@unknownPage": {
     "description": "알 수 없는 페이지 에러 메시지"
   },
-  "fitMix": "FitMix",
+  "fitMix": "Lifto",
   "@fitMix": {
     "description": "앱 이름 (짧은 버전)"
   },

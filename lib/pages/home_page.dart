@@ -12,6 +12,12 @@ import 'user_info_form_page.dart';
 import 'plan_page.dart';
 import '../models/session.dart';
 import './settings_page.dart';
+import './achievements_page.dart';
+import './power_shop_page.dart';
+import '../services/achievement_service.dart';
+import '../models/achievement.dart';
+import '../services/gamification_service.dart';
+import '../models/gamification.dart';
 
 class HomePage extends StatelessWidget {
   final SessionRepo sessionRepo;
@@ -90,9 +96,9 @@ class _HeaderComponentState extends State<_HeaderComponent> {
       ),
       child: Row(
         children: [
-          // FitMix 로고 (흰색, 22px)
+          // Lifto 로고 (흰색, 22px)
           const Text(
-            'FitMix',
+            'Lifto',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -168,16 +174,16 @@ class _BodyComponentState extends State<_BodyComponent> with SingleTickerProvide
       duration: const Duration(milliseconds: 1200),
     );
 
-    final cardCount = 2; // 업데이트 배너 제거로 2개로 변경
+    final cardCount = 6; // XP + 스트릭 + 오늘 요약 + 업적 + 목표 + 트렌드
     _slideAnimations = List.generate(cardCount, (index) {
-      final start = 0.2 * index;
-      final end = start + 0.6;
+      final start = 0.15 * index;
+      final end = start + 0.5;
       return Tween<Offset>(
         begin: const Offset(0, 0.5),
         end: Offset.zero,
       ).animate(CurvedAnimation(
         parent: _animationController,
-        curve: Interval(start, end, curve: Curves.easeOut),
+        curve: Interval(start.clamp(0.0, 1.0), end.clamp(0.0, 1.0), curve: Curves.easeOut),
       ));
     });
 
@@ -193,6 +199,10 @@ class _BodyComponentState extends State<_BodyComponent> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     final cards = [
+      _XPLevelCard(sessionRepo: widget.sessionRepo),
+      _StreakCard(sessionRepo: widget.sessionRepo),
+      _TodaySummaryCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
+      _AchievementPreviewCard(sessionRepo: widget.sessionRepo),
       _MyGoalCard(sessionRepo: widget.sessionRepo, userRepo: widget.userRepo, exerciseRepo: widget.exerciseRepo),
       _ActivityTrendCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
     ];
@@ -219,7 +229,647 @@ class _BodyComponentState extends State<_BodyComponent> with SingleTickerProvide
   }
 }
 
+// ⭐ XP/레벨 카드 (듀오링고 스타일)
+class _XPLevelCard extends StatefulWidget {
+  final SessionRepo sessionRepo;
+  const _XPLevelCard({required this.sessionRepo});
+
+  @override
+  State<_XPLevelCard> createState() => _XPLevelCardState();
+}
+
+class _XPLevelCardState extends State<_XPLevelCard> {
+  GamificationService? _service;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initService();
+  }
+
+  Future<void> _initService() async {
+    _service = GamificationService(sessionRepo: widget.sessionRepo);
+    await _service!.init();
+    if (mounted) setState(() => _isLoading = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading || _service == null) {
+      return Container(
+        height: 140,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+        ),
+      );
+    }
+
+    final data = _service!.data;
+    final league = data.league;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [league.color.withValues(alpha: 0.3), const Color(0xFF1E1E1E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: league.color.withValues(alpha: 0.5), width: 1),
+      ),
+      child: Column(
+        children: [
+          // 상단: 리그 + 레벨 + 젬
+          Row(
+            children: [
+              // 리그 뱃지
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: league.color.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: league.color),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(league.icon, style: const TextStyle(fontSize: 16)),
+                    const SizedBox(width: 6),
+                    Text(
+                      league.name,
+                      style: TextStyle(
+                        color: league.color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              // 파워 (클릭하면 상점으로)
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PowerShopPage(gamificationService: _service!),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2C2C2E),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('💪', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${data.power}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // 레벨 + XP 바
+          Row(
+            children: [
+              // 레벨 원형
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [league.color, league.color.withValues(alpha: 0.6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Center(
+                  child: Text(
+                    '${data.level}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              // XP 진행바
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Level ${data.level}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          '${data.xpToNextLevel} XP 남음',
+                          style: const TextStyle(
+                            color: Color(0xFFAAAAAA),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LinearProgressIndicator(
+                        value: data.levelProgress,
+                        backgroundColor: const Color(0xFF2C2C2E),
+                        color: league.color,
+                        minHeight: 10,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '총 ${data.totalXP} XP · 이번 주 ${data.weeklyXP} XP',
+                      style: const TextStyle(
+                        color: Color(0xFF888888),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 🔥 연속 운동 스트릭 카드
+class _StreakCard extends StatefulWidget {
+  final SessionRepo sessionRepo;
+  const _StreakCard({required this.sessionRepo});
+
+  @override
+  State<_StreakCard> createState() => _StreakCardState();
+}
+
+class _StreakCardState extends State<_StreakCard> {
+  int _streak = 0;
+  int _longestStreak = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadStreak());
+  }
+
+  Future<void> _loadStreak() async {
+    final sessions = await widget.sessionRepo.getWorkoutSessions();
+    if (sessions.isEmpty) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    // 날짜별로 정렬 (최신순)
+    sessions.sort((a, b) => b.ymd.compareTo(a.ymd));
+    
+    final today = DateTime.now();
+    final todayYmd = widget.sessionRepo.ymd(today);
+    final yesterdayYmd = widget.sessionRepo.ymd(today.subtract(const Duration(days: 1)));
+    
+    // 현재 스트릭 계산
+    int streak = 0;
+    DateTime checkDate = today;
+    
+    // 오늘 또는 어제부터 시작
+    final hasToday = sessions.any((s) => s.ymd == todayYmd);
+    final hasYesterday = sessions.any((s) => s.ymd == yesterdayYmd);
+    
+    if (!hasToday && !hasYesterday) {
+      streak = 0;
+    } else {
+      if (!hasToday) {
+        checkDate = today.subtract(const Duration(days: 1));
+      }
+      
+      while (true) {
+        final ymd = widget.sessionRepo.ymd(checkDate);
+        if (sessions.any((s) => s.ymd == ymd)) {
+          streak++;
+          checkDate = checkDate.subtract(const Duration(days: 1));
+        } else {
+          break;
+        }
+      }
+    }
+
+    // 최장 스트릭 계산
+    int longest = 0;
+    int current = 0;
+    DateTime? prevDate;
+    
+    for (final session in sessions.reversed) {
+      final date = widget.sessionRepo.ymdToDateTime(session.ymd);
+      if (prevDate == null) {
+        current = 1;
+      } else {
+        final diff = prevDate.difference(date).inDays;
+        if (diff == 1) {
+          current++;
+        } else {
+          longest = current > longest ? current : longest;
+          current = 1;
+        }
+      }
+      prevDate = date;
+    }
+    longest = current > longest ? current : longest;
+
+    if (mounted) {
+      setState(() {
+        _streak = streak;
+        _longestStreak = longest;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1E1E1E), Color(0xFF2A2A2A)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const SizedBox(height: 80),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: _streak > 0 
+            ? [const Color(0xFFFF6B35), const Color(0xFFFF8C42)]
+            : [const Color(0xFF1E1E1E), const Color(0xFF2A2A2A)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          // 불꽃 아이콘
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Icon(
+              _streak > 0 ? Icons.local_fire_department : Icons.local_fire_department_outlined,
+              size: 32,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _streak > 0 ? '$_streak일 연속 운동 중! 🔥' : '오늘 운동을 시작해보세요!',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _longestStreak > 0 ? '최장 기록: $_longestStreak일' : '첫 스트릭을 만들어보세요',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 📊 오늘의 운동 요약 카드
+class _TodaySummaryCard extends StatefulWidget {
+  final SessionRepo sessionRepo;
+  final ExerciseLibraryRepo exerciseRepo;
+  const _TodaySummaryCard({required this.sessionRepo, required this.exerciseRepo});
+
+  @override
+  State<_TodaySummaryCard> createState() => _TodaySummaryCardState();
+}
+
+class _TodaySummaryCardState extends State<_TodaySummaryCard> {
+  Session? _todaySession;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadToday());
+  }
+
+  Future<void> _loadToday() async {
+    final today = widget.sessionRepo.ymd(DateTime.now());
+    final session = await widget.sessionRepo.get(today);
+    if (mounted) {
+      setState(() {
+        _todaySession = session;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const SizedBox(height: 100),
+      );
+    }
+
+    final hasWorkout = _todaySession?.isWorkoutDay ?? false;
+    final exerciseCount = _todaySession?.exercises.length ?? 0;
+    final totalSets = _todaySession?.exercises.fold<int>(0, (sum, e) => sum + e.sets.length) ?? 0;
+    final totalVolume = _todaySession?.totalVolume ?? 0;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text(
+                '오늘의 운동',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: hasWorkout ? const Color(0xFF34C759) : const Color(0xFF2C2C2E),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  hasWorkout ? '완료' : '미완료',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: hasWorkout ? Colors.white : const Color(0xFFAAAAAA),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (hasWorkout) ...[
+            Row(
+              children: [
+                _buildStatItem(Icons.fitness_center, '$exerciseCount개', '운동'),
+                const SizedBox(width: 24),
+                _buildStatItem(Icons.repeat, '$totalSets세트', '총 세트'),
+                const SizedBox(width: 24),
+                _buildStatItem(Icons.speed, '${(totalVolume / 1000).toStringAsFixed(1)}t', '볼륨'),
+              ],
+            ),
+          ] else ...[
+            InkWell(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlanPage(
+                      date: DateTime.now(),
+                      repo: widget.sessionRepo,
+                      exerciseRepo: widget.exerciseRepo,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF007AFF).withValues(alpha: 0.3)),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add, color: Color(0xFF007AFF), size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      '지금 운동 시작하기',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF007AFF),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String value, String label) {
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, color: const Color(0xFF007AFF), size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFFAAAAAA),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // 업데이트 배너 카드 제거 - 알림 아이콘으로 대체
+
+// 🏆 업적 미리보기 카드
+class _AchievementPreviewCard extends StatefulWidget {
+  final SessionRepo sessionRepo;
+  const _AchievementPreviewCard({required this.sessionRepo});
+
+  @override
+  State<_AchievementPreviewCard> createState() => _AchievementPreviewCardState();
+}
+
+class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
+  AchievementService? _service;
+  List<Achievement> _recentUnlocked = [];
+  int _totalUnlocked = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initService();
+  }
+
+  Future<void> _initService() async {
+    _service = AchievementService(sessionRepo: widget.sessionRepo);
+    await _service!.init();
+    await _service!.checkNewUnlocks();
+    
+    if (mounted) {
+      setState(() {
+        _recentUnlocked = _service!.getUnlockedAchievements().take(3).toList();
+        _totalUnlocked = _service!.unlockedIds.length;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (_service != null) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AchievementsPage(achievementService: _service!),
+            ),
+          );
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text(
+                  '🏆 업적',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '$_totalUnlocked/${Achievements.all.length}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFFAAAAAA),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.chevron_right, color: Color(0xFFAAAAAA), size: 20),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (_isLoading)
+              const SizedBox(height: 50)
+            else if (_recentUnlocked.isEmpty)
+              const Text(
+                '첫 번째 업적을 달성해보세요!',
+                style: TextStyle(color: Color(0xFFAAAAAA), fontSize: 14),
+              )
+            else
+              Row(
+                children: _recentUnlocked.map((a) => Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: a.color.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(color: a.color.withValues(alpha: 0.5)),
+                    ),
+                    child: Icon(a.icon, color: a.color, size: 24),
+                  ),
+                )).toList(),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _MyGoalCard extends StatefulWidget {
   final SessionRepo sessionRepo;

@@ -1,6 +1,6 @@
 {
   "@@locale": "ja",
-  "appName": "FitMix PS0",
+  "appName": "Lifto",
   "greetingWithName": "こんにちは、{name}さん",
   "@greetingWithName": {
     "description": "ユーザーへの挨拶",
@@ -75,7 +75,7 @@
   "library": "ライブラリ",
   "analysis": "分析",
   "unknownPage": "不明なページ",
-  "fitMix": "FitMix",
+  "fitMix": "Lifto",
   "editGoal": "目標を編集",
   "selectDate": "行く日",
   "planWorkout": "ワークアウトを計画",

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import '../models/exercise.dart';
-import '../services/rhythm_engine.dart';
-import '../pages/voice_recorder_page.dart';
+import '../services/tempo_controller.dart';
 
 /// Tempo Settings Modal
 /// 운동별 템포 설정 (Eccentric/Concentric 시간)
 class TempoSettingsModal extends StatefulWidget {
   final Exercise exercise;
   final VoidCallback onUpdate;
-  final Function(RhythmMode)? onModeChanged;
-  final RhythmMode? initialMode;
+  final Function(TempoMode)? onModeChanged;
+  final TempoMode? initialMode;
 
   const TempoSettingsModal({
     super.key,
@@ -27,7 +26,7 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
   late int _eccentricSeconds;
   late int _concentricSeconds;
   late bool _isTempoEnabled;
-  late RhythmMode _selectedMode;
+  late TempoMode _selectedMode;
 
   @override
   void initState() {
@@ -35,7 +34,7 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
     _eccentricSeconds = widget.exercise.eccentricSeconds;
     _concentricSeconds = widget.exercise.concentricSeconds;
     _isTempoEnabled = widget.exercise.isTempoEnabled;
-    _selectedMode = widget.initialMode ?? RhythmMode.tts;
+    _selectedMode = widget.initialMode ?? TempoMode.beep;
   }
 
   @override
@@ -115,7 +114,7 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
                       onChanged: (value) {
                         setState(() => _isTempoEnabled = value);
                       },
-                      activeColor: const Color(0xFF2196F3),
+                      activeThumbColor: const Color(0xFF2196F3),
                     ),
                   ],
                 ),
@@ -243,47 +242,19 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
           ),
           child: Row(
             children: [
-              _buildModeOption('TTS', RhythmMode.tts),
+              _buildModeOption('비프', TempoMode.beep),
               Container(width: 1, height: 20, color: Colors.grey[700]),
-              _buildModeOption('SFX', RhythmMode.sfx),
+              _buildModeOption('TTS', TempoMode.tts),
               Container(width: 1, height: 20, color: Colors.grey[700]),
-              _buildModeOption('보이스', RhythmMode.voice),
-              Container(width: 1, height: 20, color: Colors.grey[700]),
-              _buildModeOption('비프', RhythmMode.beep),
+              _buildModeOption('무음', TempoMode.silent),
             ],
           ),
         ),
-        if (_selectedMode == RhythmMode.voice)
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const VoiceRecorderPage(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.mic, size: 18),
-                label: const Text('목소리 녹음하기'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: Color(0xFF2196F3)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
 
-  Widget _buildModeOption(String label, RhythmMode mode) {
+  Widget _buildModeOption(String label, TempoMode mode) {
     final isSelected = _selectedMode == mode;
     return Expanded(
       child: GestureDetector(
