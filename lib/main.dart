@@ -19,8 +19,8 @@ import 'models/session.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('ko_KR');
-  Intl.defaultLocale = 'ko_KR';
+  await initializeDateFormatting();
+  // 시스템 언어에 따라 자동 설정됨
 
   final sessionRepo = HiveSessionRepo();
   await sessionRepo.init();
@@ -110,7 +110,7 @@ class _LiftoAppState extends State<LiftoApp> {
       theme: AppConstants.darkTheme, // 다크 모드로 고정
       darkTheme: AppConstants.darkTheme,
       themeMode: ThemeMode.dark, // 항상 다크 모드
-      locale: const Locale('ko', 'KR'), // 한국어 기본
+      locale: null, // 시스템 언어 자동 감지
       supportedLocales: const [
         Locale('ko', 'KR'),
         Locale('ja', 'JP'),

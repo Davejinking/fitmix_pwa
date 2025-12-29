@@ -2,14 +2,6 @@
   "@@locale": "ja",
   "appName": "Lifto",
   "greetingWithName": "こんにちは、{name}さん",
-  "@greetingWithName": {
-    "description": "ユーザーへの挨拶",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "defaultUser": "ユーザー",
   "burnFit": "BURN FIT",
   "upgrade": "アップグレード",
@@ -17,52 +9,14 @@
   "myGoal": "マイ目標",
   "createNow": "今すぐ作成",
   "workoutDaysGoal": "運動日数: {days} / {goal} 日",
-  "@workoutDaysGoal": {
-    "description": "運動日数の目標表示",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      },
-      "goal": {
-        "type": "int"
-      }
-    }
-  },
   "workoutVolumeGoal": "運動ボリューム: {volume} / {goal} kg",
-  "@workoutVolumeGoal": {
-    "description": "運動ボリュームの目標表示",
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      },
-      "goal": {
-        "type": "String"
-      }
-    }
-  },
-  "startWorkout": "ワークアウトを開始",
+  "startWorkout": "ワークアウト開始",
   "activityTrend": "運動量の変化",
   "time": "時間",
   "volume": "ボリューム",
   "density": "密度",
   "weeklyAverageVolume": "今週の平均運動ボリュームは{volume}kgです。",
-  "@weeklyAverageVolume": {
-    "description": "週間平均ボリュームテキスト",
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      }
-    }
-  },
   "weeklyComparison": "先週比 {diff}kg",
-  "@weeklyComparison": {
-    "description": "週間比較テキスト",
-    "placeholders": {
-      "diff": {
-        "type": "String"
-      }
-    }
-  },
   "weekdayMon": "月",
   "weekdayTue": "火",
   "weekdayWed": "水",
@@ -77,39 +31,31 @@
   "unknownPage": "不明なページ",
   "fitMix": "Lifto",
   "editGoal": "目標を編集",
-  "selectDate": "行く日",
+  "selectDate": "日付選択",
   "planWorkout": "ワークアウトを計画",
   "noWorkoutRecords": "運動記録がありません",
   "workoutRecord": "運動記録",
   "totalVolume": "総ボリューム: {volume}kg",
-  "@totalVolume": {
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      }
-    }
-  },
+  "totalVolumeShort": "総ボリューム {volume}kg",
   "andMore": "他 {count}個",
-  "@andMore": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "todayWorkout": "今日のワークアウト",
   "restTimeSetting": "休憩時間設定",
   "endWorkout": "ワークアウト終了",
   "endWorkoutConfirm": "ワークアウトを終了して記録を保存しますか？",
-  "endAndSaveWorkout": "ワークアウト終了・保存",
-  "noWorkoutPlan": "今日のワークアウト計画がありません。\\nカレンダーで先に計画を立ててください。",
+  "endAndSaveWorkout": "終了して保存",
+  "noWorkoutPlan": "今日のワークアウト計画がありません。\nカレンダーで先に計画を立ててください。",
+  "noWorkoutPlanDesc": "下の「運動追加」ボタンをタップして\n運動を追加してください",
   "skipRest": "休憩をスキップ",
   "restTimer": "休憩タイマー",
   "adjustRestTime": "休憩時間調整",
   "workoutDuration": "ワークアウト時間",
   "restTimeRemaining": "休憩時間残り",
   "seconds": "{count}秒",
+  "secondsUnit": "秒",
   "close": "閉じる",
+  "confirm": "確認",
+  "continueWorkout": "続ける",
+  "quit": "終了",
   "volumeByBodyPart": "部位別総ボリューム",
   "monthlyWorkoutTime": "月別総運動時間",
   "noAnalysisData": "分析する運動記録がありません。",
@@ -120,9 +66,11 @@
   "exerciseName": "運動名",
   "cancel": "キャンセル",
   "save": "保存",
-  "deleteExercise": "運動削除",
-  "deleteExerciseConfirm": "'{name}' 運動を削除しますか？",
+  "saved": "保存しました。",
   "saveFailed": "保存に失敗しました。",
+  "loadFailed": "読み込み失敗: {error}",
+  "deleteExercise": "運動削除",
+  "deleteExerciseConfirm": "'{name}' を削除しますか？",
   "deleteFailed": "削除に失敗しました。",
   "libraryEmpty": "運動ライブラリが空です。",
   "profile": "プロフィール",
@@ -134,7 +82,7 @@
   "monthlyWorkoutDays": "月別運動日数",
   "monthlyTotalVolume": "月別総ボリューム",
   "saveGoal": "目標保存",
-  "selectFromGallery": "ギャラリーから写真選択",
+  "selectFromGallery": "ギャラリーから選択",
   "deletePhoto": "写真削除",
   "guest": "ゲスト",
   "settings": "設定",
@@ -149,9 +97,11 @@
   "logout": "ログアウト",
   "logoutConfirm": "ログアウトしますか？",
   "loginWithGoogle": "Googleでログイン",
+  "continueAsGuest": "ゲストとして続ける",
+  "allInOnePlace": "すべてのワークアウトを一か所で",
   "enterWeight": "体重を入力してください。",
   "enterHeight": "身長を入力してください。",
-  "requiredInfo": "ワークアウトを始めるために\\n必須情報を教えてください。",
+  "requiredInfo": "ワークアウトを始めるために\n必須情報を教えてください。",
   "weightLabel": "体重 *",
   "heightLabel": "身長 *",
   "saveInfoFailed": "情報保存に失敗しました。",
@@ -162,11 +112,17 @@
   "deleted": "{name} 削除",
   "undo": "元に戻す",
   "addSet": "セット追加",
+  "deleteSet": "セット削除",
   "planYourWorkout": "ワークアウトを計画しましょう！",
   "setNumber": "{number}セット",
+  "setLabel": "セット",
   "weightKg": "重量(kg)",
   "reps": "回数",
+  "repsUnit": "回",
+  "completed": "完了",
+  "notCompleted": "未完了",
   "minOneSet": "最低1セット必要です。",
+  "enterRepsFirst": "先に目標回数を入力してください",
   "favorites": "お気に入り",
   "chest": "胸",
   "back": "背中",
@@ -184,7 +140,7 @@
   "dumbbell": "ダンベル",
   "cable": "ケーブル",
   "band": "バンド",
-  "searchExercise": "運動を検索してください。",
+  "searchExercise": "運動を検索",
   "noExercises": "運動がありません。",
   "retry": "再試行",
   "addCustomExercise": "カスタム運動追加",
@@ -192,5 +148,65 @@
   "selectBodyPart": "部位選択",
   "selectEquipment": "器具選択",
   "add": "追加",
-  "pleaseEnterExerciseName": "運動名を入力してください。"
+  "pleaseEnterExerciseName": "運動名を入力してください。",
+  "workoutPlan": "ワークアウト計画",
+  "selectExercise": "運動選択",
+  "workoutInProgress": "{month}月{day}日 ({weekday}) ワークアウト中",
+  "exerciseCount": "{count}個の運動",
+  "cannotChangeDateDuringWorkout": "ワークアウト中は日付を変更できません",
+  "workoutCompleted": "ワークアウト完了！🎉",
+  "cancelTimer": "タイマーキャンセル",
+  "rest": "休憩",
+  "waiting": "待機",
+  "tempo": "テンポ",
+  "tempoStart": "テンポ開始 ({eccentric}/{concentric}秒)",
+  "memo": "メモ",
+  "dayUnit": "日",
+  "validWorkoutDaysGoal": "正しい運動日数目標を入力してください。",
+  "validVolumeGoal": "正しいボリューム目標を入力してください。",
+  "goalSaved": "目標が保存されました。",
+  "profilePhotoChanged": "プロフィール写真が変更されました。",
+  "profilePhotoDeleted": "プロフィール写真が削除されました。",
+  "birthDate": "生年月日 *",
+  "enterBirthDate": "生年月日を入力してください。",
+  "gender": "性別 *",
+  "enterGender": "性別を選択してください。",
+  "male": "男性",
+  "female": "女性",
+  "next": "次へ",
+  "infoUsageNotice": "入力情報は運動推薦のみに使用されます。",
+  "analysisTitle": "分析",
+  "totalVolumeLabel": "総ボリューム",
+  "bodyBalanceAnalysis": "身体バランス分析",
+  "last30DaysSets": "最近30日の部位別運動セット数",
+  "analysisResult": "分析結果",
+  "bodyPartAnalysisResult": "現在{strongest}運動の比重が高く({strongestSets}セット)、{weakest}運動が不足しています({weakestSets}セット)。",
+  "focusNeeded": "集中強化が必要",
+  "lowBodyPartWarning": "現在{parts}運動の比重が低いです。バランスのためにもう少し注意してください！",
+  "goToSupplementExercise": "補完運動へ",
+  "totalXpWeekly": "合計 {total} XP · 今週 {weekly} XP",
+  "streakMessage": "{days}日連続運動中！🔥",
+  "startWorkoutToday": "今日のワークアウトを始めましょう！",
+  "longestRecord": "最長記録: {days}日",
+  "createFirstStreak": "最初のストリークを作りましょう",
+  "oneMinute": "1分",
+  "oneMinute30Sec": "1分30秒",
+  "twoMinutes": "2分",
+  "threeMinutes": "3分",
+  "xpRemaining": "{xp} XP 残り",
+  "achievement": "実績",
+  "achieveFirst": "最初の実績を達成しましょう！",
+  "exerciseUnit": "{count}個",
+  "exercise": "運動",
+  "totalSets": "総セット",
+  "setsUnit": "{count}セット",
+  "startWorkoutNow": "今すぐワークアウト開始",
+  "noRecentWorkout": "最近の運動記録がありません",
+  "level": "レベル {level}",
+  "leagueBronze": "ブロンズ",
+  "leagueSilver": "シルバー",
+  "leagueGold": "ゴールド",
+  "leaguePlatinum": "プラチナ",
+  "leagueDiamond": "ダイヤモンド",
+  "leagueMaster": "マスター"
 }

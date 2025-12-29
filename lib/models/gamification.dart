@@ -1,25 +1,43 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 // 리그 등급
 enum League {
-  bronze(name: '브론즈', icon: '🥉', color: Color(0xFFCD7F32), minXP: 0),
-  silver(name: '실버', icon: '🥈', color: Color(0xFFC0C0C0), minXP: 500),
-  gold(name: '골드', icon: '🥇', color: Color(0xFFFFD700), minXP: 1500),
-  platinum(name: '플래티넘', icon: '💎', color: Color(0xFF00CED1), minXP: 3500),
-  diamond(name: '다이아몬드', icon: '💠', color: Color(0xFF00BFFF), minXP: 7000),
-  master(name: '마스터', icon: '👑', color: Color(0xFFFF6B35), minXP: 15000);
+  bronze(icon: '🥉', color: Color(0xFFCD7F32), minXP: 0),
+  silver(icon: '🥈', color: Color(0xFFC0C0C0), minXP: 500),
+  gold(icon: '🥇', color: Color(0xFFFFD700), minXP: 1500),
+  platinum(icon: '💎', color: Color(0xFF00CED1), minXP: 3500),
+  diamond(icon: '💠', color: Color(0xFF00BFFF), minXP: 7000),
+  master(icon: '👑', color: Color(0xFFFF6B35), minXP: 15000);
 
-  final String name;
   final String icon;
   final Color color;
   final int minXP;
 
   const League({
-    required this.name,
     required this.icon,
     required this.color,
     required this.minXP,
   });
+
+  // 로컬라이즈된 이름 가져오기
+  String getName(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case League.bronze:
+        return l10n.leagueBronze;
+      case League.silver:
+        return l10n.leagueSilver;
+      case League.gold:
+        return l10n.leagueGold;
+      case League.platinum:
+        return l10n.leaguePlatinum;
+      case League.diamond:
+        return l10n.leagueDiamond;
+      case League.master:
+        return l10n.leagueMaster;
+    }
+  }
 
   // 다음 리그
   League? get next {

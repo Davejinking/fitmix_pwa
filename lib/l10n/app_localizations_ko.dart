@@ -12,7 +12,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appName => 'Lifto';
 
   @override
-  String greetingWithName(String name) {
+  String greetingWithName(Object name) {
     return '안녕하세요, $name님';
   }
 
@@ -20,13 +20,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultUser => '사용자';
 
   @override
-  String get burnFit => 'BURN FIT';
-
-  @override
   String get upgrade => '업그레이드';
-
-  @override
-  String get updateNote => '9월 22일 업데이트 노트';
 
   @override
   String get myGoal => '내 목표';
@@ -35,17 +29,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get createNow => '바로 만들기';
 
   @override
-  String workoutDaysGoal(int days, int goal) {
+  String workoutDaysGoal(Object days, Object goal) {
     return '운동 일수: $days / $goal 일';
   }
 
   @override
-  String workoutVolumeGoal(String volume, String goal) {
+  String workoutVolumeGoal(Object goal, Object volume) {
     return '운동 볼륨: $volume / $goal kg';
   }
 
   @override
-  String get startWorkout => '운동 시작하기';
+  String get startWorkout => '운동 시작';
 
   @override
   String get activityTrend => '운동량 변화';
@@ -60,12 +54,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get density => '밀도';
 
   @override
-  String weeklyAverageVolume(String volume) {
+  String weeklyAverageVolume(Object volume) {
     return '이번 주 평균 운동 볼륨은 ${volume}kg 입니다.';
   }
 
   @override
-  String weeklyComparison(String diff) {
+  String weeklyComparison(Object diff) {
     return '저번 주 대비 ${diff}kg';
   }
 
@@ -124,12 +118,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get workoutRecord => '운동 기록';
 
   @override
-  String totalVolume(String volume) {
+  String totalVolume(Object volume) {
     return '총 볼륨: ${volume}kg';
   }
 
   @override
-  String andMore(int count) {
+  String totalVolumeShort(Object volume) {
+    return '총 볼륨 ${volume}kg';
+  }
+
+  @override
+  String andMore(Object count) {
     return '외 $count개';
   }
 
@@ -143,13 +142,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get endWorkout => '운동 종료';
 
   @override
-  String get endWorkoutConfirm => '운동을 종료하고 기록을 저장하시겠습니까?';
+  String get endWorkoutConfirm => '운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.';
 
   @override
   String get endAndSaveWorkout => '운동 종료 및 저장';
 
   @override
-  String get noWorkoutPlan => '오늘의 운동 계획이 없습니다.\\n캘린더에서 먼저 계획을 세워주세요.';
+  String get noWorkoutPlan => '운동 계획이 없습니다';
+
+  @override
+  String get noWorkoutPlanDesc => '하단의 \"운동 추가\" 버튼을 눌러\n운동을 추가해보세요';
 
   @override
   String get skipRest => '휴식 건너뛰기';
@@ -167,12 +169,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get restTimeRemaining => '휴식 시간 남음';
 
   @override
-  String seconds(int count) {
+  String seconds(Object count) {
     return '$count초';
   }
 
   @override
+  String get secondsUnit => '초';
+
+  @override
   String get close => '닫기';
+
+  @override
+  String get confirm => '확인';
+
+  @override
+  String get continueWorkout => '계속하기';
+
+  @override
+  String get quit => '종료';
 
   @override
   String get volumeByBodyPart => '부위별 총 볼륨';
@@ -184,12 +198,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noAnalysisData => '분석할 운동 기록이 없습니다.';
 
   @override
-  String errorOccurred(String error) {
+  String errorOccurred(Object error) {
     return '오류 발생: $error';
   }
 
   @override
-  String hours(String count) {
+  String hours(Object count) {
     return '$count 시간';
   }
 
@@ -209,15 +223,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get save => '저장';
 
   @override
-  String get deleteExercise => '운동 삭제';
+  String get saved => '저장되었습니다.';
 
   @override
-  String deleteExerciseConfirm(String name) {
-    return '\'$name\' 운동을 삭제하시겠습니까?';
+  String saveFailed(Object error) {
+    return '저장 실패: $error';
   }
 
   @override
-  String get saveFailed => '저장에 실패했습니다.';
+  String loadFailed(Object error) {
+    return '로드 실패: $error';
+  }
+
+  @override
+  String get deleteExercise => '운동 삭제';
+
+  @override
+  String deleteExerciseConfirm(Object name) {
+    return '\'$name\' 운동을 삭제하시겠습니까?';
+  }
 
   @override
   String get deleteFailed => '삭제에 실패했습니다.';
@@ -235,12 +259,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get edit => '수정';
 
   @override
-  String height(String value) {
+  String height(Object value) {
     return '키: $value cm';
   }
 
   @override
-  String weight(String value) {
+  String weight(Object value) {
     return '몸무게: $value kg';
   }
 
@@ -302,13 +326,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loginWithGoogle => 'Google로 로그인';
 
   @override
+  String get continueAsGuest => '게스트로 계속하기';
+
+  @override
+  String get allInOnePlace => '운동의 모든 것을 한 곳에서';
+
+  @override
   String get enterWeight => '몸무게를 입력해 주세요.';
 
   @override
   String get enterHeight => '키를 입력해 주세요.';
 
   @override
-  String get requiredInfo => '운동을 시작하기 위해\\n필수 정보를 알려주세요.';
+  String get requiredInfo => '운동을 시작하기 위해\n필수 정보를 알려주세요.';
 
   @override
   String get weightLabel => '몸무게 *';
@@ -323,7 +353,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get import => '가져오기';
 
   @override
-  String added(String text) {
+  String added(Object text) {
     return '추가됨: $text';
   }
 
@@ -334,7 +364,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reorderSaveFailed => '순서 변경 저장에 실패했습니다.';
 
   @override
-  String deleted(String name) {
+  String deleted(Object name) {
     return '$name 삭제됨';
   }
 
@@ -345,12 +375,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addSet => '세트 추가';
 
   @override
+  String get deleteSet => '세트 삭제';
+
+  @override
   String get planYourWorkout => '운동을 직접 계획해보세요!';
 
   @override
-  String setNumber(int number) {
+  String setNumber(Object number) {
     return '$number세트';
   }
+
+  @override
+  String get setLabel => '세트';
 
   @override
   String get weightKg => '무게(kg)';
@@ -359,7 +395,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reps => '횟수';
 
   @override
-  String get minOneSet => '최소 1개의 세트가 필요합니다.';
+  String get repsUnit => '회';
+
+  @override
+  String get completed => '완료';
+
+  @override
+  String get notCompleted => '미완료';
+
+  @override
+  String get minOneSet => '최소 1개의 세트가 필요합니다';
+
+  @override
+  String get enterRepsFirst => '먼저 목표 횟수를 입력하세요';
 
   @override
   String get favorites => '즐겨찾기';
@@ -438,4 +486,213 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pleaseEnterExerciseName => '운동 이름을 입력해주세요.';
+
+  @override
+  String get workoutPlan => '운동 계획';
+
+  @override
+  String get selectExercise => '운동 선택';
+
+  @override
+  String workoutInProgress(Object day, Object month, Object weekday) {
+    return '$month월 $day일 ($weekday) 운동 중';
+  }
+
+  @override
+  String exerciseCount(Object count) {
+    return '$count개 운동';
+  }
+
+  @override
+  String get cannotChangeDateDuringWorkout => '운동 중에는 날짜를 변경할 수 없습니다';
+
+  @override
+  String get workoutCompleted => '운동이 완료되었습니다! 🎉';
+
+  @override
+  String get cancelTimer => '타이머 취소';
+
+  @override
+  String get rest => '휴식';
+
+  @override
+  String get waiting => '대기';
+
+  @override
+  String get tempo => '템포';
+
+  @override
+  String tempoStart(Object concentric, Object eccentric) {
+    return '템포 시작 ($eccentric/${concentric}s)';
+  }
+
+  @override
+  String get memo => '메모';
+
+  @override
+  String get dayUnit => '일';
+
+  @override
+  String get validWorkoutDaysGoal => '올바른 운동일수 목표를 입력하세요.';
+
+  @override
+  String get validVolumeGoal => '올바른 볼륨 목표를 입력하세요.';
+
+  @override
+  String get goalSaved => '목표가 저장되었습니다.';
+
+  @override
+  String get profilePhotoChanged => '프로필 사진이 변경되었습니다.';
+
+  @override
+  String get profilePhotoDeleted => '프로필 사진이 삭제되었습니다.';
+
+  @override
+  String get birthDate => '생년월일 *';
+
+  @override
+  String get enterBirthDate => '생년월일을 입력해 주세요.';
+
+  @override
+  String get gender => '성별 *';
+
+  @override
+  String get enterGender => '성별을 알려주세요.';
+
+  @override
+  String get male => '남성';
+
+  @override
+  String get female => '여성';
+
+  @override
+  String get next => '다음';
+
+  @override
+  String get infoUsageNotice => '입력 정보는 운동 추천 용도로만 사용합니다.';
+
+  @override
+  String get analysisTitle => '분석';
+
+  @override
+  String get totalVolumeLabel => '총 볼륨';
+
+  @override
+  String get bodyBalanceAnalysis => '신체 밸런스 분석';
+
+  @override
+  String get last30DaysSets => '최근 30일 부위별 운동 세트 수';
+
+  @override
+  String get analysisResult => '분석 결과';
+
+  @override
+  String bodyPartAnalysisResult(
+    Object strongest,
+    Object strongestSets,
+    Object weakest,
+    Object weakestSets,
+  ) {
+    return '회원님은 현재 $strongest 운동 비중이 높고($strongestSets세트), $weakest 운동이 부족합니다($weakestSets세트).';
+  }
+
+  @override
+  String get focusNeeded => '집중 공략 필요';
+
+  @override
+  String lowBodyPartWarning(Object parts) {
+    return '현재 $parts 운동 비중이 낮습니다. 밸런스를 위해 조금 더 신경 써주세요!';
+  }
+
+  @override
+  String get goToSupplementExercise => '보완 운동 하러 가기';
+
+  @override
+  String totalXpWeekly(Object total, Object weekly) {
+    return '총 $total XP · 이번 주 $weekly XP';
+  }
+
+  @override
+  String streakMessage(Object days) {
+    return '$days일 연속 운동 중! 🔥';
+  }
+
+  @override
+  String get startWorkoutToday => '오늘 운동을 시작해보세요!';
+
+  @override
+  String longestRecord(Object days) {
+    return '최장 기록: $days일';
+  }
+
+  @override
+  String get createFirstStreak => '첫 스트릭을 만들어보세요';
+
+  @override
+  String get oneMinute => '1분';
+
+  @override
+  String get oneMinute30Sec => '1분30초';
+
+  @override
+  String get twoMinutes => '2분';
+
+  @override
+  String get threeMinutes => '3분';
+
+  @override
+  String xpRemaining(int xp) {
+    return '$xp XP 남음';
+  }
+
+  @override
+  String get achievement => '업적';
+
+  @override
+  String get achieveFirst => '첫 번째 업적을 달성해보세요!';
+
+  @override
+  String exerciseUnit(int count) {
+    return '$count개';
+  }
+
+  @override
+  String get exercise => '운동';
+
+  @override
+  String get totalSets => '총 세트';
+
+  @override
+  String setsUnit(int count) {
+    return '$count세트';
+  }
+
+  @override
+  String get startWorkoutNow => '지금 운동 시작하기';
+
+  @override
+  String get noRecentWorkout => '최근 운동 기록이 없습니다';
+
+  @override
+  String level(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get leagueBronze => '브론즈';
+
+  @override
+  String get leagueSilver => '실버';
+
+  @override
+  String get leagueGold => '골드';
+
+  @override
+  String get leaguePlatinum => '플래티넘';
+
+  @override
+  String get leagueDiamond => '다이아몬드';
+
+  @override
+  String get leagueMaster => '마스터';
 }

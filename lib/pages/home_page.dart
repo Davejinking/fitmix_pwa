@@ -17,7 +17,6 @@ import './power_shop_page.dart';
 import '../services/achievement_service.dart';
 import '../models/achievement.dart';
 import '../services/gamification_service.dart';
-import '../models/gamification.dart';
 
 class HomePage extends StatelessWidget {
   final SessionRepo sessionRepo;
@@ -299,7 +298,7 @@ class _XPLevelCardState extends State<_XPLevelCard> {
                     Text(league.icon, style: const TextStyle(fontSize: 16)),
                     const SizedBox(width: 6),
                     Text(
-                      league.name,
+                      league.getName(context),
                       style: TextStyle(
                         color: league.color,
                         fontWeight: FontWeight.bold,
@@ -380,7 +379,7 @@ class _XPLevelCardState extends State<_XPLevelCard> {
                     Row(
                       children: [
                         Text(
-                          'Level ${data.level}',
+                          context.l10n.level(data.level),
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -389,7 +388,7 @@ class _XPLevelCardState extends State<_XPLevelCard> {
                         ),
                         const Spacer(),
                         Text(
-                          '${data.xpToNextLevel} XP 남음',
+                          context.l10n.xpRemaining(data.xpToNextLevel),
                           style: const TextStyle(
                             color: Color(0xFFAAAAAA),
                             fontSize: 12,
@@ -409,7 +408,7 @@ class _XPLevelCardState extends State<_XPLevelCard> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '총 ${data.totalXP} XP · 이번 주 ${data.weeklyXP} XP',
+                      context.l10n.totalXpWeekly(data.totalXP, data.weeklyXP),
                       style: const TextStyle(
                         color: Color(0xFF888888),
                         fontSize: 11,
@@ -568,21 +567,21 @@ class _StreakCardState extends State<_StreakCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _streak > 0 ? '$_streak일 연속 운동 중! 🔥' : '오늘 운동을 시작해보세요!',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _longestStreak > 0 ? '최장 기록: $_longestStreak일' : '첫 스트릭을 만들어보세요',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.8),
-                  ),
-                ),
+                          _streak > 0 ? context.l10n.streakMessage(_streak) : context.l10n.startWorkoutToday,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _longestStreak > 0 ? context.l10n.longestRecord(_longestStreak) : context.l10n.createFirstStreak,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withValues(alpha: 0.8),
+                          ),
+                        ),
               ],
             ),
           ),
@@ -652,9 +651,9 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
         children: [
           Row(
             children: [
-              const Text(
-                '오늘의 운동',
-                style: TextStyle(
+              Text(
+                context.l10n.todayWorkout,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -668,7 +667,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  hasWorkout ? '완료' : '미완료',
+                  hasWorkout ? context.l10n.completed : context.l10n.notCompleted,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -682,11 +681,11 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
           if (hasWorkout) ...[
             Row(
               children: [
-                _buildStatItem(Icons.fitness_center, '$exerciseCount개', '운동'),
+                _buildStatItem(Icons.fitness_center, context.l10n.exerciseUnit(exerciseCount), context.l10n.exercise),
                 const SizedBox(width: 24),
-                _buildStatItem(Icons.repeat, '$totalSets세트', '총 세트'),
+                _buildStatItem(Icons.repeat, context.l10n.setsUnit(totalSets), context.l10n.totalSets),
                 const SizedBox(width: 24),
-                _buildStatItem(Icons.speed, '${(totalVolume / 1000).toStringAsFixed(1)}t', '볼륨'),
+                _buildStatItem(Icons.speed, '${(totalVolume / 1000).toStringAsFixed(1)}t', context.l10n.volume),
               ],
             ),
           ] else ...[
@@ -709,14 +708,14 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFF007AFF).withValues(alpha: 0.3)),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add, color: Color(0xFF007AFF), size: 20),
-                    SizedBox(width: 8),
+                    const Icon(Icons.add, color: Color(0xFF007AFF), size: 20),
+                    const SizedBox(width: 8),
                     Text(
-                      '지금 운동 시작하기',
-                      style: TextStyle(
+                      context.l10n.startWorkoutNow,
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF007AFF),
@@ -820,9 +819,9 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
           children: [
             Row(
               children: [
-                const Text(
-                  '🏆 업적',
-                  style: TextStyle(
+                Text(
+                  '🏆 ${context.l10n.achievement}',
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -844,9 +843,9 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
             if (_isLoading)
               const SizedBox(height: 50)
             else if (_recentUnlocked.isEmpty)
-              const Text(
-                '첫 번째 업적을 달성해보세요!',
-                style: TextStyle(color: Color(0xFFAAAAAA), fontSize: 14),
+              Text(
+                context.l10n.achieveFirst,
+                style: const TextStyle(color: Color(0xFFAAAAAA), fontSize: 14),
               )
             else
               Row(
@@ -972,9 +971,9 @@ class _MyGoalCardState extends State<_MyGoalCard> {
                           _loadGoals();
                         }
                       },
-                      child: const Text(
-                        '수정',
-                        style: TextStyle(
+                      child: Text(
+                        context.l10n.edit,
+                        style: const TextStyle(
                           color: Color(0xFF007AFF),
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -1373,9 +1372,9 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                 color: Color(0xFF2C2C2E),
               ),
               const SizedBox(height: 16),
-              const Text(
-                '최근 운동 기록이 없습니다',
-                style: TextStyle(
+              Text(
+                context.l10n.noRecentWorkout,
+                style: const TextStyle(
                   fontSize: 16,
                   color: Color(0xFFAAAAAA),
                 ),

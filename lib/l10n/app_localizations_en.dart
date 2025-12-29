@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Lifto';
 
   @override
-  String greetingWithName(String name) {
+  String greetingWithName(Object name) {
     return 'Hello, $name';
   }
 
@@ -20,13 +20,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultUser => 'User';
 
   @override
-  String get burnFit => 'BURN FIT';
-
-  @override
   String get upgrade => 'Upgrade';
-
-  @override
-  String get updateNote => 'September 22 Update Note';
 
   @override
   String get myGoal => 'My Goal';
@@ -35,12 +29,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createNow => 'Create Now';
 
   @override
-  String workoutDaysGoal(int days, int goal) {
+  String workoutDaysGoal(Object days, Object goal) {
     return 'Workout Days: $days / $goal days';
   }
 
   @override
-  String workoutVolumeGoal(String volume, String goal) {
+  String workoutVolumeGoal(Object goal, Object volume) {
     return 'Workout Volume: $volume / $goal kg';
   }
 
@@ -60,12 +54,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get density => 'Density';
 
   @override
-  String weeklyAverageVolume(String volume) {
+  String weeklyAverageVolume(Object volume) {
     return 'This week\'s average workout volume is ${volume}kg.';
   }
 
   @override
-  String weeklyComparison(String diff) {
+  String weeklyComparison(Object diff) {
     return 'Compared to last week: ${diff}kg';
   }
 
@@ -124,12 +118,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workoutRecord => 'Workout Record';
 
   @override
-  String totalVolume(String volume) {
+  String totalVolume(Object volume) {
     return 'Total Volume: ${volume}kg';
   }
 
   @override
-  String andMore(int count) {
+  String totalVolumeShort(Object volume) {
+    return 'Total Volume ${volume}kg';
+  }
+
+  @override
+  String andMore(Object count) {
     return 'and $count more';
   }
 
@@ -143,15 +142,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endWorkout => 'End Workout';
 
   @override
-  String get endWorkoutConfirm =>
-      'Do you want to end the workout and save the record?';
+  String get endWorkoutConfirm => 'End workout and save the record?';
 
   @override
   String get endAndSaveWorkout => 'End & Save Workout';
 
   @override
   String get noWorkoutPlan =>
-      'No workout plan for today.\\nPlease create a plan in the calendar first.';
+      'No workout plan for today.\nPlease create a plan in the calendar first.';
+
+  @override
+  String get noWorkoutPlanDesc =>
+      'Tap \"Add Exercise\" button below\nto add exercises';
 
   @override
   String get skipRest => 'Skip Rest';
@@ -169,12 +171,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restTimeRemaining => 'Rest Time Remaining';
 
   @override
-  String seconds(int count) {
+  String seconds(Object count) {
     return '${count}s';
   }
 
   @override
+  String get secondsUnit => 'sec';
+
+  @override
   String get close => 'Close';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get continueWorkout => 'Continue';
+
+  @override
+  String get quit => 'Quit';
 
   @override
   String get volumeByBodyPart => 'Volume by Body Part';
@@ -186,12 +200,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noAnalysisData => 'No workout data to analyze.';
 
   @override
-  String errorOccurred(String error) {
+  String errorOccurred(Object error) {
     return 'Error: $error';
   }
 
   @override
-  String hours(String count) {
+  String hours(Object count) {
     return '$count hours';
   }
 
@@ -211,18 +225,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get saved => 'Saved.';
+
+  @override
+  String saveFailed(Object error) {
+    return 'Failed to save.';
+  }
+
+  @override
+  String loadFailed(Object error) {
+    return 'Load failed: $error';
+  }
+
+  @override
   String get deleteExercise => 'Delete Exercise';
 
   @override
-  String deleteExerciseConfirm(String name) {
+  String deleteExerciseConfirm(Object name) {
     return 'Delete \'$name\' exercise?';
   }
 
   @override
-  String get saveFailed => 'Failed to save.';
-
-  @override
-  String get deleteFailed => 'Failed to delete.';
+  String get deleteFailed => 'Delete failed.';
 
   @override
   String get libraryEmpty => 'Exercise library is empty.';
@@ -237,12 +261,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
-  String height(String value) {
+  String height(Object value) {
     return 'Height: $value cm';
   }
 
   @override
-  String weight(String value) {
+  String weight(Object value) {
     return 'Weight: $value kg';
   }
 
@@ -304,6 +328,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginWithGoogle => 'Sign in with Google';
 
   @override
+  String get continueAsGuest => 'Continue as Guest';
+
+  @override
+  String get allInOnePlace => 'All your workouts in one place';
+
+  @override
   String get enterWeight => 'Please enter your weight.';
 
   @override
@@ -311,7 +341,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requiredInfo =>
-      'Please provide required information\\nto start your workout.';
+      'Please provide required information\nto start your workout.';
 
   @override
   String get weightLabel => 'Weight *';
@@ -326,7 +356,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get import => 'Import';
 
   @override
-  String added(String text) {
+  String added(Object text) {
     return 'Added: $text';
   }
 
@@ -337,7 +367,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reorderSaveFailed => 'Failed to save reorder.';
 
   @override
-  String deleted(String name) {
+  String deleted(Object name) {
     return '$name deleted';
   }
 
@@ -348,12 +378,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addSet => 'Add Set';
 
   @override
+  String get deleteSet => 'Delete Set';
+
+  @override
   String get planYourWorkout => 'Plan your workout!';
 
   @override
-  String setNumber(int number) {
+  String setNumber(Object number) {
     return 'Set $number';
   }
+
+  @override
+  String get setLabel => 'Set';
 
   @override
   String get weightKg => 'Weight(kg)';
@@ -362,7 +398,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reps => 'Reps';
 
   @override
+  String get repsUnit => 'reps';
+
+  @override
+  String get completed => 'Done';
+
+  @override
+  String get notCompleted => 'Not Done';
+
+  @override
   String get minOneSet => 'At least 1 set required.';
+
+  @override
+  String get enterRepsFirst => 'Enter target reps first';
 
   @override
   String get favorites => 'Favorites';
@@ -416,7 +464,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get band => 'Band';
 
   @override
-  String get searchExercise => 'Search for exercises.';
+  String get searchExercise => 'Search for exercises';
 
   @override
   String get noExercises => 'No exercises found.';
@@ -441,4 +489,215 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseEnterExerciseName => 'Please enter exercise name.';
+
+  @override
+  String get workoutPlan => 'Workout Plan';
+
+  @override
+  String get selectExercise => 'Select Exercise';
+
+  @override
+  String workoutInProgress(Object day, Object month, Object weekday) {
+    return '$month/$day ($weekday) Working Out';
+  }
+
+  @override
+  String exerciseCount(Object count) {
+    return '$count exercises';
+  }
+
+  @override
+  String get cannotChangeDateDuringWorkout =>
+      'Cannot change date during workout';
+
+  @override
+  String get workoutCompleted => 'Workout completed! 🎉';
+
+  @override
+  String get cancelTimer => 'Cancel Timer';
+
+  @override
+  String get rest => 'Rest';
+
+  @override
+  String get waiting => 'Wait';
+
+  @override
+  String get tempo => 'Tempo';
+
+  @override
+  String tempoStart(Object concentric, Object eccentric) {
+    return 'Start Tempo ($eccentric/${concentric}s)';
+  }
+
+  @override
+  String get memo => 'Memo';
+
+  @override
+  String get dayUnit => 'days';
+
+  @override
+  String get validWorkoutDaysGoal => 'Please enter a valid workout days goal.';
+
+  @override
+  String get validVolumeGoal => 'Please enter a valid volume goal.';
+
+  @override
+  String get goalSaved => 'Goal saved.';
+
+  @override
+  String get profilePhotoChanged => 'Profile photo changed.';
+
+  @override
+  String get profilePhotoDeleted => 'Profile photo deleted.';
+
+  @override
+  String get birthDate => 'Birth Date *';
+
+  @override
+  String get enterBirthDate => 'Please enter your birth date.';
+
+  @override
+  String get gender => 'Gender *';
+
+  @override
+  String get enterGender => 'Please select your gender.';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get infoUsageNotice =>
+      'This information is only used for workout recommendations.';
+
+  @override
+  String get analysisTitle => 'Analysis';
+
+  @override
+  String get totalVolumeLabel => 'Total Volume';
+
+  @override
+  String get bodyBalanceAnalysis => 'Body Balance Analysis';
+
+  @override
+  String get last30DaysSets => 'Sets by body part (last 30 days)';
+
+  @override
+  String get analysisResult => 'Analysis Result';
+
+  @override
+  String bodyPartAnalysisResult(
+    Object strongest,
+    Object strongestSets,
+    Object weakest,
+    Object weakestSets,
+  ) {
+    return 'You have high $strongest workout ratio ($strongestSets sets), and need more $weakest workouts ($weakestSets sets).';
+  }
+
+  @override
+  String get focusNeeded => 'Focus Needed';
+
+  @override
+  String lowBodyPartWarning(Object parts) {
+    return 'Your $parts workout ratio is low. Pay more attention for balance!';
+  }
+
+  @override
+  String get goToSupplementExercise => 'Go to Supplement Exercise';
+
+  @override
+  String totalXpWeekly(Object total, Object weekly) {
+    return 'Total $total XP · This week $weekly XP';
+  }
+
+  @override
+  String streakMessage(Object days) {
+    return '$days day streak! 🔥';
+  }
+
+  @override
+  String get startWorkoutToday => 'Start your workout today!';
+
+  @override
+  String longestRecord(Object days) {
+    return 'Longest: $days days';
+  }
+
+  @override
+  String get createFirstStreak => 'Create your first streak';
+
+  @override
+  String get oneMinute => '1 min';
+
+  @override
+  String get oneMinute30Sec => '1 min 30 sec';
+
+  @override
+  String get twoMinutes => '2 min';
+
+  @override
+  String get threeMinutes => '3 min';
+
+  @override
+  String xpRemaining(int xp) {
+    return '$xp XP left';
+  }
+
+  @override
+  String get achievement => 'Achievements';
+
+  @override
+  String get achieveFirst => 'Achieve your first badge!';
+
+  @override
+  String exerciseUnit(int count) {
+    return '$count';
+  }
+
+  @override
+  String get exercise => 'Exercises';
+
+  @override
+  String get totalSets => 'Total Sets';
+
+  @override
+  String setsUnit(int count) {
+    return '$count sets';
+  }
+
+  @override
+  String get startWorkoutNow => 'Start workout now';
+
+  @override
+  String get noRecentWorkout => 'No recent workout records';
+
+  @override
+  String level(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get leagueBronze => 'Bronze';
+
+  @override
+  String get leagueSilver => 'Silver';
+
+  @override
+  String get leagueGold => 'Gold';
+
+  @override
+  String get leaguePlatinum => 'Platinum';
+
+  @override
+  String get leagueDiamond => 'Diamond';
+
+  @override
+  String get leagueMaster => 'Master';
 }

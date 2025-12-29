@@ -1,622 +1,214 @@
 {
   "@@locale": "ko",
   "appName": "Lifto",
-  "@appName": {
-    "description": "앱 이름"
-  },
   "greetingWithName": "안녕하세요, {name}님",
-  "@greetingWithName": {
-    "description": "사용자 인사말",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "defaultUser": "사용자",
-  "@defaultUser": {
-    "description": "기본 사용자명"
-  },
-  "burnFit": "BURN FIT",
-  "@burnFit": {
-    "description": "브랜드명"
-  },
   "upgrade": "업그레이드",
-  "@upgrade": {
-    "description": "업그레이드 버튼"
-  },
-  "updateNote": "9월 22일 업데이트 노트",
-  "@updateNote": {
-    "description": "업데이트 배너 텍스트"
-  },
   "myGoal": "내 목표",
-  "@myGoal": {
-    "description": "목표 카드 제목"
-  },
   "createNow": "바로 만들기",
-  "@createNow": {
-    "description": "목표 생성 버튼"
-  },
   "workoutDaysGoal": "운동 일수: {days} / {goal} 일",
-  "@workoutDaysGoal": {
-    "description": "운동 일수 목표 표시",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      },
-      "goal": {
-        "type": "int"
-      }
-    }
-  },
   "workoutVolumeGoal": "운동 볼륨: {volume} / {goal} kg",
-  "@workoutVolumeGoal": {
-    "description": "운동 볼륨 목표 표시",
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      },
-      "goal": {
-        "type": "String"
-      }
-    }
-  },
-  "startWorkout": "운동 시작하기",
-  "@startWorkout": {
-    "description": "운동 시작 버튼"
-  },
+  "startWorkout": "운동 시작",
   "activityTrend": "운동량 변화",
-  "@activityTrend": {
-    "description": "활동 추세 카드 제목"
-  },
   "time": "시간",
-  "@time": {
-    "description": "시간 필터 탭"
-  },
   "volume": "볼륨",
-  "@volume": {
-    "description": "볼륨 필터 탭"
-  },
   "density": "밀도",
-  "@density": {
-    "description": "밀도 필터 탭"
-  },
   "weeklyAverageVolume": "이번 주 평균 운동 볼륨은 {volume}kg 입니다.",
-  "@weeklyAverageVolume": {
-    "description": "주간 평균 볼륨 텍스트",
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      }
-    }
-  },
   "weeklyComparison": "저번 주 대비 {diff}kg",
-  "@weeklyComparison": {
-    "description": "주간 비교 텍스트",
-    "placeholders": {
-      "diff": {
-        "type": "String"
-      }
-    }
-  },
   "weekdayMon": "월",
-  "@weekdayMon": {
-    "description": "요일: 월요일"
-  },
   "weekdayTue": "화",
-  "@weekdayTue": {
-    "description": "요일: 화요일"
-  },
   "weekdayWed": "수",
-  "@weekdayWed": {
-    "description": "요일: 수요일"
-  },
   "weekdayThu": "목",
-  "@weekdayThu": {
-    "description": "요일: 목요일"
-  },
   "weekdayFri": "금",
-  "@weekdayFri": {
-    "description": "요일: 금요일"
-  },
   "weekdaySat": "토",
-  "@weekdaySat": {
-    "description": "요일: 토요일"
-  },
   "weekdaySun": "일",
-  "@weekdaySun": {
-    "description": "요일: 일요일"
-  },
   "home": "홈",
-  "@home": {
-    "description": "홈 탭"
-  },
   "calendar": "캘린더",
-  "@calendar": {
-    "description": "캘린더 탭"
-  },
   "library": "라이브러리",
-  "@library": {
-    "description": "라이브러리 탭"
-  },
   "analysis": "분석",
-  "@analysis": {
-    "description": "분석 탭"
-  },
   "unknownPage": "알 수 없는 페이지",
-  "@unknownPage": {
-    "description": "알 수 없는 페이지 에러 메시지"
-  },
   "fitMix": "Lifto",
-  "@fitMix": {
-    "description": "앱 이름 (짧은 버전)"
-  },
   "editGoal": "목표 수정",
-  "@editGoal": {
-    "description": "목표 수정 버튼"
-  },
   "selectDate": "가는 날",
-  "@selectDate": {
-    "description": "날짜 선택 모달 제목"
-  },
   "planWorkout": "운동 계획하기",
-  "@planWorkout": {
-    "description": "운동 계획하기 버튼"
-  },
   "noWorkoutRecords": "운동 기록이 없습니다",
-  "@noWorkoutRecords": {
-    "description": "운동 기록 없음 메시지"
-  },
   "workoutRecord": "운동 기록",
-  "@workoutRecord": {
-    "description": "운동 기록 카드 제목"
-  },
   "totalVolume": "총 볼륨: {volume}kg",
-  "@totalVolume": {
-    "description": "총 볼륨 표시",
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      }
-    }
-  },
+  "totalVolumeShort": "총 볼륨 {volume}kg",
   "andMore": "외 {count}개",
-  "@andMore": {
-    "description": "추가 항목 개수",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "todayWorkout": "오늘의 운동",
-  "@todayWorkout": {
-    "description": "오늘의 운동 페이지 제목"
-  },
   "restTimeSetting": "휴식 시간 설정",
-  "@restTimeSetting": {
-    "description": "휴식 시간 설정 다이얼로그 제목"
-  },
   "endWorkout": "운동 종료",
-  "@endWorkout": {
-    "description": "운동 종료 다이얼로그 제목"
-  },
-  "endWorkoutConfirm": "운동을 종료하고 기록을 저장하시겠습니까?",
-  "@endWorkoutConfirm": {
-    "description": "운동 종료 확인 메시지"
-  },
+  "endWorkoutConfirm": "운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.",
   "endAndSaveWorkout": "운동 종료 및 저장",
-  "@endAndSaveWorkout": {
-    "description": "운동 종료 버튼"
-  },
-  "noWorkoutPlan": "오늘의 운동 계획이 없습니다.\\n캘린더에서 먼저 계획을 세워주세요.",
-  "@noWorkoutPlan": {
-    "description": "운동 계획 없음 메시지"
-  },
+  "noWorkoutPlan": "운동 계획이 없습니다",
+  "noWorkoutPlanDesc": "하단의 \"운동 추가\" 버튼을 눌러\n운동을 추가해보세요",
   "skipRest": "휴식 건너뛰기",
-  "@skipRest": {
-    "description": "휴식 건너뛰기 버튼"
-  },
   "restTimer": "휴식 타이머",
-  "@restTimer": {
-    "description": "휴식 타이머 제목"
-  },
   "adjustRestTime": "휴식 시간 조절",
-  "@adjustRestTime": {
-    "description": "휴식 시간 조절 다이얼로그 제목"
-  },
   "workoutDuration": "운동 시간",
-  "@workoutDuration": {
-    "description": "전체 운동 시간 레이블"
-  },
   "restTimeRemaining": "휴식 시간 남음",
-  "@restTimeRemaining": {
-    "description": "휴식 시간 남음 레이블"
-  },
   "seconds": "{count}초",
-  "@seconds": {
-    "description": "초 단위",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "secondsUnit": "초",
   "close": "닫기",
-  "@close": {
-    "description": "닫기 버튼"
-  },
+  "confirm": "확인",
+  "continueWorkout": "계속하기",
+  "quit": "종료",
   "volumeByBodyPart": "부위별 총 볼륨",
-  "@volumeByBodyPart": {
-    "description": "부위별 볼륨 차트 제목"
-  },
   "monthlyWorkoutTime": "월별 총 운동 시간",
-  "@monthlyWorkoutTime": {
-    "description": "월별 운동 시간 차트 제목"
-  },
   "noAnalysisData": "분석할 운동 기록이 없습니다.",
-  "@noAnalysisData": {
-    "description": "분석 데이터 없음 메시지"
-  },
   "errorOccurred": "오류 발생: {error}",
-  "@errorOccurred": {
-    "description": "오류 메시지",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "hours": "{count} 시간",
-  "@hours": {
-    "description": "시간 단위",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "addExercise": "운동 추가",
-  "@addExercise": {
-    "description": "운동 추가 다이얼로그 제목"
-  },
   "editExercise": "운동 수정",
-  "@editExercise": {
-    "description": "운동 수정 다이얼로그 제목"
-  },
   "exerciseName": "운동 이름",
-  "@exerciseName": {
-    "description": "운동 이름 입력 필드"
-  },
   "cancel": "취소",
-  "@cancel": {
-    "description": "취소 버튼"
-  },
   "save": "저장",
-  "@save": {
-    "description": "저장 버튼"
-  },
+  "saved": "저장되었습니다.",
+  "saveFailed": "저장 실패: {error}",
+  "loadFailed": "로드 실패: {error}",
   "deleteExercise": "운동 삭제",
-  "@deleteExercise": {
-    "description": "운동 삭제 다이얼로그 제목"
-  },
   "deleteExerciseConfirm": "'{name}' 운동을 삭제하시겠습니까?",
-  "@deleteExerciseConfirm": {
-    "description": "운동 삭제 확인 메시지",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "saveFailed": "저장에 실패했습니다.",
-  "@saveFailed": {
-    "description": "저장 실패 메시지"
-  },
   "deleteFailed": "삭제에 실패했습니다.",
-  "@deleteFailed": {
-    "description": "삭제 실패 메시지"
-  },
   "libraryEmpty": "운동 라이브러리가 비어있습니다.",
-  "@libraryEmpty": {
-    "description": "라이브러리 비어있음 메시지"
-  },
   "profile": "프로필",
-  "@profile": {
-    "description": "프로필 페이지 제목"
-  },
   "bodyInfo": "신체 정보",
-  "@bodyInfo": {
-    "description": "신체 정보 섹션 제목"
-  },
   "edit": "수정",
-  "@edit": {
-    "description": "수정 버튼"
-  },
   "height": "키: {value} cm",
-  "@height": {
-    "description": "키 표시",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "weight": "몸무게: {value} kg",
-  "@weight": {
-    "description": "몸무게 표시",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "workoutGoal": "운동 목표",
-  "@workoutGoal": {
-    "description": "운동 목표 섹션 제목"
-  },
   "monthlyWorkoutDays": "월별 운동 일수",
-  "@monthlyWorkoutDays": {
-    "description": "월별 운동 일수 레이블"
-  },
   "monthlyTotalVolume": "월별 총 볼륨",
-  "@monthlyTotalVolume": {
-    "description": "월별 총 볼륨 레이블"
-  },
   "saveGoal": "목표 저장",
-  "@saveGoal": {
-    "description": "목표 저장 버튼"
-  },
   "selectFromGallery": "갤러리에서 사진 선택",
-  "@selectFromGallery": {
-    "description": "갤러리 선택 옵션"
-  },
   "deletePhoto": "사진 삭제",
-  "@deletePhoto": {
-    "description": "사진 삭제 옵션"
-  },
   "guest": "게스트",
-  "@guest": {
-    "description": "게스트 사용자"
-  },
   "settings": "설정",
-  "@settings": {
-    "description": "설정 페이지 제목"
-  },
   "appearance": "외관",
-  "@appearance": {
-    "description": "외관 섹션"
-  },
   "theme": "테마",
-  "@theme": {
-    "description": "테마 설정"
-  },
   "systemSetting": "시스템 설정",
-  "@systemSetting": {
-    "description": "시스템 설정 옵션"
-  },
   "light": "라이트",
-  "@light": {
-    "description": "라이트 테마"
-  },
   "dark": "다크",
-  "@dark": {
-    "description": "다크 테마"
-  },
   "account": "계정",
-  "@account": {
-    "description": "계정 섹션"
-  },
   "appInfo": "앱 정보",
-  "@appInfo": {
-    "description": "앱 정보 섹션"
-  },
   "version": "버전",
-  "@version": {
-    "description": "버전 레이블"
-  },
   "logout": "로그아웃",
-  "@logout": {
-    "description": "로그아웃 버튼"
-  },
   "logoutConfirm": "로그아웃 하시겠습니까?",
-  "@logoutConfirm": {
-    "description": "로그아웃 확인 메시지"
-  },
   "loginWithGoogle": "Google로 로그인",
-  "@loginWithGoogle": {
-    "description": "Google 로그인 버튼"
-  },
+  "continueAsGuest": "게스트로 계속하기",
+  "allInOnePlace": "운동의 모든 것을 한 곳에서",
   "enterWeight": "몸무게를 입력해 주세요.",
-  "@enterWeight": {
-    "description": "몸무게 입력 안내"
-  },
   "enterHeight": "키를 입력해 주세요.",
-  "@enterHeight": {
-    "description": "키 입력 안내"
-  },
-  "requiredInfo": "운동을 시작하기 위해\\n필수 정보를 알려주세요.",
-  "@requiredInfo": {
-    "description": "필수 정보 입력 안내"
-  },
+  "requiredInfo": "운동을 시작하기 위해\n필수 정보를 알려주세요.",
   "weightLabel": "몸무게 *",
-  "@weightLabel": {
-    "description": "몸무게 레이블"
-  },
   "heightLabel": "키 *",
-  "@heightLabel": {
-    "description": "키 레이블"
-  },
   "saveInfoFailed": "정보 저장에 실패했습니다.",
-  "@saveInfoFailed": {
-    "description": "정보 저장 실패 메시지"
-  },
   "import": "가져오기",
-  "@import": {
-    "description": "가져오기 버튼"
-  },
   "added": "추가됨: {text}",
-  "@added": {
-    "description": "추가 완료 메시지",
-    "placeholders": {
-      "text": {
-        "type": "String"
-      }
-    }
-  },
   "exerciseAdded": "운동이 추가되었습니다.",
-  "@exerciseAdded": {
-    "description": "운동 추가 완료 메시지"
-  },
   "reorderSaveFailed": "순서 변경 저장에 실패했습니다.",
-  "@reorderSaveFailed": {
-    "description": "순서 변경 실패 메시지"
-  },
   "deleted": "{name} 삭제됨",
-  "@deleted": {
-    "description": "삭제 완료 메시지",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "undo": "실행 취소",
-  "@undo": {
-    "description": "실행 취소 버튼"
-  },
   "addSet": "세트 추가",
-  "@addSet": {
-    "description": "세트 추가 버튼"
-  },
+  "deleteSet": "세트 삭제",
   "planYourWorkout": "운동을 직접 계획해보세요!",
-  "@planYourWorkout": {
-    "description": "운동 계획 안내"
-  },
   "setNumber": "{number}세트",
-  "@setNumber": {
-    "description": "세트 번호",
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
+  "setLabel": "세트",
   "weightKg": "무게(kg)",
-  "@weightKg": {
-    "description": "무게 입력 레이블"
-  },
   "reps": "횟수",
-  "@reps": {
-    "description": "횟수 입력 레이블"
-  },
-  "minOneSet": "최소 1개의 세트가 필요합니다.",
-  "@minOneSet": {
-    "description": "최소 세트 경고"
-  },
+  "repsUnit": "회",
+  "completed": "완료",
+  "notCompleted": "미완료",
+  "minOneSet": "최소 1개의 세트가 필요합니다",
+  "enterRepsFirst": "먼저 목표 횟수를 입력하세요",
   "favorites": "즐겨찾기",
-  "@favorites": {
-    "description": "즐겨찾기 탭"
-  },
   "chest": "가슴",
-  "@chest": {
-    "description": "가슴 부위"
-  },
   "back": "등",
-  "@back": {
-    "description": "등 부위"
-  },
   "legs": "하체",
-  "@legs": {
-    "description": "하체 부위"
-  },
   "shoulders": "어깨",
-  "@shoulders": {
-    "description": "어깨 부위"
-  },
   "arms": "팔",
-  "@arms": {
-    "description": "팔 부위"
-  },
   "abs": "복근",
-  "@abs": {
-    "description": "복근 부위"
-  },
   "cardio": "유산소",
-  "@cardio": {
-    "description": "유산소 운동"
-  },
   "stretching": "스트레칭",
-  "@stretching": {
-    "description": "스트레칭"
-  },
   "fullBody": "전신",
-  "@fullBody": {
-    "description": "전신 운동"
-  },
   "all": "전체",
-  "@all": {
-    "description": "전체 필터"
-  },
   "bodyweight": "맨몸",
-  "@bodyweight": {
-    "description": "맨몸 운동"
-  },
   "machine": "머신",
-  "@machine": {
-    "description": "머신 장비"
-  },
   "barbell": "바벨",
-  "@barbell": {
-    "description": "바벨 장비"
-  },
   "dumbbell": "덤벨",
-  "@dumbbell": {
-    "description": "덤벨 장비"
-  },
   "cable": "케이블",
-  "@cable": {
-    "description": "케이블 장비"
-  },
   "band": "밴드",
-  "@band": {
-    "description": "밴드 장비"
-  },
   "searchExercise": "찾으시는 운동을 검색해보세요.",
-  "@searchExercise": {
-    "description": "운동 검색 힌트"
-  },
   "noExercises": "운동이 없습니다.",
-  "@noExercises": {
-    "description": "운동 없음 메시지"
-  },
   "retry": "다시 시도",
-  "@retry": {
-    "description": "다시 시도 버튼"
-  },
   "addCustomExercise": "커스텀 운동 추가",
-  "@addCustomExercise": {
-    "description": "커스텀 운동 추가 버튼"
-  },
   "customExerciseName": "운동 이름",
-  "@customExerciseName": {
-    "description": "커스텀 운동 이름 입력"
-  },
   "selectBodyPart": "부위 선택",
-  "@selectBodyPart": {
-    "description": "부위 선택 레이블"
-  },
   "selectEquipment": "장비 선택",
-  "@selectEquipment": {
-    "description": "장비 선택 레이블"
-  },
   "add": "추가",
-  "@add": {
-    "description": "추가 버튼"
-  },
   "pleaseEnterExerciseName": "운동 이름을 입력해주세요.",
-  "@pleaseEnterExerciseName": {
-    "description": "운동 이름 입력 요청"
-  }
+  "workoutPlan": "운동 계획",
+  "selectExercise": "운동 선택",
+  "workoutInProgress": "{month}월 {day}일 ({weekday}) 운동 중",
+  "exerciseCount": "{count}개 운동",
+  "cannotChangeDateDuringWorkout": "운동 중에는 날짜를 변경할 수 없습니다",
+  "workoutCompleted": "운동이 완료되었습니다! 🎉",
+  "cancelTimer": "타이머 취소",
+  "rest": "휴식",
+  "waiting": "대기",
+  "tempo": "템포",
+  "tempoStart": "템포 시작 ({eccentric}/{concentric}s)",
+  "memo": "메모",
+  "dayUnit": "일",
+  "validWorkoutDaysGoal": "올바른 운동일수 목표를 입력하세요.",
+  "validVolumeGoal": "올바른 볼륨 목표를 입력하세요.",
+  "goalSaved": "목표가 저장되었습니다.",
+  "profilePhotoChanged": "프로필 사진이 변경되었습니다.",
+  "profilePhotoDeleted": "프로필 사진이 삭제되었습니다.",
+  "birthDate": "생년월일 *",
+  "enterBirthDate": "생년월일을 입력해 주세요.",
+  "gender": "성별 *",
+  "enterGender": "성별을 알려주세요.",
+  "male": "남성",
+  "female": "여성",
+  "next": "다음",
+  "infoUsageNotice": "입력 정보는 운동 추천 용도로만 사용합니다.",
+  "analysisTitle": "분석",
+  "totalVolumeLabel": "총 볼륨",
+  "bodyBalanceAnalysis": "신체 밸런스 분석",
+  "last30DaysSets": "최근 30일 부위별 운동 세트 수",
+  "analysisResult": "분석 결과",
+  "bodyPartAnalysisResult": "회원님은 현재 {strongest} 운동 비중이 높고({strongestSets}세트), {weakest} 운동이 부족합니다({weakestSets}세트).",
+  "focusNeeded": "집중 공략 필요",
+  "lowBodyPartWarning": "현재 {parts} 운동 비중이 낮습니다. 밸런스를 위해 조금 더 신경 써주세요!",
+  "goToSupplementExercise": "보완 운동 하러 가기",
+  "totalXpWeekly": "총 {total} XP · 이번 주 {weekly} XP",
+  "streakMessage": "{days}일 연속 운동 중! 🔥",
+  "startWorkoutToday": "오늘 운동을 시작해보세요!",
+  "longestRecord": "최장 기록: {days}일",
+  "createFirstStreak": "첫 스트릭을 만들어보세요",
+  "oneMinute": "1분",
+  "oneMinute30Sec": "1분30초",
+  "twoMinutes": "2분",
+  "threeMinutes": "3분",
+  "xpRemaining": "{xp} XP 남음",
+  "@xpRemaining": { "placeholders": { "xp": { "type": "int" } } },
+  "achievement": "업적",
+  "achieveFirst": "첫 번째 업적을 달성해보세요!",
+  "exerciseUnit": "{count}개",
+  "@exerciseUnit": { "placeholders": { "count": { "type": "int" } } },
+  "exercise": "운동",
+  "totalSets": "총 세트",
+  "setsUnit": "{count}세트",
+  "@setsUnit": { "placeholders": { "count": { "type": "int" } } },
+  "startWorkoutNow": "지금 운동 시작하기",
+  "noRecentWorkout": "최근 운동 기록이 없습니다",
+  "level": "Level {level}",
+  "@level": { "placeholders": { "level": { "type": "int" } } },
+  "leagueBronze": "브론즈",
+  "leagueSilver": "실버",
+  "leagueGold": "골드",
+  "leaguePlatinum": "플래티넘",
+  "leagueDiamond": "다이아몬드",
+  "leagueMaster": "마스터"
 }
-

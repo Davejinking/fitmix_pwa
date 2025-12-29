@@ -2,14 +2,6 @@
   "@@locale": "en",
   "appName": "Lifto",
   "greetingWithName": "Hello, {name}",
-  "@greetingWithName": {
-    "description": "User greeting",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "defaultUser": "User",
   "burnFit": "BURN FIT",
   "upgrade": "Upgrade",
@@ -17,52 +9,14 @@
   "myGoal": "My Goal",
   "createNow": "Create Now",
   "workoutDaysGoal": "Workout Days: {days} / {goal} days",
-  "@workoutDaysGoal": {
-    "description": "Workout days goal display",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      },
-      "goal": {
-        "type": "int"
-      }
-    }
-  },
   "workoutVolumeGoal": "Workout Volume: {volume} / {goal} kg",
-  "@workoutVolumeGoal": {
-    "description": "Workout volume goal display",
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      },
-      "goal": {
-        "type": "String"
-      }
-    }
-  },
   "startWorkout": "Start Workout",
   "activityTrend": "Activity Trend",
   "time": "Time",
   "volume": "Volume",
   "density": "Density",
   "weeklyAverageVolume": "This week's average workout volume is {volume}kg.",
-  "@weeklyAverageVolume": {
-    "description": "Weekly average volume text",
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      }
-    }
-  },
   "weeklyComparison": "Compared to last week: {diff}kg",
-  "@weeklyComparison": {
-    "description": "Weekly comparison text",
-    "placeholders": {
-      "diff": {
-        "type": "String"
-      }
-    }
-  },
   "weekdayMon": "Mon",
   "weekdayTue": "Tue",
   "weekdayWed": "Wed",
@@ -82,34 +36,26 @@
   "noWorkoutRecords": "No workout records",
   "workoutRecord": "Workout Record",
   "totalVolume": "Total Volume: {volume}kg",
-  "@totalVolume": {
-    "placeholders": {
-      "volume": {
-        "type": "String"
-      }
-    }
-  },
+  "totalVolumeShort": "Total Volume {volume}kg",
   "andMore": "and {count} more",
-  "@andMore": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "todayWorkout": "Today's Workout",
   "restTimeSetting": "Rest Time Setting",
   "endWorkout": "End Workout",
-  "endWorkoutConfirm": "Do you want to end the workout and save the record?",
+  "endWorkoutConfirm": "End workout and save the record?",
   "endAndSaveWorkout": "End & Save Workout",
-  "noWorkoutPlan": "No workout plan for today.\\nPlease create a plan in the calendar first.",
+  "noWorkoutPlan": "No workout plan for today.\nPlease create a plan in the calendar first.",
+  "noWorkoutPlanDesc": "Tap \"Add Exercise\" button below\nto add exercises",
   "skipRest": "Skip Rest",
   "restTimer": "Rest Timer",
   "adjustRestTime": "Adjust Rest Time",
   "workoutDuration": "Workout Duration",
   "restTimeRemaining": "Rest Time Remaining",
   "seconds": "{count}s",
+  "secondsUnit": "sec",
   "close": "Close",
+  "confirm": "Confirm",
+  "continueWorkout": "Continue",
+  "quit": "Quit",
   "volumeByBodyPart": "Volume by Body Part",
   "monthlyWorkoutTime": "Monthly Workout Time",
   "noAnalysisData": "No workout data to analyze.",
@@ -120,10 +66,12 @@
   "exerciseName": "Exercise Name",
   "cancel": "Cancel",
   "save": "Save",
+  "saved": "Saved.",
+  "saveFailed": "Failed to save.",
+  "loadFailed": "Load failed: {error}",
   "deleteExercise": "Delete Exercise",
   "deleteExerciseConfirm": "Delete '{name}' exercise?",
-  "saveFailed": "Failed to save.",
-  "deleteFailed": "Failed to delete.",
+  "deleteFailed": "Delete failed.",
   "libraryEmpty": "Exercise library is empty.",
   "profile": "Profile",
   "bodyInfo": "Body Info",
@@ -149,9 +97,11 @@
   "logout": "Logout",
   "logoutConfirm": "Do you want to logout?",
   "loginWithGoogle": "Sign in with Google",
+  "continueAsGuest": "Continue as Guest",
+  "allInOnePlace": "All your workouts in one place",
   "enterWeight": "Please enter your weight.",
   "enterHeight": "Please enter your height.",
-  "requiredInfo": "Please provide required information\\nto start your workout.",
+  "requiredInfo": "Please provide required information\nto start your workout.",
   "weightLabel": "Weight *",
   "heightLabel": "Height *",
   "saveInfoFailed": "Failed to save information.",
@@ -162,11 +112,17 @@
   "deleted": "{name} deleted",
   "undo": "Undo",
   "addSet": "Add Set",
+  "deleteSet": "Delete Set",
   "planYourWorkout": "Plan your workout!",
   "setNumber": "Set {number}",
+  "setLabel": "Set",
   "weightKg": "Weight(kg)",
   "reps": "Reps",
+  "repsUnit": "reps",
+  "completed": "Done",
+  "notCompleted": "Not Done",
   "minOneSet": "At least 1 set required.",
+  "enterRepsFirst": "Enter target reps first",
   "favorites": "Favorites",
   "chest": "Chest",
   "back": "Back",
@@ -184,7 +140,7 @@
   "dumbbell": "Dumbbell",
   "cable": "Cable",
   "band": "Band",
-  "searchExercise": "Search for exercises.",
+  "searchExercise": "Search for exercises",
   "noExercises": "No exercises found.",
   "retry": "Retry",
   "addCustomExercise": "Add Custom Exercise",
@@ -192,5 +148,65 @@
   "selectBodyPart": "Select Body Part",
   "selectEquipment": "Select Equipment",
   "add": "Add",
-  "pleaseEnterExerciseName": "Please enter exercise name."
+  "pleaseEnterExerciseName": "Please enter exercise name.",
+  "workoutPlan": "Workout Plan",
+  "selectExercise": "Select Exercise",
+  "workoutInProgress": "{month}/{day} ({weekday}) Working Out",
+  "exerciseCount": "{count} exercises",
+  "cannotChangeDateDuringWorkout": "Cannot change date during workout",
+  "workoutCompleted": "Workout completed! 🎉",
+  "cancelTimer": "Cancel Timer",
+  "rest": "Rest",
+  "waiting": "Wait",
+  "tempo": "Tempo",
+  "tempoStart": "Start Tempo ({eccentric}/{concentric}s)",
+  "memo": "Memo",
+  "dayUnit": "days",
+  "validWorkoutDaysGoal": "Please enter a valid workout days goal.",
+  "validVolumeGoal": "Please enter a valid volume goal.",
+  "goalSaved": "Goal saved.",
+  "profilePhotoChanged": "Profile photo changed.",
+  "profilePhotoDeleted": "Profile photo deleted.",
+  "birthDate": "Birth Date *",
+  "enterBirthDate": "Please enter your birth date.",
+  "gender": "Gender *",
+  "enterGender": "Please select your gender.",
+  "male": "Male",
+  "female": "Female",
+  "next": "Next",
+  "infoUsageNotice": "This information is only used for workout recommendations.",
+  "analysisTitle": "Analysis",
+  "totalVolumeLabel": "Total Volume",
+  "bodyBalanceAnalysis": "Body Balance Analysis",
+  "last30DaysSets": "Sets by body part (last 30 days)",
+  "analysisResult": "Analysis Result",
+  "bodyPartAnalysisResult": "You have high {strongest} workout ratio ({strongestSets} sets), and need more {weakest} workouts ({weakestSets} sets).",
+  "focusNeeded": "Focus Needed",
+  "lowBodyPartWarning": "Your {parts} workout ratio is low. Pay more attention for balance!",
+  "goToSupplementExercise": "Go to Supplement Exercise",
+  "totalXpWeekly": "Total {total} XP · This week {weekly} XP",
+  "streakMessage": "{days} day streak! 🔥",
+  "startWorkoutToday": "Start your workout today!",
+  "longestRecord": "Longest: {days} days",
+  "createFirstStreak": "Create your first streak",
+  "oneMinute": "1 min",
+  "oneMinute30Sec": "1 min 30 sec",
+  "twoMinutes": "2 min",
+  "threeMinutes": "3 min",
+  "xpRemaining": "{xp} XP left",
+  "achievement": "Achievements",
+  "achieveFirst": "Achieve your first badge!",
+  "exerciseUnit": "{count}",
+  "exercise": "Exercises",
+  "totalSets": "Total Sets",
+  "setsUnit": "{count} sets",
+  "startWorkoutNow": "Start workout now",
+  "noRecentWorkout": "No recent workout records",
+  "level": "Level {level}",
+  "leagueBronze": "Bronze",
+  "leagueSilver": "Silver",
+  "leagueGold": "Gold",
+  "leaguePlatinum": "Platinum",
+  "leagueDiamond": "Diamond",
+  "leagueMaster": "Master"
 }

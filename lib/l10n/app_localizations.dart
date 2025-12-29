@@ -100,803 +100,1252 @@ abstract class AppLocalizations {
     Locale('ko'),
   ];
 
-  /// 앱 이름
+  /// No description provided for @appName.
   ///
   /// In ko, this message translates to:
   /// **'Lifto'**
   String get appName;
 
-  /// 사용자 인사말
+  /// No description provided for @greetingWithName.
   ///
   /// In ko, this message translates to:
   /// **'안녕하세요, {name}님'**
-  String greetingWithName(String name);
+  String greetingWithName(Object name);
 
-  /// 기본 사용자명
+  /// No description provided for @defaultUser.
   ///
   /// In ko, this message translates to:
   /// **'사용자'**
   String get defaultUser;
 
-  /// 브랜드명
-  ///
-  /// In ko, this message translates to:
-  /// **'BURN FIT'**
-  String get burnFit;
-
-  /// 업그레이드 버튼
+  /// No description provided for @upgrade.
   ///
   /// In ko, this message translates to:
   /// **'업그레이드'**
   String get upgrade;
 
-  /// 업데이트 배너 텍스트
-  ///
-  /// In ko, this message translates to:
-  /// **'9월 22일 업데이트 노트'**
-  String get updateNote;
-
-  /// 목표 카드 제목
+  /// No description provided for @myGoal.
   ///
   /// In ko, this message translates to:
   /// **'내 목표'**
   String get myGoal;
 
-  /// 목표 생성 버튼
+  /// No description provided for @createNow.
   ///
   /// In ko, this message translates to:
   /// **'바로 만들기'**
   String get createNow;
 
-  /// 운동 일수 목표 표시
+  /// No description provided for @workoutDaysGoal.
   ///
   /// In ko, this message translates to:
   /// **'운동 일수: {days} / {goal} 일'**
-  String workoutDaysGoal(int days, int goal);
+  String workoutDaysGoal(Object days, Object goal);
 
-  /// 운동 볼륨 목표 표시
+  /// No description provided for @workoutVolumeGoal.
   ///
   /// In ko, this message translates to:
   /// **'운동 볼륨: {volume} / {goal} kg'**
-  String workoutVolumeGoal(String volume, String goal);
+  String workoutVolumeGoal(Object goal, Object volume);
 
-  /// 운동 시작 버튼
+  /// No description provided for @startWorkout.
   ///
   /// In ko, this message translates to:
-  /// **'운동 시작하기'**
+  /// **'운동 시작'**
   String get startWorkout;
 
-  /// 활동 추세 카드 제목
+  /// No description provided for @activityTrend.
   ///
   /// In ko, this message translates to:
   /// **'운동량 변화'**
   String get activityTrend;
 
-  /// 시간 필터 탭
+  /// No description provided for @time.
   ///
   /// In ko, this message translates to:
   /// **'시간'**
   String get time;
 
-  /// 볼륨 필터 탭
+  /// No description provided for @volume.
   ///
   /// In ko, this message translates to:
   /// **'볼륨'**
   String get volume;
 
-  /// 밀도 필터 탭
+  /// No description provided for @density.
   ///
   /// In ko, this message translates to:
   /// **'밀도'**
   String get density;
 
-  /// 주간 평균 볼륨 텍스트
+  /// No description provided for @weeklyAverageVolume.
   ///
   /// In ko, this message translates to:
   /// **'이번 주 평균 운동 볼륨은 {volume}kg 입니다.'**
-  String weeklyAverageVolume(String volume);
+  String weeklyAverageVolume(Object volume);
 
-  /// 주간 비교 텍스트
+  /// No description provided for @weeklyComparison.
   ///
   /// In ko, this message translates to:
   /// **'저번 주 대비 {diff}kg'**
-  String weeklyComparison(String diff);
+  String weeklyComparison(Object diff);
 
-  /// 요일: 월요일
+  /// No description provided for @weekdayMon.
   ///
   /// In ko, this message translates to:
   /// **'월'**
   String get weekdayMon;
 
-  /// 요일: 화요일
+  /// No description provided for @weekdayTue.
   ///
   /// In ko, this message translates to:
   /// **'화'**
   String get weekdayTue;
 
-  /// 요일: 수요일
+  /// No description provided for @weekdayWed.
   ///
   /// In ko, this message translates to:
   /// **'수'**
   String get weekdayWed;
 
-  /// 요일: 목요일
+  /// No description provided for @weekdayThu.
   ///
   /// In ko, this message translates to:
   /// **'목'**
   String get weekdayThu;
 
-  /// 요일: 금요일
+  /// No description provided for @weekdayFri.
   ///
   /// In ko, this message translates to:
   /// **'금'**
   String get weekdayFri;
 
-  /// 요일: 토요일
+  /// No description provided for @weekdaySat.
   ///
   /// In ko, this message translates to:
   /// **'토'**
   String get weekdaySat;
 
-  /// 요일: 일요일
+  /// No description provided for @weekdaySun.
   ///
   /// In ko, this message translates to:
   /// **'일'**
   String get weekdaySun;
 
-  /// 홈 탭
+  /// No description provided for @home.
   ///
   /// In ko, this message translates to:
   /// **'홈'**
   String get home;
 
-  /// 캘린더 탭
+  /// No description provided for @calendar.
   ///
   /// In ko, this message translates to:
   /// **'캘린더'**
   String get calendar;
 
-  /// 라이브러리 탭
+  /// No description provided for @library.
   ///
   /// In ko, this message translates to:
   /// **'라이브러리'**
   String get library;
 
-  /// 분석 탭
+  /// No description provided for @analysis.
   ///
   /// In ko, this message translates to:
   /// **'분석'**
   String get analysis;
 
-  /// 알 수 없는 페이지 에러 메시지
+  /// No description provided for @unknownPage.
   ///
   /// In ko, this message translates to:
   /// **'알 수 없는 페이지'**
   String get unknownPage;
 
-  /// 앱 이름 (짧은 버전)
+  /// No description provided for @fitMix.
   ///
   /// In ko, this message translates to:
   /// **'Lifto'**
   String get fitMix;
 
-  /// 목표 수정 버튼
+  /// No description provided for @editGoal.
   ///
   /// In ko, this message translates to:
   /// **'목표 수정'**
   String get editGoal;
 
-  /// 날짜 선택 모달 제목
+  /// No description provided for @selectDate.
   ///
   /// In ko, this message translates to:
   /// **'가는 날'**
   String get selectDate;
 
-  /// 운동 계획하기 버튼
+  /// No description provided for @planWorkout.
   ///
   /// In ko, this message translates to:
   /// **'운동 계획하기'**
   String get planWorkout;
 
-  /// 운동 기록 없음 메시지
+  /// No description provided for @noWorkoutRecords.
   ///
   /// In ko, this message translates to:
   /// **'운동 기록이 없습니다'**
   String get noWorkoutRecords;
 
-  /// 운동 기록 카드 제목
+  /// No description provided for @workoutRecord.
   ///
   /// In ko, this message translates to:
   /// **'운동 기록'**
   String get workoutRecord;
 
-  /// 총 볼륨 표시
+  /// No description provided for @totalVolume.
   ///
   /// In ko, this message translates to:
   /// **'총 볼륨: {volume}kg'**
-  String totalVolume(String volume);
+  String totalVolume(Object volume);
 
-  /// 추가 항목 개수
+  /// No description provided for @totalVolumeShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 볼륨 {volume}kg'**
+  String totalVolumeShort(Object volume);
+
+  /// No description provided for @andMore.
   ///
   /// In ko, this message translates to:
   /// **'외 {count}개'**
-  String andMore(int count);
+  String andMore(Object count);
 
-  /// 오늘의 운동 페이지 제목
+  /// No description provided for @todayWorkout.
   ///
   /// In ko, this message translates to:
   /// **'오늘의 운동'**
   String get todayWorkout;
 
-  /// 휴식 시간 설정 다이얼로그 제목
+  /// No description provided for @restTimeSetting.
   ///
   /// In ko, this message translates to:
   /// **'휴식 시간 설정'**
   String get restTimeSetting;
 
-  /// 운동 종료 다이얼로그 제목
+  /// No description provided for @endWorkout.
   ///
   /// In ko, this message translates to:
   /// **'운동 종료'**
   String get endWorkout;
 
-  /// 운동 종료 확인 메시지
+  /// No description provided for @endWorkoutConfirm.
   ///
   /// In ko, this message translates to:
-  /// **'운동을 종료하고 기록을 저장하시겠습니까?'**
+  /// **'운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.'**
   String get endWorkoutConfirm;
 
-  /// 운동 종료 버튼
+  /// No description provided for @endAndSaveWorkout.
   ///
   /// In ko, this message translates to:
   /// **'운동 종료 및 저장'**
   String get endAndSaveWorkout;
 
-  /// 운동 계획 없음 메시지
+  /// No description provided for @noWorkoutPlan.
   ///
   /// In ko, this message translates to:
-  /// **'오늘의 운동 계획이 없습니다.\\n캘린더에서 먼저 계획을 세워주세요.'**
+  /// **'운동 계획이 없습니다'**
   String get noWorkoutPlan;
 
-  /// 휴식 건너뛰기 버튼
+  /// No description provided for @noWorkoutPlanDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'하단의 \"운동 추가\" 버튼을 눌러\n운동을 추가해보세요'**
+  String get noWorkoutPlanDesc;
+
+  /// No description provided for @skipRest.
   ///
   /// In ko, this message translates to:
   /// **'휴식 건너뛰기'**
   String get skipRest;
 
-  /// 휴식 타이머 제목
+  /// No description provided for @restTimer.
   ///
   /// In ko, this message translates to:
   /// **'휴식 타이머'**
   String get restTimer;
 
-  /// 휴식 시간 조절 다이얼로그 제목
+  /// No description provided for @adjustRestTime.
   ///
   /// In ko, this message translates to:
   /// **'휴식 시간 조절'**
   String get adjustRestTime;
 
-  /// 전체 운동 시간 레이블
+  /// No description provided for @workoutDuration.
   ///
   /// In ko, this message translates to:
   /// **'운동 시간'**
   String get workoutDuration;
 
-  /// 휴식 시간 남음 레이블
+  /// No description provided for @restTimeRemaining.
   ///
   /// In ko, this message translates to:
   /// **'휴식 시간 남음'**
   String get restTimeRemaining;
 
-  /// 초 단위
+  /// No description provided for @seconds.
   ///
   /// In ko, this message translates to:
   /// **'{count}초'**
-  String seconds(int count);
+  String seconds(Object count);
 
-  /// 닫기 버튼
+  /// No description provided for @secondsUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'초'**
+  String get secondsUnit;
+
+  /// No description provided for @close.
   ///
   /// In ko, this message translates to:
   /// **'닫기'**
   String get close;
 
-  /// 부위별 볼륨 차트 제목
+  /// No description provided for @confirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get confirm;
+
+  /// No description provided for @continueWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'계속하기'**
+  String get continueWorkout;
+
+  /// No description provided for @quit.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료'**
+  String get quit;
+
+  /// No description provided for @volumeByBodyPart.
   ///
   /// In ko, this message translates to:
   /// **'부위별 총 볼륨'**
   String get volumeByBodyPart;
 
-  /// 월별 운동 시간 차트 제목
+  /// No description provided for @monthlyWorkoutTime.
   ///
   /// In ko, this message translates to:
   /// **'월별 총 운동 시간'**
   String get monthlyWorkoutTime;
 
-  /// 분석 데이터 없음 메시지
+  /// No description provided for @noAnalysisData.
   ///
   /// In ko, this message translates to:
   /// **'분석할 운동 기록이 없습니다.'**
   String get noAnalysisData;
 
-  /// 오류 메시지
+  /// No description provided for @errorOccurred.
   ///
   /// In ko, this message translates to:
   /// **'오류 발생: {error}'**
-  String errorOccurred(String error);
+  String errorOccurred(Object error);
 
-  /// 시간 단위
+  /// No description provided for @hours.
   ///
   /// In ko, this message translates to:
   /// **'{count} 시간'**
-  String hours(String count);
+  String hours(Object count);
 
-  /// 운동 추가 다이얼로그 제목
+  /// No description provided for @addExercise.
   ///
   /// In ko, this message translates to:
   /// **'운동 추가'**
   String get addExercise;
 
-  /// 운동 수정 다이얼로그 제목
+  /// No description provided for @editExercise.
   ///
   /// In ko, this message translates to:
   /// **'운동 수정'**
   String get editExercise;
 
-  /// 운동 이름 입력 필드
+  /// No description provided for @exerciseName.
   ///
   /// In ko, this message translates to:
   /// **'운동 이름'**
   String get exerciseName;
 
-  /// 취소 버튼
+  /// No description provided for @cancel.
   ///
   /// In ko, this message translates to:
   /// **'취소'**
   String get cancel;
 
-  /// 저장 버튼
+  /// No description provided for @save.
   ///
   /// In ko, this message translates to:
   /// **'저장'**
   String get save;
 
-  /// 운동 삭제 다이얼로그 제목
+  /// No description provided for @saved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장되었습니다.'**
+  String get saved;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장 실패: {error}'**
+  String saveFailed(Object error);
+
+  /// No description provided for @loadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'로드 실패: {error}'**
+  String loadFailed(Object error);
+
+  /// No description provided for @deleteExercise.
   ///
   /// In ko, this message translates to:
   /// **'운동 삭제'**
   String get deleteExercise;
 
-  /// 운동 삭제 확인 메시지
+  /// No description provided for @deleteExerciseConfirm.
   ///
   /// In ko, this message translates to:
   /// **'\'{name}\' 운동을 삭제하시겠습니까?'**
-  String deleteExerciseConfirm(String name);
+  String deleteExerciseConfirm(Object name);
 
-  /// 저장 실패 메시지
-  ///
-  /// In ko, this message translates to:
-  /// **'저장에 실패했습니다.'**
-  String get saveFailed;
-
-  /// 삭제 실패 메시지
+  /// No description provided for @deleteFailed.
   ///
   /// In ko, this message translates to:
   /// **'삭제에 실패했습니다.'**
   String get deleteFailed;
 
-  /// 라이브러리 비어있음 메시지
+  /// No description provided for @libraryEmpty.
   ///
   /// In ko, this message translates to:
   /// **'운동 라이브러리가 비어있습니다.'**
   String get libraryEmpty;
 
-  /// 프로필 페이지 제목
+  /// No description provided for @profile.
   ///
   /// In ko, this message translates to:
   /// **'프로필'**
   String get profile;
 
-  /// 신체 정보 섹션 제목
+  /// No description provided for @bodyInfo.
   ///
   /// In ko, this message translates to:
   /// **'신체 정보'**
   String get bodyInfo;
 
-  /// 수정 버튼
+  /// No description provided for @edit.
   ///
   /// In ko, this message translates to:
   /// **'수정'**
   String get edit;
 
-  /// 키 표시
+  /// No description provided for @height.
   ///
   /// In ko, this message translates to:
   /// **'키: {value} cm'**
-  String height(String value);
+  String height(Object value);
 
-  /// 몸무게 표시
+  /// No description provided for @weight.
   ///
   /// In ko, this message translates to:
   /// **'몸무게: {value} kg'**
-  String weight(String value);
+  String weight(Object value);
 
-  /// 운동 목표 섹션 제목
+  /// No description provided for @workoutGoal.
   ///
   /// In ko, this message translates to:
   /// **'운동 목표'**
   String get workoutGoal;
 
-  /// 월별 운동 일수 레이블
+  /// No description provided for @monthlyWorkoutDays.
   ///
   /// In ko, this message translates to:
   /// **'월별 운동 일수'**
   String get monthlyWorkoutDays;
 
-  /// 월별 총 볼륨 레이블
+  /// No description provided for @monthlyTotalVolume.
   ///
   /// In ko, this message translates to:
   /// **'월별 총 볼륨'**
   String get monthlyTotalVolume;
 
-  /// 목표 저장 버튼
+  /// No description provided for @saveGoal.
   ///
   /// In ko, this message translates to:
   /// **'목표 저장'**
   String get saveGoal;
 
-  /// 갤러리 선택 옵션
+  /// No description provided for @selectFromGallery.
   ///
   /// In ko, this message translates to:
   /// **'갤러리에서 사진 선택'**
   String get selectFromGallery;
 
-  /// 사진 삭제 옵션
+  /// No description provided for @deletePhoto.
   ///
   /// In ko, this message translates to:
   /// **'사진 삭제'**
   String get deletePhoto;
 
-  /// 게스트 사용자
+  /// No description provided for @guest.
   ///
   /// In ko, this message translates to:
   /// **'게스트'**
   String get guest;
 
-  /// 설정 페이지 제목
+  /// No description provided for @settings.
   ///
   /// In ko, this message translates to:
   /// **'설정'**
   String get settings;
 
-  /// 외관 섹션
+  /// No description provided for @appearance.
   ///
   /// In ko, this message translates to:
   /// **'외관'**
   String get appearance;
 
-  /// 테마 설정
+  /// No description provided for @theme.
   ///
   /// In ko, this message translates to:
   /// **'테마'**
   String get theme;
 
-  /// 시스템 설정 옵션
+  /// No description provided for @systemSetting.
   ///
   /// In ko, this message translates to:
   /// **'시스템 설정'**
   String get systemSetting;
 
-  /// 라이트 테마
+  /// No description provided for @light.
   ///
   /// In ko, this message translates to:
   /// **'라이트'**
   String get light;
 
-  /// 다크 테마
+  /// No description provided for @dark.
   ///
   /// In ko, this message translates to:
   /// **'다크'**
   String get dark;
 
-  /// 계정 섹션
+  /// No description provided for @account.
   ///
   /// In ko, this message translates to:
   /// **'계정'**
   String get account;
 
-  /// 앱 정보 섹션
+  /// No description provided for @appInfo.
   ///
   /// In ko, this message translates to:
   /// **'앱 정보'**
   String get appInfo;
 
-  /// 버전 레이블
+  /// No description provided for @version.
   ///
   /// In ko, this message translates to:
   /// **'버전'**
   String get version;
 
-  /// 로그아웃 버튼
+  /// No description provided for @logout.
   ///
   /// In ko, this message translates to:
   /// **'로그아웃'**
   String get logout;
 
-  /// 로그아웃 확인 메시지
+  /// No description provided for @logoutConfirm.
   ///
   /// In ko, this message translates to:
   /// **'로그아웃 하시겠습니까?'**
   String get logoutConfirm;
 
-  /// Google 로그인 버튼
+  /// No description provided for @loginWithGoogle.
   ///
   /// In ko, this message translates to:
   /// **'Google로 로그인'**
   String get loginWithGoogle;
 
-  /// 몸무게 입력 안내
+  /// No description provided for @continueAsGuest.
+  ///
+  /// In ko, this message translates to:
+  /// **'게스트로 계속하기'**
+  String get continueAsGuest;
+
+  /// No description provided for @allInOnePlace.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동의 모든 것을 한 곳에서'**
+  String get allInOnePlace;
+
+  /// No description provided for @enterWeight.
   ///
   /// In ko, this message translates to:
   /// **'몸무게를 입력해 주세요.'**
   String get enterWeight;
 
-  /// 키 입력 안내
+  /// No description provided for @enterHeight.
   ///
   /// In ko, this message translates to:
   /// **'키를 입력해 주세요.'**
   String get enterHeight;
 
-  /// 필수 정보 입력 안내
+  /// No description provided for @requiredInfo.
   ///
   /// In ko, this message translates to:
-  /// **'운동을 시작하기 위해\\n필수 정보를 알려주세요.'**
+  /// **'운동을 시작하기 위해\n필수 정보를 알려주세요.'**
   String get requiredInfo;
 
-  /// 몸무게 레이블
+  /// No description provided for @weightLabel.
   ///
   /// In ko, this message translates to:
   /// **'몸무게 *'**
   String get weightLabel;
 
-  /// 키 레이블
+  /// No description provided for @heightLabel.
   ///
   /// In ko, this message translates to:
   /// **'키 *'**
   String get heightLabel;
 
-  /// 정보 저장 실패 메시지
+  /// No description provided for @saveInfoFailed.
   ///
   /// In ko, this message translates to:
   /// **'정보 저장에 실패했습니다.'**
   String get saveInfoFailed;
 
-  /// 가져오기 버튼
+  /// No description provided for @import.
   ///
   /// In ko, this message translates to:
   /// **'가져오기'**
   String get import;
 
-  /// 추가 완료 메시지
+  /// No description provided for @added.
   ///
   /// In ko, this message translates to:
   /// **'추가됨: {text}'**
-  String added(String text);
+  String added(Object text);
 
-  /// 운동 추가 완료 메시지
+  /// No description provided for @exerciseAdded.
   ///
   /// In ko, this message translates to:
   /// **'운동이 추가되었습니다.'**
   String get exerciseAdded;
 
-  /// 순서 변경 실패 메시지
+  /// No description provided for @reorderSaveFailed.
   ///
   /// In ko, this message translates to:
   /// **'순서 변경 저장에 실패했습니다.'**
   String get reorderSaveFailed;
 
-  /// 삭제 완료 메시지
+  /// No description provided for @deleted.
   ///
   /// In ko, this message translates to:
   /// **'{name} 삭제됨'**
-  String deleted(String name);
+  String deleted(Object name);
 
-  /// 실행 취소 버튼
+  /// No description provided for @undo.
   ///
   /// In ko, this message translates to:
   /// **'실행 취소'**
   String get undo;
 
-  /// 세트 추가 버튼
+  /// No description provided for @addSet.
   ///
   /// In ko, this message translates to:
   /// **'세트 추가'**
   String get addSet;
 
-  /// 운동 계획 안내
+  /// No description provided for @deleteSet.
+  ///
+  /// In ko, this message translates to:
+  /// **'세트 삭제'**
+  String get deleteSet;
+
+  /// No description provided for @planYourWorkout.
   ///
   /// In ko, this message translates to:
   /// **'운동을 직접 계획해보세요!'**
   String get planYourWorkout;
 
-  /// 세트 번호
+  /// No description provided for @setNumber.
   ///
   /// In ko, this message translates to:
   /// **'{number}세트'**
-  String setNumber(int number);
+  String setNumber(Object number);
 
-  /// 무게 입력 레이블
+  /// No description provided for @setLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'세트'**
+  String get setLabel;
+
+  /// No description provided for @weightKg.
   ///
   /// In ko, this message translates to:
   /// **'무게(kg)'**
   String get weightKg;
 
-  /// 횟수 입력 레이블
+  /// No description provided for @reps.
   ///
   /// In ko, this message translates to:
   /// **'횟수'**
   String get reps;
 
-  /// 최소 세트 경고
+  /// No description provided for @repsUnit.
   ///
   /// In ko, this message translates to:
-  /// **'최소 1개의 세트가 필요합니다.'**
+  /// **'회'**
+  String get repsUnit;
+
+  /// No description provided for @completed.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get completed;
+
+  /// No description provided for @notCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'미완료'**
+  String get notCompleted;
+
+  /// No description provided for @minOneSet.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 1개의 세트가 필요합니다'**
   String get minOneSet;
 
-  /// 즐겨찾기 탭
+  /// No description provided for @enterRepsFirst.
+  ///
+  /// In ko, this message translates to:
+  /// **'먼저 목표 횟수를 입력하세요'**
+  String get enterRepsFirst;
+
+  /// No description provided for @favorites.
   ///
   /// In ko, this message translates to:
   /// **'즐겨찾기'**
   String get favorites;
 
-  /// 가슴 부위
+  /// No description provided for @chest.
   ///
   /// In ko, this message translates to:
   /// **'가슴'**
   String get chest;
 
-  /// 등 부위
+  /// No description provided for @back.
   ///
   /// In ko, this message translates to:
   /// **'등'**
   String get back;
 
-  /// 하체 부위
+  /// No description provided for @legs.
   ///
   /// In ko, this message translates to:
   /// **'하체'**
   String get legs;
 
-  /// 어깨 부위
+  /// No description provided for @shoulders.
   ///
   /// In ko, this message translates to:
   /// **'어깨'**
   String get shoulders;
 
-  /// 팔 부위
+  /// No description provided for @arms.
   ///
   /// In ko, this message translates to:
   /// **'팔'**
   String get arms;
 
-  /// 복근 부위
+  /// No description provided for @abs.
   ///
   /// In ko, this message translates to:
   /// **'복근'**
   String get abs;
 
-  /// 유산소 운동
+  /// No description provided for @cardio.
   ///
   /// In ko, this message translates to:
   /// **'유산소'**
   String get cardio;
 
-  /// 스트레칭
+  /// No description provided for @stretching.
   ///
   /// In ko, this message translates to:
   /// **'스트레칭'**
   String get stretching;
 
-  /// 전신 운동
+  /// No description provided for @fullBody.
   ///
   /// In ko, this message translates to:
   /// **'전신'**
   String get fullBody;
 
-  /// 전체 필터
+  /// No description provided for @all.
   ///
   /// In ko, this message translates to:
   /// **'전체'**
   String get all;
 
-  /// 맨몸 운동
+  /// No description provided for @bodyweight.
   ///
   /// In ko, this message translates to:
   /// **'맨몸'**
   String get bodyweight;
 
-  /// 머신 장비
+  /// No description provided for @machine.
   ///
   /// In ko, this message translates to:
   /// **'머신'**
   String get machine;
 
-  /// 바벨 장비
+  /// No description provided for @barbell.
   ///
   /// In ko, this message translates to:
   /// **'바벨'**
   String get barbell;
 
-  /// 덤벨 장비
+  /// No description provided for @dumbbell.
   ///
   /// In ko, this message translates to:
   /// **'덤벨'**
   String get dumbbell;
 
-  /// 케이블 장비
+  /// No description provided for @cable.
   ///
   /// In ko, this message translates to:
   /// **'케이블'**
   String get cable;
 
-  /// 밴드 장비
+  /// No description provided for @band.
   ///
   /// In ko, this message translates to:
   /// **'밴드'**
   String get band;
 
-  /// 운동 검색 힌트
+  /// No description provided for @searchExercise.
   ///
   /// In ko, this message translates to:
   /// **'찾으시는 운동을 검색해보세요.'**
   String get searchExercise;
 
-  /// 운동 없음 메시지
+  /// No description provided for @noExercises.
   ///
   /// In ko, this message translates to:
   /// **'운동이 없습니다.'**
   String get noExercises;
 
-  /// 다시 시도 버튼
+  /// No description provided for @retry.
   ///
   /// In ko, this message translates to:
   /// **'다시 시도'**
   String get retry;
 
-  /// 커스텀 운동 추가 버튼
+  /// No description provided for @addCustomExercise.
   ///
   /// In ko, this message translates to:
   /// **'커스텀 운동 추가'**
   String get addCustomExercise;
 
-  /// 커스텀 운동 이름 입력
+  /// No description provided for @customExerciseName.
   ///
   /// In ko, this message translates to:
   /// **'운동 이름'**
   String get customExerciseName;
 
-  /// 부위 선택 레이블
+  /// No description provided for @selectBodyPart.
   ///
   /// In ko, this message translates to:
   /// **'부위 선택'**
   String get selectBodyPart;
 
-  /// 장비 선택 레이블
+  /// No description provided for @selectEquipment.
   ///
   /// In ko, this message translates to:
   /// **'장비 선택'**
   String get selectEquipment;
 
-  /// 추가 버튼
+  /// No description provided for @add.
   ///
   /// In ko, this message translates to:
   /// **'추가'**
   String get add;
 
-  /// 운동 이름 입력 요청
+  /// No description provided for @pleaseEnterExerciseName.
   ///
   /// In ko, this message translates to:
   /// **'운동 이름을 입력해주세요.'**
   String get pleaseEnterExerciseName;
+
+  /// No description provided for @workoutPlan.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 계획'**
+  String get workoutPlan;
+
+  /// No description provided for @selectExercise.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 선택'**
+  String get selectExercise;
+
+  /// No description provided for @workoutInProgress.
+  ///
+  /// In ko, this message translates to:
+  /// **'{month}월 {day}일 ({weekday}) 운동 중'**
+  String workoutInProgress(Object day, Object month, Object weekday);
+
+  /// No description provided for @exerciseCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개 운동'**
+  String exerciseCount(Object count);
+
+  /// No description provided for @cannotChangeDateDuringWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 중에는 날짜를 변경할 수 없습니다'**
+  String get cannotChangeDateDuringWorkout;
+
+  /// No description provided for @workoutCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동이 완료되었습니다! 🎉'**
+  String get workoutCompleted;
+
+  /// No description provided for @cancelTimer.
+  ///
+  /// In ko, this message translates to:
+  /// **'타이머 취소'**
+  String get cancelTimer;
+
+  /// No description provided for @rest.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식'**
+  String get rest;
+
+  /// No description provided for @waiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기'**
+  String get waiting;
+
+  /// No description provided for @tempo.
+  ///
+  /// In ko, this message translates to:
+  /// **'템포'**
+  String get tempo;
+
+  /// No description provided for @tempoStart.
+  ///
+  /// In ko, this message translates to:
+  /// **'템포 시작 ({eccentric}/{concentric}s)'**
+  String tempoStart(Object concentric, Object eccentric);
+
+  /// No description provided for @memo.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모'**
+  String get memo;
+
+  /// No description provided for @dayUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'일'**
+  String get dayUnit;
+
+  /// No description provided for @validWorkoutDaysGoal.
+  ///
+  /// In ko, this message translates to:
+  /// **'올바른 운동일수 목표를 입력하세요.'**
+  String get validWorkoutDaysGoal;
+
+  /// No description provided for @validVolumeGoal.
+  ///
+  /// In ko, this message translates to:
+  /// **'올바른 볼륨 목표를 입력하세요.'**
+  String get validVolumeGoal;
+
+  /// No description provided for @goalSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'목표가 저장되었습니다.'**
+  String get goalSaved;
+
+  /// No description provided for @profilePhotoChanged.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로필 사진이 변경되었습니다.'**
+  String get profilePhotoChanged;
+
+  /// No description provided for @profilePhotoDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로필 사진이 삭제되었습니다.'**
+  String get profilePhotoDeleted;
+
+  /// No description provided for @birthDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'생년월일 *'**
+  String get birthDate;
+
+  /// No description provided for @enterBirthDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'생년월일을 입력해 주세요.'**
+  String get enterBirthDate;
+
+  /// No description provided for @gender.
+  ///
+  /// In ko, this message translates to:
+  /// **'성별 *'**
+  String get gender;
+
+  /// No description provided for @enterGender.
+  ///
+  /// In ko, this message translates to:
+  /// **'성별을 알려주세요.'**
+  String get enterGender;
+
+  /// No description provided for @male.
+  ///
+  /// In ko, this message translates to:
+  /// **'남성'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In ko, this message translates to:
+  /// **'여성'**
+  String get female;
+
+  /// No description provided for @next.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음'**
+  String get next;
+
+  /// No description provided for @infoUsageNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력 정보는 운동 추천 용도로만 사용합니다.'**
+  String get infoUsageNotice;
+
+  /// No description provided for @analysisTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'분석'**
+  String get analysisTitle;
+
+  /// No description provided for @totalVolumeLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 볼륨'**
+  String get totalVolumeLabel;
+
+  /// No description provided for @bodyBalanceAnalysis.
+  ///
+  /// In ko, this message translates to:
+  /// **'신체 밸런스 분석'**
+  String get bodyBalanceAnalysis;
+
+  /// No description provided for @last30DaysSets.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 30일 부위별 운동 세트 수'**
+  String get last30DaysSets;
+
+  /// No description provided for @analysisResult.
+  ///
+  /// In ko, this message translates to:
+  /// **'분석 결과'**
+  String get analysisResult;
+
+  /// No description provided for @bodyPartAnalysisResult.
+  ///
+  /// In ko, this message translates to:
+  /// **'회원님은 현재 {strongest} 운동 비중이 높고({strongestSets}세트), {weakest} 운동이 부족합니다({weakestSets}세트).'**
+  String bodyPartAnalysisResult(
+    Object strongest,
+    Object strongestSets,
+    Object weakest,
+    Object weakestSets,
+  );
+
+  /// No description provided for @focusNeeded.
+  ///
+  /// In ko, this message translates to:
+  /// **'집중 공략 필요'**
+  String get focusNeeded;
+
+  /// No description provided for @lowBodyPartWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 {parts} 운동 비중이 낮습니다. 밸런스를 위해 조금 더 신경 써주세요!'**
+  String lowBodyPartWarning(Object parts);
+
+  /// No description provided for @goToSupplementExercise.
+  ///
+  /// In ko, this message translates to:
+  /// **'보완 운동 하러 가기'**
+  String get goToSupplementExercise;
+
+  /// No description provided for @totalXpWeekly.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 {total} XP · 이번 주 {weekly} XP'**
+  String totalXpWeekly(Object total, Object weekly);
+
+  /// No description provided for @streakMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 연속 운동 중! 🔥'**
+  String streakMessage(Object days);
+
+  /// No description provided for @startWorkoutToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 운동을 시작해보세요!'**
+  String get startWorkoutToday;
+
+  /// No description provided for @longestRecord.
+  ///
+  /// In ko, this message translates to:
+  /// **'최장 기록: {days}일'**
+  String longestRecord(Object days);
+
+  /// No description provided for @createFirstStreak.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 스트릭을 만들어보세요'**
+  String get createFirstStreak;
+
+  /// No description provided for @oneMinute.
+  ///
+  /// In ko, this message translates to:
+  /// **'1분'**
+  String get oneMinute;
+
+  /// No description provided for @oneMinute30Sec.
+  ///
+  /// In ko, this message translates to:
+  /// **'1분30초'**
+  String get oneMinute30Sec;
+
+  /// No description provided for @twoMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'2분'**
+  String get twoMinutes;
+
+  /// No description provided for @threeMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'3분'**
+  String get threeMinutes;
+
+  /// No description provided for @xpRemaining.
+  ///
+  /// In ko, this message translates to:
+  /// **'{xp} XP 남음'**
+  String xpRemaining(int xp);
+
+  /// No description provided for @achievement.
+  ///
+  /// In ko, this message translates to:
+  /// **'업적'**
+  String get achievement;
+
+  /// No description provided for @achieveFirst.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 번째 업적을 달성해보세요!'**
+  String get achieveFirst;
+
+  /// No description provided for @exerciseUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개'**
+  String exerciseUnit(int count);
+
+  /// No description provided for @exercise.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동'**
+  String get exercise;
+
+  /// No description provided for @totalSets.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 세트'**
+  String get totalSets;
+
+  /// No description provided for @setsUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}세트'**
+  String setsUnit(int count);
+
+  /// No description provided for @startWorkoutNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 운동 시작하기'**
+  String get startWorkoutNow;
+
+  /// No description provided for @noRecentWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 운동 기록이 없습니다'**
+  String get noRecentWorkout;
+
+  /// No description provided for @level.
+  ///
+  /// In ko, this message translates to:
+  /// **'Level {level}'**
+  String level(int level);
+
+  /// No description provided for @leagueBronze.
+  ///
+  /// In ko, this message translates to:
+  /// **'브론즈'**
+  String get leagueBronze;
+
+  /// No description provided for @leagueSilver.
+  ///
+  /// In ko, this message translates to:
+  /// **'실버'**
+  String get leagueSilver;
+
+  /// No description provided for @leagueGold.
+  ///
+  /// In ko, this message translates to:
+  /// **'골드'**
+  String get leagueGold;
+
+  /// No description provided for @leaguePlatinum.
+  ///
+  /// In ko, this message translates to:
+  /// **'플래티넘'**
+  String get leaguePlatinum;
+
+  /// No description provided for @leagueDiamond.
+  ///
+  /// In ko, this message translates to:
+  /// **'다이아몬드'**
+  String get leagueDiamond;
+
+  /// No description provided for @leagueMaster.
+  ///
+  /// In ko, this message translates to:
+  /// **'마스터'**
+  String get leagueMaster;
 }
 
 class _AppLocalizationsDelegate
