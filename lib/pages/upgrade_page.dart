@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import '../core/burn_fit_style.dart';
+import '../l10n/app_localizations.dart';
 
 class UpgradePage extends StatelessWidget {
   const UpgradePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('프리미엄으로 업그레이드'),
+        title: Text(l10n.upgrade),
         centerTitle: true,
       ),
       body: Padding(
@@ -22,7 +24,7 @@ class UpgradePage extends StatelessWidget {
               size: 80,
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               '모든 기능을 잠금 해제하세요',
               textAlign: TextAlign.center,
               style: BurnFitStyle.title1,
@@ -30,7 +32,7 @@ class UpgradePage extends StatelessWidget {
             const SizedBox(height: 32),
             _buildFeatureItem(
               Icons.analytics_outlined,
-              '고급 분석',
+              l10n.analysisTitle,
               '주간, 월간, 연간 운동 데이터를 심층 분석하세요.',
             ),
             _buildFeatureItem(
@@ -59,7 +61,7 @@ class UpgradePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '언제든지 구독을 취소할 수 있습니다.',
               textAlign: TextAlign.center,
               style: BurnFitStyle.caption,

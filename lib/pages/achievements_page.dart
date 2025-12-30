@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/achievement.dart';
 import '../services/achievement_service.dart';
+import '../l10n/app_localizations.dart';
 
 class AchievementsPage extends StatefulWidget {
   final AchievementService achievementService;
@@ -32,11 +33,12 @@ class _AchievementsPageState extends State<AchievementsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
-        title: const Text('업적', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.achievement, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
       ),
       body: _isLoading
@@ -44,13 +46,13 @@ class _AchievementsPageState extends State<AchievementsPage> {
           : CustomScrollView(
               slivers: [
                 // 통계 요약
-                SliverToBoxAdapter(child: _buildStatsCard()),
+                SliverToBoxAdapter(child: _buildStatsCard(context)),
                 // 업적 목록
                 SliverPadding(
                   padding: const EdgeInsets.all(16),
                   sliver: SliverToBoxAdapter(
                     child: Text(
-                      '업적 (${widget.achievementService.unlockedIds.length}/${Achievements.all.length})',
+                      '${l10n.achievement} (${widget.achievementService.unlockedIds.length}/${Achievements.all.length})',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -72,7 +74,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                       (context, index) {
                         final achievement = Achievements.all[index];
                         final isUnlocked = widget.achievementService.isUnlocked(achievement.id);
-                        return _buildAchievementTile(achievement, isUnlocked);
+                        return _buildAchievementTile(achievement, isUnlocked, context);
                       },
                       childCount: Achievements.all.length,
                     ),
@@ -84,7 +86,8 @@ class _AchievementsPageState extends State<AchievementsPage> {
     );
   }
 
-  Widget _buildStatsCard() {
+  Widget _buildStatsCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_stats == null) return const SizedBox.shrink();
     
     return Container(
@@ -105,7 +108,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
             children: [
               _buildStatItem('🔥', '${_stats!.currentStreak}일', '현재 스트릭'),
               _buildStatItem('💪', '${_stats!.totalWorkouts}회', '총 운동'),
-              _buildStatItem('🏋️', '${(_stats!.totalVolume / 1000).toStringAsFixed(0)}t', '총 볼륨'),
+              _buildStatItem('🏋️', '${(_stats!.totalVolume / 1000).toStringAsFixed(0)}t', l10n.totalVolumeLabel),
             ],
           ),
         ],
@@ -138,9 +141,9 @@ class _AchievementsPageState extends State<AchievementsPage> {
     );
   }
 
-  Widget _buildAchievementTile(Achievement achievement, bool isUnlocked) {
+  Widget _buildAchievementTile(Achievement achievement, bool isUnlocked, BuildContext context) {
     return GestureDetector(
-      onTap: () => _showAchievementDetail(achievement, isUnlocked),
+      onTap: () => _showAchievementDetail(achievement, isUnlocked, context),
       child: Container(
         decoration: BoxDecoration(
           color: isUnlocked 
@@ -180,7 +183,8 @@ class _AchievementsPageState extends State<AchievementsPage> {
     );
   }
 
-  void _showAchievementDetail(Achievement achievement, bool isUnlocked) {
+  void _showAchievementDetail(Achievement achievement, bool isUnlocked, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF1E1E1E),
