@@ -1352,30 +1352,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'완료'**
   String get completeLabel;
-
-  /// No description provided for @currentStreak.
-  ///
-  /// In ko, this message translates to:
-  /// **'현재 스트릭'**
-  String get currentStreak;
-
-  /// No description provided for @totalWorkouts.
-  ///
-  /// In ko, this message translates to:
-  /// **'총 운동'**
-  String get totalWorkouts;
-
-  /// No description provided for @achievementUnlocked.
-  ///
-  /// In ko, this message translates to:
-  /// **'✅ 달성 완료!'**
-  String get achievementUnlocked;
-
-  /// No description provided for @achievementLocked.
-  ///
-  /// In ko, this message translates to:
-  /// **'🔒 미달성'**
-  String get achievementLocked;
 }
 
 class _AppLocalizationsDelegate
