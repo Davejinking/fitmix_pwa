@@ -106,8 +106,8 @@ class _AchievementsPageState extends State<AchievementsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem('🔥', '${_stats!.currentStreak}일', 'Current Streak'), // 임시로 영어 사용
-              _buildStatItem('💪', '${_stats!.totalWorkouts}회', l10n.totalSets),
+              _buildStatItem('🔥', '${_stats!.currentStreak}${l10n.dayUnit}', l10n.currentStreak),
+              _buildStatItem('💪', '${_stats!.totalWorkouts}${l10n.timesUnit}', l10n.totalWorkouts),
               _buildStatItem('🏋️', '${(_stats!.totalVolume / 1000).toStringAsFixed(0)}t', l10n.totalVolumeLabel),
             ],
           ),

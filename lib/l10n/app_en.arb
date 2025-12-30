@@ -162,6 +162,7 @@
   "tempoStart": "Start Tempo ({eccentric}/{concentric}s)",
   "memo": "Memo",
   "dayUnit": "days",
+  "timesUnit": "times",
   "validWorkoutDaysGoal": "Please enter a valid workout days goal.",
   "validVolumeGoal": "Please enter a valid volume goal.",
   "goalSaved": "Goal saved.",

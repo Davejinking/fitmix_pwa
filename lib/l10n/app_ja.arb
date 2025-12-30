@@ -162,6 +162,7 @@
   "tempoStart": "テンポ開始 ({eccentric}/{concentric}秒)",
   "memo": "メモ",
   "dayUnit": "日",
+  "timesUnit": "回",
   "validWorkoutDaysGoal": "正しい運動日数目標を入力してください。",
   "validVolumeGoal": "正しいボリューム目標を入力してください。",
   "goalSaved": "目標が保存されました。",

@@ -706,6 +706,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get totalWorkouts => '총 운동';
 
   @override
+  String get timesUnit => '회';
+
+  @override
   String get achievementUnlocked => '✅ 달성 완료!';
 
   @override

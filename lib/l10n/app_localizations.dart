@@ -1365,6 +1365,12 @@ abstract class AppLocalizations {
   /// **'총 운동'**
   String get totalWorkouts;
 
+  /// No description provided for @timesUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'회'**
+  String get timesUnit;
+
   /// No description provided for @achievementUnlocked.
   ///
   /// In ko, this message translates to:

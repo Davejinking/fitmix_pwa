@@ -711,6 +711,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalWorkouts => 'Total Workouts';
 
   @override
+  String get timesUnit => 'times';
+
+  @override
   String get achievementUnlocked => '✅ Unlocked!';
 
   @override

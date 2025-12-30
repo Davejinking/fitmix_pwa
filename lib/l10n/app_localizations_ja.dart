@@ -706,6 +706,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get totalWorkouts => '総ワークアウト';
 
   @override
+  String get timesUnit => '回';
+
+  @override
   String get achievementUnlocked => '✅ 達成完了!';
 
   @override
