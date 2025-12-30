@@ -106,8 +106,8 @@ class _AchievementsPageState extends State<AchievementsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem('🔥', '${_stats!.currentStreak}일', l10n.currentStreak),
-              _buildStatItem('💪', '${_stats!.totalWorkouts}회', l10n.totalWorkouts),
+              _buildStatItem('🔥', '${_stats!.currentStreak}일', 'Current Streak'), // 임시로 영어 사용
+              _buildStatItem('💪', '${_stats!.totalWorkouts}회', l10n.totalSets),
               _buildStatItem('🏋️', '${(_stats!.totalVolume / 1000).toStringAsFixed(0)}t', l10n.totalVolumeLabel),
             ],
           ),
@@ -238,7 +238,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isUnlocked ? l10n.achievementUnlocked : l10n.achievementLocked,
+                isUnlocked ? l10n.completed : l10n.notCompleted,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
