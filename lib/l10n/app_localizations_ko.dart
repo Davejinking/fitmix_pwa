@@ -698,4 +698,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get completeLabel => '완료';
+
+  @override
+  String get currentStreak => '현재 스트릭';
+
+  @override
+  String get totalWorkouts => '총 운동';
+
+  @override
+  String get achievementUnlocked => '✅ 달성 완료!';
+
+  @override
+  String get achievementLocked => '🔒 미달성';
 }
