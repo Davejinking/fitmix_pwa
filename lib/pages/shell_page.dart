@@ -37,6 +37,17 @@ class ShellPageState extends State<ShellPage> {
   // IndexedStack을 사용하여 각 페이지의 상태를 보존
   late final List<Widget> _pages;
 
+  // 라이브러리 탭으로 이동하는 메서드
+  void navigateToLibrary({String? bodyPart}) {
+    setState(() => _currentIndex = 2); // 라이브러리는 인덱스 2
+    
+    // 특정 부위가 지정된 경우, 해당 탭으로 이동
+    if (bodyPart != null) {
+      // LibraryPageV2에 부위 정보를 전달하는 로직은 나중에 구현
+      // 현재는 라이브러리 탭으로만 이동
+    }
+  }
+
   @override
   void initState() {
     super.initState();

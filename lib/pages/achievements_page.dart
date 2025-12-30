@@ -107,7 +107,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStatItem('🔥', '${_stats!.currentStreak}${l10n.dayUnit}', l10n.currentStreak),
-              _buildStatItem('💪', '${_stats!.totalWorkouts}${l10n.timesUnit}', l10n.totalWorkouts),
+              _buildStatItem('💪', '${_stats!.totalWorkouts}${l10n.repsUnit}', l10n.totalWorkouts),
               _buildStatItem('🏋️', '${(_stats!.totalVolume / 1000).toStringAsFixed(0)}t', l10n.totalVolumeLabel),
             ],
           ),
@@ -141,6 +141,66 @@ class _AchievementsPageState extends State<AchievementsPage> {
     );
   }
 
+  String _getAchievementTitle(Achievement achievement, AppLocalizations l10n) {
+    final locale = l10n.localeName;
+    
+    switch (achievement.id) {
+      case 'streak_3': 
+        return locale == 'ja' ? '始まりが半分' : locale == 'en' ? 'Getting Started' : '시작이 반이다';
+      case 'streak_7': 
+        return locale == 'ja' ? '一週間戦士' : locale == 'en' ? 'Week Warrior' : '일주일 전사';
+      case 'streak_30': 
+        return locale == 'ja' ? '一ヶ月の奇跡' : locale == 'en' ? 'Monthly Miracle' : '한 달의 기적';
+      case 'workout_1': 
+        return locale == 'ja' ? '最初の一歩' : locale == 'en' ? 'First Step' : '첫 발걸음';
+      case 'workout_10': 
+        return locale == 'ja' ? '習慣形成' : locale == 'en' ? 'Habit Builder' : '습관 형성';
+      case 'workout_50': 
+        return locale == 'ja' ? '運動マニア' : locale == 'en' ? 'Fitness Enthusiast' : '운동 마니아';
+      case 'workout_100': 
+        return locale == 'ja' ? '百戦百勝' : locale == 'en' ? 'Hundred Club' : '백전백승';
+      case 'volume_10k': 
+        return locale == 'ja' ? '1万キログラム' : locale == 'en' ? 'Ten Thousand' : '만 킬로그램';
+      case 'volume_100k': 
+        return locale == 'ja' ? '10万クラブ' : locale == 'en' ? 'Hundred K Club' : '10만 클럽';
+      case 'volume_1m': 
+        return locale == 'ja' ? 'ミリオンリフター' : locale == 'en' ? 'Million Lifter' : '밀리언 리프터';
+      case 'weekend_warrior': 
+        return locale == 'ja' ? '週末戦士' : locale == 'en' ? 'Weekend Warrior' : '주말 전사';
+      default: return achievement.title;
+    }
+  }
+
+  String _getAchievementDescription(Achievement achievement, AppLocalizations l10n) {
+    final locale = l10n.localeName;
+    
+    switch (achievement.id) {
+      case 'streak_3': 
+        return locale == 'ja' ? '3日連続運動' : locale == 'en' ? '3 days workout streak' : '3일 연속 운동';
+      case 'streak_7': 
+        return locale == 'ja' ? '7日連続運動' : locale == 'en' ? '7 days workout streak' : '7일 연속 운동';
+      case 'streak_30': 
+        return locale == 'ja' ? '30日連続運動' : locale == 'en' ? '30 days workout streak' : '30일 연속 운동';
+      case 'workout_1': 
+        return locale == 'ja' ? '初回運動完了' : locale == 'en' ? 'Complete first workout' : '첫 운동 완료';
+      case 'workout_10': 
+        return locale == 'ja' ? '10回運動完了' : locale == 'en' ? 'Complete 10 workouts' : '10회 운동 완료';
+      case 'workout_50': 
+        return locale == 'ja' ? '50回運동完了' : locale == 'en' ? 'Complete 50 workouts' : '50회 운동 완료';
+      case 'workout_100': 
+        return locale == 'ja' ? '100回運동完了' : locale == 'en' ? 'Complete 100 workouts' : '100회 운동 완료';
+      case 'volume_10k': 
+        return locale == 'ja' ? '総ボリューム10,000kg達成' : locale == 'en' ? 'Reach 10,000kg total volume' : '총 볼륨 10,000kg 달성';
+      case 'volume_100k': 
+        return locale == 'ja' ? '総ボリューム100,000kg達成' : locale == 'en' ? 'Reach 100,000kg total volume' : '총 볼륨 100,000kg 달성';
+      case 'volume_1m': 
+        return locale == 'ja' ? '総ボリューム1,000,000kg達성' : locale == 'en' ? 'Reach 1,000,000kg total volume' : '총 볼륨 1,000,000kg 달성';
+      case 'weekend_warrior': 
+        return locale == 'ja' ? '週末に運動' : locale == 'en' ? 'Workout on weekend' : '주말에 운동하기';
+      default: return achievement.description;
+    }
+  }
+
   Widget _buildAchievementTile(Achievement achievement, bool isUnlocked, BuildContext context) {
     return GestureDetector(
       onTap: () => _showAchievementDetail(achievement, isUnlocked, context),
@@ -166,7 +226,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                achievement.title,
+                _getAchievementTitle(achievement, AppLocalizations.of(context)),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -213,7 +273,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              achievement.title,
+              _getAchievementTitle(achievement, l10n),
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -222,7 +282,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              achievement.description,
+              _getAchievementDescription(achievement, l10n),
               style: const TextStyle(
                 fontSize: 16,
                 color: Color(0xFFAAAAAA),
@@ -238,7 +298,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isUnlocked ? l10n.completed : l10n.notCompleted,
+                isUnlocked ? l10n.achievementUnlocked : l10n.achievementLocked,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

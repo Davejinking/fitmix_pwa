@@ -649,6 +649,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get achievement => '업적';
 
   @override
+  String get currentStreak => '현재 스트릭';
+
+  @override
+  String get totalWorkouts => '총 운동';
+
+  @override
+  String get achievementUnlocked => '✅ 달성 완료!';
+
+  @override
+  String get achievementLocked => '🔒 미달성';
+
+  @override
   String get achieveFirst => '첫 번째 업적을 달성해보세요!';
 
   @override
@@ -698,19 +710,4 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get completeLabel => '완료';
-
-  @override
-  String get currentStreak => '현재 스트릭';
-
-  @override
-  String get totalWorkouts => '총 운동';
-
-  @override
-  String get timesUnit => '회';
-
-  @override
-  String get achievementUnlocked => '✅ 달성 완료!';
-
-  @override
-  String get achievementLocked => '🔒 미달성';
 }

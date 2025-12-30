@@ -654,6 +654,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get achievement => 'Achievements';
 
   @override
+  String get currentStreak => 'Current Streak';
+
+  @override
+  String get totalWorkouts => 'Total Workouts';
+
+  @override
+  String get achievementUnlocked => '✅ Unlocked!';
+
+  @override
+  String get achievementLocked => '🔒 Locked';
+
+  @override
   String get achieveFirst => 'Achieve your first badge!';
 
   @override
@@ -703,19 +715,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completeLabel => 'Done';
-
-  @override
-  String get currentStreak => 'Current Streak';
-
-  @override
-  String get totalWorkouts => 'Total Workouts';
-
-  @override
-  String get timesUnit => 'times';
-
-  @override
-  String get achievementUnlocked => '✅ Unlocked!';
-
-  @override
-  String get achievementLocked => '🔒 Locked';
 }

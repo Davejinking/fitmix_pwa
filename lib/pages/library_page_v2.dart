@@ -3,6 +3,7 @@ import '../services/exercise_db_service.dart';
 import '../models/exercise_db.dart';
 import '../l10n/app_localizations.dart';
 import '../data/exercise_library_repo.dart';
+import 'exercise_detail_page.dart';
 
 class LibraryPageV2 extends StatefulWidget {
   const LibraryPageV2({super.key});
@@ -466,6 +467,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   }
 
   Widget _buildHeader(AppLocalizations l10n) {
+    // 독립적인 라우트로 호출된 경우 뒤로가기 버튼 표시
+    final canPop = Navigator.of(context).canPop();
+    
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       decoration: const BoxDecoration(
@@ -474,14 +478,26 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            '라이브러리',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: -0.3,
-            ),
+          Row(
+            children: [
+              if (canPop)
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                  onPressed: () => Navigator.of(context).pop(),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                ),
+              if (canPop) const SizedBox(width: 8),
+              const Text(
+                '라이브러리',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
           ),
           Row(
             children: [
@@ -592,8 +608,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected 
-                      ? const Color(0xFFFFFFFF) // 선택 시 흰색 고정
-                      : const Color(0xFF8E8E93), // 더 밝은 회색
+                      ? const Color(0xFFFFFFFF)
+                      : const Color(0xFF8E8E93),
                   letterSpacing: 0.2,
                 ),
               ),
@@ -613,7 +629,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                 side: BorderSide(
                   color: isSelected 
                       ? const Color(0xFF007AFF) 
-                      : const Color(0xFF8E8E93), // 더 밝은 회색
+                      : const Color(0xFF8E8E93),
                   width: 1.5,
                 ),
               ),
@@ -696,8 +712,33 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              onTap: () {
-                // TODO: 운동 상세 페이지
+              onTap: () async {
+                // 운동 상세 페이지로 이동
+                final result = await Navigator.of(context).push<ExerciseDB>(
+                  MaterialPageRoute(
+                    builder: (context) => ExerciseDetailPage(exercise: exercise),
+                  ),
+                );
+                
+                // 운동이 선택되어 돌아온 경우 처리
+                if (result != null) {
+                  // 운동 계획에 추가하는 로직은 나중에 구현
+                  if (mounted) {
+                    final locale = l10n.localeName;
+                    final message = locale == 'ja' 
+                        ? '${result.name} 運動が選択されました。'
+                        : locale == 'en' 
+                        ? '${result.name} exercise has been selected.'
+                        : '${result.name} 운동이 선택되었습니다.';
+                        
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(message),
+                        backgroundColor: const Color(0xFF4A9EFF),
+                      ),
+                    );
+                  }
+                }
               },
               child: Padding(
                 padding: const EdgeInsets.all(14),
@@ -752,7 +793,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                             children: [
                               Expanded(
                                 child: Text(
-                                  exercise.name,
+                                  exercise.getLocalizedName(l10n.localeName),
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -790,7 +831,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            '${exercise.targetPart} | ${exercise.equipmentType}',
+                            '${exercise.getTargetPart(l10n.localeName)} | ${exercise.getEquipmentType(l10n.localeName)}',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[500],
