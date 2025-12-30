@@ -137,6 +137,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       color: const Color(0xFF121212),
       child: SafeArea(
@@ -148,11 +149,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
               decoration: const BoxDecoration(
                 color: Color(0xFF121212),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Text(
-                    '분석',
-                    style: TextStyle(
+                    l10n.analysisTitle,
+                    style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -458,6 +459,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
   Widget _buildBodyBalanceRadarChart(_AnalysisData data) {
     final mainBodyParts = ['가슴', '등', '하체', '어깨', '팔', '복근'];
     final setsByBodyPart = data.setsByBodyPart;
+    final l10n = AppLocalizations.of(context);
     
     // 데이터가 없으면 표시하지 않음
     if (setsByBodyPart.isEmpty) {
@@ -499,18 +501,18 @@ class _AnalysisPageState extends State<AnalysisPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '신체 밸런스 분석',
-            style: TextStyle(
+          Text(
+            l10n.bodyBalanceAnalysis,
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: Color(0xFFFFFFFF),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            '최근 30일 부위별 운동 세트 수',
-            style: TextStyle(
+          Text(
+            l10n.last30DaysSets,
+            style: const TextStyle(
               fontSize: 14,
               color: Color(0xFFAAAAAA),
             ),
@@ -564,9 +566,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
                   children: [
                     const Icon(Icons.lightbulb_outline, color: Color(0xFF007AFF), size: 20),
                     const SizedBox(width: 8),
-                    const Text(
-                      '분석 결과',
-                      style: TextStyle(
+                    Text(
+                      l10n.analysisResult,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFFFFFFFF),
