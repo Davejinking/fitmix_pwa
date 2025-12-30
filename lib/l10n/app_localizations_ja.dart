@@ -698,4 +698,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get completeLabel => '完了';
+
+  @override
+  String get currentStreak => '現在のストリーク';
+
+  @override
+  String get totalWorkouts => '総ワークアウト';
+
+  @override
+  String get achievementUnlocked => '✅ 達成完了!';
+
+  @override
+  String get achievementLocked => '🔒 未達成';
 }
