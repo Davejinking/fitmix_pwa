@@ -1346,6 +1346,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'마스터'**
   String get leagueMaster;
+
+  /// No description provided for @completeLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get completeLabel;
 }
 
 class _AppLocalizationsDelegate

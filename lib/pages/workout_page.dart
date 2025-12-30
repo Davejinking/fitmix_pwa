@@ -177,7 +177,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       }
                       Navigator.pop(context);
                     },
-                    child: const Text('확인'),
+                    child: Text(AppLocalizations.of(context).confirm),
                   ),
                 ],
               ),

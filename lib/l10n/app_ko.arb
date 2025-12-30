@@ -210,5 +210,7 @@
   "leagueGold": "골드",
   "leaguePlatinum": "플래티넘",
   "leagueDiamond": "다이아몬드",
-  "leagueMaster": "마스터"
+  "leagueMaster": "마스터",
+  "setLabel": "세트",
+  "completeLabel": "완료"
 }

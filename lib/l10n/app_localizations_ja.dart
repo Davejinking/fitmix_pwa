@@ -695,4 +695,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get leagueMaster => 'マスター';
+
+  @override
+  String get completeLabel => '完了';
 }

@@ -7,6 +7,7 @@ import '../models/session.dart';
 import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../core/error_handler.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/tempo_settings_modal.dart';
 import '../widgets/tempo_countdown_modal.dart';
 import '../services/tempo_controller.dart';
@@ -387,7 +388,7 @@ class _PlanPageState extends State<PlanPage> {
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('확인'),
+                        child: Text(AppLocalizations.of(context).confirm),
                       ),
                     ],
                   ),
@@ -832,7 +833,7 @@ class _PlanPageState extends State<PlanPage> {
                     backgroundColor: const Color(0xFF2196F3),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

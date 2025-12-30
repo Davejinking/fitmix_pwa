@@ -695,4 +695,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get leagueMaster => '마스터';
+
+  @override
+  String get completeLabel => '완료';
 }

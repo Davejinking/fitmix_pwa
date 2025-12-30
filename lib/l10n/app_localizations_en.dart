@@ -700,4 +700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leagueMaster => 'Master';
+
+  @override
+  String get completeLabel => 'Done';
 }

@@ -208,5 +208,9 @@
   "leagueGold": "ゴールド",
   "leaguePlatinum": "プラチナ",
   "leagueDiamond": "ダイヤモンド",
-  "leagueMaster": "マスター"
+  "leagueMaster": "マスター",
+  "setLabel": "セット",
+  "completeLabel": "完了",
+  "setLabel": "セット",
+  "completeLabel": "完了"
 }

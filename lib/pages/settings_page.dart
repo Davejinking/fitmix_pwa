@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../core/constants.dart';
-import '../core/theme_notifier.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/user_repo.dart';
 import '../data/session_repo.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class ExerciseSetCard extends StatefulWidget {
   final String exerciseNumber;
@@ -145,7 +146,7 @@ class _ExerciseSetCardState extends State<ExerciseSetCard> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  '세트',
+                  AppLocalizations.of(context).setLabel,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[400], fontSize: 14),
                 ),
@@ -169,7 +170,7 @@ class _ExerciseSetCardState extends State<ExerciseSetCard> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  '완료',
+                  AppLocalizations.of(context).completeLabel,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[400], fontSize: 14),
                 ),

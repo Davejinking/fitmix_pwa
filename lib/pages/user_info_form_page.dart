@@ -40,6 +40,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
   Future<void> _loadUserProfile() async {
     final profile = await widget.userRepo.getUserProfile();
     if (profile != null) {
+      final locale = Localizations.localeOf(context).languageCode;
       setState(() {
         _weight = profile.weight;
         _height = profile.height;
@@ -48,7 +49,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
 
         _weightController.text = '${_weight!.toStringAsFixed(1)} kg';
         _heightController.text = '$_height cm';
-        _birthDateController.text = DateFormat('yyyy년 MM월 dd일').format(_birthDate!);
+        _birthDateController.text = DateFormat('yMMMd', locale).format(_birthDate!);
         _genderController.text = _gender!;
       });
     }
@@ -106,7 +107,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
                         onConfirm();
                         Navigator.pop(context);
                       },
-                      child: const Text('확인', style: TextStyle(color: BurnFitStyle.primaryBlue)),
+                      child: Text(AppLocalizations.of(context).confirm, style: const TextStyle(color: BurnFitStyle.primaryBlue)),
                     ),
                   ],
                 ),
@@ -160,9 +161,10 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
 
   void _showHeightPicker() {
     int selectedCm = _height ?? 170;
+    final l10n = AppLocalizations.of(context);
     _showPicker(
       context: context,
-      title: '키를 입력해 주세요.',
+      title: l10n.enterHeight,
       picker: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -187,9 +189,10 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
 
   void _showDatePicker() {
     DateTime tempDate = _birthDate ?? DateTime(1990, 1, 1);
+    final l10n = AppLocalizations.of(context);
     _showPicker(
       context: context,
-      title: '생년월일을 입력해 주세요.',
+      title: l10n.enterBirthDate,
       picker: CupertinoDatePicker(
         mode: CupertinoDatePickerMode.date,
         initialDateTime: tempDate,
@@ -202,7 +205,8 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
       onConfirm: () {
         setState(() {
           _birthDate = tempDate;
-          _birthDateController.text = DateFormat('yyyy년 MM월 dd일').format(_birthDate!);
+          final locale = Localizations.localeOf(context).languageCode;
+          _birthDateController.text = DateFormat('yMMMd', locale).format(_birthDate!);
         });
       },
     );

@@ -62,7 +62,7 @@ class MonthHeader extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    DateFormat.yMMMM('ko').format(focusedDay),
+                    DateFormat.yMMMM(Localizations.localeOf(context).languageCode).format(focusedDay),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,

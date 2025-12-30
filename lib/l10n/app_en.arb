@@ -208,5 +208,9 @@
   "leagueGold": "Gold",
   "leaguePlatinum": "Platinum",
   "leagueDiamond": "Diamond",
-  "leagueMaster": "Master"
+  "leagueMaster": "Master",
+  "setLabel": "Set",
+  "completeLabel": "Done",
+  "setLabel": "Set",
+  "completeLabel": "Done"
 }
