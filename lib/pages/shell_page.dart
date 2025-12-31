@@ -63,7 +63,10 @@ class ShellPageState extends State<ShellPage> {
         repo: widget.sessionRepo,
         exerciseRepo: widget.exerciseRepo,
       ),
-      const LibraryPageV2(),
+      Scaffold(
+        backgroundColor: const Color(0xFF121212),
+        body: const LibraryPageV2(),
+      ),
       AnalysisPage(
         repo: widget.sessionRepo,
         userRepo: widget.userRepo,

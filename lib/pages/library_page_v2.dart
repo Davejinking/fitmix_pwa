@@ -443,26 +443,21 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
-    return Scaffold(
-      backgroundColor: const Color(0xFF121212), // 배경색 통일
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 헤더
-            _buildHeader(l10n),
-            // 검색바
-            _buildSearchBar(l10n),
-            // 부위 탭
-            _buildBodyPartTabs(),
-            // 장비 필터
-            _buildEquipmentFilter(),
-            // 운동 목록
-            Expanded(
-              child: _buildExerciseList(),
-            ),
-          ],
+    return Column(
+      children: [
+        // 헤더
+        _buildHeader(l10n),
+        // 검색바
+        _buildSearchBar(l10n),
+        // 부위 탭
+        _buildBodyPartTabs(),
+        // 장비 필터
+        _buildEquipmentFilter(),
+        // 운동 목록
+        Expanded(
+          child: _buildExerciseList(),
         ),
-      ),
+      ],
     );
   }
 
@@ -470,47 +465,50 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     // 독립적인 라우트로 호출된 경우 뒤로가기 버튼 표시
     final canPop = Navigator.of(context).canPop();
     
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      decoration: const BoxDecoration(
-        color: Color(0xFF121212),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              if (canPop)
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        decoration: const BoxDecoration(
+          color: Color(0xFF121212),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                if (canPop)
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                    onPressed: () => Navigator.of(context).pop(),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                  ),
+                if (canPop) const SizedBox(width: 8),
+                const Text(
+                  '라이브러리',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
-                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
+                  onPressed: () => _showAddCustomExerciseDialog(l10n),
+                  tooltip: l10n.addCustomExercise,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                 ),
-              if (canPop) const SizedBox(width: 8),
-              const Text(
-                '라이브러리',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
-                onPressed: () => _showAddCustomExerciseDialog(l10n),
-                tooltip: l10n.addCustomExercise,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
