@@ -8,6 +8,7 @@ import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
+import '../core/l10n_extensions.dart';
 import '../widgets/tempo_settings_modal.dart';
 import '../widgets/tempo_countdown_modal.dart';
 import '../services/tempo_controller.dart';
@@ -17,12 +18,14 @@ class PlanPage extends StatefulWidget {
   final DateTime date;
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
+  final bool isFromTodayWorkout;
   
   const PlanPage({
     super.key,
     required this.date,
     required this.repo,
     required this.exerciseRepo,
+    this.isFromTodayWorkout = false,
   });
 
   @override
@@ -86,6 +89,12 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   void _onDateSelected(DateTime date) {
+    // 오늘의 운동에서 진입한 경우 날짜 변경 불가
+    if (widget.isFromTodayWorkout) {
+      ErrorHandler.showErrorSnackBar(context, context.l10n.cannotChangeDateDuringWorkout);
+      return;
+    }
+    
     setState(() {
       _selectedDate = date;
       _focusedDate = date;

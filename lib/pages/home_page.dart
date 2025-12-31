@@ -697,6 +697,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                       date: DateTime.now(),
                       repo: widget.sessionRepo,
                       exerciseRepo: widget.exerciseRepo,
+                      isFromTodayWorkout: true,
                     ),
                   ),
                 );
