@@ -57,6 +57,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   
   // 북마크된 운동 ID
   final Set<String> _bookmarkedIds = {};
+  
+  // 검색 관련
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
 
   bool _isInitArgHandled = false;
 
@@ -92,6 +96,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -251,6 +256,14 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     } else {
       final equipmentEn = _getEquipmentEn(_selectedEquipmentKey);
       _filteredExercises = _exercises.where((ex) => ex.equipment == equipmentEn).toList();
+    }
+    
+    // 3단계 필터링: 검색어 적용
+    if (_searchQuery.isNotEmpty) {
+      _filteredExercises = _filteredExercises.where((ex) {
+        final name = ex.getLocalizedName(AppLocalizations.of(context).localeName).toLowerCase();
+        return name.contains(_searchQuery.toLowerCase());
+      }).toList();
     }
   }
 
@@ -517,6 +530,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: TextField(
+        controller: _searchController,
         decoration: InputDecoration(
           hintText: l10n.searchExercise,
           hintStyle: const TextStyle(
@@ -528,6 +542,18 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
             color: Color(0xFF8E8E93), // 더 밝은 회색
             size: 22,
           ),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, color: Color(0xFF8E8E93)),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {
+                      _searchQuery = '';
+                      _applyFilter();
+                    });
+                  },
+                )
+              : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -547,8 +573,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           fontSize: 15,
           color: Colors.white,
         ),
-        onSubmitted: (query) async {
-          // TODO: 검색 기능
+        onChanged: (query) {
+          setState(() {
+            _searchQuery = query;
+            _applyFilter();
+          });
         },
       ),
     );
