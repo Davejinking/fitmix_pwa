@@ -114,7 +114,12 @@ class _HeaderComponentState extends State<_HeaderComponent> {
               color: Colors.white,
             ),
             onPressed: () {
-              // TODO: 알림 페이지로 이동
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('알림 기능은 준비 중입니다.'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
             },
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
@@ -640,14 +645,28 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
     final totalSets = _todaySession?.exercises.fold<int>(0, (sum, e) => sum + e.sets.length) ?? 0;
     final totalVolume = _todaySession?.totalVolume ?? 0;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PlanPage(
+              date: DateTime.now(),
+              repo: widget.sessionRepo,
+              exerciseRepo: widget.exerciseRepo,
+              isFromTodayWorkout: true,
+              isViewOnly: hasWorkout, // 완료된 운동이면 조회 모드
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -728,6 +747,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
             ),
           ],
         ],
+      ),
       ),
     );
   }

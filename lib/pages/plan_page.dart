@@ -19,6 +19,7 @@ class PlanPage extends StatefulWidget {
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
   final bool isFromTodayWorkout;
+  final bool isViewOnly; // 완료된 운동 조회 모드
   
   const PlanPage({
     super.key,
@@ -26,6 +27,7 @@ class PlanPage extends StatefulWidget {
     required this.repo,
     required this.exerciseRepo,
     this.isFromTodayWorkout = false,
+    this.isViewOnly = false,
   });
 
   @override
@@ -38,6 +40,7 @@ class _PlanPageState extends State<PlanPage> {
   Session? _currentSession;
   bool _isLoading = true;
   Set<String> _workoutDates = {};
+  bool _isEditingMode = false; // 편집 모드 플래그
   
   // Live Workout Mode
   bool _isWorkoutStarted = false;
@@ -89,8 +92,10 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   void _onDateSelected(DateTime date) {
-    // 오늘의 운동에서 진입한 경우 날짜 변경 불가
-    if (widget.isFromTodayWorkout) {
+    // 오늘의 운동에서 진입한 경우:
+    // - 운동이 완료되지 않은 경우: 날짜 변경 불가
+    // - 운동이 완료된 경우 (isViewOnly): 날짜 변경 가능 (편집 모드)
+    if (widget.isFromTodayWorkout && !widget.isViewOnly) {
       ErrorHandler.showErrorSnackBar(context, context.l10n.cannotChangeDateDuringWorkout);
       return;
     }
@@ -246,7 +251,7 @@ class _PlanPageState extends State<PlanPage> {
             icon: const Icon(Icons.chevron_left, color: Colors.white, size: 20),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            onPressed: widget.isFromTodayWorkout ? null : () {
+            onPressed: (widget.isFromTodayWorkout && !widget.isViewOnly) ? null : () {
               final previousWeek = _focusedDate.subtract(const Duration(days: 7));
               _onWeekChanged(previousWeek);
               _onDateSelected(previousWeek);
@@ -263,7 +268,7 @@ class _PlanPageState extends State<PlanPage> {
                 final hasWorkout = _workoutDates.contains(widget.repo.ymd(day));
                 
                 return GestureDetector(
-                  onTap: widget.isFromTodayWorkout ? null : () => _onDateSelected(day),
+                  onTap: (widget.isFromTodayWorkout && !widget.isViewOnly) ? null : () => _onDateSelected(day),
                   child: Container(
                     width: 36,
                     height: 48,
@@ -313,7 +318,7 @@ class _PlanPageState extends State<PlanPage> {
             icon: const Icon(Icons.chevron_right, color: Colors.white, size: 20),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            onPressed: widget.isFromTodayWorkout ? null : () {
+            onPressed: (widget.isFromTodayWorkout && !widget.isViewOnly) ? null : () {
               final nextWeek = _focusedDate.add(const Duration(days: 7));
               _onWeekChanged(nextWeek);
               _onDateSelected(nextWeek);
@@ -466,6 +471,7 @@ class _PlanPageState extends State<PlanPage> {
             },
             onSetCompleted: _onSetChecked,
             isWorkoutStarted: _isWorkoutStarted,
+            isEditingEnabled: !widget.isViewOnly || _isEditingMode, // 편집 활성화 여부
           ),
         );
       },
@@ -532,49 +538,64 @@ class _PlanPageState extends State<PlanPage> {
       child: SafeArea(
         child: Row(
           children: [
-            // 좌측 (40%): 운동 추가 버튼
-            Expanded(
-              flex: 4,
-              child: SizedBox(
-                height: 52, // 고정 높이
-                child: OutlinedButton.icon(
-                  onPressed: _addExercise,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text(
-                    '운동 추가',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+            // 좌측 (40%): 운동 추가 버튼 (편집 모드에서만 표시)
+            if (!widget.isViewOnly || _isEditingMode)
+              Expanded(
+                flex: 4,
+                child: SizedBox(
+                  height: 52, // 고정 높이
+                  child: OutlinedButton.icon(
+                    onPressed: _addExercise,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text(
+                      '운동 추가',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: BorderSide(color: Colors.grey[700]!, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: BorderSide(color: Colors.grey[700]!, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            // 우측 (60%): 운동 시작 버튼
+            if (!widget.isViewOnly || _isEditingMode)
+              const SizedBox(width: 12),
+            // 우측: 운동 시작 / 운동 편집 / 편집 완료 버튼
             Expanded(
-              flex: 6,
+              flex: widget.isViewOnly && !_isEditingMode ? 12 : 6,
               child: SizedBox(
                 height: 52, // 고정 높이
                 child: ElevatedButton.icon(
-                  onPressed: hasExercises ? _startWorkout : null,
-                  icon: const Icon(Icons.play_arrow, size: 22),
-                  label: const Text(
-                    '운동 시작',
-                    style: TextStyle(
+                  onPressed: hasExercises ? (
+                    widget.isViewOnly 
+                      ? (_isEditingMode ? _finishEditingWorkout : _startEditingMode)
+                      : _startWorkout
+                  ) : null,
+                  icon: Icon(
+                    widget.isViewOnly 
+                      ? (_isEditingMode ? Icons.check : Icons.edit)
+                      : Icons.play_arrow,
+                    size: 22,
+                  ),
+                  label: Text(
+                    widget.isViewOnly 
+                      ? (_isEditingMode ? '편집 완료' : '운동 편집')
+                      : '운동 시작',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2196F3),
+                    backgroundColor: widget.isViewOnly 
+                      ? const Color(0xFF34C759)  // 초록색 (편집 모드)
+                      : const Color(0xFF2196F3), // 파란색 (시작 모드)
                     disabledBackgroundColor: Colors.grey[800],
                     foregroundColor: Colors.white,
                     elevation: 0,
@@ -653,6 +674,25 @@ class _PlanPageState extends State<PlanPage> {
     _saveSession();
     HapticFeedback.heavyImpact();
     ErrorHandler.showSuccessSnackBar(context, '운동이 완료되었습니다! 🎉');
+  }
+
+  void _finishEditingWorkout() {
+    // 편집 완료 - 타이머 없이 저장만 함
+    _saveSession();
+    setState(() {
+      _isEditingMode = false;
+    });
+    HapticFeedback.mediumImpact();
+    ErrorHandler.showSuccessSnackBar(context, '편집이 완료되었습니다.');
+    Navigator.of(context).pop();
+  }
+
+  void _startEditingMode() {
+    // 편집 모드 활성화
+    setState(() {
+      _isEditingMode = true;
+    });
+    HapticFeedback.mediumImpact();
   }
 
   void _onSetChecked(bool value) {
@@ -983,6 +1023,7 @@ class ExerciseCard extends StatefulWidget {
   final VoidCallback onUpdate;
   final Function(bool)? onSetCompleted;
   final bool isWorkoutStarted;
+  final bool isEditingEnabled; // 편집 활성화 여부
 
   const ExerciseCard({
     super.key,
@@ -992,6 +1033,7 @@ class ExerciseCard extends StatefulWidget {
     required this.onUpdate,
     this.onSetCompleted,
     this.isWorkoutStarted = false,
+    this.isEditingEnabled = true,
   });
 
   @override
@@ -1107,6 +1149,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                     onUpdate: widget.onUpdate,
                     onSetCompleted: widget.onSetCompleted,
                     isWorkoutStarted: widget.isWorkoutStarted,
+                    isEditingEnabled: widget.isEditingEnabled, // 편집 활성화 여부
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1176,18 +1219,18 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 size: 28,
               )
             else ...[
-              // 템포 버튼 (항상 표시, 탭하면 설정 열림)
+              // 템포 버튼 (편집 모드에서만 활성화)
               GestureDetector(
-                onTap: () => _showTempoSettings(),
+                onTap: widget.isEditingEnabled ? () => _showTempoSettings() : null,
                 child: Container(
                   margin: const EdgeInsets.only(right: 6),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: widget.exercise.isTempoEnabled
+                    color: widget.isEditingEnabled && widget.exercise.isTempoEnabled
                         ? const Color(0xFF2196F3).withValues(alpha: 0.2)
                         : Colors.transparent,
                     border: Border.all(
-                      color: widget.exercise.isTempoEnabled
+                      color: widget.isEditingEnabled && widget.exercise.isTempoEnabled
                           ? const Color(0xFF2196F3)
                           : Colors.grey[600]!,
                     ),
@@ -1199,7 +1242,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                       Icon(
                         Icons.music_note,
                         size: 12,
-                        color: widget.exercise.isTempoEnabled
+                        color: widget.isEditingEnabled && widget.exercise.isTempoEnabled
                             ? const Color(0xFF2196F3)
                             : Colors.grey[400],
                       ),
@@ -1210,10 +1253,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
                             : '템포',
                         style: TextStyle(
                           fontSize: 11,
-                          color: widget.exercise.isTempoEnabled
+                          color: widget.isEditingEnabled && widget.exercise.isTempoEnabled
                               ? const Color(0xFF2196F3)
                               : Colors.grey[400],
-                          fontWeight: widget.exercise.isTempoEnabled
+                          fontWeight: widget.isEditingEnabled && widget.exercise.isTempoEnabled
                               ? FontWeight.w600
                               : FontWeight.normal,
                         ),
@@ -1280,6 +1323,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
       ),
       child: TextField(
         controller: _memoController,
+        enabled: widget.isEditingEnabled, // 편집 활성화 여부
         style: const TextStyle(color: Colors.white, fontSize: 13),
         decoration: InputDecoration(
           hintText: '메모',
@@ -1356,8 +1400,8 @@ class _ExerciseCardState extends State<ExerciseCard> {
   Widget _buildFooterActions() {
     return Column(
       children: [
-        // 템포 시작 버튼 (운동 시작 후 + 템포 활성화 시)
-        if (widget.isWorkoutStarted && widget.exercise.isTempoEnabled) ...[
+        // 템포 시작 버튼 (운동 시작 후 + 템포 활성화 시 + 편집 모드에서만)
+        if (widget.isWorkoutStarted && widget.exercise.isTempoEnabled && widget.isEditingEnabled) ...[
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -1384,23 +1428,23 @@ class _ExerciseCardState extends State<ExerciseCard> {
           const SizedBox(height: 12),
         ],
         
-        // 세트 추가/삭제 버튼
+        // 세트 추가/삭제 버튼 (편집 모드에서만 활성화)
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextButton.icon(
-              onPressed: () {
+              onPressed: widget.isEditingEnabled ? () {
                 if (widget.exercise.sets.isNotEmpty) {
                   setState(() {
                     widget.exercise.sets.removeLast();
                   });
                   widget.onUpdate();
                 }
-              },
+              } : null,
               icon: const Icon(Icons.remove, size: 16),
               label: const Text('세트 삭제', style: TextStyle(fontSize: 13)),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.grey[500],
+                foregroundColor: widget.isEditingEnabled ? Colors.grey[500] : Colors.grey[700],
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               ),
             ),
@@ -1411,7 +1455,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
               margin: const EdgeInsets.symmetric(horizontal: 8),
             ),
             TextButton.icon(
-              onPressed: () {
+              onPressed: widget.isEditingEnabled ? () {
                 setState(() {
                   if (widget.exercise.sets.isNotEmpty) {
                     final lastSet = widget.exercise.sets.last;
@@ -1424,11 +1468,11 @@ class _ExerciseCardState extends State<ExerciseCard> {
                   }
                 });
                 widget.onUpdate();
-              },
+              } : null,
               icon: const Icon(Icons.add, size: 16),
               label: const Text('세트 추가', style: TextStyle(fontSize: 13)),
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF2196F3),
+                foregroundColor: widget.isEditingEnabled ? const Color(0xFF2196F3) : Colors.grey[700],
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               ),
             ),
@@ -1505,6 +1549,7 @@ class _SetRowGrid extends StatefulWidget {
   final VoidCallback onUpdate;
   final Function(bool)? onSetCompleted;
   final bool isWorkoutStarted;
+  final bool isEditingEnabled; // 편집 활성화 여부
 
   const _SetRowGrid({
     required this.exercise,
@@ -1513,6 +1558,7 @@ class _SetRowGrid extends StatefulWidget {
     required this.onUpdate,
     this.onSetCompleted,
     this.isWorkoutStarted = false,
+    this.isEditingEnabled = true,
   });
 
   @override
@@ -1596,6 +1642,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
               controller: _weightController,
               label: 'kg',
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              isEnabled: widget.isEditingEnabled,
             ),
           ),
           // Reps Input (3) - Stack Style with Label
@@ -1605,6 +1652,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
               controller: _repsController,
               label: '회',
               keyboardType: TextInputType.number,
+              isEnabled: widget.isEditingEnabled,
             ),
           ),
           // Conditional Action (2)
@@ -1633,9 +1681,9 @@ class _SetRowGridState extends State<_SetRowGrid> {
                         ),
                       ),
                     )
-                  // 운동 시작 전: 삭제 버튼
+                  // 운동 시작 전: 삭제 버튼 (편집 모드에서만 활성화)
                   : IconButton(
-                      onPressed: widget.onDelete,
+                      onPressed: widget.isEditingEnabled ? widget.onDelete : null,
                       icon: const Icon(
                         Icons.remove_circle_outline,
                         color: Colors.redAccent,
@@ -1656,15 +1704,16 @@ class _SetRowGridState extends State<_SetRowGrid> {
     required TextEditingController controller,
     required String label,
     required TextInputType keyboardType,
+    required bool isEnabled,
   }) {
     return Container(
       height: 42, // Force Compact: 48 → 42px
       margin: const EdgeInsets.symmetric(horizontal: 3),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
+        color: isEnabled ? const Color(0xFF2C2C2C) : const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(6), // 8 → 6px
         border: Border.all(
-          color: Colors.grey.shade800,
+          color: isEnabled ? Colors.grey.shade800 : Colors.grey.shade900,
           width: 1,
         ),
       ),
@@ -1678,7 +1727,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
               label,
               style: TextStyle(
                 fontSize: 10, // 11 → 10px
-                color: Colors.grey.shade500,
+                color: isEnabled ? Colors.grey.shade500 : Colors.grey.shade700,
               ),
             ),
           ),
@@ -1686,12 +1735,13 @@ class _SetRowGridState extends State<_SetRowGrid> {
           Center(
             child: TextFormField(
               controller: controller,
+              enabled: isEnabled,
               keyboardType: keyboardType,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16, // 18 → 16px
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: isEnabled ? Colors.white : Colors.grey.shade600,
                 height: 1.0, // Remove extra font padding
               ),
               decoration: const InputDecoration(
