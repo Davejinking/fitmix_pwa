@@ -246,7 +246,7 @@ class _PlanPageState extends State<PlanPage> {
             icon: const Icon(Icons.chevron_left, color: Colors.white, size: 20),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            onPressed: () {
+            onPressed: widget.isFromTodayWorkout ? null : () {
               final previousWeek = _focusedDate.subtract(const Duration(days: 7));
               _onWeekChanged(previousWeek);
               _onDateSelected(previousWeek);
@@ -263,7 +263,7 @@ class _PlanPageState extends State<PlanPage> {
                 final hasWorkout = _workoutDates.contains(widget.repo.ymd(day));
                 
                 return GestureDetector(
-                  onTap: () => _onDateSelected(day),
+                  onTap: widget.isFromTodayWorkout ? null : () => _onDateSelected(day),
                   child: Container(
                     width: 36,
                     height: 48,
@@ -313,7 +313,7 @@ class _PlanPageState extends State<PlanPage> {
             icon: const Icon(Icons.chevron_right, color: Colors.white, size: 20),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            onPressed: () {
+            onPressed: widget.isFromTodayWorkout ? null : () {
               final nextWeek = _focusedDate.add(const Duration(days: 7));
               _onWeekChanged(nextWeek);
               _onDateSelected(nextWeek);
