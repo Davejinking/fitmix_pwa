@@ -10,7 +10,6 @@ import '../core/l10n_extensions.dart';
 import 'package:shimmer/shimmer.dart';
 import 'user_info_form_page.dart';
 import 'plan_page.dart';
-import 'shell_page.dart';
 import '../models/session.dart';
 import './settings_page.dart';
 import './achievements_page.dart';
@@ -643,35 +642,24 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
 
     final hasWorkout = _todaySession?.isWorkoutDay ?? false;
     final isRest = _todaySession?.isRest ?? false;
-    // 실제 완료 여부: session.isCompleted로 판단
-    final isCompleted = _todaySession?.isCompleted ?? false;
     final exerciseCount = _todaySession?.exercises.length ?? 0;
     final totalSets = _todaySession?.exercises.fold<int>(0, (sum, e) => sum + e.sets.length) ?? 0;
     final totalVolume = _todaySession?.totalVolume ?? 0;
 
-    // 상태 텍스트 결정
-    String statusText;
-    Color statusColor;
-    
-    if (isRest) {
-      statusText = context.l10n.rest;
-      statusColor = const Color(0xFFFF6B6B); // 빨간색
-    } else if (isCompleted) {
-      statusText = context.l10n.completed;
-      statusColor = const Color(0xFF34C759); // 초록색
-    } else if (hasWorkout) {
-      statusText = context.l10n.notCompleted;
-      statusColor = const Color(0xFFFFA500); // 주황색
-    } else {
-      statusText = context.l10n.notCompleted;
-      statusColor = const Color(0xFF2C2C2E); // 회색
-    }
-
     return InkWell(
-      onTap: () {
-        // ShellPage의 캘린더 탭으로 이동
-        final shellState = context.findAncestorStateOfType<ShellPageState>();
-        shellState?.navigateToCalendar();
+      onTap: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PlanPage(
+              date: DateTime.now(),
+              repo: widget.sessionRepo,
+              exerciseRepo: widget.exerciseRepo,
+              isFromTodayWorkout: true,
+              isViewOnly: hasWorkout, // 완료된 운동이면 조회 모드
+            ),
+          ),
+        );
+        if (mounted) _loadToday();
       },
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -696,48 +684,26 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.2),
+                  color: hasWorkout
+                      ? const Color(0xFF34C759)
+                      : (isRest ? const Color(0xFF007AFF) : const Color(0xFF2C2C2E)),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: statusColor.withValues(alpha: 0.5)),
                 ),
                 child: Text(
-                  statusText,
+                  hasWorkout
+                      ? context.l10n.completed
+                      : (isRest ? context.l10n.rest : context.l10n.notCompleted),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: statusColor,
+                    color: (hasWorkout || isRest) ? Colors.white : const Color(0xFFAAAAAA),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          if (isRest) ...[
-            // 휴식일: 휴식 상태 표시
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFFF6B6B).withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.event_busy, color: Color(0xFFFF6B6B), size: 24),
-                  const SizedBox(width: 12),
-                  Text(
-                    context.l10n.rest,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFFFF6B6B),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ] else if (hasWorkout) ...[
+          if (hasWorkout) ...[
             Row(
               children: [
                 _buildStatItem(Icons.fitness_center, context.l10n.exerciseUnit(exerciseCount), context.l10n.exercise),
@@ -747,12 +713,35 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                 _buildStatItem(Icons.speed, '${(totalVolume / 1000).toStringAsFixed(1)}t', context.l10n.volume),
               ],
             ),
+          ] else if (isRest) ...[
+            SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: Center(
+                child: Text(
+                  context.l10n.rest, // 휴식
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF007AFF),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
           ] else ...[
             InkWell(
-              onTap: () {
-                // ShellPage의 캘린더 탭으로 이동
-                final shellState = context.findAncestorStateOfType<ShellPageState>();
-                shellState?.navigateToCalendar();
+              onTap: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlanPage(
+                      date: DateTime.now(),
+                      repo: widget.sessionRepo,
+                      exerciseRepo: widget.exerciseRepo,
+                      isFromTodayWorkout: true,
+                    ),
+                  ),
+                );
+                if (mounted) _loadToday();
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
