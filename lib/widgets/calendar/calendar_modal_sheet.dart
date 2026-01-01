@@ -104,7 +104,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    DateFormat.yMMMM().format(_focusedMonth),
+                    DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(_focusedMonth),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -148,7 +148,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TableCalendar(
-                      locale: 'ko_KR',
+                      locale: Localizations.localeOf(context).toString(),
                       focusedDay: monthDate,
                       firstDay: DateTime.utc(2010, 1, 1),
                       lastDay: DateTime.utc(2035, 12, 31),
