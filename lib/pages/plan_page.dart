@@ -736,14 +736,8 @@ class _PlanPageState extends State<PlanPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
-    // 모든 세트의 체크박스 상태 리셋
-    if (_currentSession != null) {
-      for (var exercise in _currentSession!.exercises) {
-        for (var set in exercise.sets) {
-          set.isCompleted = false;
-        }
-      }
-    }
+    // 이전에 완료 상태를 리셋하던 로직 제거됨.
+    // 운동 완료 시 체크 상태를 유지해야 홈 화면에서 완료로 표시됨.
     
     setState(() {
       _isWorkoutStarted = false;

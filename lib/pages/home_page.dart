@@ -646,6 +646,13 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
     final totalSets = _todaySession?.exercises.fold<int>(0, (sum, e) => sum + e.sets.length) ?? 0;
     final totalVolume = _todaySession?.totalVolume ?? 0;
 
+    // 실제로 모든 세트가 완료되었는지 확인
+    final isCompleted = hasWorkout &&
+        (_todaySession?.exercises.isNotEmpty ?? false) &&
+        (_todaySession?.exercises.every(
+                (e) => e.sets.isNotEmpty && e.sets.every((s) => s.isCompleted)) ??
+            false);
+
     return InkWell(
       onTap: () async {
         await Navigator.of(context).push(
@@ -655,7 +662,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
               repo: widget.sessionRepo,
               exerciseRepo: widget.exerciseRepo,
               isFromTodayWorkout: true,
-              isViewOnly: hasWorkout, // 완료된 운동이면 조회 모드
+              isViewOnly: isCompleted, // 완료된 운동이면 조회 모드
             ),
           ),
         );
@@ -684,19 +691,25 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: hasWorkout
-                      ? const Color(0xFF34C759)
-                      : (isRest ? const Color(0xFF007AFF) : const Color(0xFF2C2C2E)),
+                  color: isRest
+                      ? const Color(0xFF007AFF) // Rest: Blue
+                      : (isCompleted
+                          ? const Color(0xFF34C759) // Completed: Green
+                          : const Color(0xFF2C2C2E)), // Planned/Empty: Dark Grey
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  hasWorkout
-                      ? context.l10n.completed
-                      : (isRest ? context.l10n.rest : context.l10n.notCompleted),
+                  isRest
+                      ? context.l10n.rest
+                      : (isCompleted
+                          ? context.l10n.completed
+                          : context.l10n.notCompleted), // "미완료" (Planned or Empty)
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: (hasWorkout || isRest) ? Colors.white : const Color(0xFFAAAAAA),
+                    color: (isRest || isCompleted)
+                        ? Colors.white
+                        : const Color(0xFFAAAAAA),
                   ),
                 ),
               ),
