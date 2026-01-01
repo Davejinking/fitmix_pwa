@@ -641,13 +641,14 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
     }
 
     final hasWorkout = _todaySession?.isWorkoutDay ?? false;
+    final isRest = _todaySession?.isRest ?? false;
     final exerciseCount = _todaySession?.exercises.length ?? 0;
     final totalSets = _todaySession?.exercises.fold<int>(0, (sum, e) => sum + e.sets.length) ?? 0;
     final totalVolume = _todaySession?.totalVolume ?? 0;
 
     return InkWell(
-      onTap: () {
-        Navigator.of(context).push(
+      onTap: () async {
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PlanPage(
               date: DateTime.now(),
@@ -658,6 +659,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
             ),
           ),
         );
+        if (mounted) _loadToday();
       },
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -682,15 +684,19 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: hasWorkout ? const Color(0xFF34C759) : const Color(0xFF2C2C2E),
+                  color: hasWorkout
+                      ? const Color(0xFF34C759)
+                      : (isRest ? const Color(0xFF007AFF) : const Color(0xFF2C2C2E)),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  hasWorkout ? context.l10n.completed : context.l10n.notCompleted,
+                  hasWorkout
+                      ? context.l10n.completed
+                      : (isRest ? context.l10n.rest : context.l10n.notCompleted),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: hasWorkout ? Colors.white : const Color(0xFFAAAAAA),
+                    color: (hasWorkout || isRest) ? Colors.white : const Color(0xFFAAAAAA),
                   ),
                 ),
               ),
@@ -707,10 +713,25 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                 _buildStatItem(Icons.speed, '${(totalVolume / 1000).toStringAsFixed(1)}t', context.l10n.volume),
               ],
             ),
+          ] else if (isRest) ...[
+            SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: Center(
+                child: Text(
+                  context.l10n.rest, // 휴식
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF007AFF),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
           ] else ...[
             InkWell(
-              onTap: () {
-                Navigator.of(context).push(
+              onTap: () async {
+                await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PlanPage(
                       date: DateTime.now(),
@@ -720,6 +741,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                     ),
                   ),
                 );
+                if (mounted) _loadToday();
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
