@@ -29,6 +29,7 @@ class _CalendarPageState extends State<CalendarPage> {
   // 데이터
   Session? _currentSession; // Single Source of Truth
   Set<String> _workoutDates = {};
+  Set<String> _restDates = {};
   bool _isLoading = true;
 
   @override
@@ -36,6 +37,7 @@ class _CalendarPageState extends State<CalendarPage> {
     super.initState();
     _loadSession();
     _loadWorkoutDates();
+    _loadRestDates();
   }
 
   Future<void> _loadSession() async {
@@ -69,6 +71,56 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
+  Future<void> _loadRestDates() async {
+    try {
+      final allSessions = await widget.repo.listAll();
+      if (mounted) {
+        setState(() {
+          _restDates = allSessions
+              .where((s) => s.isRest)
+              .map((s) => s.ymd)
+              .toSet();
+        });
+      }
+    } catch (e) {
+      // 무시
+    }
+  }
+
+  Future<void> _saveRestDay() async {
+    try {
+      await widget.repo.markRest(
+        widget.repo.ymd(_selectedDay),
+        rest: true,
+      );
+      await _loadRestDates();
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.showErrorSnackBar(context, '휴식 저장 실패: $e');
+      }
+    }
+  }
+
+  Future<void> _cancelRestDay() async {
+    try {
+      await widget.repo.markRest(
+        widget.repo.ymd(_selectedDay),
+        rest: false,
+      );
+      await _loadRestDates();
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.showErrorSnackBar(context, '휴식 해제 실패: $e');
+      }
+    }
+  }
+
   void _onDaySelected(DateTime selectedDay) {
     if (mounted) {
       setState(() {
@@ -84,6 +136,7 @@ class _CalendarPageState extends State<CalendarPage> {
       try {
         await widget.repo.put(_currentSession!);
         await _loadWorkoutDates();
+        await _loadRestDates();
       } catch (e) {
         if (mounted) {
           ErrorHandler.showErrorSnackBar(context, '저장 실패: $e');
@@ -119,6 +172,15 @@ class _CalendarPageState extends State<CalendarPage> {
                   onDateSelected: _onDaySelected,
                   repo: widget.repo,
                   exerciseRepo: widget.exerciseRepo,
+                  workoutDates: _workoutDates,
+                  restDates: _restDates,
+                  onRestStatusChanged: () async {
+                    await _loadRestDates();
+                    await _loadSession();
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
                 ),
                 // 2. 주간 스트립
                 WeekStrip(
@@ -126,6 +188,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   selectedDay: _selectedDay,
                   onDaySelected: _onDaySelected,
                   workoutDates: _workoutDates,
+                  restDates: _restDates,
                   onWeekChanged: (newWeekStart) {
                     setState(() {
                       _focusedDay = newWeekStart;
@@ -152,20 +215,23 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  // Empty State (운동 계획 없음)
+  // Empty State (운동 계획 없음 또는 휴식 상태)
   Widget _buildEmptyState() {
+    final selectedYmd = widget.repo.ymd(_selectedDay);
+    final isRest = _restDates.contains(selectedYmd);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.fitness_center,
+            isRest ? Icons.event_busy : Icons.fitness_center,
             size: 64,
             color: Colors.grey[700],
           ),
           const SizedBox(height: 16),
           Text(
-            '운동 계획이 없습니다',
+            isRest ? '운동 휴식 중입니다' : '운동 계획이 없습니다',
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -174,7 +240,9 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '하단의 "운동 계획하기" 버튼을 눌러\n운동을 추가해보세요',
+            isRest
+                ? '오늘은 휴식하는 날입니다.\n"운동 휴식 해제" 버튼으로 변경할 수 있습니다'
+                : '하단의 "운동 계획하기" 버튼을 눌러\n운동을 추가해보세요',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -294,8 +362,84 @@ class _CalendarPageState extends State<CalendarPage> {
 
   // Bottom Action Bar (Conditional)
   Widget _buildBottomBar(bool hasPlan) {
-    if (!hasPlan) {
-      // Case A: Empty State - "운동 계획하기" 버튼
+    final selectedYmd = widget.repo.ymd(_selectedDay);
+    final isRest = _restDates.contains(selectedYmd);
+
+    if (!hasPlan && !isRest) {
+      // Case A: Empty State - "운동 계획하기" + "운동 휴식하기" 버튼
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF121212),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: _addExercise,
+                  icon: const Icon(Icons.add, size: 22),
+                  label: const Text(
+                    '운동 계획하기',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2196F3),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton.icon(
+                  onPressed: _saveRestDay,
+                  icon: const Icon(Icons.event_busy, size: 22),
+                  label: const Text(
+                    '운동 휴식하기',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF2196F3),
+                    side: const BorderSide(
+                      color: Color(0xFF2196F3),
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (isRest) {
+      // Case B: Rest Day - "운동 휴식 해제" 버튼
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -310,10 +454,10 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
         child: SafeArea(
           child: ElevatedButton.icon(
-            onPressed: _addExercise,
-            icon: const Icon(Icons.add, size: 22),
+            onPressed: _cancelRestDay,
+            icon: const Icon(Icons.check_circle, size: 22),
             label: const Text(
-              '운동 계획하기',
+              '운동 휴식 해제',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -333,7 +477,65 @@ class _CalendarPageState extends State<CalendarPage> {
       );
     }
 
-    // Case B: Has Plan - "운동 추가" + "운동 시작" 버튼
+    // Case C: Has Plan - 완료 여부에 따라 다른 버튼 표시
+    final bool isCompleted = _currentSession?.isCompleted ?? false;
+
+    if (isCompleted) {
+      // Case C-1: Completed - "운동 편집" 버튼
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF121212),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlanPage(
+                      date: _selectedDay,
+                      repo: widget.repo,
+                      exerciseRepo: widget.exerciseRepo,
+                      isViewOnly: false,
+                    ),
+                  ),
+                ).then((_) {
+                  _loadSession();
+                  _loadWorkoutDates();
+                });
+              },
+              icon: const Icon(Icons.edit, size: 20),
+              label: const Text(
+                '운동 편집',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                side: BorderSide(color: Colors.grey[600]!, width: 1.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Case C-2: Not Completed - "운동 추가" + "운동 시작" 버튼
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(

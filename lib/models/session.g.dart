@@ -21,13 +21,14 @@ class SessionAdapter extends TypeAdapter<Session> {
       exercises: (fields[1] as List?)?.cast<Exercise>(),
       isRest: fields[2] as bool,
       durationInSeconds: fields[3] as int,
+      isCompleted: fields[4] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Session obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.ymd)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class SessionAdapter extends TypeAdapter<Session> {
       ..writeByte(2)
       ..write(obj.isRest)
       ..writeByte(3)
-      ..write(obj.durationInSeconds);
+      ..write(obj.durationInSeconds)
+      ..writeByte(4)
+      ..write(obj.isCompleted);
   }
 
   @override

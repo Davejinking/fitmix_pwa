@@ -7,16 +7,22 @@ import '../../data/exercise_library_repo.dart';
 import '../../pages/plan_page.dart';
 import '../../l10n/app_localizations.dart';
 
+// 휴식 날짜 기능 추가
+
 class CalendarModalSheet extends StatefulWidget {
   final DateTime initialDate;
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
+  final Set<String> workoutDates; // 운동한 날짜들 (yyyy-MM-dd 형식)
+  final Set<String> restDates; // 휴식 날짜들 (yyyy-MM-dd 형식)
 
   const CalendarModalSheet({
     super.key,
     required this.initialDate,
     required this.repo,
     required this.exerciseRepo,
+    required this.workoutDates,
+    required this.restDates,
   });
 
   @override
@@ -65,6 +71,14 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
     );
   }
 
+  String _getYmd(DateTime date) {
+    return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  Future<dynamic> _getSessionStatus() async {
+    return await widget.repo.get(_getYmd(_tempSelectedDate));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -104,7 +118,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    DateFormat.yMMMM().format(_focusedMonth),
+                    DateFormat.yMMMM(Localizations.localeOf(context).languageCode).format(_focusedMonth),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -229,47 +243,221 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                             ),
                           );
                         },
+                        markerBuilder: (context, day, events) {
+                          final ymd = '${day.year.toString().padLeft(4, '0')}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
+                          
+                          // 휴식 날짜에 빨간색 동그라미 표시
+                          if (widget.restDates.contains(ymd)) {
+                            return Positioned(
+                              bottom: 1,
+                              child: Container(
+                                width: 6,
+                                height: 6,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            );
+                          }
+                          
+                          // 운동 완료된 날짜에 파란색 동그라미 표시
+                          if (widget.workoutDates.contains(ymd)) {
+                            return Positioned(
+                              bottom: 1,
+                              child: Container(
+                                width: 6,
+                                height: 6,
+                                decoration: const BoxDecoration(
+                                  color: BurnFitStyle.primaryBlue,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            );
+                          }
+                          
+                          return const SizedBox.shrink();
+                        },
                       ),
                     ),
                   );
                 },
               ),
             ),
-            // 운동 계획하기 버튼
+            // 버튼 영역 (조건부 표시)
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-              child: SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PlanPage(
-                          date: _tempSelectedDate,
-                          repo: widget.repo,
-                          exerciseRepo: widget.exerciseRepo,
+              child: FutureBuilder<dynamic>(
+                future: _getSessionStatus(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: null,
+                        child: const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
                         ),
                       ),
                     );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: BurnFitStyle.primaryBlue,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  }
+
+                  final session = snapshot.data as dynamic;
+                  final isRest = session?.isRest ?? false;
+                  final hasExercises = session?.hasExercises ?? false;
+
+                  // 휴식 상태: "운동 휴식 해제" 버튼
+                  if (isRest) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await widget.repo.markRest(
+                            _getYmd(_tempSelectedDate),
+                            rest: false,
+                          );
+                          if (context.mounted) {
+                            Navigator.pop(context, true); // true를 반환하여 새로고침 신호
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: BurnFitStyle.primaryBlue,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context).cancelRest,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  // 운동이 있는 경우: "운동 편집" 버튼
+                  if (hasExercises) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PlanPage(
+                                date: _tempSelectedDate,
+                                repo: widget.repo,
+                                exerciseRepo: widget.exerciseRepo,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: BurnFitStyle.primaryBlue,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context).editExercise,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  // 기본: "운동 계획하기" + "운동 휴식하기" 버튼 (2개 버튼)
+                  return SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PlanPage(
+                                    date: _tempSelectedDate,
+                                    repo: widget.repo,
+                                    exerciseRepo: widget.exerciseRepo,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: BurnFitStyle.primaryBlue,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context).planWorkout,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: OutlinedButton(
+                            onPressed: () async {
+                              await widget.repo.markRest(
+                                _getYmd(_tempSelectedDate),
+                                rest: true,
+                              );
+                              if (context.mounted) {
+                                Navigator.pop(context, true); // true를 반환하여 새로고침 신호
+                              }
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: BurnFitStyle.primaryBlue,
+                              side: const BorderSide(
+                                color: BurnFitStyle.primaryBlue,
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context).markRest,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context).planWorkout,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],

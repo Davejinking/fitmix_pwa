@@ -18,11 +18,15 @@ class Session extends HiveObject {
   @HiveField(3)
   int durationInSeconds;
 
+  @HiveField(4)
+  bool isCompleted; // 운동 완료 여부
+
   Session({
     required this.ymd,
     List<Exercise>? exercises,
     this.isRest = false,
     this.durationInSeconds = 0,
+    this.isCompleted = false,
   }) : exercises = exercises ?? [];
 
   /// Session 객체를 복사하여 새로운 인스턴스를 생성합니다.
@@ -31,12 +35,14 @@ class Session extends HiveObject {
     List<Exercise>? exercises,
     bool? isRest,
     int? durationInSeconds,
+    bool? isCompleted,
   }) {
     return Session(
       ymd: ymd ?? this.ymd,
       exercises: exercises ?? List.from(this.exercises),
       isRest: isRest ?? this.isRest,
       durationInSeconds: durationInSeconds ?? this.durationInSeconds,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 

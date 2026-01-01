@@ -8,6 +8,7 @@ class WeekStrip extends StatelessWidget {
   final void Function(DateTime) onDaySelected;
   final void Function(DateTime) onWeekChanged;
   final Set<String> workoutDates; // 운동한 날짜들 (yyyy-MM-dd 형식)
+  final Set<String> restDates; // 휴식 날짜들 (yyyy-MM-dd 형식)
 
   const WeekStrip({
     super.key,
@@ -16,6 +17,7 @@ class WeekStrip extends StatelessWidget {
     required this.onDaySelected,
     required this.onWeekChanged,
     this.workoutDates = const {},
+    this.restDates = const {},
   });
 
   void _goToPreviousWeek() {
@@ -125,14 +127,16 @@ class WeekStrip extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      // 운동 기록 점 표시
+                      // 운동 기록 점 표시 (파란색) 또는 휴식 점 표시 (빨간색)
                       Container(
                         width: 5,
                         height: 5,
                         decoration: BoxDecoration(
                           color: hasWorkout
                               ? const Color(0xFF007AFF)
-                              : Colors.transparent,
+                              : restDates.contains(dayYmd)
+                                  ? Colors.red
+                                  : Colors.transparent,
                           shape: BoxShape.circle,
                         ),
                       ),

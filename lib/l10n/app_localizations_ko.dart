@@ -20,7 +20,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultUser => '사용자';
 
   @override
+  String get burnFit => 'BURN FIT';
+
+  @override
   String get upgrade => '업그레이드';
+
+  @override
+  String get updateNote => '9월 22일 업데이트 노트';
 
   @override
   String get myGoal => '내 목표';
@@ -39,7 +45,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get startWorkout => '운동 시작';
+  String get startWorkout => '운동 시작하기';
 
   @override
   String get activityTrend => '운동량 변화';
@@ -106,10 +112,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get editGoal => '목표 수정';
 
   @override
-  String get selectDate => '가는 날';
+  String get selectDate => '날짜 선택';
 
   @override
   String get planWorkout => '운동 계획하기';
+
+  @override
+  String get markRest => '운동 휴식하기';
+
+  @override
+  String get cancelRest => '운동 휴식 해제';
 
   @override
   String get noWorkoutRecords => '운동 기록이 없습니다';
@@ -142,13 +154,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get endWorkout => '운동 종료';
 
   @override
-  String get endWorkoutConfirm => '운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.';
+  String get endWorkoutConfirm => '운동을 종료하고 기록을 저장하시겠습니까?';
 
   @override
   String get endAndSaveWorkout => '운동 종료 및 저장';
 
   @override
-  String get noWorkoutPlan => '운동 계획이 없습니다';
+  String get noWorkoutPlan => '오늘의 운동 계획이 없습니다.\n캘린더에서 먼저 계획을 세워주세요.';
 
   @override
   String get noWorkoutPlanDesc => '하단의 \"운동 추가\" 버튼을 눌러\n운동을 추가해보세요';
@@ -226,9 +238,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get saved => '저장되었습니다.';
 
   @override
-  String saveFailed(Object error) {
-    return '저장 실패: $error';
-  }
+  String get saveFailed => '저장에 실패했습니다.';
 
   @override
   String loadFailed(Object error) {
@@ -404,7 +414,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get notCompleted => '미완료';
 
   @override
-  String get minOneSet => '최소 1개의 세트가 필요합니다';
+  String get minOneSet => '최소 1개의 세트가 필요합니다.';
 
   @override
   String get enterRepsFirst => '먼저 목표 횟수를 입력하세요';
@@ -533,6 +543,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dayUnit => '일';
 
   @override
+  String get timesUnit => '회';
+
+  @override
   String get validWorkoutDaysGoal => '올바른 운동일수 목표를 입력하세요.';
 
   @override
@@ -641,7 +654,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get threeMinutes => '3분';
 
   @override
-  String xpRemaining(int xp) {
+  String xpRemaining(Object xp) {
     return '$xp XP 남음';
   }
 
@@ -664,7 +677,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get achieveFirst => '첫 번째 업적을 달성해보세요!';
 
   @override
-  String exerciseUnit(int count) {
+  String exerciseUnit(Object count) {
     return '$count개';
   }
 
@@ -675,7 +688,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get totalSets => '총 세트';
 
   @override
-  String setsUnit(int count) {
+  String setsUnit(Object count) {
     return '$count세트';
   }
 
@@ -686,7 +699,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noRecentWorkout => '최근 운동 기록이 없습니다';
 
   @override
-  String level(int level) {
+  String level(Object level) {
     return 'Level $level';
   }
 
@@ -710,4 +723,211 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get completeLabel => '완료';
+
+  @override
+  String get basicInfo => '기본 정보';
+
+  @override
+  String get bodyPart => '부위';
+
+  @override
+  String get equipment => '장비';
+
+  @override
+  String get exerciseType => '타입';
+
+  @override
+  String get customExercise => '커스텀 운동';
+
+  @override
+  String get exerciseInstructions => '운동 방법';
+
+  @override
+  String get primaryMuscles => '주요 타겟 근육';
+
+  @override
+  String get secondaryMuscles => '보조 근육';
+
+  @override
+  String get addToWorkoutPlan => '운동 계획에 추가';
+
+  @override
+  String get achievementStreak3Title => '시작이 반이다';
+
+  @override
+  String get achievementStreak3Desc => '3일 연속 운동';
+
+  @override
+  String get achievementStreak7Title => '일주일 전사';
+
+  @override
+  String get achievementStreak7Desc => '7일 연속 운동';
+
+  @override
+  String get achievementStreak30Title => '한 달의 기적';
+
+  @override
+  String get achievementStreak30Desc => '30일 연속 운동';
+
+  @override
+  String get achievementWorkout1Title => '첫 발걸음';
+
+  @override
+  String get achievementWorkout1Desc => '첫 운동 완료';
+
+  @override
+  String get achievementWorkout10Title => '습관 형성';
+
+  @override
+  String get achievementWorkout10Desc => '10회 운동 완료';
+
+  @override
+  String get achievementWorkout50Title => '운동 마니아';
+
+  @override
+  String get achievementWorkout50Desc => '50회 운동 완료';
+
+  @override
+  String get achievementWorkout100Title => '백전백승';
+
+  @override
+  String get achievementWorkout100Desc => '100회 운동 완료';
+
+  @override
+  String get achievementVolume10kTitle => '만 킬로그램';
+
+  @override
+  String get achievementVolume10kDesc => '총 볼륨 10,000kg 달성';
+
+  @override
+  String get achievementVolume100kTitle => '10만 클럽';
+
+  @override
+  String get achievementVolume100kDesc => '총 볼륨 100,000kg 달성';
+
+  @override
+  String get achievementVolume1mTitle => '밀리언 리프터';
+
+  @override
+  String get achievementVolume1mDesc => '총 볼륨 1,000,000kg 달성';
+
+  @override
+  String get achievementWeekendTitle => '주말 전사';
+
+  @override
+  String get achievementWeekendDesc => '주말에 운동하기';
+
+  @override
+  String exerciseSelected(String name) {
+    return '$name 운동이 선택되었습니다.';
+  }
+
+  @override
+  String get upgradeTitle => '프리미엄으로 업그레이드';
+
+  @override
+  String get unlockAllFeatures => '모든 기능을 잠금 해제하세요';
+
+  @override
+  String get advancedAnalytics => '고급 분석';
+
+  @override
+  String get advancedAnalyticsDesc => '주간, 월간, 연간 운동 데이터를 심층 분석하세요.';
+
+  @override
+  String get removeAds => '광고 제거';
+
+  @override
+  String get removeAdsDesc => '방해 없이 운동에만 집중하세요.';
+
+  @override
+  String get cloudBackup => '클라우드 백업';
+
+  @override
+  String get cloudBackupDesc => '여러 기기에서 데이터를 안전하게 동기화하세요.';
+
+  @override
+  String get startMonthly => '월 9,900원으로 시작하기';
+
+  @override
+  String get cancelAnytime => '언제든지 구독을 취소할 수 있습니다.';
+
+  @override
+  String get powerShop => '파워 상점';
+
+  @override
+  String get items => '🛉 아이템';
+
+  @override
+  String get streakFreeze => '스트릭 프리즈';
+
+  @override
+  String get streakFreezeDesc => '하루 쉬어도 스트릭 유지';
+
+  @override
+  String get weeklyReport => '�� 주간 운동 리포트';
+
+  @override
+  String get weeklyReportDesc => '이번 주 운동 분석 리포트';
+
+  @override
+  String get customization => '🎨 커스터마이징 (준비 중)';
+
+  @override
+  String get darkPurpleTheme => '다크 퍼플 테마';
+
+  @override
+  String get purplePointTheme => '보라색 포인트 테마';
+
+  @override
+  String get fireTheme => '파이어 테마';
+
+  @override
+  String get orangeTheme => '불타는 오렌지 테마';
+
+  @override
+  String get specialBadges => '🏅 특별 뱃지 (준비 중)';
+
+  @override
+  String get lightningBadge => '번개 뱃지';
+
+  @override
+  String get specialBadgeDesc => '프로필에 표시되는 특별 뱃지';
+
+  @override
+  String get comingSoon => '준비 중이에요!';
+
+  @override
+  String get streakFreezeSuccess => '스트릭 프리즈 구매 완료! ❄️';
+
+  @override
+  String get insufficientPower => '파워가 부족해요 💪';
+
+  @override
+  String get weeklyReportTitle => '📊 주간 리포트';
+
+  @override
+  String get thisWeekPerformance => '이번 주 성과';
+
+  @override
+  String get allRecords => '전체 기록';
+
+  @override
+  String get nextGoal => '다음 목표';
+
+  @override
+  String levelAchievement(Object level) {
+    return 'Level $level 달성';
+  }
+
+  @override
+  String leaguePromotion(Object league) {
+    return '$league 리그 승급';
+  }
+
+  @override
+  String get encouragingMessage => '잘하고 있어요!';
+
+  @override
+  String get encouragingDesc => '꾸준히 운동하면 목표를 달성할 수 있어요';
 }

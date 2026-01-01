@@ -48,6 +48,11 @@ class ShellPageState extends State<ShellPage> {
     }
   }
 
+  // 캘린더 탭으로 이동하는 메서드
+  void navigateToCalendar() {
+    setState(() => _currentIndex = 1); // 캘린더는 인덱스 1
+  }
+
   @override
   void initState() {
     super.initState();

@@ -652,18 +652,48 @@ class _PlanPageState extends State<PlanPage> {
     HapticFeedback.mediumImpact();
   }
 
-  void _finishWorkout() {
+  void _finishWorkout() async {
+    if (_currentSession == null) return;
+    
+    // 미완료 세트가 있는지 확인
+    final hasIncompleteSets = _currentSession!.exercises.any((e) => 
+        e.sets.any((s) => !s.isCompleted));
+    
+    if (hasIncompleteSets) {
+      // 경고 팝업 표시
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text(
+            '운동 완료',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            '일부 세트가 완료되지 않았습니다.\n그래도 운동을 완료하시겠습니까?',
+            style: TextStyle(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('완료'),
+            ),
+          ],
+        ),
+      );
+      
+      if (confirmed != true) return;
+    }
+    
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
-    // 모든 세트의 체크박스 상태 리셋
-    if (_currentSession != null) {
-      for (var exercise in _currentSession!.exercises) {
-        for (var set in exercise.sets) {
-          set.isCompleted = false;
-        }
-      }
-    }
+    // 세션을 완료 상태로 설정
+    _currentSession!.isCompleted = true;
     
     setState(() {
       _isWorkoutStarted = false;

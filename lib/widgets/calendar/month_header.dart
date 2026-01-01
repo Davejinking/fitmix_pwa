@@ -11,6 +11,9 @@ class MonthHeader extends StatelessWidget {
   final void Function(DateTime) onDateSelected;
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
+  final Set<String> workoutDates; // 운동한 날짜들
+  final Set<String> restDates; // 휴식 날짜들
+  final Future<void> Function()? onRestStatusChanged; // 휴식 상태 변경 콜백
 
   const MonthHeader({
     super.key,
@@ -19,10 +22,13 @@ class MonthHeader extends StatelessWidget {
     required this.onDateSelected,
     required this.repo,
     required this.exerciseRepo,
+    required this.workoutDates,
+    required this.restDates,
+    this.onRestStatusChanged,
   });
 
   Future<void> _showCalendarModal(BuildContext context) async {
-    await showModalBottomSheet<DateTime>(
+    final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -30,8 +36,15 @@ class MonthHeader extends StatelessWidget {
         initialDate: selectedDay,
         repo: repo,
         exerciseRepo: exerciseRepo,
+        workoutDates: workoutDates,
+        restDates: restDates,
       ),
     );
+    
+    // 휴식 상태가 변경되었으면 부모에 알림
+    if (result == true) {
+      await onRestStatusChanged?.call();
+    }
   }
 
   void _goToToday() {

@@ -33,6 +33,8 @@
   "editGoal": "Edit Goal",
   "selectDate": "Select Date",
   "planWorkout": "Plan Workout",
+  "markRest": "Mark as Rest Day",
+  "cancelRest": "Cancel Rest Day",
   "noWorkoutRecords": "No workout records",
   "workoutRecord": "Workout Record",
   "totalVolume": "Total Volume: {volume}kg",

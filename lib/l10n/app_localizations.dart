@@ -118,11 +118,23 @@ abstract class AppLocalizations {
   /// **'사용자'**
   String get defaultUser;
 
+  /// No description provided for @burnFit.
+  ///
+  /// In ko, this message translates to:
+  /// **'BURN FIT'**
+  String get burnFit;
+
   /// No description provided for @upgrade.
   ///
   /// In ko, this message translates to:
   /// **'업그레이드'**
   String get upgrade;
+
+  /// No description provided for @updateNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'9월 22일 업데이트 노트'**
+  String get updateNote;
 
   /// No description provided for @myGoal.
   ///
@@ -151,7 +163,7 @@ abstract class AppLocalizations {
   /// No description provided for @startWorkout.
   ///
   /// In ko, this message translates to:
-  /// **'운동 시작'**
+  /// **'운동 시작하기'**
   String get startWorkout;
 
   /// No description provided for @activityTrend.
@@ -277,7 +289,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectDate.
   ///
   /// In ko, this message translates to:
-  /// **'가는 날'**
+  /// **'날짜 선택'**
   String get selectDate;
 
   /// No description provided for @planWorkout.
@@ -285,6 +297,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'운동 계획하기'**
   String get planWorkout;
+
+  /// No description provided for @markRest.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 휴식하기'**
+  String get markRest;
+
+  /// No description provided for @cancelRest.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 휴식 해제'**
+  String get cancelRest;
 
   /// No description provided for @noWorkoutRecords.
   ///
@@ -337,7 +361,7 @@ abstract class AppLocalizations {
   /// No description provided for @endWorkoutConfirm.
   ///
   /// In ko, this message translates to:
-  /// **'운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.'**
+  /// **'운동을 종료하고 기록을 저장하시겠습니까?'**
   String get endWorkoutConfirm;
 
   /// No description provided for @endAndSaveWorkout.
@@ -349,7 +373,7 @@ abstract class AppLocalizations {
   /// No description provided for @noWorkoutPlan.
   ///
   /// In ko, this message translates to:
-  /// **'운동 계획이 없습니다'**
+  /// **'오늘의 운동 계획이 없습니다.\n캘린더에서 먼저 계획을 세워주세요.'**
   String get noWorkoutPlan;
 
   /// No description provided for @noWorkoutPlanDesc.
@@ -493,8 +517,8 @@ abstract class AppLocalizations {
   /// No description provided for @saveFailed.
   ///
   /// In ko, this message translates to:
-  /// **'저장 실패: {error}'**
-  String saveFailed(Object error);
+  /// **'저장에 실패했습니다.'**
+  String get saveFailed;
 
   /// No description provided for @loadFailed.
   ///
@@ -817,7 +841,7 @@ abstract class AppLocalizations {
   /// No description provided for @minOneSet.
   ///
   /// In ko, this message translates to:
-  /// **'최소 1개의 세트가 필요합니다'**
+  /// **'최소 1개의 세트가 필요합니다.'**
   String get minOneSet;
 
   /// No description provided for @enterRepsFirst.
@@ -1060,6 +1084,12 @@ abstract class AppLocalizations {
   /// **'일'**
   String get dayUnit;
 
+  /// No description provided for @timesUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'회'**
+  String get timesUnit;
+
   /// No description provided for @validWorkoutDaysGoal.
   ///
   /// In ko, this message translates to:
@@ -1255,7 +1285,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{xp} XP 남음'**
-  String xpRemaining(int xp);
+  String xpRemaining(Object xp);
 
   /// No description provided for @achievement.
   ///
@@ -1297,7 +1327,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{count}개'**
-  String exerciseUnit(int count);
+  String exerciseUnit(Object count);
 
   /// No description provided for @exercise.
   ///
@@ -1315,7 +1345,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{count}세트'**
-  String setsUnit(int count);
+  String setsUnit(Object count);
 
   /// No description provided for @startWorkoutNow.
   ///
@@ -1333,7 +1363,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'Level {level}'**
-  String level(int level);
+  String level(Object level);
 
   /// No description provided for @leagueBronze.
   ///
@@ -1376,6 +1406,408 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'완료'**
   String get completeLabel;
+
+  /// No description provided for @basicInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 정보'**
+  String get basicInfo;
+
+  /// No description provided for @bodyPart.
+  ///
+  /// In ko, this message translates to:
+  /// **'부위'**
+  String get bodyPart;
+
+  /// No description provided for @equipment.
+  ///
+  /// In ko, this message translates to:
+  /// **'장비'**
+  String get equipment;
+
+  /// No description provided for @exerciseType.
+  ///
+  /// In ko, this message translates to:
+  /// **'타입'**
+  String get exerciseType;
+
+  /// No description provided for @customExercise.
+  ///
+  /// In ko, this message translates to:
+  /// **'커스텀 운동'**
+  String get customExercise;
+
+  /// No description provided for @exerciseInstructions.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 방법'**
+  String get exerciseInstructions;
+
+  /// No description provided for @primaryMuscles.
+  ///
+  /// In ko, this message translates to:
+  /// **'주요 타겟 근육'**
+  String get primaryMuscles;
+
+  /// No description provided for @secondaryMuscles.
+  ///
+  /// In ko, this message translates to:
+  /// **'보조 근육'**
+  String get secondaryMuscles;
+
+  /// No description provided for @addToWorkoutPlan.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 계획에 추가'**
+  String get addToWorkoutPlan;
+
+  /// No description provided for @achievementStreak3Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작이 반이다'**
+  String get achievementStreak3Title;
+
+  /// No description provided for @achievementStreak3Desc.
+  ///
+  /// In ko, this message translates to:
+  /// **'3일 연속 운동'**
+  String get achievementStreak3Desc;
+
+  /// No description provided for @achievementStreak7Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'일주일 전사'**
+  String get achievementStreak7Title;
+
+  /// No description provided for @achievementStreak7Desc.
+  ///
+  /// In ko, this message translates to:
+  /// **'7일 연속 운동'**
+  String get achievementStreak7Desc;
+
+  /// No description provided for @achievementStreak30Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 달의 기적'**
+  String get achievementStreak30Title;
+
+  /// No description provided for @achievementStreak30Desc.
+  ///
+  /// In ko, this message translates to:
+  /// **'30일 연속 운동'**
+  String get achievementStreak30Desc;
+
+  /// No description provided for @achievementWorkout1Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 발걸음'**
+  String get achievementWorkout1Title;
+
+  /// No description provided for @achievementWorkout1Desc.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 운동 완료'**
+  String get achievementWorkout1Desc;
+
+  /// No description provided for @achievementWorkout10Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'습관 형성'**
+  String get achievementWorkout10Title;
+
+  /// No description provided for @achievementWorkout10Desc.
+  ///
+  /// In ko, this message translates to:
+  /// **'10회 운동 완료'**
+  String get achievementWorkout10Desc;
+
+  /// No description provided for @achievementWorkout50Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 마니아'**
+  String get achievementWorkout50Title;
+
+  /// No description provided for @achievementWorkout50Desc.
+  ///
+  /// In ko, this message translates to:
+  /// **'50회 운동 완료'**
+  String get achievementWorkout50Desc;
+
+  /// No description provided for @achievementWorkout100Title.
+  ///
+  /// In ko, this message translates to:
+  /// **'백전백승'**
+  String get achievementWorkout100Title;
+
+  /// No description provided for @achievementWorkout100Desc.
+  ///
+  /// In ko, this message translates to:
+  /// **'100회 운동 완료'**
+  String get achievementWorkout100Desc;
+
+  /// No description provided for @achievementVolume10kTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'만 킬로그램'**
+  String get achievementVolume10kTitle;
+
+  /// No description provided for @achievementVolume10kDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 볼륨 10,000kg 달성'**
+  String get achievementVolume10kDesc;
+
+  /// No description provided for @achievementVolume100kTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'10만 클럽'**
+  String get achievementVolume100kTitle;
+
+  /// No description provided for @achievementVolume100kDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 볼륨 100,000kg 달성'**
+  String get achievementVolume100kDesc;
+
+  /// No description provided for @achievementVolume1mTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'밀리언 리프터'**
+  String get achievementVolume1mTitle;
+
+  /// No description provided for @achievementVolume1mDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 볼륨 1,000,000kg 달성'**
+  String get achievementVolume1mDesc;
+
+  /// No description provided for @achievementWeekendTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'주말 전사'**
+  String get achievementWeekendTitle;
+
+  /// No description provided for @achievementWeekendDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'주말에 운동하기'**
+  String get achievementWeekendDesc;
+
+  /// No description provided for @exerciseSelected.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name} 운동이 선택되었습니다.'**
+  String exerciseSelected(String name);
+
+  /// No description provided for @upgradeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'프리미엄으로 업그레이드'**
+  String get upgradeTitle;
+
+  /// No description provided for @unlockAllFeatures.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 기능을 잠금 해제하세요'**
+  String get unlockAllFeatures;
+
+  /// No description provided for @advancedAnalytics.
+  ///
+  /// In ko, this message translates to:
+  /// **'고급 분석'**
+  String get advancedAnalytics;
+
+  /// No description provided for @advancedAnalyticsDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'주간, 월간, 연간 운동 데이터를 심층 분석하세요.'**
+  String get advancedAnalyticsDesc;
+
+  /// No description provided for @removeAds.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 제거'**
+  String get removeAds;
+
+  /// No description provided for @removeAdsDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'방해 없이 운동에만 집중하세요.'**
+  String get removeAdsDesc;
+
+  /// No description provided for @cloudBackup.
+  ///
+  /// In ko, this message translates to:
+  /// **'클라우드 백업'**
+  String get cloudBackup;
+
+  /// No description provided for @cloudBackupDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'여러 기기에서 데이터를 안전하게 동기화하세요.'**
+  String get cloudBackupDesc;
+
+  /// No description provided for @startMonthly.
+  ///
+  /// In ko, this message translates to:
+  /// **'월 9,900원으로 시작하기'**
+  String get startMonthly;
+
+  /// No description provided for @cancelAnytime.
+  ///
+  /// In ko, this message translates to:
+  /// **'언제든지 구독을 취소할 수 있습니다.'**
+  String get cancelAnytime;
+
+  /// No description provided for @powerShop.
+  ///
+  /// In ko, this message translates to:
+  /// **'파워 상점'**
+  String get powerShop;
+
+  /// No description provided for @items.
+  ///
+  /// In ko, this message translates to:
+  /// **'🛉 아이템'**
+  String get items;
+
+  /// No description provided for @streakFreeze.
+  ///
+  /// In ko, this message translates to:
+  /// **'스트릭 프리즈'**
+  String get streakFreeze;
+
+  /// No description provided for @streakFreezeDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'하루 쉬어도 스트릭 유지'**
+  String get streakFreezeDesc;
+
+  /// No description provided for @weeklyReport.
+  ///
+  /// In ko, this message translates to:
+  /// **'�� 주간 운동 리포트'**
+  String get weeklyReport;
+
+  /// No description provided for @weeklyReportDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 주 운동 분석 리포트'**
+  String get weeklyReportDesc;
+
+  /// No description provided for @customization.
+  ///
+  /// In ko, this message translates to:
+  /// **'🎨 커스터마이징 (준비 중)'**
+  String get customization;
+
+  /// No description provided for @darkPurpleTheme.
+  ///
+  /// In ko, this message translates to:
+  /// **'다크 퍼플 테마'**
+  String get darkPurpleTheme;
+
+  /// No description provided for @purplePointTheme.
+  ///
+  /// In ko, this message translates to:
+  /// **'보라색 포인트 테마'**
+  String get purplePointTheme;
+
+  /// No description provided for @fireTheme.
+  ///
+  /// In ko, this message translates to:
+  /// **'파이어 테마'**
+  String get fireTheme;
+
+  /// No description provided for @orangeTheme.
+  ///
+  /// In ko, this message translates to:
+  /// **'불타는 오렌지 테마'**
+  String get orangeTheme;
+
+  /// No description provided for @specialBadges.
+  ///
+  /// In ko, this message translates to:
+  /// **'🏅 특별 뱃지 (준비 중)'**
+  String get specialBadges;
+
+  /// No description provided for @lightningBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'번개 뱃지'**
+  String get lightningBadge;
+
+  /// No description provided for @specialBadgeDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'프로필에 표시되는 특별 뱃지'**
+  String get specialBadgeDesc;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In ko, this message translates to:
+  /// **'준비 중이에요!'**
+  String get comingSoon;
+
+  /// No description provided for @streakFreezeSuccess.
+  ///
+  /// In ko, this message translates to:
+  /// **'스트릭 프리즈 구매 완료! ❄️'**
+  String get streakFreezeSuccess;
+
+  /// No description provided for @insufficientPower.
+  ///
+  /// In ko, this message translates to:
+  /// **'파워가 부족해요 💪'**
+  String get insufficientPower;
+
+  /// No description provided for @weeklyReportTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'📊 주간 리포트'**
+  String get weeklyReportTitle;
+
+  /// No description provided for @thisWeekPerformance.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 주 성과'**
+  String get thisWeekPerformance;
+
+  /// No description provided for @allRecords.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 기록'**
+  String get allRecords;
+
+  /// No description provided for @nextGoal.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 목표'**
+  String get nextGoal;
+
+  /// No description provided for @levelAchievement.
+  ///
+  /// In ko, this message translates to:
+  /// **'Level {level} 달성'**
+  String levelAchievement(Object level);
+
+  /// No description provided for @leaguePromotion.
+  ///
+  /// In ko, this message translates to:
+  /// **'{league} 리그 승급'**
+  String leaguePromotion(Object league);
+
+  /// No description provided for @encouragingMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'잘하고 있어요!'**
+  String get encouragingMessage;
+
+  /// No description provided for @encouragingDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'꾸준히 운동하면 목표를 달성할 수 있어요'**
+  String get encouragingDesc;
 }
 
 class _AppLocalizationsDelegate

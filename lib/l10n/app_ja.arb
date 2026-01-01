@@ -33,6 +33,8 @@
   "editGoal": "目標を編集",
   "selectDate": "日付選択",
   "planWorkout": "ワークアウトを計画",
+  "markRest": "休息日にする",
+  "cancelRest": "休息日を解除",
   "noWorkoutRecords": "運動記録がありません",
   "workoutRecord": "運動記録",
   "totalVolume": "総ボリューム: {volume}kg",
