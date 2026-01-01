@@ -2,118 +2,108 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../data/exercise_library_repo.dart';
 import '../../data/session_repo.dart';
+import '../../data/settings_repo.dart';
 import '../../models/session.dart';
 import '../../pages/plan_page.dart';
 import '../../l10n/app_localizations.dart';
 
 class DayTimelineList extends StatelessWidget {
-  final DateTime selectedDay;
-  final ValueNotifier<List<Session>> selectedEvents;
+  final DateTime monthDate;
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateSelected;
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
-  final double topPadding;
+  final SettingsRepo? settingsRepo;
 
   const DayTimelineList({
     super.key,
-    required this.selectedDay,
-    required this.selectedEvents,
+    required this.monthDate,
+    required this.selectedDate,
+    required this.onDateSelected,
     required this.repo,
     required this.exerciseRepo,
-    this.topPadding = 0,
+    this.settingsRepo,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<Session>>(
-      valueListenable: selectedEvents,
-      builder: (context, sessions, _) {
-        return Container(
-          color: const Color(0xFF121212),
-          child: sessions.isEmpty || !sessions.first.isWorkoutDay
-              ? _buildEmptyState(context)
-              : _buildSessionList(context, sessions),
-        );
-      },
+    // 해당 월의 모든 날짜 생성
+    final daysInMonth = DateTime(monthDate.year, monthDate.month + 1, 0).day;
+    final dates = List.generate(
+      daysInMonth,
+      (index) => DateTime(monthDate.year, monthDate.month, index + 1),
     );
-  }
 
-  Widget _buildEmptyState(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.fitness_center,
-              size: 64,
-              color: Color(0xFF2C2C2E),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              DateFormat.MMMEd().format(selectedDay),
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFFFFFFFF),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.noWorkoutRecords,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Color(0xFFAAAAAA),
-              ),
-            ),
-            const SizedBox(height: 28),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PlanPage(
-                      date: selectedDay,
-                      repo: repo,
-                      exerciseRepo: exerciseRepo,
-                    ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: Text(l10n.planWorkout),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF007AFF),
-                foregroundColor: const Color(0xFFFFFFFF),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSessionList(BuildContext context, List<Session> sessions) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: sessions.length,
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: daysInMonth,
       itemBuilder: (context, index) {
-        final session = sessions[index];
-        return _WorkoutSessionCard(
-          session: session,
-          repo: repo,
-          exerciseRepo: exerciseRepo,
+        final date = dates[index];
+        final isSelected = isSameDay(date, selectedDate);
+        final isToday = isSameDay(date, DateTime.now());
+
+        return GestureDetector(
+          onTap: () => onDateSelected(date),
+          child: Container(
+            width: 60,
+            margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFF007AFF) : const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(12),
+              border: isToday && !isSelected
+                  ? Border.all(color: const Color(0xFF007AFF), width: 1.5)
+                  : null,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  DateFormat.E(Localizations.localeOf(context).languageCode).format(date),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.white : Colors.grey[500],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  date.day.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.white : Colors.white,
+                  ),
+                ),
+                // 운동 완료 마커 (여기서는 간단하게 표시, 실제 데이터 연동 필요)
+                // FutureBuilder 등을 사용하여 해당 날짜의 운동 여부 확인 가능
+                FutureBuilder<Session?>(
+                  future: repo.get(repo.ymd(date)),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData && snapshot.data!.isWorkoutDay) {
+                        return Container(
+                          margin: const EdgeInsets.only(top: 6),
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isSelected ? Colors.white : const Color(0xFF007AFF),
+                          ),
+                        );
+                    }
+                    return const SizedBox(height: 10);
+                  },
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
+  }
+
+  bool isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }
 
@@ -121,11 +111,13 @@ class _WorkoutSessionCard extends StatelessWidget {
   final Session session;
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
+  final SettingsRepo? settingsRepo;
 
   const _WorkoutSessionCard({
     required this.session,
     required this.repo,
     required this.exerciseRepo,
+    this.settingsRepo,
   });
 
   @override
@@ -191,6 +183,7 @@ class _WorkoutSessionCard extends StatelessWidget {
                         date: repo.ymdToDateTime(session.ymd),
                         repo: repo,
                         exerciseRepo: exerciseRepo,
+                        settingsRepo: settingsRepo,
                       ),
                     ),
                   );

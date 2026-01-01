@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/exercise.dart';
 import '../services/tempo_controller.dart';
+import '../data/settings_repo.dart';
 
 /// Tempo Settings Modal
 /// 운동별 템포 설정 (Eccentric/Concentric 시간)
@@ -9,6 +10,7 @@ class TempoSettingsModal extends StatefulWidget {
   final VoidCallback onUpdate;
   final Function(TempoMode)? onModeChanged;
   final TempoMode? initialMode;
+  final SettingsRepo? settingsRepo;
 
   const TempoSettingsModal({
     super.key,
@@ -16,6 +18,7 @@ class TempoSettingsModal extends StatefulWidget {
     required this.onUpdate,
     this.onModeChanged,
     this.initialMode,
+    this.settingsRepo,
   });
 
   @override
@@ -27,6 +30,7 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
   late int _concentricSeconds;
   late bool _isTempoEnabled;
   late TempoMode _selectedMode;
+  int _preparationSeconds = 10;
 
   @override
   void initState() {
@@ -35,6 +39,14 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
     _concentricSeconds = widget.exercise.concentricSeconds;
     _isTempoEnabled = widget.exercise.isTempoEnabled;
     _selectedMode = widget.initialMode ?? TempoMode.beep;
+    _loadPreparationSeconds();
+  }
+
+  Future<void> _loadPreparationSeconds() async {
+    if (widget.settingsRepo != null) {
+        final val = await widget.settingsRepo!.getTempoPreparationSeconds();
+        if (mounted) setState(() => _preparationSeconds = val);
+    }
   }
 
   @override
@@ -125,6 +137,10 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
                 // Mode Selector
                 _buildModeSelector(),
                 const SizedBox(height: 24),
+
+                // Preparation Time Selector
+                _buildPreparationTimeSelector(),
+                const SizedBox(height: 24),
               ],
 
               // Eccentric Time
@@ -193,6 +209,11 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
                     widget.exercise.eccentricSeconds = _eccentricSeconds;
                     widget.exercise.concentricSeconds = _concentricSeconds;
                     widget.exercise.isTempoEnabled = _isTempoEnabled;
+
+                    if (widget.settingsRepo != null) {
+                        widget.settingsRepo!.saveTempoPreparationSeconds(_preparationSeconds);
+                    }
+
                     widget.onUpdate();
                     widget.onModeChanged?.call(_selectedMode); // Pass mode back
                     Navigator.pop(context);
@@ -218,6 +239,55 @@ class _TempoSettingsModalState extends State<TempoSettingsModal> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPreparationTimeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '준비 시간',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2C2C2C),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [0, 10, 15, 20].map((sec) {
+                return Expanded(
+                    child: GestureDetector(
+                        onTap: () => setState(() => _preparationSeconds = sec),
+                        behavior: HitTestBehavior.translucent,
+                        child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: _preparationSeconds == sec ? const Color(0xFF2196F3).withOpacity(0.2) : Colors.transparent,
+                            ),
+                            child: Text(
+                                sec == 0 ? '없음' : '${sec}초',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: _preparationSeconds == sec ? FontWeight.bold : FontWeight.normal,
+                                    color: _preparationSeconds == sec ? const Color(0xFF2196F3) : Colors.grey[400],
+                                ),
+                            ),
+                        ),
+                    ),
+                );
+            }).toList(),
+          ),
+        ),
+      ],
     );
   }
 

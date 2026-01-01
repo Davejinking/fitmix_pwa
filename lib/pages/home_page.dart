@@ -57,6 +57,7 @@ class HomePage extends StatelessWidget {
               sessionRepo: sessionRepo,
               userRepo: userRepo,
               exerciseRepo: exerciseRepo,
+              settingsRepo: settingsRepo,
             ),
           ),
         ],
@@ -159,8 +160,14 @@ class _BodyComponent extends StatefulWidget {
   final SessionRepo sessionRepo;
   final UserRepo userRepo;
   final ExerciseLibraryRepo exerciseRepo;
+  final SettingsRepo settingsRepo;
 
-  const _BodyComponent({required this.sessionRepo, required this.userRepo, required this.exerciseRepo});
+  const _BodyComponent({
+    required this.sessionRepo,
+    required this.userRepo,
+    required this.exerciseRepo,
+    required this.settingsRepo,
+  });
 
   @override
   State<_BodyComponent> createState() => _BodyComponentState();
@@ -205,10 +212,14 @@ class _BodyComponentState extends State<_BodyComponent> with SingleTickerProvide
     final cards = [
       _XPLevelCard(sessionRepo: widget.sessionRepo),
       _StreakCard(sessionRepo: widget.sessionRepo),
-      _TodaySummaryCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
+      _TodaySummaryCard(
+        sessionRepo: widget.sessionRepo,
+        exerciseRepo: widget.exerciseRepo,
+        settingsRepo: widget.settingsRepo,
+      ),
       _AchievementPreviewCard(sessionRepo: widget.sessionRepo),
-      _MyGoalCard(sessionRepo: widget.sessionRepo, userRepo: widget.userRepo, exerciseRepo: widget.exerciseRepo),
-      _ActivityTrendCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
+      _MyGoalCard(sessionRepo: widget.sessionRepo, userRepo: widget.userRepo, exerciseRepo: widget.exerciseRepo, settingsRepo: widget.settingsRepo),
+      _ActivityTrendCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo, settingsRepo: widget.settingsRepo),
     ];
 
     return SingleChildScrollView(
@@ -600,7 +611,12 @@ class _StreakCardState extends State<_StreakCard> {
 class _TodaySummaryCard extends StatefulWidget {
   final SessionRepo sessionRepo;
   final ExerciseLibraryRepo exerciseRepo;
-  const _TodaySummaryCard({required this.sessionRepo, required this.exerciseRepo});
+  final SettingsRepo settingsRepo;
+  const _TodaySummaryCard({
+    required this.sessionRepo,
+    required this.exerciseRepo,
+    required this.settingsRepo,
+  });
 
   @override
   State<_TodaySummaryCard> createState() => _TodaySummaryCardState();
@@ -653,6 +669,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
               date: DateTime.now(),
               repo: widget.sessionRepo,
               exerciseRepo: widget.exerciseRepo,
+              settingsRepo: widget.settingsRepo,
               isFromTodayWorkout: true,
               isViewOnly: hasWorkout, // 완료된 운동이면 조회 모드
             ),
@@ -716,6 +733,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                       date: DateTime.now(),
                       repo: widget.sessionRepo,
                       exerciseRepo: widget.exerciseRepo,
+                      settingsRepo: widget.settingsRepo,
                       isFromTodayWorkout: true,
                     ),
                   ),
@@ -895,8 +913,14 @@ class _MyGoalCard extends StatefulWidget {
   final SessionRepo sessionRepo;
   final UserRepo userRepo;
   final ExerciseLibraryRepo exerciseRepo;
+  final SettingsRepo settingsRepo;
 
-  const _MyGoalCard({required this.sessionRepo, required this.userRepo, required this.exerciseRepo});
+  const _MyGoalCard({
+    required this.sessionRepo,
+    required this.userRepo,
+    required this.exerciseRepo,
+    required this.settingsRepo,
+  });
 
   @override
   State<_MyGoalCard> createState() => _MyGoalCardState();
@@ -1018,6 +1042,7 @@ class _MyGoalCardState extends State<_MyGoalCard> {
                           date: DateTime.now(),
                           repo: widget.sessionRepo,
                           exerciseRepo: widget.exerciseRepo,
+                          settingsRepo: widget.settingsRepo,
                         ),
                       ),
                     );
@@ -1095,7 +1120,13 @@ class _MyGoalCardState extends State<_MyGoalCard> {
 class _ActivityTrendCard extends StatefulWidget {
   final SessionRepo sessionRepo;
   final ExerciseLibraryRepo exerciseRepo;
-  const _ActivityTrendCard({required this.sessionRepo, required this.exerciseRepo});
+  final SettingsRepo settingsRepo;
+
+  const _ActivityTrendCard({
+    required this.sessionRepo,
+    required this.exerciseRepo,
+    required this.settingsRepo,
+  });
 
   @override
   State<_ActivityTrendCard> createState() => _ActivityTrendCardState();
@@ -1409,6 +1440,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                         date: DateTime.now(),
                         repo: widget.sessionRepo,
                         exerciseRepo: widget.exerciseRepo,
+                        settingsRepo: widget.settingsRepo,
                       ),
                     ),
                   );

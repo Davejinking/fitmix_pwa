@@ -24,6 +24,9 @@ class TempoController {
   String phase = 'idle';
   TempoMode mode = TempoMode.beep; // 기본값: 비프음
   
+  int totalPreparationSeconds = 0;
+  int currentPreparationSeconds = 0;
+
   // 콜백
   VoidCallback? onStateChange;
   VoidCallback? onComplete;
@@ -68,12 +71,32 @@ class TempoController {
     required int reps,
     required int downSeconds,
     required int upSeconds,
+    int preparationSeconds = 0,
   }) async {
     if (isRunning) return;
     isRunning = true;
     currentRep = 0;
     
-    // 카운트다운
+    // Preparation Phase
+    if (preparationSeconds > 0) {
+      phase = 'preparation';
+      totalPreparationSeconds = preparationSeconds;
+      currentPreparationSeconds = preparationSeconds;
+      onStateChange?.call();
+
+      for (int i = preparationSeconds; i > 0; i--) {
+        if (!isRunning) return;
+        currentPreparationSeconds = i;
+        onStateChange?.call();
+        // 5초 이하일 때만 소리/진동
+        if (i <= 5) {
+            HapticFeedback.lightImpact();
+        }
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+
+    // 카운트다운 (3-2-1-GO)
     phase = 'countdown';
     onStateChange?.call();
     
