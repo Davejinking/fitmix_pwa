@@ -143,25 +143,25 @@ class _PlanPageState extends State<PlanPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text(
-          '운동 종료',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context).endWorkout,
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          '운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.',
-          style: TextStyle(color: Colors.grey),
+        content: Text(
+          AppLocalizations.of(context).endWorkoutConfirm,
+          style: const TextStyle(color: Colors.grey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('계속하기'),
+            child: Text(AppLocalizations.of(context).continueWorkout),
           ),
           TextButton(
             onPressed: () {
               _finishWorkout();
               Navigator.pop(context, true);
             },
-            child: const Text('종료', style: TextStyle(color: Colors.redAccent)),
+            child: Text(AppLocalizations.of(context).quit, style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -395,9 +395,9 @@ class _PlanPageState extends State<PlanPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        '운동 중에는 날짜를 변경할 수 없습니다',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      Text(
+                        AppLocalizations.of(context).cannotChangeDateDuringWorkout,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       const SizedBox(height: 16),
                       TextButton(
@@ -882,7 +882,7 @@ class _PlanPageState extends State<PlanPage> {
                     backgroundColor: const Color(0xFF2196F3),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(AppLocalizations.of(context).confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
