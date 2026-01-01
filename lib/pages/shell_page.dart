@@ -62,6 +62,7 @@ class ShellPageState extends State<ShellPage> {
       CalendarPage(
         repo: widget.sessionRepo,
         exerciseRepo: widget.exerciseRepo,
+        settingsRepo: widget.settingsRepo,
       ),
       Scaffold(
         backgroundColor: const Color(0xFF121212),

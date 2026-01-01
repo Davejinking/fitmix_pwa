@@ -51,7 +51,9 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
       if (mounted) {
         setState(() {});
         _updatePhaseTimer();
-        _pulseController.forward().then((_) => _pulseController.reverse());
+        if (widget.controller.phase != 'preparation') {
+            _pulseController.forward().then((_) => _pulseController.reverse());
+        }
         HapticFeedback.lightImpact();
       }
     };
@@ -87,6 +89,10 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
       _phaseTimeRemaining = widget.upSeconds * 1000;
     } else if (phase == 'countdown') {
       _phaseTimeRemaining = 800;
+    } else if (phase == 'preparation') {
+      // Preparation phase uses seconds, update manually not via this timer usually
+      // But we can sync it for visualization
+      _phaseTimeRemaining = 1000;
     }
   }
 
@@ -195,6 +201,30 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
   Widget _buildMainDisplay() {
     final phase = widget.controller.phase;
     
+    if (phase == 'preparation') {
+        return Column(
+            children: [
+                const Text(
+                    '준비하세요',
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                    ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                    '${widget.controller.currentPreparationSeconds}',
+                    style: const TextStyle(
+                        fontSize: 60,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orangeAccent,
+                    ),
+                ),
+            ],
+        );
+    }
+
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
@@ -310,6 +340,8 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
 
   Color _getPhaseColor() {
     switch (widget.controller.phase) {
+      case 'preparation':
+        return Colors.blueGrey;
       case 'countdown':
         return Colors.orange;
       case 'down':
@@ -325,6 +357,8 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
 
   IconData _getPhaseIcon() {
     switch (widget.controller.phase) {
+      case 'preparation':
+        return Icons.accessibility_new;
       case 'countdown':
         return Icons.timer;
       case 'down':
@@ -340,8 +374,10 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
 
   String _getPhaseText() {
     switch (widget.controller.phase) {
-      case 'countdown':
+      case 'preparation':
         return '준비';
+      case 'countdown':
+        return '시작!';
       case 'down':
         return 'DOWN';
       case 'up':

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/burn_fit_style.dart';
 import '../../data/session_repo.dart';
 import '../../data/exercise_library_repo.dart';
+import '../../data/settings_repo.dart';
 import '../../pages/plan_page.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -11,12 +12,14 @@ class CalendarModalSheet extends StatefulWidget {
   final DateTime initialDate;
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
+  final SettingsRepo? settingsRepo;
 
   const CalendarModalSheet({
     super.key,
     required this.initialDate,
     required this.repo,
     required this.exerciseRepo,
+    this.settingsRepo,
   });
 
   @override
@@ -28,6 +31,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
   late DateTime _focusedMonth;
   late PageController _pageController;
   static const int _initialPage = 500;
+  Set<String> _workoutDates = {};
 
   @override
   void initState() {
@@ -35,6 +39,20 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
     _tempSelectedDate = widget.initialDate;
     _focusedMonth = widget.initialDate;
     _pageController = PageController(initialPage: _initialPage);
+    _loadWorkoutDates();
+  }
+
+  Future<void> _loadWorkoutDates() async {
+    try {
+      final sessions = await widget.repo.getWorkoutSessions();
+      if (mounted) {
+        setState(() {
+          _workoutDates = sessions.map((s) => s.ymd).toSet();
+        });
+      }
+    } catch (e) {
+      // 무시
+    }
   }
 
   @override
@@ -104,7 +122,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    DateFormat.yMMMM().format(_focusedMonth),
+                    DateFormat.yMMMM(Localizations.localeOf(context).languageCode).format(_focusedMonth),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -148,7 +166,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TableCalendar(
-                      locale: 'ko_KR',
+                      locale: Localizations.localeOf(context).toString(),
                       focusedDay: monthDate,
                       firstDay: DateTime.utc(2010, 1, 1),
                       lastDay: DateTime.utc(2035, 12, 31),
@@ -204,8 +222,30 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                           color: Colors.grey[350],
                           fontSize: 15,
                         ),
+                        // Marker Decoration
+                        markerDecoration: const BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                        ),
                       ),
+                      // Marker Builder for completed workouts
                       calendarBuilders: CalendarBuilders(
+                        markerBuilder: (context, date, events) {
+                          if (_workoutDates.contains(widget.repo.ymd(date))) {
+                            return Positioned(
+                              bottom: 1,
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.blue,
+                                ),
+                                width: 5.0,
+                                height: 5.0,
+                              ),
+                            );
+                          }
+                          return null;
+                        },
                         dowBuilder: (context, day) {
                           final l10n = AppLocalizations.of(context);
                           final weekdays = [
@@ -250,6 +290,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                           date: _tempSelectedDate,
                           repo: widget.repo,
                           exerciseRepo: widget.exerciseRepo,
+                          settingsRepo: widget.settingsRepo,
                         ),
                       ),
                     );

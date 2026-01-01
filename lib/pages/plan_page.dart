@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';
+import '../data/settings_repo.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
 import '../models/exercise_set.dart';
@@ -18,6 +19,7 @@ class PlanPage extends StatefulWidget {
   final DateTime date;
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
+  final SettingsRepo? settingsRepo;
   final bool isFromTodayWorkout;
   final bool isViewOnly; // 완료된 운동 조회 모드
   
@@ -26,6 +28,7 @@ class PlanPage extends StatefulWidget {
     required this.date,
     required this.repo,
     required this.exerciseRepo,
+    this.settingsRepo,
     this.isFromTodayWorkout = false,
     this.isViewOnly = false,
   });
@@ -541,6 +544,7 @@ class _PlanPageState extends State<PlanPage> {
           child: ExerciseCard(
             exercise: exercise,
             exerciseIndex: index,
+            settingsRepo: widget.settingsRepo,
             onDelete: () {
               setState(() {
                 _currentSession!.exercises.removeAt(index);
@@ -1104,6 +1108,7 @@ class ExerciseCard extends StatefulWidget {
   final Function(bool)? onSetCompleted;
   final bool isWorkoutStarted;
   final bool isEditingEnabled; // 편집 활성화 여부
+  final SettingsRepo? settingsRepo;
 
   const ExerciseCard({
     super.key,
@@ -1114,6 +1119,7 @@ class ExerciseCard extends StatefulWidget {
     this.onSetCompleted,
     this.isWorkoutStarted = false,
     this.isEditingEnabled = true,
+    this.settingsRepo,
   });
 
   @override
@@ -1141,6 +1147,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
       builder: (context) => TempoSettingsModal(
         exercise: widget.exercise,
         initialMode: _currentMode,
+        settingsRepo: widget.settingsRepo,
         onUpdate: () {
           setState(() {});
           widget.onUpdate();
@@ -1583,6 +1590,11 @@ class _ExerciseCardState extends State<ExerciseCard> {
     _tempoController!.mode = _currentMode;
     
     await _tempoController!.init();
+
+    int prepSeconds = 10;
+    if (widget.settingsRepo != null) {
+        prepSeconds = await widget.settingsRepo!.getTempoPreparationSeconds();
+    }
     
     // 모달 표시 후 템포 시작
     if (mounted) {
@@ -1616,6 +1628,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
         reps: nextSet.reps,
         downSeconds: widget.exercise.eccentricSeconds,
         upSeconds: widget.exercise.concentricSeconds,
+        preparationSeconds: prepSeconds,
       );
     }
   }

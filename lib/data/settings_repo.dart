@@ -8,6 +8,8 @@ abstract class SettingsRepo {
   Future<void> saveThemeMode(ThemeMode themeMode);
   Future<bool> isOnboardingComplete();
   Future<void> setOnboardingComplete(bool complete);
+  Future<int> getTempoPreparationSeconds();
+  Future<void> saveTempoPreparationSeconds(int seconds);
   Future<void> clearAllData();
 }
 
@@ -15,6 +17,8 @@ class HiveSettingsRepo implements SettingsRepo {
   static const String boxName = 'settings';
   static const String themeModeKey = 'theme_mode';
   static const String onboardingCompleteKey = 'onboarding_complete';
+  static const String tempoPrepKey = 'tempo_prep_seconds';
+
   late Box<String> _box;
 
   @override
@@ -52,6 +56,17 @@ class HiveSettingsRepo implements SettingsRepo {
   @override
   Future<void> setOnboardingComplete(bool complete) async {
     await _box.put(onboardingCompleteKey, complete.toString());
+  }
+
+  @override
+  Future<int> getTempoPreparationSeconds() async {
+    final val = _box.get(tempoPrepKey, defaultValue: '10');
+    return int.tryParse(val ?? '10') ?? 10;
+  }
+
+  @override
+  Future<void> saveTempoPreparationSeconds(int seconds) async {
+    await _box.put(tempoPrepKey, seconds.toString());
   }
 
   @override
