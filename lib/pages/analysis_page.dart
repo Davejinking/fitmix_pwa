@@ -277,9 +277,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        '총 볼륨',
-                        style: TextStyle(
+                      Text(
+                        l10n.totalVolumeLabel,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Color(0xFFAAAAAA),
                         ),
@@ -457,10 +457,28 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
   // 신체 밸런스 레이더 차트
   Widget _buildBodyBalanceRadarChart(_AnalysisData data) {
+    // Note: mainBodyParts are in Korean, which are used as keys in setsByBodyPart.
+    // If we want to localize the chart labels, we need to map them.
+    // However, data processing currently uses hardcoded Korean keys.
+    // For now, let's keep keys as is but translate display.
     final mainBodyParts = ['가슴', '등', '하체', '어깨', '팔', '복근'];
-    final setsByBodyPart = data.setsByBodyPart;
     final l10n = AppLocalizations.of(context);
     
+    // Map Korean keys to localized strings
+    String getLocalizedPart(String key) {
+      switch (key) {
+        case '가슴': return l10n.chest;
+        case '등': return l10n.back;
+        case '하체': return l10n.legs;
+        case '어깨': return l10n.shoulders;
+        case '팔': return l10n.arms;
+        case '복근': return l10n.abs;
+        default: return key;
+      }
+    }
+
+    final setsByBodyPart = data.setsByBodyPart;
+
     // 데이터가 없으면 표시하지 않음
     if (setsByBodyPart.isEmpty) {
       return const SizedBox.shrink();
@@ -530,7 +548,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 tickBorderData: const BorderSide(color: Colors.transparent),
                 getTitle: (index, angle) {
                   return RadarChartTitle(
-                    text: mainBodyParts[index],
+                    text: getLocalizedPart(mainBodyParts[index]),
                     angle: angle,
                   );
                 },
@@ -578,7 +596,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '회원님은 현재 $strongestPart 운동 비중이 높고($strongestSets세트), $weakest 운동이 부족합니다($weakestSets세트).',
+                  l10n.bodyPartAnalysisResult(getLocalizedPart(strongestPart), strongestSets, getLocalizedPart(weakest), weakestSets),
                   style: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFFAAAAAA),
@@ -591,7 +609,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     Navigator.of(context).pushNamed('/library', arguments: weakest);
                   },
                   icon: const Icon(Icons.fitness_center, size: 18),
-                  label: Text('$weakest 운동 하러 가기'),
+                  label: Text(l10n.goToSupplementExercise),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF007AFF),
                     foregroundColor: const Color(0xFFFFFFFF),
@@ -613,10 +631,24 @@ class _AnalysisPageState extends State<AnalysisPage> {
   // 약점 부위 카드
   Widget _buildWeakPointsCard(_AnalysisData data) {
     final weakPoints = data.weakPoints;
+    final l10n = AppLocalizations.of(context);
     
     // 약점이 없으면 표시하지 않음
     if (weakPoints.isEmpty) {
       return const SizedBox.shrink();
+    }
+
+    // Map Korean keys to localized strings (reuse helper if possible, or duplicate for scope)
+    String getLocalizedPart(String key) {
+      switch (key) {
+        case '가슴': return l10n.chest;
+        case '등': return l10n.back;
+        case '하체': return l10n.legs;
+        case '어깨': return l10n.shoulders;
+        case '팔': return l10n.arms;
+        case '복근': return l10n.abs;
+        default: return key;
+      }
     }
 
     final setsByBodyPart = data.setsByBodyPart;
@@ -649,9 +681,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                '집중 공략 필요',
-                style: TextStyle(
+              Text(
+                l10n.focusNeeded,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFFFFFFFF),
@@ -661,7 +693,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            '현재 ${weakPoints.join('과 ')} 운동 비중이 낮습니다. 밸런스를 위해 조금 더 신경 써주세요!',
+            l10n.lowBodyPartWarning(weakPoints.map((p) => getLocalizedPart(p)).join(', ')),
             style: const TextStyle(
               fontSize: 15,
               color: Color(0xFFAAAAAA),
@@ -695,7 +727,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      part,
+                      getLocalizedPart(part),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -704,7 +736,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '$sets세트',
+                      l10n.setsUnit(sets),
                       style: const TextStyle(
                         fontSize: 14,
                         color: Color(0xFFAAAAAA),
@@ -724,7 +756,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 Navigator.of(context).pushNamed('/library', arguments: weakPoints.first);
               },
               icon: const Icon(Icons.add_circle_outline, size: 20),
-              label: const Text('보완 운동 하러 가기'),
+              label: Text(l10n.goToSupplementExercise),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFF3B30),
                 foregroundColor: const Color(0xFFFFFFFF),

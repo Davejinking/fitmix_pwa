@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/gamification_service.dart';
 import '../models/gamification.dart';
 
@@ -25,11 +26,12 @@ class _PowerShopPageState extends State<PowerShopPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
-        title: const Text('파워 상점', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.powerShop, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         actions: [
           Container(
@@ -59,27 +61,27 @@ class _PowerShopPageState extends State<PowerShopPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSectionTitle('🛡️ 아이템'),
+          _buildSectionTitle('🛡️ ${l10n.items}'),
           _buildShopItem(
             icon: '❄️',
-            title: '스트릭 프리즈',
-            description: '하루 쉬어도 스트릭 유지',
+            title: l10n.streakFreeze,
+            description: l10n.streakFreezeDesc,
             price: 50,
             owned: _data.freezes,
             onBuy: () async {
               if (await widget.gamificationService.buyFreeze()) {
                 _refresh();
-                _showSnackBar('스트릭 프리즈 구매 완료! ❄️');
+                _showSnackBar(l10n.buyComplete(l10n.streakFreeze, '❄️'));
               } else {
-                _showSnackBar('파워가 부족해요 💪');
+                _showSnackBar(l10n.powerNotEnough);
               }
             },
           ),
           const SizedBox(height: 12),
           _buildShopItem(
             icon: '📊',
-            title: '주간 운동 리포트',
-            description: '이번 주 운동 분석 리포트',
+            title: l10n.weeklyReport,
+            description: l10n.weeklyReportDesc,
             price: 30,
             onBuy: () {
               if (_data.power >= 30) {
@@ -91,38 +93,38 @@ class _PowerShopPageState extends State<PowerShopPage> {
                   ),
                 );
               } else {
-                _showSnackBar('파워가 부족해요 💪');
+                _showSnackBar(l10n.powerNotEnough);
               }
             },
           ),
           const SizedBox(height: 24),
-          _buildSectionTitle('🎨 커스터마이징 (준비 중)'),
+          _buildSectionTitle('🎨 ${l10n.customization}'),
           _buildShopItem(
             icon: '🌙',
-            title: '다크 퍼플 테마',
-            description: '보라색 포인트 테마',
+            title: l10n.darkPurpleTheme,
+            description: l10n.darkPurpleThemeDesc,
             price: 100,
             locked: true,
-            onBuy: () => _showSnackBar('준비 중이에요!'),
+            onBuy: () => _showSnackBar(l10n.comingSoon),
           ),
           const SizedBox(height: 12),
           _buildShopItem(
             icon: '🔥',
-            title: '파이어 테마',
-            description: '불타는 오렌지 테마',
+            title: l10n.fireTheme,
+            description: l10n.fireThemeDesc,
             price: 100,
             locked: true,
-            onBuy: () => _showSnackBar('준비 중이에요!'),
+            onBuy: () => _showSnackBar(l10n.comingSoon),
           ),
           const SizedBox(height: 24),
-          _buildSectionTitle('🏅 특별 뱃지 (준비 중)'),
+          _buildSectionTitle('🏅 ${l10n.specialBadges}'),
           _buildShopItem(
             icon: '⚡',
-            title: '번개 뱃지',
-            description: '프로필에 표시되는 특별 뱃지',
+            title: l10n.lightningBadge,
+            description: l10n.lightningBadgeDesc,
             price: 200,
             locked: true,
-            onBuy: () => _showSnackBar('준비 중이에요!'),
+            onBuy: () => _showSnackBar(l10n.comingSoon),
           ),
         ],
       ),
@@ -205,7 +207,7 @@ class _PowerShopPageState extends State<PowerShopPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          '보유: $owned',
+                          AppLocalizations.of(context)!.owned(owned!),
                           style: const TextStyle(
                             fontSize: 11,
                             color: Color(0xFF34C759),
@@ -282,12 +284,13 @@ class WorkoutReportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = gamificationService.data;
     final league = data.league;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
-        title: const Text('📊 주간 리포트'),
+        title: Text('📊 ${l10n.weeklyReportTitle}'),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -312,7 +315,7 @@ class WorkoutReportPage extends StatelessWidget {
                   Text(league.icon, style: const TextStyle(fontSize: 48)),
                   const SizedBox(height: 12),
                   Text(
-                    '${league.name} 리그',
+                    l10n.league(league.getName(context)),
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -321,7 +324,7 @@ class WorkoutReportPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Level ${data.level}',
+                    l10n.level(data.level),
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
@@ -332,9 +335,9 @@ class WorkoutReportPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // 이번 주 통계
-            const Text(
-              '이번 주 성과',
-              style: TextStyle(
+            Text(
+              l10n.weeklyPerformance,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -343,31 +346,31 @@ class WorkoutReportPage extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                _buildStatCard('⚡', '${data.weeklyXP}', 'XP 획득'),
+                _buildStatCard('⚡', '${data.weeklyXP}', l10n.xpEarned),
                 const SizedBox(width: 12),
-                _buildStatCard('💪', '${data.weeklyXP ~/ 100}', '파워 획득'),
+                _buildStatCard('💪', '${data.weeklyXP ~/ 100}', l10n.powerEarned),
               ],
             ),
             const SizedBox(height: 24),
             // 총 통계
-            const Text(
-              '전체 기록',
-              style: TextStyle(
+            Text(
+              l10n.totalRecord,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow('총 XP', '${data.totalXP} XP'),
-            _buildInfoRow('현재 레벨', 'Level ${data.level}'),
-            _buildInfoRow('보유 파워', '${data.power} 💪'),
-            _buildInfoRow('스트릭 프리즈', '${data.freezes}개'),
+            _buildInfoRow(l10n.totalXP, '${data.totalXP} XP'),
+            _buildInfoRow(l10n.currentLevel, l10n.level(data.level)),
+            _buildInfoRow(l10n.myPower, '${data.power} 💪'),
+            _buildInfoRow(l10n.streakFreeze, l10n.exerciseUnit(data.freezes)),
             const SizedBox(height: 24),
             // 다음 목표
-            const Text(
-              '다음 목표',
-              style: TextStyle(
+            Text(
+              l10n.nextGoal,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -391,7 +394,7 @@ class WorkoutReportPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Level ${data.level + 1} 달성',
+                              l10n.reachLevel(data.level + 1),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -399,7 +402,7 @@ class WorkoutReportPage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${data.xpToNextLevel} XP 남음',
+                              l10n.xpLeft(data.xpToNextLevel),
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: Color(0xFFAAAAAA),
@@ -421,7 +424,7 @@ class WorkoutReportPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${league.next!.name} 리그 승급',
+                                l10n.leaguePromotion(league.next!.getName(context)),
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -429,7 +432,7 @@ class WorkoutReportPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${league.next!.minXP - data.totalXP} XP 남음',
+                                l10n.xpLeft(league.next!.minXP - data.totalXP),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: Color(0xFFAAAAAA),
@@ -454,22 +457,22 @@ class WorkoutReportPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: const Color(0xFF34C759).withValues(alpha: 0.3)),
               ),
-              child: const Column(
+              child: Column(
                 children: [
-                  Text('💪', style: TextStyle(fontSize: 32)),
-                  SizedBox(height: 8),
+                  const Text('💪', style: TextStyle(fontSize: 32)),
+                  const SizedBox(height: 8),
                   Text(
-                    '잘하고 있어요!',
-                    style: TextStyle(
+                    l10n.cheerUpTitle,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF34C759),
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    '꾸준히 운동하면 목표를 달성할 수 있어요',
-                    style: TextStyle(
+                    l10n.cheerUpDesc,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white70,
                     ),

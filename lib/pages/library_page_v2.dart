@@ -237,13 +237,13 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$name 운동이 추가되었습니다.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.exerciseAddedTitle(name))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('운동 추가 실패: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.exerciseAddFailed(e.toString()))),
         );
       }
     }
@@ -498,9 +498,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                   ),
                 if (canPop) const SizedBox(width: 8),
-                const Text(
-                  '라이브러리',
-                  style: TextStyle(
+                Text(
+                  l10n.library,
+                  style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -751,16 +751,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                 if (result != null) {
                   // 운동 계획에 추가하는 로직은 나중에 구현
                   if (mounted) {
-                    final locale = l10n.localeName;
-                    final message = locale == 'ja' 
-                        ? '${result.name} 運動が選択されました。'
-                        : locale == 'en' 
-                        ? '${result.name} exercise has been selected.'
-                        : '${result.name} 운동이 선택되었습니다.';
-                        
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(message),
+                        content: Text(l10n.exerciseSelected(result.name)),
                         backgroundColor: const Color(0xFF4A9EFF),
                       ),
                     );
@@ -844,9 +837,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                                       width: 1,
                                     ),
                                   ),
-                                  child: const Text(
-                                    '커스텀',
-                                    style: TextStyle(
+                                  child: Text(
+                                    l10n.custom,
+                                    style: const TextStyle(
                                       fontSize: 10,
                                       color: Color(0xFF4A9EFF),
                                       fontWeight: FontWeight.w700,

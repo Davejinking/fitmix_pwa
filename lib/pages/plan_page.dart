@@ -118,11 +118,11 @@ class _PlanPageState extends State<PlanPage> {
       try {
         await widget.repo.put(_currentSession!);
         if (mounted) {
-          ErrorHandler.showSuccessSnackBar(context, '저장되었습니다.');
+          ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context)!.saved);
         }
       } catch (e) {
         if (mounted) {
-          ErrorHandler.showErrorSnackBar(context, '저장 실패: $e');
+          ErrorHandler.showErrorSnackBar(context, AppLocalizations.of(context)!.saveFailed(e.toString()));
         }
       }
     }
@@ -139,29 +139,30 @@ class _PlanPageState extends State<PlanPage> {
   Future<bool> _onWillPop() async {
     if (!_isWorkoutStarted) return true;
     
+    final l10n = AppLocalizations.of(context)!;
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text(
-          '운동 종료',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l10n.endWorkout,
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          '운동을 종료하시겠습니까?\n진행 상황은 저장됩니다.',
-          style: TextStyle(color: Colors.grey),
+        content: Text(
+          l10n.endWorkoutConfirm,
+          style: const TextStyle(color: Colors.grey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('계속하기'),
+            child: Text(l10n.continueWorkout),
           ),
           TextButton(
             onPressed: () {
               _finishWorkout();
               Navigator.pop(context, true);
             },
-            child: const Text('종료', style: TextStyle(color: Colors.redAccent)),
+            child: Text(l10n.quit, style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -171,6 +172,7 @@ class _PlanPageState extends State<PlanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PopScope(
       canPop: !_isWorkoutStarted,
       onPopInvokedWithResult: (didPop, result) async {
@@ -183,7 +185,7 @@ class _PlanPageState extends State<PlanPage> {
       child: Scaffold(
         backgroundColor: const Color(0xFF121212),
         appBar: AppBar(
-          title: const Text('운동 계획'),
+          title: Text(l10n.workoutPlan),
           backgroundColor: const Color(0xFF121212),
           foregroundColor: Colors.white,
           elevation: 0,
@@ -229,6 +231,7 @@ class _PlanPageState extends State<PlanPage> {
 
   // 1. Compact Weekly Calendar (모바일 최적화)
   Widget _buildCompactWeeklyCalendar() {
+    final l10n = AppLocalizations.of(context)!;
     final startOfWeek = _focusedDate.subtract(
       Duration(days: _focusedDate.weekday - 1),
     );
@@ -236,6 +239,16 @@ class _PlanPageState extends State<PlanPage> {
       7,
       (index) => startOfWeek.add(Duration(days: index)),
     );
+
+    final weekdayNames = [
+      l10n.weekdayMon,
+      l10n.weekdayTue,
+      l10n.weekdayWed,
+      l10n.weekdayThu,
+      l10n.weekdayFri,
+      l10n.weekdaySat,
+      l10n.weekdaySun
+    ];
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -280,7 +293,7 @@ class _PlanPageState extends State<PlanPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          ['월', '화', '수', '목', '금', '토', '일'][day.weekday - 1],
+                          weekdayNames[day.weekday - 1],
                           style: TextStyle(
                             fontSize: 10,
                             color: isSelected ? Colors.white : Colors.grey[500],
@@ -331,7 +344,16 @@ class _PlanPageState extends State<PlanPage> {
 
   // 운동 중일 때 표시되는 간단한 날짜 헤더
   Widget _buildWorkoutDateHeader() {
-    final weekDays = ['월', '화', '수', '목', '금', '토', '일'];
+    final l10n = AppLocalizations.of(context)!;
+    final weekDays = [
+      l10n.weekdayMon,
+      l10n.weekdayTue,
+      l10n.weekdayWed,
+      l10n.weekdayThu,
+      l10n.weekdayFri,
+      l10n.weekdaySat,
+      l10n.weekdaySun
+    ];
     final dayName = weekDays[_selectedDate.weekday - 1];
     
     return Container(
@@ -361,7 +383,7 @@ class _PlanPageState extends State<PlanPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${_selectedDate.month}월 ${_selectedDate.day}일 ($dayName) 운동 중',
+                  l10n.workoutInProgress(_selectedDate.month.toString(), _selectedDate.day.toString(), dayName),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -370,7 +392,7 @@ class _PlanPageState extends State<PlanPage> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${_currentSession?.exercises.length ?? 0}개 운동',
+                  l10n.exerciseCount(_currentSession?.exercises.length ?? 0),
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey[400],
@@ -395,14 +417,14 @@ class _PlanPageState extends State<PlanPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        '운동 중에는 날짜를 변경할 수 없습니다',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      Text(
+                        l10n.cannotChangeDateDuringWorkout,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text(AppLocalizations.of(context).confirm),
+                        child: Text(l10n.confirm),
                       ),
                     ],
                   ),
@@ -416,6 +438,7 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -427,7 +450,7 @@ class _PlanPageState extends State<PlanPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            '운동 계획이 없습니다',
+            l10n.noWorkoutPlan,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -436,7 +459,7 @@ class _PlanPageState extends State<PlanPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '하단의 "운동 추가" 버튼을 눌러\n운동을 추가해보세요',
+            l10n.noWorkoutPlanDesc,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -519,6 +542,7 @@ class _PlanPageState extends State<PlanPage> {
 
   // 3. Bottom Action Bar (Balance - 4:6 비율, 52px 고정)
   Widget _buildActionBar() {
+    final l10n = AppLocalizations.of(context)!;
     final hasExercises = _currentSession != null && 
                         _currentSession!.isWorkoutDay && 
                         _currentSession!.exercises.isNotEmpty;
@@ -547,9 +571,9 @@ class _PlanPageState extends State<PlanPage> {
                   child: OutlinedButton.icon(
                     onPressed: _addExercise,
                     icon: const Icon(Icons.add, size: 18),
-                    label: const Text(
-                      '운동 추가',
-                      style: TextStyle(
+                    label: Text(
+                      l10n.addExercise,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -585,8 +609,8 @@ class _PlanPageState extends State<PlanPage> {
                   ),
                   label: Text(
                     widget.isViewOnly 
-                      ? (_isEditingMode ? '편집 완료' : '운동 편집')
-                      : '운동 시작',
+                      ? (_isEditingMode ? l10n.completeLabel : l10n.editExercise)
+                      : l10n.startWorkout,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -673,7 +697,7 @@ class _PlanPageState extends State<PlanPage> {
     });
     _saveSession();
     HapticFeedback.heavyImpact();
-    ErrorHandler.showSuccessSnackBar(context, '운동이 완료되었습니다! 🎉');
+    ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context)!.workoutCompleted);
   }
 
   void _finishEditingWorkout() {
@@ -683,7 +707,7 @@ class _PlanPageState extends State<PlanPage> {
       _isEditingMode = false;
     });
     HapticFeedback.mediumImpact();
-    ErrorHandler.showSuccessSnackBar(context, '편집이 완료되었습니다.');
+    ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context)!.saved);
     Navigator.of(context).pop();
   }
 
@@ -728,6 +752,7 @@ class _PlanPageState extends State<PlanPage> {
     final TextEditingController timeController = TextEditingController(
       text: _defaultRestDuration.toString(),
     );
+    final l10n = AppLocalizations.of(context)!;
     
     showModalBottomSheet(
       context: context,
@@ -752,9 +777,9 @@ class _PlanPageState extends State<PlanPage> {
                 children: [
                   const Icon(Icons.timer, color: Color(0xFF2196F3)),
                   const SizedBox(width: 8),
-                  const Text(
-                    '휴식 시간 설정',
-                    style: TextStyle(
+                  Text(
+                    l10n.restTimeSetting,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -768,7 +793,7 @@ class _PlanPageState extends State<PlanPage> {
                         setState(() => _restTimerRunning = false);
                         Navigator.pop(context);
                       },
-                      child: const Text('타이머 취소', style: TextStyle(color: Colors.redAccent)),
+                      child: Text(l10n.cancelTimer, style: const TextStyle(color: Colors.redAccent)),
                     ),
                 ],
               ),
@@ -814,7 +839,7 @@ class _PlanPageState extends State<PlanPage> {
                             ),
                           ),
                           Text(
-                            '초',
+                            l10n.secondsUnit,
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.grey[400],
@@ -882,7 +907,7 @@ class _PlanPageState extends State<PlanPage> {
                     backgroundColor: const Color(0xFF2196F3),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(l10n.confirm, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -900,6 +925,7 @@ class _PlanPageState extends State<PlanPage> {
 
   // Live Workout Bar (Image 2 Style)
   Widget _buildLiveWorkoutBar() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -934,7 +960,7 @@ class _PlanPageState extends State<PlanPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            _restTimerRunning ? "휴식" : "휴식",
+                            _restTimerRunning ? l10n.rest : l10n.rest,
                             style: TextStyle(
                               fontSize: 10,
                               color: _restTimerRunning ? const Color(0xFF4CAF50) : Colors.grey[500],
@@ -959,7 +985,7 @@ class _PlanPageState extends State<PlanPage> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             "TIME",
                             style: TextStyle(
                               fontSize: 10,
@@ -997,9 +1023,9 @@ class _PlanPageState extends State<PlanPage> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "운동 완료",
-                    style: TextStyle(
+                  child: Text(
+                    l10n.completeLabel,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -1250,7 +1276,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                       Text(
                         widget.exercise.isTempoEnabled
                             ? '${widget.exercise.eccentricSeconds}/${widget.exercise.concentricSeconds}s'
-                            : '템포',
+                                : AppLocalizations.of(context)!.tempo,
                         style: TextStyle(
                           fontSize: 11,
                           color: widget.isEditingEnabled && widget.exercise.isTempoEnabled
@@ -1302,7 +1328,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
           Row(
             children: [
               Text(
-                '총 볼륨 ${totalVolume.toStringAsFixed(0)}kg',
+                    AppLocalizations.of(context)!.totalVolume(totalVolume.toStringAsFixed(0)),
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey[500],
@@ -1326,7 +1352,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
         enabled: widget.isEditingEnabled, // 편집 활성화 여부
         style: const TextStyle(color: Colors.white, fontSize: 13),
         decoration: InputDecoration(
-          hintText: '메모',
+              hintText: AppLocalizations.of(context)!.memo,
           hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
@@ -1340,6 +1366,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
   }
 
   Widget _buildColumnHeaders() {
+        final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Row(
@@ -1347,7 +1374,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
           Expanded(
             flex: 2,
             child: Text(
-              '세트',
+                  l10n.setLabel,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
@@ -1371,7 +1398,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
           Expanded(
             flex: 3,
             child: Text(
-              '회',
+                  l10n.repsUnit,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
@@ -1383,7 +1410,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
           Expanded(
             flex: 2,
             child: Text(
-              '완료',
+                  l10n.completeLabel,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
@@ -1398,6 +1425,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
   }
 
   Widget _buildFooterActions() {
+        final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         // 템포 시작 버튼 (운동 시작 후 + 템포 활성화 시 + 편집 모드에서만)
@@ -1408,7 +1436,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
               onPressed: _startTempoSet,
               icon: const Icon(Icons.play_arrow, size: 20),
               label: Text(
-                '템포 시작 (${widget.exercise.eccentricSeconds}/${widget.exercise.concentricSeconds}s)',
+                    l10n.tempoStart(widget.exercise.eccentricSeconds, widget.exercise.concentricSeconds),
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -1442,7 +1470,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 }
               } : null,
               icon: const Icon(Icons.remove, size: 16),
-              label: const Text('세트 삭제', style: TextStyle(fontSize: 13)),
+                  label: Text(l10n.deleteSet, style: const TextStyle(fontSize: 13)),
               style: TextButton.styleFrom(
                 foregroundColor: widget.isEditingEnabled ? Colors.grey[500] : Colors.grey[700],
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1470,7 +1498,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 widget.onUpdate();
               } : null,
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('세트 추가', style: TextStyle(fontSize: 13)),
+                  label: Text(l10n.addSet, style: const TextStyle(fontSize: 13)),
               style: TextButton.styleFrom(
                 foregroundColor: widget.isEditingEnabled ? const Color(0xFF2196F3) : Colors.grey[700],
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1493,7 +1521,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
     final nextSet = widget.exercise.sets[nextSetIndex];
     if (nextSet.reps == 0) {
       // 횟수가 설정되지 않음
-      ErrorHandler.showInfoSnackBar(context, '먼저 목표 횟수를 입력하세요');
+          ErrorHandler.showInfoSnackBar(context, AppLocalizations.of(context)!.enterRepsFirst);
       return;
     }
 
@@ -1994,10 +2022,11 @@ class _ExerciseSelectionPageState extends State<_ExerciseSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('운동 선택'),
+        title: Text(l10n.selectExercise),
         backgroundColor: const Color(0xFF121212),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -2016,7 +2045,7 @@ class _ExerciseSelectionPageState extends State<_ExerciseSelectionPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '${_selectedExercises.length}개',
+                    l10n.exerciseUnit(_selectedExercises.length),
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -2116,7 +2145,7 @@ class _ExerciseSelectionPageState extends State<_ExerciseSelectionPage> {
                     ),
                   ),
                   child: Text(
-                    '${_selectedExercises.length}개 운동 추가',
+                    l10n.addExercisesCount(_selectedExercises.length),
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
