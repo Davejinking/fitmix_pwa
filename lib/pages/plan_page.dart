@@ -128,6 +128,44 @@ class _PlanPageState extends State<PlanPage> {
     }
   }
 
+  Future<void> _markRest() async {
+    final isRest = !(_currentSession?.isRest ?? false);
+
+    if (isRest &&
+        _currentSession != null &&
+        _currentSession!.exercises.isNotEmpty) {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text('운동 기록 삭제', style: TextStyle(color: Colors.white)),
+          content: const Text('휴식일로 설정하면 작성한 운동 계획이 삭제됩니다.\n계속하시겠습니까?',
+              style: TextStyle(color: Colors.grey)),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('취소')),
+            TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('확인', style: TextStyle(color: Colors.red))),
+          ],
+        ),
+      );
+      if (confirm != true) return;
+    }
+
+    try {
+      await widget.repo.markRest(widget.repo.ymd(_selectedDate), rest: isRest);
+      await _loadSession(); // Reload session to reflect changes
+      if (mounted) {
+        ErrorHandler.showSuccessSnackBar(
+            context, isRest ? '휴식일로 설정되었습니다.' : '휴식일 설정이 해제되었습니다.');
+      }
+    } catch (e) {
+      if (mounted) ErrorHandler.showErrorSnackBar(context, '오류 발생: $e');
+    }
+  }
+
   @override
   void dispose() {
     _workoutTimer?.cancel();
@@ -200,6 +238,25 @@ class _PlanPageState extends State<PlanPage> {
               }
             },
           ),
+          actions: [
+            if (!_isWorkoutStarted)
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'rest') {
+                    _markRest();
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'rest',
+                    child: Text(_currentSession?.isRest == true
+                        ? '휴식 취소'
+                        : '운동 휴식하기'),
+                  ),
+                ],
+                icon: const Icon(Icons.more_vert),
+              ),
+          ],
         ),
         body: Column(
           children: [
@@ -416,6 +473,29 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   Widget _buildEmptyState() {
+    if (_currentSession?.isRest == true) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.hotel, size: 64, color: Color(0xFF007AFF)),
+            const SizedBox(height: 16),
+            const Text(
+              '오늘은 휴식일입니다',
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0xFF007AFF),
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '충분한 휴식은 근성장에 필수적입니다!',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      );
+    }
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
