@@ -823,111 +823,120 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get upgradeTitle => '프리미엄으로 업그레이드';
+  String get upgradeTitle => 'プレミアムにアップグレード';
 
   @override
-  String get unlockAllFeatures => '모든 기능을 잠금 해제하세요';
+  String get unlockAllFeatures => 'すべての機能をアンロック';
 
   @override
-  String get advancedAnalytics => '고급 분석';
+  String get advancedAnalytics => '高度な分析';
 
   @override
-  String get advancedAnalyticsDesc => '주간, 월간, 연간 운동 데이터를 심층 분석하세요.';
+  String get advancedAnalyticsDesc => '週間、月間、年間のワークアウトデータの深い分析。';
 
   @override
-  String get removeAds => '광고 제거';
+  String get removeAds => '広告を削除';
 
   @override
-  String get removeAdsDesc => '방해 없이 운동에만 집중하세요.';
+  String get removeAdsDesc => '邪魔されずにワークアウトに集中してください。';
 
   @override
-  String get cloudBackup => '클라우드 백업';
+  String get cloudBackup => 'クラウドバックアップ';
 
   @override
-  String get cloudBackupDesc => '여러 기기에서 데이터를 안전하게 동기화하세요.';
+  String get cloudBackupDesc => '複数のデバイス間でデータを安全に同期します。';
 
   @override
-  String get startMonthly => '월 9,900원으로 시작하기';
+  String get startMonthly => '月額¥990で開始';
 
   @override
-  String get cancelAnytime => '언제든지 구독을 취소할 수 있습니다.';
+  String get cancelAnytime => 'いつでもサブスクリプションをキャンセルできます。';
 
   @override
-  String get powerShop => '파워 상점';
+  String get powerShop => 'パワーショップ';
 
   @override
-  String get items => '🛉 아이템';
+  String get items => '🛉 アイテム';
 
   @override
-  String get streakFreeze => '스트릭 프리즈';
+  String get streakFreeze => 'ストリークフリーズ';
 
   @override
-  String get streakFreezeDesc => '하루 쉬어도 스트릭 유지';
+  String get streakFreezeDesc => '1日休んでもストリークを保つ';
 
   @override
-  String get weeklyReport => '�� 주간 운동 리포트';
+  String get weeklyReport => '📊 週間ワークアウトレポート';
 
   @override
-  String get weeklyReportDesc => '이번 주 운동 분석 리포트';
+  String get weeklyReportDesc => '今週のワークアウト分析レポート';
 
   @override
-  String get customization => '🎨 커스터마이징 (준비 중)';
+  String get customization => '🎨 カスタマイズ（準備中）';
 
   @override
-  String get darkPurpleTheme => '다크 퍼플 테마';
+  String get darkPurpleTheme => 'ダークパープルテーマ';
 
   @override
-  String get purplePointTheme => '보라색 포인트 테마';
+  String get purplePointTheme => 'パープルポイントテーマ';
 
   @override
-  String get fireTheme => '파이어 테마';
+  String get fireTheme => 'ファイアテーマ';
 
   @override
-  String get orangeTheme => '불타는 오렌지 테마';
+  String get orangeTheme => '燃えるようなオレンジテーマ';
 
   @override
-  String get specialBadges => '🏅 특별 뱃지 (준비 중)';
+  String get specialBadges => '🏅 特別バッジ（準備中）';
 
   @override
-  String get lightningBadge => '번개 뱃지';
+  String get lightningBadge => '稲妻バッジ';
 
   @override
-  String get specialBadgeDesc => '프로필에 표시되는 특별 뱃지';
+  String get specialBadgeDesc => 'プロフィールに表示される特別なバッジ';
 
   @override
-  String get comingSoon => '준비 중이에요!';
+  String get comingSoon => '準備中です！';
 
   @override
-  String get streakFreezeSuccess => '스트릭 프리즈 구매 완료! ❄️';
+  String get streakFreezeSuccess => 'ストリークフリーズ購入完了！❄️';
 
   @override
-  String get insufficientPower => '파워가 부족해요 💪';
+  String get insufficientPower => 'パワーが不足しています 💪';
 
   @override
-  String get weeklyReportTitle => '📊 주간 리포트';
+  String get weeklyReportTitle => '📊 週間レポート';
 
   @override
-  String get thisWeekPerformance => '이번 주 성과';
+  String get thisWeekPerformance => '今週のパフォーマンス';
 
   @override
-  String get allRecords => '전체 기록';
+  String get allRecords => 'すべての記録';
 
   @override
-  String get nextGoal => '다음 목표';
+  String get nextGoal => '次の目標';
 
   @override
   String levelAchievement(Object level) {
-    return 'Level $level 달성';
+    return 'レベル $level 達成';
   }
 
   @override
   String leaguePromotion(Object league) {
-    return '$league 리그 승급';
+    return '$leagueリーグ昇格';
   }
 
   @override
-  String get encouragingMessage => '잘하고 있어요!';
+  String get encouragingMessage => 'よくやってます！';
 
   @override
-  String get encouragingDesc => '꾸준히 운동하면 목표를 달성할 수 있어요';
+  String get encouragingDesc => '継続的にワークアウトすれば目標を達成できます';
+
+  @override
+  String get set => 'セット';
+
+  @override
+  String get done => '完了';
+
+  @override
+  String get birthDateFormat => 'yyyy年MM月dd日';
 }

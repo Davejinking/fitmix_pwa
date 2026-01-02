@@ -144,10 +144,10 @@ class _PlanPageState extends State<PlanPage> {
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('취소')),
+                child: Text(AppLocalizations.of(context).cancel)),
             TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('확인', style: TextStyle(color: Colors.red))),
+                child: Text(AppLocalizations.of(context).confirm, style: const TextStyle(color: Colors.red))),
           ],
         ),
       );
@@ -756,11 +756,11 @@ class _PlanPageState extends State<PlanPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('취소'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('완료'),
+              child: Text(AppLocalizations.of(context).done),
             ),
           ],
         ),
@@ -992,7 +992,7 @@ class _PlanPageState extends State<PlanPage> {
                     backgroundColor: const Color(0xFF2196F3),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: Text('확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(AppLocalizations.of(context).confirm, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

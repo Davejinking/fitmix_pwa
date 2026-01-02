@@ -213,11 +213,12 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
   }
 
   void _showGenderPicker() {
-    final genders = ['남성', '여성'];
+    final l10n = AppLocalizations.of(context);
+    final genders = [l10n.male, l10n.female];
     int selectedIndex = _gender == null ? 0 : genders.indexOf(_gender!);
     _showPicker(
       context: context,
-      title: '성별을 알려주세요.',
+      title: l10n.enterGender,
       picker: _buildPickerWheel(
         itemCount: genders.length,
         initialItem: selectedIndex,
@@ -284,7 +285,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
               ),
               const SizedBox(height: 12),
               Text(
-                '입력 정보는 운동 추천 용도로만 사용합니다.',
+                l10n.infoUsageNotice,
                 style: BurnFitStyle.body.copyWith(
                   color: isDark ? Colors.grey[400] : BurnFitStyle.secondaryGrayText,
                   fontSize: 15,
@@ -296,9 +297,9 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
               const SizedBox(height: 16),
               _FormInputTextField(label: l10n.heightLabel, hint: l10n.enterHeight, controller: _heightController, onTap: _showHeightPicker),
               const SizedBox(height: 16),
-              _FormInputTextField(label: '생년월일 *', hint: '생년월일을 입력해 주세요.', controller: _birthDateController, onTap: _showDatePicker),
+              _FormInputTextField(label: l10n.birthDate, hint: l10n.enterBirthDate, controller: _birthDateController, onTap: _showDatePicker),
               const SizedBox(height: 16),
-              _FormInputTextField(label: '성별 *', hint: '성별을 알려주세요.', controller: _genderController, onTap: _showGenderPicker),
+              _FormInputTextField(label: l10n.gender, hint: l10n.enterGender, controller: _genderController, onTap: _showGenderPicker),
               const Spacer(),
               // NextButton
               Container(
@@ -346,7 +347,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
                     elevation: 0,
                   ),
                   child: Text(
-                    '다음',
+                    l10n.next,
                     style: TextStyle(
                       fontSize: 17,
                       color: _isFormComplete ? Colors.white : Colors.grey[500],

@@ -284,6 +284,17 @@
   "leaguePromotion": "{league} 리그 승급",
   "encouragingMessage": "잘하고 있어요!",
   "encouragingDesc": "꾸준히 운동하면 목표를 달성할 수 있어요",
+  "set": "세트",
+  "done": "완료",
+  "birthDateFormat": "yyyy년 MM월 dd일",
+  "achievement": "업적",
+  "currentStreak": "현재 스트릭",
+  "totalWorkouts": "총 운동",
+  "achievementUnlocked": "✅ 달성 완료!",
+  "achievementLocked": "🔒 미달성",
+  "analysisTitle": "분석",
+  "bodyBalanceAnalysis": "신체 밸런스 분석",
+  "analysisResult": "분석 결과",
   "@exerciseSelected": {
     "placeholders": {
       "name": {

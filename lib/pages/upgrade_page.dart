@@ -25,25 +25,25 @@ class UpgradePage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              '모든 기능을 잠금 해제하세요',
+              l10n.unlockAllFeatures,
               textAlign: TextAlign.center,
               style: BurnFitStyle.title1,
             ),
             const SizedBox(height: 32),
             _buildFeatureItem(
               Icons.analytics_outlined,
-              l10n.analysisTitle,
-              '주간, 월간, 연간 운동 데이터를 심층 분석하세요.',
+              l10n.advancedAnalytics,
+              l10n.advancedAnalyticsDesc,
             ),
             _buildFeatureItem(
               Icons.do_not_disturb_on_outlined,
-              '광고 제거',
-              '방해 없이 운동에만 집중하세요.',
+              l10n.removeAds,
+              l10n.removeAdsDesc,
             ),
             _buildFeatureItem(
               Icons.cloud_sync_outlined,
-              '클라우드 백업',
-              '여러 기기에서 데이터를 안전하게 동기화하세요.',
+              l10n.cloudBackup,
+              l10n.cloudBackupDesc,
             ),
             const Spacer(),
             ElevatedButton(
@@ -56,13 +56,13 @@ class UpgradePage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: Text(
-                '월 9,900원으로 시작하기',
+                l10n.startMonthly,
                 style: BurnFitStyle.body.copyWith(color: BurnFitStyle.white, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '언제든지 구독을 취소할 수 있습니다.',
+              l10n.cancelAnytime,
               textAlign: TextAlign.center,
               style: BurnFitStyle.caption,
             ),

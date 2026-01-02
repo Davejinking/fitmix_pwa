@@ -128,7 +128,7 @@ class _ExerciseSetCardState extends State<ExerciseSetCard> {
               controller: _memoController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: '메모',
+                hintText: AppLocalizations.of(context).memo,
                 hintStyle: TextStyle(color: Colors.grey[500]),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
@@ -162,7 +162,7 @@ class _ExerciseSetCardState extends State<ExerciseSetCard> {
               Expanded(
                 flex: 3,
                 child: Text(
-                  '회',
+                  AppLocalizations.of(context).repsUnit,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[400], fontSize: 14),
                 ),
@@ -200,15 +200,15 @@ class _ExerciseSetCardState extends State<ExerciseSetCard> {
               TextButton(
                 onPressed: widget.onDeleteLastSet,
                 child: Text(
-                  '- 세트 삭제',
+                  '- ${AppLocalizations.of(context).deleteSet}',
                   style: TextStyle(color: Colors.grey[400]),
                 ),
               ),
               TextButton(
                 onPressed: widget.onAddSet,
-                child: const Text(
-                  '+ 세트 추가',
-                  style: TextStyle(
+                child: Text(
+                  '+ ${AppLocalizations.of(context).addSet}',
+                  style: const TextStyle(
                     color: Colors.blue,
                     fontWeight: FontWeight.bold,
                   ),

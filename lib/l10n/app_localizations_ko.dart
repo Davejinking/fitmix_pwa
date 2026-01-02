@@ -930,4 +930,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get encouragingDesc => '꾸준히 운동하면 목표를 달성할 수 있어요';
+
+  @override
+  String get set => '세트';
+
+  @override
+  String get done => '완료';
+
+  @override
+  String get birthDateFormat => 'yyyy년 MM월 dd일';
 }

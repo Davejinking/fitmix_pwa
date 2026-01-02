@@ -1808,6 +1808,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'꾸준히 운동하면 목표를 달성할 수 있어요'**
   String get encouragingDesc;
+
+  /// No description provided for @set.
+  ///
+  /// In ko, this message translates to:
+  /// **'세트'**
+  String get set;
+
+  /// No description provided for @done.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get done;
+
+  /// No description provided for @birthDateFormat.
+  ///
+  /// In ko, this message translates to:
+  /// **'yyyy년 MM월 dd일'**
+  String get birthDateFormat;
 }
 
 class _AppLocalizationsDelegate

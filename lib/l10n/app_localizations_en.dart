@@ -828,111 +828,122 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get upgradeTitle => '프리미엄으로 업그레이드';
+  String get upgradeTitle => 'Upgrade to Premium';
 
   @override
-  String get unlockAllFeatures => '모든 기능을 잠금 해제하세요';
+  String get unlockAllFeatures => 'Unlock all features';
 
   @override
-  String get advancedAnalytics => '고급 분석';
+  String get advancedAnalytics => 'Advanced Analytics';
 
   @override
-  String get advancedAnalyticsDesc => '주간, 월간, 연간 운동 데이터를 심층 분석하세요.';
+  String get advancedAnalyticsDesc =>
+      'Deep analysis of weekly, monthly, and yearly workout data.';
 
   @override
-  String get removeAds => '광고 제거';
+  String get removeAds => 'Remove Ads';
 
   @override
-  String get removeAdsDesc => '방해 없이 운동에만 집중하세요.';
+  String get removeAdsDesc => 'Focus on your workout without distractions.';
 
   @override
-  String get cloudBackup => '클라우드 백업';
+  String get cloudBackup => 'Cloud Backup';
 
   @override
-  String get cloudBackupDesc => '여러 기기에서 데이터를 안전하게 동기화하세요.';
+  String get cloudBackupDesc => 'Safely sync data across multiple devices.';
 
   @override
-  String get startMonthly => '월 9,900원으로 시작하기';
+  String get startMonthly => 'Start with ₩9,900/month';
 
   @override
-  String get cancelAnytime => '언제든지 구독을 취소할 수 있습니다.';
+  String get cancelAnytime => 'You can cancel your subscription anytime.';
 
   @override
-  String get powerShop => '파워 상점';
+  String get powerShop => 'Power Shop';
 
   @override
-  String get items => '🛉 아이템';
+  String get items => '🛉 Items';
 
   @override
-  String get streakFreeze => '스트릭 프리즈';
+  String get streakFreeze => 'Streak Freeze';
 
   @override
-  String get streakFreezeDesc => '하루 쉬어도 스트릭 유지';
+  String get streakFreezeDesc => 'Keep your streak even if you take a day off';
 
   @override
-  String get weeklyReport => '�� 주간 운동 리포트';
+  String get weeklyReport => '📊 Weekly Workout Report';
 
   @override
-  String get weeklyReportDesc => '이번 주 운동 분석 리포트';
+  String get weeklyReportDesc => 'This week workout analysis report';
 
   @override
-  String get customization => '🎨 커스터마이징 (준비 중)';
+  String get customization => '🎨 Customization (Coming Soon)';
 
   @override
-  String get darkPurpleTheme => '다크 퍼플 테마';
+  String get darkPurpleTheme => 'Dark Purple Theme';
 
   @override
-  String get purplePointTheme => '보라색 포인트 테마';
+  String get purplePointTheme => 'Purple Point Theme';
 
   @override
-  String get fireTheme => '파이어 테마';
+  String get fireTheme => 'Fire Theme';
 
   @override
-  String get orangeTheme => '불타는 오렌지 테마';
+  String get orangeTheme => 'Burning Orange Theme';
 
   @override
-  String get specialBadges => '🏅 특별 뱃지 (준비 중)';
+  String get specialBadges => '🏅 Special Badges (Coming Soon)';
 
   @override
-  String get lightningBadge => '번개 뱃지';
+  String get lightningBadge => 'Lightning Badge';
 
   @override
-  String get specialBadgeDesc => '프로필에 표시되는 특별 뱃지';
+  String get specialBadgeDesc => 'Special badge displayed on profile';
 
   @override
-  String get comingSoon => '준비 중이에요!';
+  String get comingSoon => 'Coming soon!';
 
   @override
-  String get streakFreezeSuccess => '스트릭 프리즈 구매 완료! ❄️';
+  String get streakFreezeSuccess => 'Streak Freeze purchased! ❄️';
 
   @override
-  String get insufficientPower => '파워가 부족해요 💪';
+  String get insufficientPower => 'Insufficient Power 💪';
 
   @override
-  String get weeklyReportTitle => '📊 주간 리포트';
+  String get weeklyReportTitle => '📊 Weekly Report';
 
   @override
-  String get thisWeekPerformance => '이번 주 성과';
+  String get thisWeekPerformance => 'This Week Performance';
 
   @override
-  String get allRecords => '전체 기록';
+  String get allRecords => 'All Records';
 
   @override
-  String get nextGoal => '다음 목표';
+  String get nextGoal => 'Next Goal';
 
   @override
   String levelAchievement(Object level) {
-    return 'Level $level 달성';
+    return 'Level $level Achieved';
   }
 
   @override
   String leaguePromotion(Object league) {
-    return '$league 리그 승급';
+    return '$league League Promotion';
   }
 
   @override
-  String get encouragingMessage => '잘하고 있어요!';
+  String get encouragingMessage => 'You\'re doing great!';
 
   @override
-  String get encouragingDesc => '꾸준히 운동하면 목표를 달성할 수 있어요';
+  String get encouragingDesc =>
+      'You can achieve your goals with consistent workouts';
+
+  @override
+  String get set => 'Set';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get birthDateFormat => 'yyyy/MM/dd';
 }
