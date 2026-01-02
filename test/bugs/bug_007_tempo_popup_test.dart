@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitmix_pwa/widgets/tempo_countdown_modal.dart';
 import 'package:fitmix_pwa/services/tempo_controller.dart';
-import 'package:fitmix_pwa/services/tempo_metronome_service.dart';
 
 void main() {
   group('BUG-007: Tempo Mode Popup Options', () {

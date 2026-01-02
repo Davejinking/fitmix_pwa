@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitmix_pwa/pages/home_page.dart';
+import 'package:fitmix_pwa/pages/user_info_form_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
@@ -15,7 +16,6 @@ class MockUserRepo extends Mock implements UserRepo {}
 class MockExerciseLibraryRepo extends Mock implements ExerciseLibraryRepo {}
 class MockSettingsRepo extends Mock implements SettingsRepo {}
 class MockAuthRepo extends Mock implements AuthRepo {}
-import 'package:fitmix_pwa/pages/user_info_form_page.dart';
 
 void main() {
   group('BUG-008: My Goal Edit Navigation', () {
@@ -71,6 +71,5 @@ void main() {
       expect(find.byType(UserInfoFormPage), findsNothing, reason: "BUG-008: Should not navigate to UserInfoFormPage");
       expect(find.text('Goal Settings'), findsOneWidget, reason: "Should navigate to Goal Settings page");
     });
-  });
   });
 }
