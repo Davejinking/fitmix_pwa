@@ -69,8 +69,11 @@ void main() {
     await tester.tap(prevButton);
     await tester.pump();
 
-    // Expect Error SnackBar
+    // Wait for SnackBar to appear
+    await tester.pumpAndSettle();
+
+    // Expect Error SnackBar with specific message
     // "운동 중에는 날짜를 변경할 수 없습니다"
-    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('운동 중에는 날짜를 변경할 수 없습니다'), findsOneWidget);
   });
 }

@@ -20,6 +20,10 @@ void main() {
   });
 
   testWidgets('BUG-019: CalendarModalSheet should display markers for workout dates', (WidgetTester tester) async {
+    // Set larger test size to avoid overflow
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    
     final workoutDate = DateTime(2023, 10, 15);
     final workoutDateStr = '2023-10-15';
 
@@ -59,5 +63,11 @@ void main() {
     });
 
     expect(markerFinder, findsOneWidget);
+    
+    // Reset view size
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
   });
 }

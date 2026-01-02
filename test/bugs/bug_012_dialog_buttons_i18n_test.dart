@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fitmix_pwa/pages/user_info_form_page.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
@@ -23,9 +23,13 @@ void main() {
   });
 
   testWidgets('BUG-012: Dialog buttons should be localized', (WidgetTester tester) async {
+    // Set larger test size to avoid overflow
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: const [
+        localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -55,5 +59,11 @@ void main() {
     // Ensure Korean is not present
     expect(find.text('확인'), findsNothing);
     expect(find.text('취소'), findsNothing);
+    
+    // Reset view size
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
   });
 }

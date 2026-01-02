@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fitmix_pwa/widgets/exercise_set_card.dart';
 
@@ -8,7 +8,7 @@ void main() {
   testWidgets('BUG-011: ExerciseSetCard should use localized strings', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: const [
+        localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -42,7 +42,7 @@ void main() {
 
     // Check for Set label (Row header)
     expect(find.text('Set'), findsOneWidget);
-    expect(find.text('Completed'), findsOneWidget);
+    expect(find.text('Done'), findsOneWidget);
 
     // Also verify absence of hardcoded Korean
     expect(find.text('세트'), findsNothing);

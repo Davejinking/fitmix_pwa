@@ -1,8 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:fitmix_pwa/services/tempo_controller.dart';
-// import 'package:fake_async/fake_async.dart'; // Assuming fake_async is available or included in test deps
 
 void main() {
+  setUpAll(() {
+    // Initialize Flutter bindings for platform channels
+    TestWidgetsFlutterBinding.ensureInitialized();
+  });
+
   test('BUG-005: TempoController should have a configurable preparation phase', () async {
     final controller = TempoController();
 

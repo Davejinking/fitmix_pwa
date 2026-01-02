@@ -1,9 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
-  test('BUG-013: Calendar month name should be localized using DateFormat', () {
+  setUpAll(() async {
+    // Initialize date formatting for all locales
+    await initializeDateFormatting();
+  });
+
+  test('BUG-013: Calendar month name should be localized using DateFormat', () async {
     // Since BUG-013 was about DateFormat usage, we test DateFormat directly with different locales.
     // The bug was "Calendar month name fixed in English" (or maybe fixed in a specific way).
     // The fix was `DateFormat.yMMMM(Localizations.localeOf(context).languageCode)`.

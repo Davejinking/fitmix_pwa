@@ -36,10 +36,9 @@ void main() {
     mockNavigatorObserver = MockNavigatorObserver();
 
     // Mock session repo responses
-    when(() => mockSessionRepo.get(any())).thenAnswer((_) async => Session(date: '2023-10-15'));
+    when(() => mockSessionRepo.get(any())).thenAnswer((_) async => Session(ymd: '2023-10-15'));
     // Mock user repo responses if needed by Home Page
-    // (Assuming Stream<UserProfile?> userProfile is used)
-    when(() => mockUserRepo.userProfile).thenAnswer((_) => const Stream.empty());
+    when(() => mockUserRepo.getUserProfile()).thenAnswer((_) async => null);
   });
 
   testWidgets('BUG-020: Tapping "Today\'s Workout" should navigate to CalendarPage', (WidgetTester tester) async {
@@ -57,7 +56,10 @@ void main() {
         ),
         navigatorObservers: [mockNavigatorObserver],
         routes: {
-          '/calendar': (context) => const CalendarPage(), // Register if named route used
+          '/calendar': (context) => CalendarPage(
+            repo: mockSessionRepo,
+            exerciseRepo: mockExerciseRepo,
+          ), // Register if named route used
         },
       ),
     );
