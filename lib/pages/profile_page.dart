@@ -35,8 +35,27 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _loadData() async {
-    final profile = await widget.userRepo.getUserProfile();
+    print('🔄 프로필 데이터 로드 시작...');
+    var profile = await widget.userRepo.getUserProfile();
+    print('✅ 프로필 로드 완료: $profile');
+    
+    // 프로필이 없으면 기본값으로 생성
+    if (profile == null) {
+      print('⚠️ 프로필이 없음. 기본값으로 생성 중...');
+      profile = UserProfile(
+        weight: 70.0,
+        height: 170,
+        birthDate: DateTime(1990, 1, 1),
+        gender: '남성',
+        monthlyWorkoutGoal: 20,
+        monthlyVolumeGoal: 100000.0,
+      );
+      await widget.userRepo.saveUserProfile(profile);
+      print('✅ 기본 프로필 저장 완료');
+    }
+    
     final googleUser = widget.authRepo.currentUser;
+    print('✅ Google 사용자 로드 완료: $googleUser');
     if (mounted) {
       setState(() {
         _userProfile = profile;
@@ -44,6 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _goalController.text = _userProfile?.monthlyWorkoutGoal.toString() ?? '20';
         _volumeGoalController.text = _userProfile?.monthlyVolumeGoal.toString() ?? '100000';
       });
+      print('✅ UI 업데이트 완료');
     }
   }
 
@@ -145,7 +165,16 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.profile)),
       body: _userProfile == null
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text('프로필 로드 중...'),
+                ],
+              ),
+            )
           : ListView(
               padding: const EdgeInsets.all(16.0),
               children: [
