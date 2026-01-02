@@ -618,7 +618,11 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
 
   Future<void> _loadToday() async {
     final today = widget.sessionRepo.ymd(DateTime.now());
+    // Force a fetch to ensure we have the latest data, especially after returning from PlanPage
+    // Note: Hive objects are cached, so we rely on the object being updated or a new fetch returning the latest state.
     final session = await widget.sessionRepo.get(today);
+    debugPrint('_TodaySummaryCard: Loaded session for $today. isRest=${session?.isRest}, exercises=${session?.exercises.length}');
+
     if (mounted) {
       setState(() {
         _todaySession = session;
@@ -655,6 +659,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
 
     return InkWell(
       onTap: () async {
+        debugPrint('_TodaySummaryCard: Navigating to PlanPage');
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PlanPage(
@@ -666,7 +671,8 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
             ),
           ),
         );
-        if (mounted) _loadToday();
+        debugPrint('_TodaySummaryCard: Returned from PlanPage, reloading...');
+        if (mounted) await _loadToday();
       },
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -744,6 +750,7 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
           ] else ...[
             InkWell(
               onTap: () async {
+                debugPrint('_TodaySummaryCard: Start Workout button tapped');
                 await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PlanPage(
@@ -754,7 +761,8 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
                     ),
                   ),
                 );
-                if (mounted) _loadToday();
+                debugPrint('_TodaySummaryCard: Returned from PlanPage (Start Button), reloading...');
+                if (mounted) await _loadToday();
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),

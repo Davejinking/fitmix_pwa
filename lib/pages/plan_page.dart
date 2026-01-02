@@ -155,13 +155,18 @@ class _PlanPageState extends State<PlanPage> {
     }
 
     try {
+      debugPrint('_markRest: Updating rest status to $isRest for $_selectedDate');
       await widget.repo.markRest(widget.repo.ymd(_selectedDate), rest: isRest);
+      debugPrint('_markRest: markRest completed. Reloading session...');
       await _loadSession(); // Reload session to reflect changes
+      debugPrint('_markRest: Session reloaded. isRest=${_currentSession?.isRest}');
+
       if (mounted) {
         ErrorHandler.showSuccessSnackBar(
             context, isRest ? '휴식일로 설정되었습니다.' : '휴식일 설정이 해제되었습니다.');
       }
     } catch (e) {
+      debugPrint('_markRest: Error - $e');
       if (mounted) ErrorHandler.showErrorSnackBar(context, '오류 발생: $e');
     }
   }
