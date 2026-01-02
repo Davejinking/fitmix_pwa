@@ -21,7 +21,9 @@ void main() {
                     showTempoCountdownModal(
                       context: context,
                       controller: controller,
-                      metronomeService: TempoMetronomeService(),
+                      totalReps: 5,
+                      downSeconds: 4,
+                      upSeconds: 2,
                     );
                   },
                   child: const Text('Open Modal'),

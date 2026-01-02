@@ -4,22 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitmix_pwa/pages/upgrade_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fitmix_pwa/l10n/app_localizations.dart';
 
 void main() {
   group('BUG-009: Upgrade Page i18n', () {
     testWidgets('Upgrade Page should display English text when locale is English', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [Locale('en'), Locale('ko')],
-          locale: Locale('en'), // Force English
-          home: UpgradePage(),
+          supportedLocales: const [Locale('en'), Locale('ko')],
+          locale: const Locale('en'), // Force English
+          home: const UpgradePage(),
         ),
       );
 
@@ -29,16 +29,16 @@ void main() {
 
     testWidgets('Upgrade Page should display Japanese text when locale is Japanese', (WidgetTester tester) async {
        await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [Locale('en'), Locale('ko'), Locale('ja')],
-          locale: Locale('ja'), // Force Japanese
-          home: UpgradePage(),
+          supportedLocales: const [Locale('en'), Locale('ko'), Locale('ja')],
+          locale: const Locale('ja'), // Force Japanese
+          home: const UpgradePage(),
         ),
       );
 

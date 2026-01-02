@@ -13,7 +13,7 @@ void main() {
     setUp(() {
       testExercise = Exercise(
         name: 'Bench Press',
-        targetBodyPart: 'Chest',
+        bodyPart: 'Chest',
         eccentricSeconds: 2,
         concentricSeconds: 2,
         isTempoEnabled: true,
