@@ -939,4 +939,33 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get birthDateFormat => 'yyyy년 MM월 dd일';
+
+  @override
+  String get workoutPlanEmpty => '운동 계획이 없습니다';
+
+  @override
+  String get restingDay => '운동 휴식 중입니다';
+
+  @override
+  String get restingDayDesc => '오늘은 휴식하는 날입니다.\n\"운동 휴식 해제\" 버튼으로 변경할 수 있습니다';
+
+  @override
+  String get planWorkoutDesc => '하단의 \"운동 계획하기\" 버튼을 눌러\n운동을 추가해보세요';
+
+  @override
+  String get cancelRestDay => '운동 휴식 해제';
+
+  @override
+  String get editWorkout => '운동 편집';
+
+  @override
+  String get addWorkout => '운동 추가';
+
+  @override
+  String get minOneSetRequired => '최소 1개의 세트가 필요합니다';
+
+  @override
+  String addExercises(int count) {
+    return '$count개 운동 추가';
+  }
 }

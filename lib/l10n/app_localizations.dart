@@ -1826,6 +1826,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'yyyy년 MM월 dd일'**
   String get birthDateFormat;
+
+  /// No description provided for @workoutPlanEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 계획이 없습니다'**
+  String get workoutPlanEmpty;
+
+  /// No description provided for @restingDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 휴식 중입니다'**
+  String get restingDay;
+
+  /// No description provided for @restingDayDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘은 휴식하는 날입니다.\n\"운동 휴식 해제\" 버튼으로 변경할 수 있습니다'**
+  String get restingDayDesc;
+
+  /// No description provided for @planWorkoutDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'하단의 \"운동 계획하기\" 버튼을 눌러\n운동을 추가해보세요'**
+  String get planWorkoutDesc;
+
+  /// No description provided for @cancelRestDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 휴식 해제'**
+  String get cancelRestDay;
+
+  /// No description provided for @editWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 편집'**
+  String get editWorkout;
+
+  /// No description provided for @addWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 추가'**
+  String get addWorkout;
+
+  /// No description provided for @minOneSetRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 1개의 세트가 필요합니다'**
+  String get minOneSetRequired;
+
+  /// No description provided for @addExercises.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개 운동 추가'**
+  String addExercises(int count);
 }
 
 class _AppLocalizationsDelegate

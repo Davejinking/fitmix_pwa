@@ -294,5 +294,21 @@
   "comingSoon": "準備中です！",
   "levelAchievement": "レベル {level} 達成",
   "specialBadges": "🏅 特別バッジ（準備中）",
-  "orangeTheme": "燃えるようなオレンジテーマ"
+  "orangeTheme": "燃えるようなオレンジテーマ",
+  "workoutPlanEmpty": "ワークアウト計画がありません",
+  "restingDay": "休息日",
+  "restingDayDesc": "今日は休息日です。\n「休息日を解除」ボタンで変更できます",
+  "planWorkoutDesc": "下の「ワークアウトを計画」ボタンをタップして\n運動を追加してください",
+  "cancelRestDay": "休息日を解除",
+  "editWorkout": "ワークアウトを編集",
+  "minOneSetRequired": "最低1セット必要です",
+  "addExercises": "{count}個の運動を追加",
+  "@addExercises": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  }
 }

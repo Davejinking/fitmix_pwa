@@ -294,5 +294,21 @@
   "comingSoon": "Coming soon!",
   "levelAchievement": "Level {level} Achieved",
   "specialBadges": "🏅 Special Badges (Coming Soon)",
-  "orangeTheme": "Burning Orange Theme"
+  "orangeTheme": "Burning Orange Theme",
+  "workoutPlanEmpty": "No workout plan",
+  "restingDay": "Rest day",
+  "restingDayDesc": "Today is a rest day.\nYou can change it with the \"Cancel Rest Day\" button",
+  "planWorkoutDesc": "Tap the \"Plan Workout\" button below\nto add exercises",
+  "cancelRestDay": "Cancel Rest Day",
+  "editWorkout": "Edit Workout",
+  "minOneSetRequired": "At least 1 set required",
+  "addExercises": "Add {count} exercises",
+  "@addExercises": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  }
 }

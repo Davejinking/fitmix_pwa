@@ -946,4 +946,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get birthDateFormat => 'yyyy/MM/dd';
+
+  @override
+  String get workoutPlanEmpty => 'No workout plan';
+
+  @override
+  String get restingDay => 'Rest day';
+
+  @override
+  String get restingDayDesc =>
+      'Today is a rest day.\nYou can change it with the \"Cancel Rest Day\" button';
+
+  @override
+  String get planWorkoutDesc =>
+      'Tap the \"Plan Workout\" button below\nto add exercises';
+
+  @override
+  String get cancelRestDay => 'Cancel Rest Day';
+
+  @override
+  String get editWorkout => 'Edit Workout';
+
+  @override
+  String get addWorkout => '운동 추가';
+
+  @override
+  String get minOneSetRequired => 'At least 1 set required';
+
+  @override
+  String addExercises(int count) {
+    return 'Add $count exercises';
+  }
 }

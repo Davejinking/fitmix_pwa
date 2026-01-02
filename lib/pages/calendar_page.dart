@@ -9,6 +9,7 @@ import '../widgets/calendar/month_header.dart';
 import '../widgets/calendar/week_strip.dart';
 import '../core/error_handler.dart';
 import 'plan_page.dart';
+import '../l10n/app_localizations.dart';
 
 /// 캘린더 페이지 - PlanPage 기능 통합
 class CalendarPage extends StatefulWidget {
@@ -219,6 +220,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget _buildEmptyState() {
     final selectedYmd = widget.repo.ymd(_selectedDay);
     final isRest = _restDates.contains(selectedYmd);
+    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: Column(
@@ -231,7 +233,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            isRest ? '운동 휴식 중입니다' : '운동 계획이 없습니다',
+            isRest ? l10n.restingDay : l10n.workoutPlanEmpty,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -241,8 +243,8 @@ class _CalendarPageState extends State<CalendarPage> {
           const SizedBox(height: 8),
           Text(
             isRest
-                ? '오늘은 휴식하는 날입니다.\n"운동 휴식 해제" 버튼으로 변경할 수 있습니다'
-                : '하단의 "운동 계획하기" 버튼을 눌러\n운동을 추가해보세요',
+                ? l10n.restingDayDesc
+                : l10n.planWorkoutDesc,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -364,6 +366,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget _buildBottomBar(bool hasPlan) {
     final selectedYmd = widget.repo.ymd(_selectedDay);
     final isRest = _restDates.contains(selectedYmd);
+    final l10n = AppLocalizations.of(context);
 
     if (!hasPlan && !isRest) {
       // Case A: Empty State - "운동 계획하기" + "운동 휴식하기" 버튼
@@ -389,9 +392,9 @@ class _CalendarPageState extends State<CalendarPage> {
                 child: ElevatedButton.icon(
                   onPressed: _addExercise,
                   icon: const Icon(Icons.add, size: 22),
-                  label: const Text(
-                    '운동 계획하기',
-                    style: TextStyle(
+                  label: Text(
+                    l10n.planWorkout,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -413,9 +416,9 @@ class _CalendarPageState extends State<CalendarPage> {
                 child: OutlinedButton.icon(
                   onPressed: _saveRestDay,
                   icon: const Icon(Icons.event_busy, size: 22),
-                  label: const Text(
-                    '운동 휴식하기',
-                    style: TextStyle(
+                  label: Text(
+                    l10n.markRest,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -456,9 +459,9 @@ class _CalendarPageState extends State<CalendarPage> {
           child: ElevatedButton.icon(
             onPressed: _cancelRestDay,
             icon: const Icon(Icons.check_circle, size: 22),
-            label: const Text(
-              '운동 휴식 해제',
-              style: TextStyle(
+            label: Text(
+              l10n.cancelRestDay,
+              style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
@@ -515,9 +518,9 @@ class _CalendarPageState extends State<CalendarPage> {
                 });
               },
               icon: const Icon(Icons.edit, size: 20),
-              label: const Text(
-                '운동 편집',
-                style: TextStyle(
+              label: Text(
+                l10n.editWorkout,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -558,9 +561,9 @@ class _CalendarPageState extends State<CalendarPage> {
                 child: OutlinedButton.icon(
                   onPressed: _addExercise,
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text(
-                    '운동 추가',
-                    style: TextStyle(
+                  label: Text(
+                    l10n.addWorkout,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -583,9 +586,9 @@ class _CalendarPageState extends State<CalendarPage> {
                 child: ElevatedButton.icon(
                   onPressed: _startWorkout,
                   icon: const Icon(Icons.play_arrow, size: 22),
-                  label: const Text(
-                    '운동 시작',
-                    style: TextStyle(
+                  label: Text(
+                    l10n.startWorkout,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -685,6 +688,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final totalVolume = widget.exercise.sets.fold<double>(
       0,
       (sum, set) => sum + (set.weight * set.reps),
@@ -850,7 +854,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       Expanded(
                         flex: 2,
                         child: Text(
-                          '세트',
+                          l10n.setLabel,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 11,
@@ -913,7 +917,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       } else {
                         ErrorHandler.showInfoSnackBar(
                           context,
-                          '최소 1개의 세트가 필요합니다',
+                          l10n.minOneSetRequired,
                         );
                       }
                     },
@@ -934,7 +938,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         }
                       },
                       icon: const Icon(Icons.remove, size: 16),
-                      label: const Text('세트 삭제', style: TextStyle(fontSize: 13)),
+                      label: Text(l10n.deleteSet, style: const TextStyle(fontSize: 13)),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.grey[500],
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -962,7 +966,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         widget.onUpdate();
                       },
                       icon: const Icon(Icons.add, size: 16),
-                      label: const Text('세트 추가', style: TextStyle(fontSize: 13)),
+                      label: Text(l10n.addSet, style: const TextStyle(fontSize: 13)),
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF2196F3),
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1042,8 +1046,6 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final set = widget.exercise.sets[widget.setIndex];
-    
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
@@ -1217,10 +1219,11 @@ class _ExerciseSelectionPageState extends State<_ExerciseSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('운동 선택'),
+        title: Text(l10n.selectExercise),
         backgroundColor: const Color(0xFF121212),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -1339,7 +1342,7 @@ class _ExerciseSelectionPageState extends State<_ExerciseSelectionPage> {
                     ),
                   ),
                   child: Text(
-                    '${_selectedExercises.length}개 운동 추가',
+                    l10n.addExercises(_selectedExercises.length),
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,

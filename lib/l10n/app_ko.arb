@@ -287,19 +287,28 @@
   "set": "세트",
   "done": "완료",
   "birthDateFormat": "yyyy년 MM월 dd일",
-  "achievement": "업적",
-  "currentStreak": "현재 스트릭",
-  "totalWorkouts": "총 운동",
-  "achievementUnlocked": "✅ 달성 완료!",
-  "achievementLocked": "🔒 미달성",
-  "analysisTitle": "분석",
-  "bodyBalanceAnalysis": "신체 밸런스 분석",
-  "analysisResult": "분석 결과",
   "@exerciseSelected": {
     "placeholders": {
       "name": {
         "type": "String",
         "example": "Bench Press"
+      }
+    }
+  },
+  "workoutPlanEmpty": "운동 계획이 없습니다",
+  "restingDay": "운동 휴식 중입니다",
+  "restingDayDesc": "오늘은 휴식하는 날입니다.\n\"운동 휴식 해제\" 버튼으로 변경할 수 있습니다",
+  "planWorkoutDesc": "하단의 \"운동 계획하기\" 버튼을 눌러\n운동을 추가해보세요",
+  "cancelRestDay": "운동 휴식 해제",
+  "editWorkout": "운동 편집",
+  "addWorkout": "운동 추가",
+  "minOneSetRequired": "최소 1개의 세트가 필요합니다",
+  "addExercises": "{count}개 운동 추가",
+  "@addExercises": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
       }
     }
   }

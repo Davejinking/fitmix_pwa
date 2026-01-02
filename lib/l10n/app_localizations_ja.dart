@@ -939,4 +939,33 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get birthDateFormat => 'yyyy年MM月dd日';
+
+  @override
+  String get workoutPlanEmpty => 'ワークアウト計画がありません';
+
+  @override
+  String get restingDay => '休息日';
+
+  @override
+  String get restingDayDesc => '今日は休息日です。\n「休息日を解除」ボタンで変更できます';
+
+  @override
+  String get planWorkoutDesc => '下の「ワークアウトを計画」ボタンをタップして\n運動を追加してください';
+
+  @override
+  String get cancelRestDay => '休息日を解除';
+
+  @override
+  String get editWorkout => 'ワークアウトを編集';
+
+  @override
+  String get addWorkout => '운동 추가';
+
+  @override
+  String get minOneSetRequired => '最低1セット必要です';
+
+  @override
+  String addExercises(int count) {
+    return '$count個の運動を追加';
+  }
 }
