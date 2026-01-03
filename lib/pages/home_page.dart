@@ -9,7 +9,7 @@ import '../models/user_profile.dart';
 import '../core/l10n_extensions.dart';
 import 'package:shimmer/shimmer.dart';
 import 'user_info_form_page.dart';
-import 'plan_page.dart';
+import 'shell_page.dart';
 import '../models/session.dart';
 import './settings_page.dart';
 import './notifications_page.dart';
@@ -686,19 +686,10 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
     final totalVolume = _todaySession?.totalVolume ?? 0;
 
     return InkWell(
-      onTap: () async {
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PlanPage(
-              date: DateTime.now(),
-              repo: widget.sessionRepo,
-              exerciseRepo: widget.exerciseRepo,
-              isFromTodayWorkout: true,
-              isViewOnly: hasWorkout, // 완료된 운동이면 조회 모드
-            ),
-          ),
-        );
-        if (mounted) _loadToday();
+      onTap: () {
+        // 캘린더 탭으로 이동 (오늘 날짜가 자동 선택됨)
+        final shellState = context.findAncestorStateOfType<ShellPageState>();
+        shellState?.navigateToCalendar();
       },
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -769,18 +760,10 @@ class _TodaySummaryCardState extends State<_TodaySummaryCard> {
             )
           ] else ...[
             InkWell(
-              onTap: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PlanPage(
-                      date: DateTime.now(),
-                      repo: widget.sessionRepo,
-                      exerciseRepo: widget.exerciseRepo,
-                      isFromTodayWorkout: true,
-                    ),
-                  ),
-                );
-                if (mounted) _loadToday();
+              onTap: () {
+                // 캘린더 탭으로 이동
+                final shellState = context.findAncestorStateOfType<ShellPageState>();
+                shellState?.navigateToCalendar();
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -1072,16 +1055,10 @@ class _MyGoalCardState extends State<_MyGoalCard> {
                     text: context.l10n.workoutVolumeGoal(_totalVolume!.toStringAsFixed(0), _monthlyVolumeGoal!.toStringAsFixed(0)), progress: _volumeProgress!),
                 const SizedBox(height: 28),
                 ElevatedButton(
-                  onPressed: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PlanPage(
-                          date: DateTime.now(),
-                          repo: widget.sessionRepo,
-                          exerciseRepo: widget.exerciseRepo,
-                        ),
-                      ),
-                    );
+                  onPressed: () {
+                    // 캘린더 탭으로 이동
+                    final shellState = context.findAncestorStateOfType<ShellPageState>();
+                    shellState?.navigateToCalendar();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF007AFF),
@@ -1463,16 +1440,10 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PlanPage(
-                        date: DateTime.now(),
-                        repo: widget.sessionRepo,
-                        exerciseRepo: widget.exerciseRepo,
-                      ),
-                    ),
-                  );
+                onPressed: () {
+                  // 캘린더 탭으로 이동
+                  final shellState = context.findAncestorStateOfType<ShellPageState>();
+                  shellState?.navigateToCalendar();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF007AFF),

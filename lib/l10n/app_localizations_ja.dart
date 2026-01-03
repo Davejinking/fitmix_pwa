@@ -157,6 +157,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get endWorkoutConfirm => 'ワークアウトを終了して記録を保存しますか？';
 
   @override
+  String get finishWorkoutTitle => 'ワークアウトを終了しますか？';
+
+  @override
+  String get finishWorkout => 'ワークアウト完了';
+
+  @override
+  String get continueWorkout => '続ける';
+
+  @override
+  String get workoutWillBeSaved => 'すべての記録が保存されます';
+
+  @override
   String get endAndSaveWorkout => '終了して保存';
 
   @override
@@ -193,9 +205,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get confirm => '確認';
-
-  @override
-  String get continueWorkout => '続ける';
 
   @override
   String get quit => '終了';
@@ -426,6 +435,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get enterRepsFirst => '先に目標回数を入力してください';
 
   @override
+  String get enterWeightAndReps => '重量と回数を入力してください';
+
+  @override
   String get favorites => 'お気に入り';
 
   @override
@@ -556,6 +568,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get recentRecord => '最近の記録';
+
+  @override
+  String get workingOut => 'ワークアウト中';
+
+  @override
+  String get setsCompleted => 'セット完了';
+
+  @override
+  String get restTimeSettings => '休憩時間設定';
+
+  @override
+  String get showOnScreen => '画面に表示';
+
+  @override
+  String get showOnScreenDescription => '休憩タイマーを画面に大きく表示します';
+
+  @override
+  String get tapToAdjustTime => 'タップして時間調整';
 
   @override
   String get dayUnit => '日';
@@ -954,6 +984,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get done => '完了';
+
+  @override
+  String get collapseAll => 'すべて閉じる';
+
+  @override
+  String get expandAll => 'すべて開く';
+
+  @override
+  String get reorder => '並び替え';
+
+  @override
+  String get reorderExercises => '運動の順序変更';
+
+  @override
+  String get dragToReorder => 'ドラッグして順序を変更';
+
+  @override
+  String get exerciseList => '運動リスト';
 
   @override
   String get birthDateFormat => 'yyyy年MM月dd日';

@@ -157,6 +157,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get endWorkoutConfirm => '운동을 종료하고 기록을 저장하시겠습니까?';
 
   @override
+  String get finishWorkoutTitle => '운동을 종료하시겠습니까?';
+
+  @override
+  String get finishWorkout => '운동 완료하기';
+
+  @override
+  String get continueWorkout => '계속하기';
+
+  @override
+  String get workoutWillBeSaved => '현재까지 진행한 모든 기록이 저장됩니다';
+
+  @override
   String get endAndSaveWorkout => '운동 종료 및 저장';
 
   @override
@@ -193,9 +205,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get confirm => '확인';
-
-  @override
-  String get continueWorkout => '계속하기';
 
   @override
   String get quit => '종료';
@@ -426,6 +435,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get enterRepsFirst => '먼저 목표 횟수를 입력하세요';
 
   @override
+  String get enterWeightAndReps => '무게와 횟수를 입력해주세요';
+
+  @override
   String get favorites => '즐겨찾기';
 
   @override
@@ -556,6 +568,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get recentRecord => '최근 기록';
+
+  @override
+  String get workingOut => '운동 중';
+
+  @override
+  String get setsCompleted => '세트 완료';
+
+  @override
+  String get restTimeSettings => '휴식 시간 설정';
+
+  @override
+  String get showOnScreen => '화면에 표시';
+
+  @override
+  String get showOnScreenDescription => '휴식 타이머를 화면에 크게 표시합니다';
+
+  @override
+  String get tapToAdjustTime => '탭하여 시간 조절';
 
   @override
   String get dayUnit => '일';
@@ -954,6 +984,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get done => '완료';
+
+  @override
+  String get collapseAll => '모두 접기';
+
+  @override
+  String get expandAll => '모두 펼치기';
+
+  @override
+  String get reorder => '순서';
+
+  @override
+  String get reorderExercises => '운동 순서 변경';
+
+  @override
+  String get dragToReorder => '드래그하여 순서를 변경하세요';
+
+  @override
+  String get exerciseList => '운동 목록';
 
   @override
   String get birthDateFormat => 'yyyy년 MM월 dd일';

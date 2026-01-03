@@ -69,6 +69,17 @@ class _PlanPageState extends State<PlanPage> {
           _currentSession = session;
           _isLoading = false;
         });
+        
+        // 캘린더에서 "운동 시작" 버튼으로 진입한 경우 자동으로 운동 시작
+        if (widget.isFromTodayWorkout && !widget.isViewOnly && !_isWorkoutStarted) {
+          if (_currentSession != null && 
+              _currentSession!.isWorkoutDay && 
+              _currentSession!.exercises.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _startWorkout();
+            });
+          }
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -1322,10 +1333,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
             ),
             // Dynamic Status Widget (Completion or Progress)
             if (isCompleted)
-              // ✅ All Completed: Green Checkmark (Apple-style Reward)
+              // ✅ All Completed: Blue Checkmark (Brand Color)
               const Icon(
                 Icons.check_circle,
-                color: Color(0xFF34C759), // iOS Green
+                color: Color(0xFF2196F3), // Brand Blue
                 size: 28,
               )
             else ...[

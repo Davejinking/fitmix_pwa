@@ -364,6 +364,30 @@ abstract class AppLocalizations {
   /// **'운동을 종료하고 기록을 저장하시겠습니까?'**
   String get endWorkoutConfirm;
 
+  /// No description provided for @finishWorkoutTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동을 종료하시겠습니까?'**
+  String get finishWorkoutTitle;
+
+  /// No description provided for @finishWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 완료하기'**
+  String get finishWorkout;
+
+  /// No description provided for @continueWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'계속하기'**
+  String get continueWorkout;
+
+  /// No description provided for @workoutWillBeSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재까지 진행한 모든 기록이 저장됩니다'**
+  String get workoutWillBeSaved;
+
   /// No description provided for @endAndSaveWorkout.
   ///
   /// In ko, this message translates to:
@@ -435,12 +459,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'확인'**
   String get confirm;
-
-  /// No description provided for @continueWorkout.
-  ///
-  /// In ko, this message translates to:
-  /// **'계속하기'**
-  String get continueWorkout;
 
   /// No description provided for @quit.
   ///
@@ -862,6 +880,12 @@ abstract class AppLocalizations {
   /// **'먼저 목표 횟수를 입력하세요'**
   String get enterRepsFirst;
 
+  /// No description provided for @enterWeightAndReps.
+  ///
+  /// In ko, this message translates to:
+  /// **'무게와 횟수를 입력해주세요'**
+  String get enterWeightAndReps;
+
   /// No description provided for @favorites.
   ///
   /// In ko, this message translates to:
@@ -1113,6 +1137,42 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'최근 기록'**
   String get recentRecord;
+
+  /// No description provided for @workingOut.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 중'**
+  String get workingOut;
+
+  /// No description provided for @setsCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'세트 완료'**
+  String get setsCompleted;
+
+  /// No description provided for @restTimeSettings.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식 시간 설정'**
+  String get restTimeSettings;
+
+  /// No description provided for @showOnScreen.
+  ///
+  /// In ko, this message translates to:
+  /// **'화면에 표시'**
+  String get showOnScreen;
+
+  /// No description provided for @showOnScreenDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식 타이머를 화면에 크게 표시합니다'**
+  String get showOnScreenDescription;
+
+  /// No description provided for @tapToAdjustTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'탭하여 시간 조절'**
+  String get tapToAdjustTime;
 
   /// No description provided for @dayUnit.
   ///
@@ -1856,6 +1916,42 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'완료'**
   String get done;
+
+  /// No description provided for @collapseAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'모두 접기'**
+  String get collapseAll;
+
+  /// No description provided for @expandAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'모두 펼치기'**
+  String get expandAll;
+
+  /// No description provided for @reorder.
+  ///
+  /// In ko, this message translates to:
+  /// **'순서'**
+  String get reorder;
+
+  /// No description provided for @reorderExercises.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 순서 변경'**
+  String get reorderExercises;
+
+  /// No description provided for @dragToReorder.
+  ///
+  /// In ko, this message translates to:
+  /// **'드래그하여 순서를 변경하세요'**
+  String get dragToReorder;
+
+  /// No description provided for @exerciseList.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 목록'**
+  String get exerciseList;
 
   /// No description provided for @birthDateFormat.
   ///

@@ -157,6 +157,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endWorkoutConfirm => 'End workout and save the record?';
 
   @override
+  String get finishWorkoutTitle => 'Finish your workout?';
+
+  @override
+  String get finishWorkout => 'Finish Workout';
+
+  @override
+  String get continueWorkout => 'Continue';
+
+  @override
+  String get workoutWillBeSaved => 'All your progress will be saved';
+
+  @override
   String get endAndSaveWorkout => 'End & Save Workout';
 
   @override
@@ -195,9 +207,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
-
-  @override
-  String get continueWorkout => 'Continue';
 
   @override
   String get quit => 'Quit';
@@ -429,6 +438,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterRepsFirst => 'Enter target reps first';
 
   @override
+  String get enterWeightAndReps => 'Please enter weight and reps';
+
+  @override
   String get favorites => 'Favorites';
 
   @override
@@ -561,6 +573,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recentRecord => 'Recent Record';
+
+  @override
+  String get workingOut => 'Working Out';
+
+  @override
+  String get setsCompleted => 'Sets Done';
+
+  @override
+  String get restTimeSettings => 'Rest Time Settings';
+
+  @override
+  String get showOnScreen => 'Show on Screen';
+
+  @override
+  String get showOnScreenDescription =>
+      'Display rest timer prominently on screen';
+
+  @override
+  String get tapToAdjustTime => 'Tap to adjust time';
 
   @override
   String get dayUnit => 'days';
@@ -962,6 +993,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get done => 'Done';
+
+  @override
+  String get collapseAll => 'Collapse';
+
+  @override
+  String get expandAll => 'Expand';
+
+  @override
+  String get reorder => 'Reorder';
+
+  @override
+  String get reorderExercises => 'Reorder Exercises';
+
+  @override
+  String get dragToReorder => 'Drag to reorder';
+
+  @override
+  String get exerciseList => 'Exercises';
 
   @override
   String get birthDateFormat => 'yyyy/MM/dd';
