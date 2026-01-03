@@ -12,6 +12,7 @@ import 'user_info_form_page.dart';
 import 'plan_page.dart';
 import '../models/session.dart';
 import './settings_page.dart';
+import './notifications_page.dart';
 import './achievements_page.dart';
 import './power_shop_page.dart';
 import '../services/achievement_service.dart';
@@ -114,10 +115,9 @@ class _HeaderComponentState extends State<_HeaderComponent> {
               color: Colors.white,
             ),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('알림 기능은 준비 중입니다.'),
-                  duration: Duration(seconds: 2),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsPage(),
                 ),
               );
             },
@@ -141,6 +141,26 @@ class _HeaderComponentState extends State<_HeaderComponent> {
                     settingsRepo: widget.settingsRepo,
                     sessionRepo: widget.sessionRepo,
                     authRepo: widget.authRepo,
+                  ),
+                ),
+              );
+            },
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+          ),
+          const SizedBox(width: 4),
+          // 프로필 아이콘
+          IconButton(
+            icon: const Icon(
+              Icons.person_outlined,
+              size: 24,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserInfoFormPage(
+                    userRepo: widget.userRepo,
                   ),
                 ),
               );
