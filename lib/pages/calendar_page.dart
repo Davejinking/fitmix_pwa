@@ -10,6 +10,7 @@ import '../widgets/calendar/month_header.dart';
 import '../widgets/calendar/week_strip.dart';
 import '../core/error_handler.dart';
 import 'plan_page.dart';
+import 'workout_page.dart';
 import '../l10n/app_localizations.dart';
 
 /// 캘린더 페이지 - PlanPage 기능 통합
@@ -640,13 +641,13 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _startWorkout() async {
     await _saveSession();
     if (mounted) {
+      // 바로 WorkoutPage로 이동하여 운동 시작
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PlanPage(
+          builder: (context) => WorkoutPage(
+            sessionRepo: widget.repo,
             date: _selectedDay,
-            repo: widget.repo,
-            exerciseRepo: widget.exerciseRepo,
           ),
         ),
       );

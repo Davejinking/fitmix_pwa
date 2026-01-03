@@ -13,8 +13,9 @@ import '../widgets/workout/set_tile.dart';
 
 class WorkoutPage extends StatefulWidget {
   final SessionRepo sessionRepo;
+  final DateTime? date; // 선택적 날짜 파라미터 (null이면 오늘)
 
-  const WorkoutPage({super.key, required this.sessionRepo});
+  const WorkoutPage({super.key, required this.sessionRepo, this.date});
 
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
@@ -42,7 +43,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
   @override
   void initState() {
     super.initState();
-    _sessionFuture = widget.sessionRepo.get(widget.sessionRepo.ymd(DateTime.now()));
+    final targetDate = widget.date ?? DateTime.now();
+    _sessionFuture = widget.sessionRepo.get(widget.sessionRepo.ymd(targetDate));
     _startGlobalTimer();
     _initTempoController();
   }
