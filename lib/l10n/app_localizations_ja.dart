@@ -540,6 +540,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get memo => 'メモ';
 
   @override
+  String get recentRecord => '最近の記録';
+
+  @override
   String get dayUnit => '日';
 
   @override
@@ -654,8 +657,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get threeMinutes => '3分';
 
   @override
-  String xpRemaining(Object xp) {
-    return '$xp XP 残り';
+  String xpRemaining(int xp) {
+    return '残り$xp XP';
   }
 
   @override
@@ -856,22 +859,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get powerShop => 'パワーショップ';
 
   @override
-  String get items => '🛉 アイテム';
+  String get items => 'アイテム';
 
   @override
   String get streakFreeze => 'ストリークフリーズ';
 
   @override
-  String get streakFreezeDesc => '1日休んでもストリークを保つ';
+  String get streakFreezeDesc => '1日休んでもストリークを維持';
 
   @override
-  String get weeklyReport => '📊 週間ワークアウトレポート';
+  String get weeklyReport => '週間ワークアウトレポート';
 
   @override
   String get weeklyReportDesc => '今週のワークアウト分析レポート';
 
   @override
-  String get customization => '🎨 カスタマイズ（準備中）';
+  String get customization => 'カスタマイゼーション';
 
   @override
   String get darkPurpleTheme => 'ダークパープルテーマ';
@@ -883,25 +886,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fireTheme => 'ファイアテーマ';
 
   @override
-  String get orangeTheme => '燃えるようなオレンジテーマ';
+  String get orangeTheme => 'バーニングオレンジテーマ';
 
   @override
-  String get specialBadges => '🏅 特別バッジ（準備中）';
+  String get specialBadges => '特別バッジ';
 
   @override
-  String get lightningBadge => '稲妻バッジ';
+  String get lightningBadge => 'ライトニングバッジ';
 
   @override
-  String get specialBadgeDesc => 'プロフィールに表示される特別なバッジ';
+  String get specialBadgeDesc => 'プロフィールに表示される特別バッジ';
 
   @override
-  String get comingSoon => '準備中です！';
+  String get comingSoon => '準備中';
 
   @override
-  String get streakFreezeSuccess => 'ストリークフリーズ購入完了！❄️';
+  String get streakFreezeSuccess => 'ストリークフリーズを購入しました！❄️';
 
   @override
-  String get insufficientPower => 'パワーが不足しています 💪';
+  String get insufficientPower => 'パワーが不足しています💪';
 
   @override
   String get weeklyReportTitle => '📊 週間レポート';
@@ -916,20 +919,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nextGoal => '次の目標';
 
   @override
-  String levelAchievement(Object level) {
-    return 'レベル $level 達成';
+  String levelAchievement(int level) {
+    return 'レベル$level達成';
   }
 
   @override
-  String leaguePromotion(Object league) {
-    return '$leagueリーグ昇格';
+  String leaguePromotion(String league) {
+    return '$leagueリーグ';
   }
 
   @override
-  String get encouragingMessage => 'よくやってます！';
+  String get encouragingMessage => 'よくやっています！';
 
   @override
-  String get encouragingDesc => '継続的にワークアウトすれば目標を達成できます';
+  String get encouragingDesc => '継続的なワークアウトで目標を達成できます';
 
   @override
   String get set => 'セット';
@@ -959,7 +962,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editWorkout => 'ワークアウトを編集';
 
   @override
-  String get addWorkout => '운동 추가';
+  String get addWorkout => 'ワークアウトを追加';
 
   @override
   String get minOneSetRequired => '最低1セット必要です';
@@ -968,4 +971,30 @@ class AppLocalizationsJa extends AppLocalizations {
   String addExercises(int count) {
     return '$count個の運動を追加';
   }
+
+  @override
+  String get comingSoonMessage => '準備中です！';
+
+  @override
+  String owned(int count) {
+    return '所有: $count';
+  }
+
+  @override
+  String get xpEarned => 'XP獲得';
+
+  @override
+  String get powerEarned => 'パワー獲得';
+
+  @override
+  String get totalRecords => '総記録';
+
+  @override
+  String get totalXp => '総XP';
+
+  @override
+  String get currentLevel => '現在のレベル';
+
+  @override
+  String get currentPower => '現在のパワー';
 }

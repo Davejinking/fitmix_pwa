@@ -544,6 +544,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get memo => 'Memo';
 
   @override
+  String get recentRecord => 'Recent Record';
+
+  @override
   String get dayUnit => 'days';
 
   @override
@@ -659,7 +662,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get threeMinutes => '3 min';
 
   @override
-  String xpRemaining(Object xp) {
+  String xpRemaining(int xp) {
     return '$xp XP left';
   }
 
@@ -862,7 +865,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get powerShop => 'Power Shop';
 
   @override
-  String get items => '🛉 Items';
+  String get items => 'Items';
 
   @override
   String get streakFreeze => 'Streak Freeze';
@@ -871,13 +874,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get streakFreezeDesc => 'Keep your streak even if you take a day off';
 
   @override
-  String get weeklyReport => '📊 Weekly Workout Report';
+  String get weeklyReport => 'Weekly Workout Report';
 
   @override
   String get weeklyReportDesc => 'This week workout analysis report';
 
   @override
-  String get customization => '🎨 Customization (Coming Soon)';
+  String get customization => 'Customization';
 
   @override
   String get darkPurpleTheme => 'Dark Purple Theme';
@@ -892,7 +895,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orangeTheme => 'Burning Orange Theme';
 
   @override
-  String get specialBadges => '🏅 Special Badges (Coming Soon)';
+  String get specialBadges => 'Special Badges';
 
   @override
   String get lightningBadge => 'Lightning Badge';
@@ -901,7 +904,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get specialBadgeDesc => 'Special badge displayed on profile';
 
   @override
-  String get comingSoon => 'Coming soon!';
+  String get comingSoon => 'Coming Soon';
 
   @override
   String get streakFreezeSuccess => 'Streak Freeze purchased! ❄️';
@@ -922,13 +925,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextGoal => 'Next Goal';
 
   @override
-  String levelAchievement(Object level) {
-    return 'Level $level Achieved';
+  String levelAchievement(int level) {
+    return 'Level $level Achievement';
   }
 
   @override
-  String leaguePromotion(Object league) {
-    return '$league League Promotion';
+  String leaguePromotion(String league) {
+    return '$league League';
   }
 
   @override
@@ -968,7 +971,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editWorkout => 'Edit Workout';
 
   @override
-  String get addWorkout => '운동 추가';
+  String get addWorkout => 'Add Workout';
 
   @override
   String get minOneSetRequired => 'At least 1 set required';
@@ -977,4 +980,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String addExercises(int count) {
     return 'Add $count exercises';
   }
+
+  @override
+  String get comingSoonMessage => 'Coming soon!';
+
+  @override
+  String owned(int count) {
+    return 'Owned: $count';
+  }
+
+  @override
+  String get xpEarned => 'XP Earned';
+
+  @override
+  String get powerEarned => 'Power Earned';
+
+  @override
+  String get totalRecords => 'Total Records';
+
+  @override
+  String get totalXp => 'Total XP';
+
+  @override
+  String get currentLevel => 'Current Level';
+
+  @override
+  String get currentPower => 'Current Power';
 }

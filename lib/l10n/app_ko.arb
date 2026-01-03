@@ -163,6 +163,7 @@
   "tempo": "템포",
   "tempoStart": "템포 시작 ({eccentric}/{concentric}s)",
   "memo": "메모",
+  "recentRecord": "최근 기록",
   "dayUnit": "일",
   "timesUnit": "회",
   "validWorkoutDaysGoal": "올바른 운동일수 목표를 입력하세요.",
@@ -311,5 +312,70 @@
         "example": "3"
       }
     }
-  }
+  },
+  "powerShop": "파워 상점",
+  "items": "아이템",
+  "streakFreeze": "스트릭 프리즈",
+  "streakFreezeDesc": "하루 쉬어도 스트릭 유지",
+  "weeklyReport": "주간 운동 리포트",
+  "weeklyReportDesc": "이번 주 운동 분석 리포트",
+  "customization": "커스터마이징",
+  "comingSoon": "준비 중",
+  "darkPurpleTheme": "다크 퍼플 테마",
+  "purplePointTheme": "보라색 포인트 테마",
+  "fireTheme": "파이어 테마",
+  "orangeTheme": "불타는 오렌지 테마",
+  "specialBadges": "특별 뱃지",
+  "lightningBadge": "번개 뱃지",
+  "specialBadgeDesc": "프로필에 표시되는 특별 뱃지",
+  "streakFreezeSuccess": "스트릭 프리즈 구매 완료! ❄️",
+  "insufficientPower": "파워가 부족해요 💪",
+  "comingSoonMessage": "준비 중이에요!",
+  "owned": "보유: {count}",
+  "@owned": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "weeklyReportTitle": "📊 주간 리포트",
+  "leaguePromotion": "{league} 리그",
+  "@leaguePromotion": {
+    "placeholders": {
+      "league": {
+        "type": "String",
+        "example": "골드"
+      }
+    }
+  },
+  "thisWeekPerformance": "이번 주 성과",
+  "xpEarned": "XP 획득",
+  "powerEarned": "파워 획득",
+  "totalRecords": "전체 기록",
+  "totalXp": "총 XP",
+  "currentLevel": "현재 레벨",
+  "currentPower": "보유 파워",
+  "nextGoal": "다음 목표",
+  "levelAchievement": "Level {level} 달성",
+  "@levelAchievement": {
+    "placeholders": {
+      "level": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "xpRemaining": "{xp} XP 남음",
+  "@xpRemaining": {
+    "placeholders": {
+      "xp": {
+        "type": "int",
+        "example": "150"
+      }
+    }
+  },
+  "encouragingMessage": "잘하고 있어요!",
+  "encouragingDesc": "꾸준히 운동하면 목표를 달성할 수 있어요"
 }

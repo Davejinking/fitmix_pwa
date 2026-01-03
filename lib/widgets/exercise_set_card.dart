@@ -93,7 +93,7 @@ class _ExerciseSetCardState extends State<ExerciseSetCard> {
             children: [
               Expanded(
                 child: Text(
-                  '총 볼륨 ${widget.totalVolume}',
+                  AppLocalizations.of(context).totalVolumeShort(widget.totalVolume.replaceAll('kg', '')),
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 14,
@@ -107,7 +107,7 @@ class _ExerciseSetCardState extends State<ExerciseSetCard> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '최근 기록',
+                  AppLocalizations.of(context).recentRecord,
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 12,

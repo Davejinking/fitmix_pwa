@@ -39,7 +39,7 @@ class _UserInfoFormPageState extends State<UserInfoFormPage> {
 
   Future<void> _loadUserProfile() async {
     final profile = await widget.userRepo.getUserProfile();
-    if (profile != null) {
+    if (profile != null && mounted) {
       final locale = Localizations.localeOf(context).languageCode;
       setState(() {
         _weight = profile.weight;

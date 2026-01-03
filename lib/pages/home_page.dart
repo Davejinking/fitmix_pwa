@@ -14,6 +14,7 @@ import '../models/session.dart';
 import './settings_page.dart';
 import './notifications_page.dart';
 import './achievements_page.dart';
+import './upgrade_page.dart';
 import './power_shop_page.dart';
 import '../services/achievement_service.dart';
 import '../models/achievement.dart';
@@ -118,6 +119,24 @@ class _HeaderComponentState extends State<_HeaderComponent> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const NotificationsPage(),
+                ),
+              );
+            },
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+          ),
+          const SizedBox(width: 4),
+          // 업그레이드 아이콘
+          IconButton(
+            icon: const Icon(
+              Icons.star_outline,
+              size: 24,
+              color: Colors.amber,
+            ),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const UpgradePage(),
                 ),
               );
             },

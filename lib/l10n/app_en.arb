@@ -163,6 +163,7 @@
   "tempo": "Tempo",
   "tempoStart": "Start Tempo ({eccentric}/{concentric}s)",
   "memo": "Memo",
+  "recentRecord": "Recent Record",
   "dayUnit": "days",
   "timesUnit": "times",
   "validWorkoutDaysGoal": "Please enter a valid workout days goal.",
@@ -301,6 +302,7 @@
   "planWorkoutDesc": "Tap the \"Plan Workout\" button below\nto add exercises",
   "cancelRestDay": "Cancel Rest Day",
   "editWorkout": "Edit Workout",
+  "addWorkout": "Add Workout",
   "minOneSetRequired": "At least 1 set required",
   "addExercises": "Add {count} exercises",
   "@addExercises": {
@@ -310,5 +312,70 @@
         "example": "3"
       }
     }
-  }
+  },
+  "powerShop": "Power Shop",
+  "items": "Items",
+  "streakFreeze": "Streak Freeze",
+  "streakFreezeDesc": "Keep your streak even if you take a day off",
+  "weeklyReport": "Weekly Workout Report",
+  "weeklyReportDesc": "This week workout analysis report",
+  "customization": "Customization",
+  "comingSoon": "Coming Soon",
+  "darkPurpleTheme": "Dark Purple Theme",
+  "purplePointTheme": "Purple Point Theme",
+  "fireTheme": "Fire Theme",
+  "orangeTheme": "Burning Orange Theme",
+  "specialBadges": "Special Badges",
+  "lightningBadge": "Lightning Badge",
+  "specialBadgeDesc": "Special badge displayed on profile",
+  "streakFreezeSuccess": "Streak Freeze purchased! ❄️",
+  "insufficientPower": "Insufficient Power 💪",
+  "comingSoonMessage": "Coming soon!",
+  "owned": "Owned: {count}",
+  "@owned": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "weeklyReportTitle": "📊 Weekly Report",
+  "leaguePromotion": "{league} League",
+  "@leaguePromotion": {
+    "placeholders": {
+      "league": {
+        "type": "String",
+        "example": "Gold"
+      }
+    }
+  },
+  "thisWeekPerformance": "This Week Performance",
+  "xpEarned": "XP Earned",
+  "powerEarned": "Power Earned",
+  "totalRecords": "Total Records",
+  "totalXp": "Total XP",
+  "currentLevel": "Current Level",
+  "currentPower": "Current Power",
+  "nextGoal": "Next Goal",
+  "levelAchievement": "Level {level} Achievement",
+  "@levelAchievement": {
+    "placeholders": {
+      "level": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "xpRemaining": "{xp} XP left",
+  "@xpRemaining": {
+    "placeholders": {
+      "xp": {
+        "type": "int",
+        "example": "150"
+      }
+    }
+  },
+  "encouragingMessage": "You're doing great!",
+  "encouragingDesc": "You can achieve your goals with consistent workouts"
 }

@@ -540,6 +540,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get memo => '메모';
 
   @override
+  String get recentRecord => '최근 기록';
+
+  @override
   String get dayUnit => '일';
 
   @override
@@ -654,7 +657,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get threeMinutes => '3분';
 
   @override
-  String xpRemaining(Object xp) {
+  String xpRemaining(int xp) {
     return '$xp XP 남음';
   }
 
@@ -856,7 +859,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get powerShop => '파워 상점';
 
   @override
-  String get items => '🛉 아이템';
+  String get items => '아이템';
 
   @override
   String get streakFreeze => '스트릭 프리즈';
@@ -865,13 +868,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get streakFreezeDesc => '하루 쉬어도 스트릭 유지';
 
   @override
-  String get weeklyReport => '�� 주간 운동 리포트';
+  String get weeklyReport => '주간 운동 리포트';
 
   @override
   String get weeklyReportDesc => '이번 주 운동 분석 리포트';
 
   @override
-  String get customization => '🎨 커스터마이징 (준비 중)';
+  String get customization => '커스터마이징';
 
   @override
   String get darkPurpleTheme => '다크 퍼플 테마';
@@ -886,7 +889,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get orangeTheme => '불타는 오렌지 테마';
 
   @override
-  String get specialBadges => '🏅 특별 뱃지 (준비 중)';
+  String get specialBadges => '특별 뱃지';
 
   @override
   String get lightningBadge => '번개 뱃지';
@@ -895,7 +898,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get specialBadgeDesc => '프로필에 표시되는 특별 뱃지';
 
   @override
-  String get comingSoon => '준비 중이에요!';
+  String get comingSoon => '준비 중';
 
   @override
   String get streakFreezeSuccess => '스트릭 프리즈 구매 완료! ❄️';
@@ -916,13 +919,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nextGoal => '다음 목표';
 
   @override
-  String levelAchievement(Object level) {
+  String levelAchievement(int level) {
     return 'Level $level 달성';
   }
 
   @override
-  String leaguePromotion(Object league) {
-    return '$league 리그 승급';
+  String leaguePromotion(String league) {
+    return '$league 리그';
   }
 
   @override
@@ -968,4 +971,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String addExercises(int count) {
     return '$count개 운동 추가';
   }
+
+  @override
+  String get comingSoonMessage => '준비 중이에요!';
+
+  @override
+  String owned(int count) {
+    return '보유: $count';
+  }
+
+  @override
+  String get xpEarned => 'XP 획득';
+
+  @override
+  String get powerEarned => '파워 획득';
+
+  @override
+  String get totalRecords => '전체 기록';
+
+  @override
+  String get totalXp => '총 XP';
+
+  @override
+  String get currentLevel => '현재 레벨';
+
+  @override
+  String get currentPower => '보유 파워';
 }

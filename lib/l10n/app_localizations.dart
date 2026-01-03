@@ -1078,6 +1078,12 @@ abstract class AppLocalizations {
   /// **'메모'**
   String get memo;
 
+  /// No description provided for @recentRecord.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 기록'**
+  String get recentRecord;
+
   /// No description provided for @dayUnit.
   ///
   /// In ko, this message translates to:
@@ -1285,7 +1291,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{xp} XP 남음'**
-  String xpRemaining(Object xp);
+  String xpRemaining(int xp);
 
   /// No description provided for @achievement.
   ///
@@ -1668,7 +1674,7 @@ abstract class AppLocalizations {
   /// No description provided for @items.
   ///
   /// In ko, this message translates to:
-  /// **'🛉 아이템'**
+  /// **'아이템'**
   String get items;
 
   /// No description provided for @streakFreeze.
@@ -1686,7 +1692,7 @@ abstract class AppLocalizations {
   /// No description provided for @weeklyReport.
   ///
   /// In ko, this message translates to:
-  /// **'�� 주간 운동 리포트'**
+  /// **'주간 운동 리포트'**
   String get weeklyReport;
 
   /// No description provided for @weeklyReportDesc.
@@ -1698,7 +1704,7 @@ abstract class AppLocalizations {
   /// No description provided for @customization.
   ///
   /// In ko, this message translates to:
-  /// **'🎨 커스터마이징 (준비 중)'**
+  /// **'커스터마이징'**
   String get customization;
 
   /// No description provided for @darkPurpleTheme.
@@ -1728,7 +1734,7 @@ abstract class AppLocalizations {
   /// No description provided for @specialBadges.
   ///
   /// In ko, this message translates to:
-  /// **'🏅 특별 뱃지 (준비 중)'**
+  /// **'특별 뱃지'**
   String get specialBadges;
 
   /// No description provided for @lightningBadge.
@@ -1746,7 +1752,7 @@ abstract class AppLocalizations {
   /// No description provided for @comingSoon.
   ///
   /// In ko, this message translates to:
-  /// **'준비 중이에요!'**
+  /// **'준비 중'**
   String get comingSoon;
 
   /// No description provided for @streakFreezeSuccess.
@@ -1789,13 +1795,13 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'Level {level} 달성'**
-  String levelAchievement(Object level);
+  String levelAchievement(int level);
 
   /// No description provided for @leaguePromotion.
   ///
   /// In ko, this message translates to:
-  /// **'{league} 리그 승급'**
-  String leaguePromotion(Object league);
+  /// **'{league} 리그'**
+  String leaguePromotion(String league);
 
   /// No description provided for @encouragingMessage.
   ///
@@ -1880,6 +1886,54 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{count}개 운동 추가'**
   String addExercises(int count);
+
+  /// No description provided for @comingSoonMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'준비 중이에요!'**
+  String get comingSoonMessage;
+
+  /// No description provided for @owned.
+  ///
+  /// In ko, this message translates to:
+  /// **'보유: {count}'**
+  String owned(int count);
+
+  /// No description provided for @xpEarned.
+  ///
+  /// In ko, this message translates to:
+  /// **'XP 획득'**
+  String get xpEarned;
+
+  /// No description provided for @powerEarned.
+  ///
+  /// In ko, this message translates to:
+  /// **'파워 획득'**
+  String get powerEarned;
+
+  /// No description provided for @totalRecords.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 기록'**
+  String get totalRecords;
+
+  /// No description provided for @totalXp.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 XP'**
+  String get totalXp;
+
+  /// No description provided for @currentLevel.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 레벨'**
+  String get currentLevel;
+
+  /// No description provided for @currentPower.
+  ///
+  /// In ko, this message translates to:
+  /// **'보유 파워'**
+  String get currentPower;
 }
 
 class _AppLocalizationsDelegate
