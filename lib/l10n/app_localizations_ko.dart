@@ -238,6 +238,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get saved => '저장되었습니다.';
 
   @override
+  String get restDaySet => '휴식일로 설정되었습니다.';
+
+  @override
+  String get restDayUnset => '휴식일 설정이 해제되었습니다.';
+
+  @override
   String get saveFailed => '저장에 실패했습니다.';
 
   @override
@@ -518,6 +524,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get workoutCompleted => '운동이 완료되었습니다! 🎉';
+
+  @override
+  String get editCompleted => '편집이 완료되었습니다.';
+
+  @override
+  String get workoutCompletedTitle => '운동 완료';
+
+  @override
+  String get incompleteSetWarning => '일부 세트가 완료되지 않았습니다.\n그래도 운동을 완료하시겠습니까?';
 
   @override
   String get cancelTimer => '타이머 취소';
@@ -963,6 +978,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get addWorkout => '운동 추가';
+
+  @override
+  String get editComplete => '편집 완료';
 
   @override
   String get minOneSetRequired => '최소 1개의 세트가 필요합니다';

@@ -238,6 +238,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get saved => '保存しました。';
 
   @override
+  String get restDaySet => '休息日に設定されました。';
+
+  @override
+  String get restDayUnset => '休息日設定が解除されました。';
+
+  @override
   String get saveFailed => '保存に失敗しました。';
 
   @override
@@ -518,6 +524,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get workoutCompleted => 'ワークアウト完了！🎉';
+
+  @override
+  String get editCompleted => '編集が完了しました。';
+
+  @override
+  String get workoutCompletedTitle => 'ワークアウト完了';
+
+  @override
+  String get incompleteSetWarning => '一部のセットが完了していません。\nそれでもワークアウトを完了しますか？';
 
   @override
   String get cancelTimer => 'タイマーキャンセル';
@@ -963,6 +978,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get addWorkout => 'ワークアウトを追加';
+
+  @override
+  String get editComplete => '編集完了';
 
   @override
   String get minOneSetRequired => '最低1セット必要です';

@@ -514,6 +514,18 @@ abstract class AppLocalizations {
   /// **'저장되었습니다.'**
   String get saved;
 
+  /// No description provided for @restDaySet.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식일로 설정되었습니다.'**
+  String get restDaySet;
+
+  /// No description provided for @restDayUnset.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식일 설정이 해제되었습니다.'**
+  String get restDayUnset;
+
   /// No description provided for @saveFailed.
   ///
   /// In ko, this message translates to:
@@ -1041,6 +1053,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'운동이 완료되었습니다! 🎉'**
   String get workoutCompleted;
+
+  /// No description provided for @editCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'편집이 완료되었습니다.'**
+  String get editCompleted;
+
+  /// No description provided for @workoutCompletedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 완료'**
+  String get workoutCompletedTitle;
+
+  /// No description provided for @incompleteSetWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'일부 세트가 완료되지 않았습니다.\n그래도 운동을 완료하시겠습니까?'**
+  String get incompleteSetWarning;
 
   /// No description provided for @cancelTimer.
   ///
@@ -1874,6 +1904,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'운동 추가'**
   String get addWorkout;
+
+  /// No description provided for @editComplete.
+  ///
+  /// In ko, this message translates to:
+  /// **'편집 완료'**
+  String get editComplete;
 
   /// No description provided for @minOneSetRequired.
   ///

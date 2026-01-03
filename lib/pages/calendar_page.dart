@@ -5,6 +5,7 @@ import '../data/session_repo.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
 import '../models/exercise_set.dart';
+import '../models/exercise_db.dart';
 import '../widgets/calendar/month_header.dart';
 import '../widgets/calendar/week_strip.dart';
 import '../core/error_handler.dart';
@@ -686,9 +687,20 @@ class _ExerciseCardState extends State<_ExerciseCard> {
     super.dispose();
   }
 
+  // 부위 이름 번역 헬퍼
+  String _getLocalizedBodyPart(String bodyPart, String locale) {
+    return ExerciseDB.getBodyPartLocalized(bodyPart, locale);
+  }
+
+  // 운동 이름 번역 헬퍼
+  String _getLocalizedExerciseName(String name, String locale) {
+    return ExerciseDB.getExerciseNameLocalized(name, locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final totalVolume = widget.exercise.sets.fold<double>(
       0,
       (sum, set) => sum + (set.weight * set.reps),
@@ -736,14 +748,14 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                                 ),
                               ),
                               TextSpan(
-                                text: '${widget.exercise.bodyPart} | ',
+                                text: '${_getLocalizedBodyPart(widget.exercise.bodyPart, locale)} | ',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[500],
                                 ),
                               ),
                               TextSpan(
-                                text: widget.exercise.name,
+                                text: _getLocalizedExerciseName(widget.exercise.name, locale),
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -792,7 +804,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     Row(
                       children: [
                         Text(
-                          '총 볼륨 ${totalVolume.toStringAsFixed(0)}kg',
+                          AppLocalizations.of(context).totalVolumeShort(totalVolume.toStringAsFixed(0)),
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.grey[500],
@@ -806,7 +818,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            '최근 기록',
+                            AppLocalizations.of(context).recentRecord,
                             style: TextStyle(
                               fontSize: 10,
                               color: Colors.grey[400],
@@ -835,7 +847,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     controller: _memoController,
                     style: const TextStyle(color: Colors.white, fontSize: 13),
                     decoration: InputDecoration(
-                      hintText: '메모',
+                      hintText: AppLocalizations.of(context).memo,
                       hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
@@ -878,7 +890,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          '회',
+                          AppLocalizations.of(context).repsUnit,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 11,
@@ -890,7 +902,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       Expanded(
                         flex: 2,
                         child: Text(
-                          '완료',
+                          AppLocalizations.of(context).completeLabel,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 11,
@@ -1085,7 +1097,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
             flex: 3,
             child: _buildStackInput(
               controller: _repsController,
-              label: '회',
+              label: AppLocalizations.of(context).repsUnit,
               keyboardType: TextInputType.number,
             ),
           ),

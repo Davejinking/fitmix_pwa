@@ -240,6 +240,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Saved.';
 
   @override
+  String get restDaySet => 'Set as rest day.';
+
+  @override
+  String get restDayUnset => 'Rest day setting has been removed.';
+
+  @override
   String get saveFailed => 'Failed to save.';
 
   @override
@@ -522,6 +528,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutCompleted => 'Workout completed! 🎉';
+
+  @override
+  String get editCompleted => 'Edit completed.';
+
+  @override
+  String get workoutCompletedTitle => 'Workout Complete';
+
+  @override
+  String get incompleteSetWarning =>
+      'Some sets are not completed.\nDo you still want to complete the workout?';
 
   @override
   String get cancelTimer => 'Cancel Timer';
@@ -972,6 +988,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addWorkout => 'Add Workout';
+
+  @override
+  String get editComplete => 'Edit Complete';
 
   @override
   String get minOneSetRequired => 'At least 1 set required';

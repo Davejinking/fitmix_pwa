@@ -118,7 +118,7 @@ class _PlanPageState extends State<PlanPage> {
       try {
         await widget.repo.put(_currentSession!);
         if (mounted) {
-          ErrorHandler.showSuccessSnackBar(context, '저장되었습니다.');
+          ErrorHandler.showSuccessSnackBar(context, context.l10n.saved);
         }
       } catch (e) {
         if (mounted) {
@@ -159,7 +159,7 @@ class _PlanPageState extends State<PlanPage> {
       await _loadSession(); // Reload session to reflect changes
       if (mounted) {
         ErrorHandler.showSuccessSnackBar(
-            context, isRest ? '휴식일로 설정되었습니다.' : '휴식일 설정이 해제되었습니다.');
+            context, isRest ? context.l10n.restDaySet : context.l10n.restDayUnset);
       }
     } catch (e) {
       if (mounted) ErrorHandler.showErrorSnackBar(context, '오류 발생: $e');
@@ -665,8 +665,8 @@ class _PlanPageState extends State<PlanPage> {
                   ),
                   label: Text(
                     widget.isViewOnly 
-                      ? (_isEditingMode ? '편집 완료' : '운동 편집')
-                      : '운동 시작',
+                      ? (_isEditingMode ? context.l10n.editComplete : context.l10n.editWorkout)
+                      : context.l10n.startWorkout,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -745,13 +745,13 @@ class _PlanPageState extends State<PlanPage> {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text(
-            '운동 완료',
-            style: TextStyle(color: Colors.white),
+          title: Text(
+            context.l10n.workoutCompletedTitle,
+            style: const TextStyle(color: Colors.white),
           ),
-          content: const Text(
-            '일부 세트가 완료되지 않았습니다.\n그래도 운동을 완료하시겠습니까?',
-            style: TextStyle(color: Colors.white70),
+          content: Text(
+            context.l10n.incompleteSetWarning,
+            style: const TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
@@ -783,7 +783,7 @@ class _PlanPageState extends State<PlanPage> {
     });
     _saveSession();
     HapticFeedback.heavyImpact();
-    ErrorHandler.showSuccessSnackBar(context, '운동이 완료되었습니다! 🎉');
+    ErrorHandler.showSuccessSnackBar(context, context.l10n.workoutCompleted);
   }
 
   void _finishEditingWorkout() {
@@ -793,7 +793,7 @@ class _PlanPageState extends State<PlanPage> {
       _isEditingMode = false;
     });
     HapticFeedback.mediumImpact();
-    ErrorHandler.showSuccessSnackBar(context, '편집이 완료되었습니다.');
+    ErrorHandler.showSuccessSnackBar(context, context.l10n.editCompleted);
     Navigator.of(context).pop();
   }
 
@@ -1107,9 +1107,9 @@ class _PlanPageState extends State<PlanPage> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "운동 완료",
-                    style: TextStyle(
+                  child: Text(
+                    context.l10n.endWorkout,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -1481,7 +1481,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
           Expanded(
             flex: 3,
             child: Text(
-              '회',
+              context.l10n.repsUnit,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
@@ -1493,7 +1493,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
           Expanded(
             flex: 2,
             child: Text(
-              '완료',
+              context.l10n.completeLabel,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
@@ -1760,7 +1760,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
             flex: 3,
             child: _buildStackInput(
               controller: _repsController,
-              label: '회',
+              label: context.l10n.repsUnit,
               keyboardType: TextInputType.number,
               isEnabled: widget.isEditingEnabled,
             ),
@@ -1957,7 +1957,7 @@ class _SetRowState extends State<SetRow> {
           Expanded(
             child: _buildLargeInputBox(
               controller: _repsController,
-              label: '회',
+              label: context.l10n.repsUnit,
               keyboardType: TextInputType.number,
             ),
           ),
