@@ -6,15 +6,22 @@ import '../data/exercise_library_repo.dart';
 import 'exercise_detail_page.dart';
 
 class LibraryPageV2 extends StatefulWidget {
-  const LibraryPageV2({super.key});
+  final ExerciseDBService? service;
+  final ExerciseLibraryRepo? customRepo;
+
+  const LibraryPageV2({
+    super.key,
+    this.service,
+    this.customRepo,
+  });
 
   @override
   State<LibraryPageV2> createState() => _LibraryPageV2State();
 }
 
 class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProviderStateMixin {
-  final ExerciseDBService _service = ExerciseDBService();
-  final ExerciseLibraryRepo _customRepo = HiveExerciseLibraryRepo();
+  late final ExerciseDBService _service;
+  late final ExerciseLibraryRepo _customRepo;
   late TabController _tabController;
   
   // 메인 탭 키 (i18n용)
@@ -83,6 +90,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
+    _service = widget.service ?? ExerciseDBService();
+    _customRepo = widget.customRepo ?? HiveExerciseLibraryRepo();
     _tabController = TabController(length: _mainTabKeys.length, vsync: this);
     _tabController.addListener(_onTabChanged);
     _initRepo();
