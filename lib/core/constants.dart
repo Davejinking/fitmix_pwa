@@ -76,16 +76,9 @@ class AppConstants {
     '유산소'
   ];
   
-  // 기본 운동 라이브러리
-  static const Map<String, List<String>> defaultExerciseLibrary = {
-    '가슴': ['벤치프레스', '인클라인 덤벨프레스', '체스트 프레스'],
-    '등': ['랫풀다운', '바벨 로우', '시티드 로우'],
-    '어깨': ['사이드 레터럴', '숄더 프레스', '리어 델트 플라이'],
-    '팔': ['바벨 컬', '케이블 푸시다운', '해머 컬'],
-    '하체': ['스쿼트', '레그 프레스', '레그 컬'],
-    '복근': ['크런치', '행잉 레그레이즈', '케이블 크런치'],
-    '유산소': ['싸이클', '런닝머신', '로잉'],
-  };
+  // 기본 운동 라이브러리 - 더 이상 사용하지 않음 (ExerciseSeedingService로 대체)
+  // 레거시 호환성을 위해 빈 맵 유지
+  static const Map<String, List<String>> defaultExerciseLibrary = {};
   
   // 목표 관련
   static const Map<String, int> defaultGoals = {

@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import '../core/constants.dart';
+import '../services/exercise_seeding_service.dart';
+import '../models/exercise_library.dart';
 
 /// 운동 라이브러리 데이터 저장소 인터페이스
 abstract class ExerciseLibraryRepo {
@@ -14,6 +15,7 @@ abstract class ExerciseLibraryRepo {
 class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
   static const String boxName = 'exercise_library';
   late Box _box;
+  final ExerciseSeedingService _seedingService = ExerciseSeedingService();
 
   @override
   Future<void> init() async {
@@ -30,32 +32,41 @@ class HiveExerciseLibraryRepo implements ExerciseLibraryRepo {
       _box = await Hive.openBox(boxName);
     }
 
-    // 박스가 비어있으면 기본값으로 채움
-    if (_box.isEmpty) {
-      await _populateWithDefaults();
-    }
-  }
-
-  Future<void> _populateWithDefaults() async {
-    for (final entry in AppConstants.defaultExerciseLibrary.entries) {
-      await _box.put(entry.key, entry.value);
-    }
+    // 새로운 시딩 서비스로 운동 데이터 초기화
+    await _seedingService.initializeAndSeed();
   }
 
   @override
   Future<Map<String, List<String>>> getLibrary() async {
+    // 새로운 시딩 서비스에서 운동 데이터 가져오기
+    final exercises = await _seedingService.getAllExercises();
     final map = <String, List<String>>{};
-    for (var key in _box.keys) {
-      try {
-        final value = _box.get(key);
-        if (value != null && value is List) {
-          map[key as String] = List<String>.from(value.map((e) => e.toString()));
-        }
-      } catch (e) {
-        // 에러 무시
+    
+    // 부위별로 그룹화
+    for (final exercise in exercises) {
+      final bodyPart = _getLocalizedBodyPart(exercise.targetPart);
+      if (!map.containsKey(bodyPart)) {
+        map[bodyPart] = [];
       }
+      map[bodyPart]!.add(exercise.nameKr); // 기본적으로 한국어 이름 사용
     }
+    
     return map;
+  }
+  
+  String _getLocalizedBodyPart(String targetPart) {
+    switch (targetPart.toLowerCase()) {
+      case 'chest': return '가슴';
+      case 'back': return '등';
+      case 'legs': return '하체';
+      case 'shoulders': return '어깨';
+      case 'arms': return '팔';
+      case 'abs': return '복근';
+      case 'cardio': return '유산소';
+      case 'stretching': return '스트레칭';
+      case 'fullbody': return '전신';
+      default: return targetPart;
+    }
   }
 
   @override
