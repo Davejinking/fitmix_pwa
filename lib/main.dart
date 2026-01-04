@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/constants.dart';
 import 'data/session_repo.dart';
@@ -15,11 +16,16 @@ import 'pages/splash_page.dart';
 import 'pages/library_page_v2.dart';
 import 'utils/dummy_data_generator.dart';
 import 'models/session.dart';
+import 'models/exercise_library.dart';
+import 'services/exercise_seeding_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
-  // 시스템 언어에 따라 자동 설정됨
+  
+  // Hive 초기화 및 어댑터 등록
+  await Hive.initFlutter();
+  Hive.registerAdapter(ExerciseLibraryItemAdapter());
 
   final sessionRepo = HiveSessionRepo();
   await sessionRepo.init();
@@ -34,6 +40,18 @@ Future<void> main() async {
   await settingsRepo.init();
 
   final authRepo = GoogleAuthRepo();
+
+  // 🏋️ Iron Log 운동 라이브러리 시딩
+  try {
+    final seedingService = ExerciseSeedingService();
+    await seedingService.initializeAndSeed();
+    
+    // 시딩 통계 출력
+    final stats = await seedingService.getStatistics();
+    print('📊 Iron Log 운동 라이브러리: ${stats['total']}개 운동 로드 완료');
+  } catch (e) {
+    print('❌ 운동 라이브러리 시딩 실패: $e');
+  }
 
   // 디버그 모드에서만 더미 데이터 생성
   if (kDebugMode) {
