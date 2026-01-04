@@ -11,7 +11,7 @@ import '../widgets/workout/exercise_card.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
-import 'exercise_selection_page.dart';
+import 'exercise_selection_page_v2.dart';
 
 /// 운동 중 전체 화면 모달 (탭바 숨김, 집중 모드)
 class ActiveWorkoutPage extends StatefulWidget {
@@ -333,7 +333,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final result = await Navigator.push<List<Exercise>>(
       context,
       MaterialPageRoute(
-        builder: (context) => ExerciseSelectionPage(exerciseRepo: widget.exerciseRepo),
+        builder: (context) => const ExerciseSelectionPageV2(),
       ),
     );
     
