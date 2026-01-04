@@ -4,99 +4,120 @@ import '../models/exercise_library.dart';
 import '../services/exercise_seeding_service.dart';
 import '../l10n/app_localizations.dart';
 
-/// Iron Log 다국어 지원 운동 선택 페이지
 class ExerciseSelectionPageV2 extends StatefulWidget {
   const ExerciseSelectionPageV2({super.key});
-
   @override
   State<ExerciseSelectionPageV2> createState() => _ExerciseSelectionPageV2State();
 }
 
-class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> {
-  final List<Exercise> _selectedExercises = [];
+class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> with SingleTickerProviderStateMixin {
+  final ExerciseSeedingService _seedingService = ExerciseSeedingService();
+  late TabController _tabController;
+  final List<String> _mainTabKeys = ['favorites', 'chest', 'back', 'legs', 'shoulders', 'arms', 'abs', 'cardio', 'stretching', 'fullBody'];
+  final List<String> _equipmentFilterKeys = ['all', 'bodyweight', 'machine', 'barbell', 'dumbbell', 'cable', 'band'];
+  String _selectedEquipmentKey = 'all';
   List<ExerciseLibraryItem> _allExercises = [];
   List<ExerciseLibraryItem> _filteredExercises = [];
-  bool _isLoading = true;
+  final List<Exercise> _selectedExercises = [];
+  final Set<String> _bookmarkedIds = {};
+  bool _isLoading = false;
+  String? _error;
   String _searchQuery = '';
-  String _selectedBodyPart = 'all';
-  String _selectedEquipment = 'all';
-
-  late ExerciseSeedingService _seedingService;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _seedingService = ExerciseSeedingService();
-    _loadExercises();
+    _tabController = TabController(length: _mainTabKeys.length, vsync: this);
+    _tabController.addListener(_onTabChanged);
+    _loadAllExercises();
   }
 
-  Future<void> _loadExercises() async {
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onTabChanged() { if (_tabController.indexIsChanging) _applyFilter(); }
+
+  Future<void> _loadAllExercises() async {
+    setState(() { _isLoading = true; _error = null; });
     try {
-      setState(() => _isLoading = true);
-      
-      // 시딩 서비스에서 운동 데이터 로드
       await _seedingService.initializeAndSeed();
       final exercises = await _seedingService.getAllExercises();
-      
-      if (mounted) {
-        setState(() {
-          _allExercises = exercises;
-          _filteredExercises = exercises;
-          _isLoading = false;
-        });
+      if (mounted) { setState(() { _allExercises = exercises; _isLoading = false; }); _applyFilter(); }
+    } catch (e) { if (mounted) setState(() { _error = e.toString(); _isLoading = false; }); }
+  }
+
+  void _applyFilter() {
+    final currentTabKey = _mainTabKeys[_tabController.index];
+    setState(() {
+      if (currentTabKey == 'favorites') {
+        _filteredExercises = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
+      } else {
+        _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == currentTabKey.toLowerCase()).toList();
       }
-    } catch (e) {
-      print('❌ 운동 데이터 로드 실패: $e');
-      if (mounted) {
-        setState(() => _isLoading = false);
+      if (_selectedEquipmentKey != 'all') {
+        _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey.toLowerCase()).toList();
       }
+      if (_searchQuery.isNotEmpty) {
+        _filteredExercises = _filteredExercises.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+      }
+    });
+  }
+
+  void _toggleExercise(ExerciseLibraryItem item) {
+    final name = item.getLocalizedName(context);
+    setState(() {
+      final idx = _selectedExercises.indexWhere((e) => e.name == name);
+      if (idx >= 0) { _selectedExercises.removeAt(idx); }
+      else { _selectedExercises.add(Exercise(name: name, bodyPart: _getLocalizedBodyPart(item.targetPart))); }
+    });
+  }
+
+  bool _isSelected(ExerciseLibraryItem item) => _selectedExercises.any((e) => e.name == item.getLocalizedName(context));
+
+  void _toggleBookmark(String id) {
+    setState(() {
+      if (_bookmarkedIds.contains(id)) { _bookmarkedIds.remove(id); } else { _bookmarkedIds.add(id); }
+      if (_mainTabKeys[_tabController.index] == 'favorites') _applyFilter();
+    });
+  }
+
+  String _getTabLabel(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'favorites': return l10n.favorites;
+      case 'chest': return l10n.chest;
+      case 'back': return l10n.back;
+      case 'legs': return l10n.legs;
+      case 'shoulders': return l10n.shoulders;
+      case 'arms': return l10n.arms;
+      case 'abs': return l10n.abs;
+      case 'cardio': return l10n.cardio;
+      case 'stretching': return l10n.stretching;
+      case 'fullBody': return l10n.fullBody;
+      default: return key;
     }
   }
 
-  void _filterExercises() {
-    setState(() {
-      _filteredExercises = _allExercises.where((exercise) {
-        // 검색어 필터
-        final matchesSearch = _searchQuery.isEmpty ||
-            exercise.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase());
-        
-        // 부위 필터
-        final matchesBodyPart = _selectedBodyPart == 'all' ||
-            exercise.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase();
-        
-        // 장비 필터
-        final matchesEquipment = _selectedEquipment == 'all' ||
-            exercise.equipmentType.toLowerCase() == _selectedEquipment.toLowerCase();
-        
-        return matchesSearch && matchesBodyPart && matchesEquipment;
-      }).toList();
-    });
+  String _getEquipmentLabel(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'all': return l10n.all;
+      case 'bodyweight': return l10n.bodyweight;
+      case 'machine': return l10n.machine;
+      case 'barbell': return l10n.barbell;
+      case 'dumbbell': return l10n.dumbbell;
+      case 'cable': return l10n.cable;
+      case 'band': return l10n.band;
+      default: return key;
+    }
   }
 
-  void _toggleExercise(ExerciseLibraryItem libraryItem) {
-    setState(() {
-      final exerciseName = libraryItem.getLocalizedName(context);
-      final index = _selectedExercises.indexWhere((e) => e.name == exerciseName);
-      
-      if (index >= 0) {
-        _selectedExercises.removeAt(index);
-      } else {
-        _selectedExercises.add(Exercise(
-          name: exerciseName,
-          bodyPart: _getLocalizedBodyPart(libraryItem.targetPart),
-        ));
-      }
-    });
-  }
-
-  bool _isSelected(ExerciseLibraryItem libraryItem) {
-    final exerciseName = libraryItem.getLocalizedName(context);
-    return _selectedExercises.any((e) => e.name == exerciseName);
-  }
-
-  String _getLocalizedBodyPart(String targetPart) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (targetPart.toLowerCase()) {
+  String _getLocalizedBodyPart(String part) {
+    final l10n = AppLocalizations.of(context);
+    switch (part.toLowerCase()) {
       case 'chest': return l10n.chest;
       case 'back': return l10n.back;
       case 'legs': return l10n.legs;
@@ -106,219 +127,176 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> {
       case 'cardio': return l10n.cardio;
       case 'stretching': return l10n.stretching;
       case 'fullbody': return l10n.fullBody;
-      default: return targetPart;
+      default: return part;
     }
   }
 
-  String _getLocalizedEquipment(String equipmentType) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (equipmentType.toLowerCase()) {
+  String _getLocalizedEquipment(String eq) {
+    final l10n = AppLocalizations.of(context);
+    switch (eq.toLowerCase()) {
       case 'barbell': return l10n.barbell;
       case 'dumbbell': return l10n.dumbbell;
       case 'machine': return l10n.machine;
       case 'cable': return l10n.cable;
       case 'bodyweight': return l10n.bodyweight;
       case 'band': return l10n.band;
-      default: return equipmentType;
+      default: return eq;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(
-          l10n.selectExercise,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          if (_selectedExercises.isNotEmpty)
-            TextButton(
-              onPressed: () => Navigator.pop(context, _selectedExercises),
-              child: Text(
-                '${l10n.add} (${_selectedExercises.length})',
-                style: const TextStyle(
-                  color: Color(0xFF2196F3),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2196F3)))
-          : Column(
-              children: [
-                // 검색 및 필터 섹션
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  color: const Color(0xFF1E1E1E),
-                  child: Column(
-                    children: [
-                      // 검색바
-                      TextField(
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: l10n.searchExercise,
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                          filled: true,
-                          fillColor: const Color(0xFF2A2A2A),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          _searchQuery = value;
-                          _filterExercises();
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      // 필터 버튼들
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildFilterDropdown(
-                              value: _selectedBodyPart,
-                              items: [
-                                'all',
-                                'chest',
-                                'back',
-                                'legs',
-                                'shoulders',
-                                'arms',
-                                'abs',
-                                'cardio',
-                                'stretching',
-                                'fullbody',
-                              ],
-                              onChanged: (value) {
-                                _selectedBodyPart = value!;
-                                _filterExercises();
-                              },
-                              getLabel: (value) => value == 'all' ? l10n.all : _getLocalizedBodyPart(value),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildFilterDropdown(
-                              value: _selectedEquipment,
-                              items: [
-                                'all',
-                                'barbell',
-                                'dumbbell',
-                                'machine',
-                                'cable',
-                                'bodyweight',
-                                'band',
-                              ],
-                              onChanged: (value) {
-                                _selectedEquipment = value!;
-                                _filterExercises();
-                              },
-                              getLabel: (value) => value == 'all' ? l10n.all : _getLocalizedEquipment(value),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // 운동 목록
-                Expanded(
-                  child: _filteredExercises.isEmpty
-                      ? Center(
-                          child: Text(
-                            l10n.noExercises,
-                            style: const TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: _filteredExercises.length,
-                          itemBuilder: (context, index) {
-                            final exercise = _filteredExercises[index];
-                            final isSelected = _isSelected(exercise);
-                            
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              decoration: BoxDecoration(
-                                color: isSelected ? const Color(0xFF2196F3).withOpacity(0.1) : const Color(0xFF1E1E1E),
-                                borderRadius: BorderRadius.circular(12),
-                                border: isSelected 
-                                    ? Border.all(color: const Color(0xFF2196F3), width: 2)
-                                    : null,
-                              ),
-                              child: ListTile(
-                                title: Text(
-                                  exercise.getLocalizedName(context),
-                                  style: TextStyle(
-                                    color: isSelected ? const Color(0xFF2196F3) : Colors.white,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  '${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}',
-                                  style: const TextStyle(color: Colors.grey, fontSize: 12),
-                                ),
-                                trailing: isSelected
-                                    ? const Icon(Icons.check_circle, color: Color(0xFF2196F3))
-                                    : const Icon(Icons.add_circle_outline, color: Colors.grey),
-                                onTap: () => _toggleExercise(exercise),
-                              ),
-                            );
-                          },
-                        ),
-                ),
-              ],
-            ),
+      body: Column(children: [
+        _buildHeader(l10n),
+        _buildSearchBar(l10n),
+        _buildBodyPartTabs(l10n),
+        _buildEquipmentFilter(l10n),
+        Expanded(child: _buildExerciseList(l10n)),
+      ]),
+      bottomNavigationBar: _selectedExercises.isEmpty ? null : _buildBottomBar(l10n),
     );
   }
 
-  Widget _buildFilterDropdown({
-    required String value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-    required String Function(String) getLabel,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
-        borderRadius: BorderRadius.circular(8),
+  Widget _buildHeader(AppLocalizations l10n) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        color: const Color(0xFF121212),
+        child: Row(children: [
+          IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context)),
+          const SizedBox(width: 8),
+          Text(l10n.selectExercise, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)),
+          const Spacer(),
+          if (_selectedExercises.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(color: const Color(0xFF2196F3), borderRadius: BorderRadius.circular(16)),
+              child: Text('\${_selectedExercises.length}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
+        ]),
       ),
-      child: DropdownButton<String>(
-        value: value,
-        items: items.map((item) {
-          return DropdownMenuItem(
-            value: item,
-            child: Text(
-              getLabel(item),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+    );
+  }
+
+  Widget _buildSearchBar(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: l10n.searchExercise,
+          hintStyle: const TextStyle(color: Color(0xFF8E8E93)),
+          prefixIcon: const Icon(Icons.search, color: Color(0xFF8E8E93)),
+          suffixIcon: _searchQuery.isNotEmpty ? IconButton(icon: const Icon(Icons.clear, color: Color(0xFF8E8E93)), onPressed: () { _searchController.clear(); setState(() { _searchQuery = ''; _applyFilter(); }); }) : null,
+          filled: true,
+          fillColor: const Color(0xFF2C2C2C),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        ),
+        style: const TextStyle(color: Colors.white),
+        onChanged: (q) { setState(() { _searchQuery = q; _applyFilter(); }); },
+      ),
+    );
+  }
+
+  Widget _buildBodyPartTabs(AppLocalizations l10n) {
+    return Container(
+      color: const Color(0xFF121212),
+      child: TabBar(
+        controller: _tabController,
+        isScrollable: true,
+        labelColor: const Color(0xFF2196F3),
+        unselectedLabelColor: const Color(0xFF8E8E93),
+        indicatorColor: const Color(0xFF2196F3),
+        indicatorWeight: 3,
+        tabAlignment: TabAlignment.start,
+        tabs: _mainTabKeys.map((k) => Tab(text: _getTabLabel(l10n, k))).toList(),
+      ),
+    );
+  }
+
+  Widget _buildEquipmentFilter(AppLocalizations l10n) {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      color: const Color(0xFF121212),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _equipmentFilterKeys.length,
+        itemBuilder: (ctx, i) {
+          final k = _equipmentFilterKeys[i];
+          final sel = k == _selectedEquipmentKey;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilterChip(
+              label: Text(_getEquipmentLabel(l10n, k), style: TextStyle(color: sel ? Colors.white : const Color(0xFF8E8E93))),
+              selected: sel,
+              onSelected: (_) { setState(() { _selectedEquipmentKey = k; _applyFilter(); }); },
+              backgroundColor: Colors.transparent,
+              selectedColor: const Color(0xFF2196F3),
+              checkmarkColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: sel ? const Color(0xFF2196F3) : const Color(0xFF8E8E93))),
             ),
           );
-        }).toList(),
-        onChanged: onChanged,
-        dropdownColor: const Color(0xFF2A2A2A),
-        underline: const SizedBox(),
-        isExpanded: true,
-        style: const TextStyle(color: Colors.white),
+        },
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _seedingService.close();
-    super.dispose();
+  Widget _buildExerciseList(AppLocalizations l10n) {
+    if (_isLoading) return const Center(child: CircularProgressIndicator(color: Color(0xFF2196F3)));
+    if (_error != null) return Center(child: Text('Error: \$_error', style: const TextStyle(color: Colors.red)));
+    if (_filteredExercises.isEmpty) return Center(child: Text(l10n.noExercises, style: TextStyle(color: Colors.grey[600])));
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _filteredExercises.length,
+      itemBuilder: (ctx, i) {
+        final ex = _filteredExercises[i];
+        final sel = _isSelected(ex);
+        final bm = _bookmarkedIds.contains(ex.id);
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: sel ? const Color(0xFF2196F3).withValues(alpha: 0.1) : const Color(0xFF1E1E1E),
+            borderRadius: BorderRadius.circular(12),
+            border: sel ? Border.all(color: const Color(0xFF2196F3), width: 2) : null,
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: Container(
+              width: 50, height: 50,
+              decoration: BoxDecoration(color: const Color(0xFF2196F3).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+              child: const Icon(Icons.fitness_center, color: Color(0xFF2196F3)),
+            ),
+            title: Text(ex.getLocalizedName(context), style: TextStyle(fontWeight: FontWeight.w600, color: sel ? const Color(0xFF2196F3) : Colors.white)),
+            subtitle: Text('\${_getLocalizedBodyPart(ex.targetPart)} • \${_getLocalizedEquipment(ex.equipmentType)}', style: TextStyle(color: Colors.grey[500])),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              IconButton(icon: Icon(bm ? Icons.bookmark : Icons.bookmark_border, color: bm ? const Color(0xFF2196F3) : Colors.grey[600]), onPressed: () => _toggleBookmark(ex.id)),
+              Icon(sel ? Icons.check_circle : Icons.add_circle_outline, color: sel ? const Color(0xFF2196F3) : Colors.grey[600]),
+            ]),
+            onTap: () => _toggleExercise(ex),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomBar(AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: const Color(0xFF121212), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, -2))]),
+      child: SafeArea(
+        child: ElevatedButton(
+          onPressed: () => Navigator.pop(context, _selectedExercises),
+          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2196F3), minimumSize: const Size(double.infinity, 56), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          child: Text(l10n.addExercises(_selectedExercises.length), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white)),
+        ),
+      ),
+    );
   }
 }

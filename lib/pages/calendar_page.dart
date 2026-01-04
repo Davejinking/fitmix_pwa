@@ -617,7 +617,7 @@ class _CalendarPageState extends State<CalendarPage> {
     final selected = await Navigator.push<List<Exercise>>(
       context,
       MaterialPageRoute(
-        builder: (context) => const ExerciseSelectionPageV2(),
+        builder: (_) => ExerciseSelectionPageV2(),
       ),
     );
 
