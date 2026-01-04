@@ -37,7 +37,6 @@ void main() {
 
     // Mock session repo responses
     when(() => mockSessionRepo.get(any())).thenAnswer((_) async => Session(ymd: '2023-10-15'));
-    // Mock user repo responses if needed by Home Page
     when(() => mockUserRepo.getUserProfile()).thenAnswer((_) async => null);
   });
 
@@ -59,29 +58,28 @@ void main() {
           '/calendar': (context) => CalendarPage(
             repo: mockSessionRepo,
             exerciseRepo: mockExerciseRepo,
-          ), // Register if named route used
+          ),
         },
       ),
     );
 
-    await tester.pumpAndSettle();
+    await tester.pump(); // Initial frame
+    // await tester.pumpAndSettle(); // REMOVED to avoid timeout issues
 
     // Find "Today's Workout" card.
+    // Assuming English is default
     final todayWorkoutFinder = find.text("Today's Workout");
-
-    // If not found, try Korean just in case or verify finder
-    if (todayWorkoutFinder.evaluate().isEmpty) {
-       // Try finding by Key if available or partial text?
-       // Let's assume English based on app_en.arb presence.
-    }
 
     expect(todayWorkoutFinder, findsOneWidget);
 
     // Tap it
     await tester.tap(todayWorkoutFinder);
-    await tester.pumpAndSettle();
 
-    // Verify navigation by checking if Navigator pushed a route
-    verify(() => mockNavigatorObserver.didPush(any(), any())).called(greaterThan(0));
+    // We expect navigation. Wait a bit for it to trigger.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    // Verify navigation by checking if CalendarPage is present
+    expect(find.byType(CalendarPage), findsOneWidget);
   });
 }
