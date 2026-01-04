@@ -1,6 +1,6 @@
 {
   "@@locale": "ja",
-  "appName": "Lifto",
+  "appName": "アイアンログ",
   "greetingWithName": "こんにちは、{name}さん",
   "defaultUser": "ユーザー",
   "burnFit": "BURN FIT",
@@ -29,7 +29,7 @@
   "library": "ライブラリ",
   "analysis": "分析",
   "unknownPage": "不明なページ",
-  "fitMix": "Lifto",
+  "fitMix": "アイアンログ",
   "editGoal": "目標を編集",
   "selectDate": "日付選択",
   "planWorkout": "ワークアウトを計画",

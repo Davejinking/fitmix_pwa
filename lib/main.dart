@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/constants.dart';
@@ -66,7 +65,7 @@ Future<void> main() async {
   // 사용자 프로필이 있는지 확인하여 첫 화면 결정
   final userProfile = await userRepo.getUserProfile();
 
-  runApp(LiftoApp(
+  runApp(IronLogApp(
     sessionRepo: sessionRepo,
     exerciseRepo: exerciseRepo,
     userRepo: userRepo,
@@ -76,14 +75,14 @@ Future<void> main() async {
   ));
 }
 
-class LiftoApp extends StatefulWidget {
+class IronLogApp extends StatefulWidget {
   final SessionRepo sessionRepo;
   final ExerciseLibraryRepo exerciseRepo;
   final UserRepo userRepo;
   final SettingsRepo settingsRepo;
   final AuthRepo authRepo;
   final bool isLoggedIn;
-  const LiftoApp(
+  const IronLogApp(
       {super.key,
       required this.sessionRepo,
       required this.exerciseRepo,
@@ -93,10 +92,10 @@ class LiftoApp extends StatefulWidget {
       required this.isLoggedIn});
 
   @override
-  State<LiftoApp> createState() => _LiftoAppState();
+  State<IronLogApp> createState() => _IronLogAppState();
 }
 
-class _LiftoAppState extends State<LiftoApp> {
+class _IronLogAppState extends State<IronLogApp> {
   @override
   void initState() {
     super.initState();

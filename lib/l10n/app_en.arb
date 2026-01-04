@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "Lifto",
+  "appName": "Iron Log",
   "greetingWithName": "Hello, {name}",
   "defaultUser": "User",
   "burnFit": "BURN FIT",
@@ -29,7 +29,7 @@
   "library": "Library",
   "analysis": "Analysis",
   "unknownPage": "Unknown Page",
-  "fitMix": "Lifto",
+  "fitMix": "Iron Log",
   "editGoal": "Edit Goal",
   "selectDate": "Select Date",
   "planWorkout": "Plan Workout",

@@ -9,7 +9,7 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appName => 'Lifto';
+  String get appName => 'Iron Log';
 
   @override
   String greetingWithName(Object name) {
@@ -106,7 +106,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unknownPage => '알 수 없는 페이지';
 
   @override
-  String get fitMix => 'Lifto';
+  String get fitMix => 'Iron Log';
 
   @override
   String get editGoal => '목표 수정';

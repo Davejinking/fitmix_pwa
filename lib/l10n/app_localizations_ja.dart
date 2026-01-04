@@ -9,7 +9,7 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appName => 'Lifto';
+  String get appName => 'アイアンログ';
 
   @override
   String greetingWithName(Object name) {
@@ -106,7 +106,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unknownPage => '不明なページ';
 
   @override
-  String get fitMix => 'Lifto';
+  String get fitMix => 'アイアンログ';
 
   @override
   String get editGoal => '目標を編集';
