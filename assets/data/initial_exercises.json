@@ -1,0 +1,322 @@
+[
+  {
+    "id": "chest_barbell_bench_press",
+    "target_part": "chest",
+    "equipment_type": "barbell",
+    "name_kr": "벤치프레스",
+    "name_en": "Bench Press",
+    "name_jp": "ベンチプレス"
+  },
+  {
+    "id": "chest_barbell_incline_bench_press",
+    "target_part": "chest",
+    "equipment_type": "barbell",
+    "name_kr": "인클라인 벤치프레스",
+    "name_en": "Incline Bench Press",
+    "name_jp": "インクライン・ベンチプレス"
+  },
+  {
+    "id": "chest_dumbbell_press",
+    "target_part": "chest",
+    "equipment_type": "dumbbell",
+    "name_kr": "덤벨 프레스",
+    "name_en": "Dumbbell Press",
+    "name_jp": "ダンベル・プレス"
+  },
+  {
+    "id": "chest_dumbbell_incline_press",
+    "target_part": "chest",
+    "equipment_type": "dumbbell",
+    "name_kr": "인클라인 덤벨 프레스",
+    "name_en": "Incline Dumbbell Press",
+    "name_jp": "インクライン・ダンベル・プレス"
+  },
+  {
+    "id": "chest_machine_chest_press",
+    "target_part": "chest",
+    "equipment_type": "machine",
+    "name_kr": "체스트 프레스",
+    "name_en": "Chest Press Machine",
+    "name_jp": "チェスト・プレス"
+  },
+  {
+    "id": "chest_machine_pec_deck_fly",
+    "target_part": "chest",
+    "equipment_type": "machine",
+    "name_kr": "펙 덱 플라이",
+    "name_en": "Pec Deck Fly",
+    "name_jp": "ペックフライ"
+  },
+  {
+    "id": "back_barbell_deadlift",
+    "target_part": "back",
+    "equipment_type": "barbell",
+    "name_kr": "데드리프트",
+    "name_en": "Deadlift",
+    "name_jp": "デッドリフト"
+  },
+  {
+    "id": "back_barbell_row",
+    "target_part": "back",
+    "equipment_type": "barbell",
+    "name_kr": "바벨 로우",
+    "name_en": "Barbell Row",
+    "name_jp": "バーベル・ロウ"
+  },
+  {
+    "id": "back_dumbbell_one_arm_row",
+    "target_part": "back",
+    "equipment_type": "dumbbell",
+    "name_kr": "원 암 덤벨 로우",
+    "name_en": "One Arm Dumbbell Row",
+    "name_jp": "ワンハンド・ロウ"
+  },
+  {
+    "id": "back_bodyweight_pullup",
+    "target_part": "back",
+    "equipment_type": "bodyweight",
+    "name_kr": "풀업",
+    "name_en": "Pull-up",
+    "name_jp": "チンニング"
+  },
+  {
+    "id": "back_machine_lat_pulldown",
+    "target_part": "back",
+    "equipment_type": "machine",
+    "name_kr": "랫 풀 다운",
+    "name_en": "Lat Pulldown",
+    "name_jp": "ラットプルダウン"
+  },
+  {
+    "id": "back_cable_seated_row",
+    "target_part": "back",
+    "equipment_type": "cable",
+    "name_kr": "시티드 로우",
+    "name_en": "Seated Cable Row",
+    "name_jp": "シーテッド・ロウ"
+  },
+  {
+    "id": "back_cable_straight_arm_pulldown",
+    "target_part": "back",
+    "equipment_type": "cable",
+    "name_kr": "스트레이트 암 풀다운",
+    "name_en": "Straight Arm Pulldown",
+    "name_jp": "ストレートアーム・プルダウン"
+  },
+  {
+    "id": "legs_barbell_squat",
+    "target_part": "legs",
+    "equipment_type": "barbell",
+    "name_kr": "스쿼트",
+    "name_en": "Squat",
+    "name_jp": "スクワット"
+  },
+  {
+    "id": "legs_dumbbell_lunge",
+    "target_part": "legs",
+    "equipment_type": "dumbbell",
+    "name_kr": "런지",
+    "name_en": "Dumbbell Lunge",
+    "name_jp": "ダンベル・ランジ"
+  },
+  {
+    "id": "legs_dumbbell_bulgarian_split_squat",
+    "target_part": "legs",
+    "equipment_type": "dumbbell",
+    "name_kr": "불가리안 스플릿 스쿼트",
+    "name_en": "Bulgarian Split Squat",
+    "name_jp": "ブルガリアン・スクワット"
+  },
+  {
+    "id": "legs_machine_leg_press",
+    "target_part": "legs",
+    "equipment_type": "machine",
+    "name_kr": "레그 프레스",
+    "name_en": "Leg Press",
+    "name_jp": "レッグプレス"
+  },
+  {
+    "id": "legs_machine_leg_extension",
+    "target_part": "legs",
+    "equipment_type": "machine",
+    "name_kr": "레그 익스텐션",
+    "name_en": "Leg Extension",
+    "name_jp": "レッグエクステンション"
+  },
+  {
+    "id": "legs_machine_leg_curl",
+    "target_part": "legs",
+    "equipment_type": "machine",
+    "name_kr": "레그 컬",
+    "name_en": "Leg Curl",
+    "name_jp": "レッグカール"
+  },
+  {
+    "id": "legs_machine_hip_abduction",
+    "target_part": "legs",
+    "equipment_type": "machine",
+    "name_kr": "힙 어브덕션",
+    "name_en": "Hip Abduction",
+    "name_jp": "ヒップアブダクション"
+  },
+  {
+    "id": "legs_machine_calf_raise",
+    "target_part": "legs",
+    "equipment_type": "machine",
+    "name_kr": "카프 레이즈",
+    "name_en": "Calf Raise",
+    "name_jp": "カーフレイズ"
+  },
+  {
+    "id": "shoulders_barbell_overhead_press",
+    "target_part": "shoulders",
+    "equipment_type": "barbell",
+    "name_kr": "오버헤드 프레스",
+    "name_en": "Overhead Press",
+    "name_jp": "オーバーヘッドプレス"
+  },
+  {
+    "id": "shoulders_dumbbell_shoulder_press",
+    "target_part": "shoulders",
+    "equipment_type": "dumbbell",
+    "name_kr": "덤벨 숄더 프레스",
+    "name_en": "Dumbbell Shoulder Press",
+    "name_jp": "ダンベル・ショルダープレス"
+  },
+  {
+    "id": "shoulders_dumbbell_lateral_raise",
+    "target_part": "shoulders",
+    "equipment_type": "dumbbell",
+    "name_kr": "사이드 레터럴 레이즈",
+    "name_en": "Lateral Raise",
+    "name_jp": "サイドレイズ"
+  },
+  {
+    "id": "shoulders_dumbbell_bent_over_lateral_raise",
+    "target_part": "shoulders",
+    "equipment_type": "dumbbell",
+    "name_kr": "벤트오버 레터럴 레이즈",
+    "name_en": "Bent-over Lateral Raise",
+    "name_jp": "リアレイズ"
+  },
+  {
+    "id": "shoulders_cable_face_pull",
+    "target_part": "shoulders",
+    "equipment_type": "cable",
+    "name_kr": "페이스 풀",
+    "name_en": "Face Pull",
+    "name_jp": "フェイスプル"
+  },
+  {
+    "id": "arms_barbell_curl",
+    "target_part": "arms",
+    "equipment_type": "barbell",
+    "name_kr": "바벨 컬",
+    "name_en": "Barbell Curl",
+    "name_jp": "バーベルカール"
+  },
+  {
+    "id": "arms_barbell_lying_triceps_extension",
+    "target_part": "arms",
+    "equipment_type": "barbell",
+    "name_kr": "라잉 트라이셉스 익스텐션",
+    "name_en": "Lying Triceps Extension",
+    "name_jp": "スカルクラッシャー"
+  },
+  {
+    "id": "arms_dumbbell_curl",
+    "target_part": "arms",
+    "equipment_type": "dumbbell",
+    "name_kr": "덤벨 컬",
+    "name_en": "Dumbbell Curl",
+    "name_jp": "ダンベルカール"
+  },
+  {
+    "id": "arms_dumbbell_hammer_curl",
+    "target_part": "arms",
+    "equipment_type": "dumbbell",
+    "name_kr": "해머 컬",
+    "name_en": "Hammer Curl",
+    "name_jp": "ハンマーカール"
+  },
+  {
+    "id": "arms_cable_pushdown",
+    "target_part": "arms",
+    "equipment_type": "cable",
+    "name_kr": "케이블 푸쉬 다운",
+    "name_en": "Cable Pushdown",
+    "name_jp": "プレスダウン"
+  },
+  {
+    "id": "arms_bodyweight_dips",
+    "target_part": "arms",
+    "equipment_type": "bodyweight",
+    "name_kr": "딥스",
+    "name_en": "Dips",
+    "name_jp": "ディップス"
+  },
+  {
+    "id": "abs_bodyweight_plank",
+    "target_part": "abs",
+    "equipment_type": "bodyweight",
+    "name_kr": "플랭크",
+    "name_en": "Plank",
+    "name_jp": "プランク"
+  },
+  {
+    "id": "abs_bodyweight_crunch",
+    "target_part": "abs",
+    "equipment_type": "bodyweight",
+    "name_kr": "크런치",
+    "name_en": "Crunch",
+    "name_jp": "クランチ"
+  },
+  {
+    "id": "abs_bodyweight_hanging_leg_raise",
+    "target_part": "abs",
+    "equipment_type": "bodyweight",
+    "name_kr": "행잉 레그 레이즈",
+    "name_en": "Hanging Leg Raise",
+    "name_jp": "ハンギング・レッグレイズ"
+  },
+  {
+    "id": "cardio_machine_treadmill",
+    "target_part": "cardio",
+    "equipment_type": "machine",
+    "name_kr": "러닝머신",
+    "name_en": "Treadmill",
+    "name_jp": "ランニングマシン"
+  },
+  {
+    "id": "cardio_machine_indoor_cycle",
+    "target_part": "cardio",
+    "equipment_type": "machine",
+    "name_kr": "사이클",
+    "name_en": "Indoor Cycle",
+    "name_jp": "エアロバイク"
+  },
+  {
+    "id": "cardio_machine_stair_climber",
+    "target_part": "cardio",
+    "equipment_type": "machine",
+    "name_kr": "천국의 계단",
+    "name_en": "Stair Climber",
+    "name_jp": "ステアクライマー"
+  },
+  {
+    "id": "fullbody_bodyweight_burpee",
+    "target_part": "fullBody",
+    "equipment_type": "bodyweight",
+    "name_kr": "버피 테스트",
+    "name_en": "Burpee",
+    "name_jp": "バーピー"
+  },
+  {
+    "id": "stretching_bodyweight_foam_rolling",
+    "target_part": "stretching",
+    "equipment_type": "bodyweight",
+    "name_kr": "폼롤러 전신 스트레칭",
+    "name_en": "Foam Rolling",
+    "name_jp": "フォームローラー"
+  }
+]

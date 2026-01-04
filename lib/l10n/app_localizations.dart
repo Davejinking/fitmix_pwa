@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In ko, this message translates to:
-  /// **'Iron Log'**
+  /// **'아이언 로그'**
   String get appName;
 
   /// No description provided for @greetingWithName.
@@ -277,7 +277,7 @@ abstract class AppLocalizations {
   /// No description provided for @fitMix.
   ///
   /// In ko, this message translates to:
-  /// **'Iron Log'**
+  /// **'아이언 로그'**
   String get fitMix;
 
   /// No description provided for @editGoal.
