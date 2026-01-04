@@ -2013,6 +2013,24 @@ abstract class AppLocalizations {
   /// **'최소 1개의 세트가 필요합니다'**
   String get minOneSetRequired;
 
+  /// No description provided for @deleteExerciseTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 삭제'**
+  String get deleteExerciseTitle;
+
+  /// No description provided for @deleteExerciseMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 세트를 삭제하면 \'{exerciseName}\' 운동이 완전히 제거됩니다.\n정말 삭제하시겠습니까?'**
+  String deleteExerciseMessage(String exerciseName);
+
+  /// No description provided for @delete.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제'**
+  String get delete;
+
   /// No description provided for @addExercises.
   ///
   /// In ko, this message translates to:

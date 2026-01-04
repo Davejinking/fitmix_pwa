@@ -916,28 +916,105 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     // 미니 타이머가 표시될 때 하단 패딩 추가 (하단 바 높이만큼)
     final bottomPadding = (_restTimerRunning && _isTimerUIVisible && !_showRestTimerOverlay) ? 200.0 : 8.0;
     
-    return ListView.builder(
-      padding: EdgeInsets.only(top: 8, bottom: bottomPadding),
-      itemCount: _session.exercises.length + 1, // +1 for add button
-      itemBuilder: (context, index) {
-        // 마지막 아이템: 운동 추가 버튼
-        if (index == _session.exercises.length) {
-          return _buildAddExerciseButton(l10n);
-        }
-        
-        final exercise = _session.exercises[index];
-        return ExerciseCard(
-          key: ValueKey('${exercise.name}_$index'),
-          exercise: exercise,
-          exerciseIndex: index,
-          onDelete: () {}, // 운동 중에는 삭제 불가
-          onUpdate: () => setState(() {}),
-          onSetCompleted: _onSetChecked,
-          isWorkoutStarted: true,
-          isEditingEnabled: true,
-          forceExpanded: _allCardsExpanded,
-        );
-      },
+    return CustomScrollView(
+      slivers: [
+        SliverReorderableList(
+          itemCount: _session.exercises.length,
+          itemBuilder: (context, index) {
+            final exercise = _session.exercises[index];
+            return ReorderableDragStartListener(
+              key: ValueKey('${exercise.name}_$index'),
+              index: index,
+              child: Dismissible(
+                key: ValueKey('${exercise.name}_dismiss_$index'),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  margin: const EdgeInsets.only(bottom: 10, left: 12, right: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
+                ),
+                onDismissed: (direction) {
+                  final deletedExercise = exercise;
+                  setState(() {
+                    _session.exercises.removeAt(index);
+                  });
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${deletedExercise.name} 삭제됨'),
+                      duration: const Duration(seconds: 3),
+                      action: SnackBarAction(
+                        label: '실행 취소',
+                        onPressed: () {
+                          setState(() {
+                            _session.exercises.insert(index, deletedExercise);
+                          });
+                        },
+                      ),
+                    ),
+                  );
+                },
+                child: ExerciseCard(
+                  key: ValueKey('${exercise.name}_card_$index'),
+                  exercise: exercise,
+                  exerciseIndex: index,
+                  onDelete: () {
+                    setState(() {
+                      _session.exercises.removeAt(index);
+                    });
+                  },
+                  onUpdate: () => setState(() {}),
+                  onSetCompleted: _onSetChecked,
+                  isWorkoutStarted: true,
+                  isEditingEnabled: true,
+                  forceExpanded: _allCardsExpanded,
+                ),
+              ),
+            );
+          },
+          onReorder: (oldIndex, newIndex) {
+            setState(() {
+              if (newIndex > oldIndex) newIndex -= 1;
+              final item = _session.exercises.removeAt(oldIndex);
+              _session.exercises.insert(newIndex, item);
+              HapticFeedback.mediumImpact();
+            });
+          },
+          proxyDecorator: (child, index, animation) {
+            return AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) {
+                final double elevation = Tween<double>(begin: 0, end: 8).evaluate(animation);
+                return Material(
+                  elevation: elevation,
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.6), width: 2),
+                    ),
+                    child: child,
+                  ),
+                );
+              },
+              child: child,
+            );
+          },
+        ),
+        // 운동 추가 버튼을 SliverToBoxAdapter로 추가
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottomPadding),
+            child: _buildAddExerciseButton(l10n),
+          ),
+        ),
+      ],
     );
   }
   
@@ -1374,124 +1451,127 @@ class _ReorderExercisesModalState extends State<_ReorderExercisesModal> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
+    // 화면 높이의 동적 계산 (운동 개수에 따라 최소 40%, 최대 70%)
+    final screenHeight = MediaQuery.of(context).size.height;
+    final itemCount = _tempExercises.length;
+    final dynamicHeight = (0.15 + (itemCount * 0.08)).clamp(0.4, 0.7);
+    
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          // 헤더
-          Row(
-            children: [
-              const Icon(Icons.swap_vert, color: Color(0xFF2196F3)),
-              const SizedBox(width: 8),
-              Text(
-                l10n.reorderExercises,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      height: screenHeight * dynamicHeight,
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 핸들 바
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Spacer(),
-              TextButton(
-                onPressed: () {
-                  widget.onReorder(_tempExercises);
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  l10n.done,
-                  style: const TextStyle(
-                    color: Color(0xFF2196F3),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.dragToReorder,
-            style: TextStyle(fontSize: 13, color: Colors.grey[500]),
-          ),
-          const SizedBox(height: 16),
-          // 드래그 가능한 리스트
-          Expanded(
-            child: ReorderableListView.builder(
-              itemCount: _tempExercises.length,
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) newIndex--;
-                  final item = _tempExercises.removeAt(oldIndex);
-                  _tempExercises.insert(newIndex, item);
-                });
-                HapticFeedback.lightImpact();
-              },
-              itemBuilder: (context, index) {
-                final exercise = _tempExercises[index];
-                final completedSets = exercise.sets.where((s) => s.isCompleted).length;
-                final totalSets = exercise.sets.length;
-                final isCompleted = completedSets > 0 && completedSets == totalSets;
-                
-                return Container(
-                  key: ValueKey(exercise),
-                  margin: const EdgeInsets.only(bottom: 8),
-                  decoration: BoxDecoration(
-                    color: isCompleted 
-                        ? const Color(0xFF1A1D22) 
-                        : const Color(0xFF252932),
-                    borderRadius: BorderRadius.circular(12),
-                    border: isCompleted 
-                        ? Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.3))
-                        : null,
-                  ),
-                  child: ListTile(
-                    leading: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2196F3).withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${index + 1}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2196F3),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      exercise.name,
-                      style: TextStyle(
-                        color: isCompleted ? Colors.white54 : Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '$completedSets / $totalSets ${l10n.setLabel}',
-                      style: TextStyle(
-                        color: isCompleted ? Colors.grey[600] : Colors.grey[500],
-                        fontSize: 12,
-                      ),
-                    ),
-                    trailing: ReorderableDragStartListener(
-                      index: index,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.drag_handle,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
             ),
-          ),
-        ],
+            // 헤더
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Row(
+                children: [
+                  Text(
+                    l10n.reorderExercises,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      widget.onReorder(_tempExercises);
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      l10n.done,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2196F3),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // 드래그 가능한 리스트
+            Expanded(
+              child: ReorderableListView.builder(
+                itemCount: _tempExercises.length,
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) newIndex--;
+                    final item = _tempExercises.removeAt(oldIndex);
+                    _tempExercises.insert(newIndex, item);
+                  });
+                  HapticFeedback.lightImpact();
+                },
+                itemBuilder: (context, index) {
+                  final exercise = _tempExercises[index];
+                  final completedSets = exercise.sets.where((s) => s.isCompleted).length;
+                  final totalSets = exercise.sets.length;
+                  
+                  return ReorderableDelayedDragStartListener(
+                    key: ValueKey(exercise),
+                    index: index,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF252932),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[700]!, width: 1),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.drag_handle, color: Colors.grey[600], size: 24),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${index + 1}. ${exercise.name}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  '$completedSets / $totalSets SET',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[500],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -327,6 +327,17 @@
   "addWorkout": "Add Workout",
   "editComplete": "Edit Complete",
   "minOneSetRequired": "At least 1 set required",
+  "deleteExerciseTitle": "Delete Exercise",
+  "deleteExerciseMessage": "Deleting the last set will completely remove the '{exerciseName}' exercise.\nAre you sure you want to delete it?",
+  "@deleteExerciseMessage": {
+    "placeholders": {
+      "exerciseName": {
+        "type": "String",
+        "example": "Bench Press"
+      }
+    }
+  },
+  "delete": "Delete",
   "addExercises": "Add {count} exercises",
   "@addExercises": {
     "placeholders": {

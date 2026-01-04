@@ -1045,6 +1045,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get minOneSetRequired => 'At least 1 set required';
 
   @override
+  String get deleteExerciseTitle => 'Delete Exercise';
+
+  @override
+  String deleteExerciseMessage(String exerciseName) {
+    return 'Deleting the last set will completely remove the \'$exerciseName\' exercise.\nAre you sure you want to delete it?';
+  }
+
+  @override
+  String get delete => 'Delete';
+
+  @override
   String addExercises(int count) {
     return 'Add $count exercises';
   }

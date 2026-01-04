@@ -327,6 +327,17 @@
   "addWorkout": "ワークアウトを追加",
   "editComplete": "編集完了",
   "minOneSetRequired": "最低1セット必要です",
+  "deleteExerciseTitle": "運動削除",
+  "deleteExerciseMessage": "最後のセットを削除すると「{exerciseName}」の運動が完全に削除されます。\n本当に削除しますか？",
+  "@deleteExerciseMessage": {
+    "placeholders": {
+      "exerciseName": {
+        "type": "String",
+        "example": "ベンチプレス"
+      }
+    }
+  },
+  "delete": "削除",
   "addExercises": "{count}個の運動を追加",
   "@addExercises": {
     "placeholders": {

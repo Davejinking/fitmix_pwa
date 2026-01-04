@@ -1034,6 +1034,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get minOneSetRequired => '최소 1개의 세트가 필요합니다';
 
   @override
+  String get deleteExerciseTitle => '운동 삭제';
+
+  @override
+  String deleteExerciseMessage(String exerciseName) {
+    return '마지막 세트를 삭제하면 \'$exerciseName\' 운동이 완전히 제거됩니다.\n정말 삭제하시겠습니까?';
+  }
+
+  @override
+  String get delete => '삭제';
+
+  @override
   String addExercises(int count) {
     return '$count개 운동 추가';
   }

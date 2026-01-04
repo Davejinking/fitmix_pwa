@@ -327,6 +327,17 @@
   "addWorkout": "운동 추가",
   "editComplete": "편집 완료",
   "minOneSetRequired": "최소 1개의 세트가 필요합니다",
+  "deleteExerciseTitle": "운동 삭제",
+  "deleteExerciseMessage": "마지막 세트를 삭제하면 '{exerciseName}' 운동이 완전히 제거됩니다.\n정말 삭제하시겠습니까?",
+  "@deleteExerciseMessage": {
+    "placeholders": {
+      "exerciseName": {
+        "type": "String",
+        "example": "벤치프레스"
+      }
+    }
+  },
+  "delete": "삭제",
   "addExercises": "{count}개 운동 추가",
   "@addExercises": {
     "placeholders": {
