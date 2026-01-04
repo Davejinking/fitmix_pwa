@@ -1,6 +1,6 @@
 {
   "@@locale": "ko",
-  "appName": "Iron Log",
+  "appName": "아이언 로그",
   "greetingWithName": "안녕하세요, {name}님",
   "defaultUser": "사용자",
   "burnFit": "BURN FIT",
@@ -29,7 +29,7 @@
   "library": "라이브러리",
   "analysis": "분석",
   "unknownPage": "알 수 없는 페이지",
-  "fitMix": "Iron Log",
+  "fitMix": "아이언 로그",
   "editGoal": "목표 수정",
   "selectDate": "날짜 선택",
   "planWorkout": "운동 계획하기",
