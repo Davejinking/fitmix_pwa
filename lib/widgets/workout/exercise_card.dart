@@ -43,11 +43,22 @@ class _ExerciseCardState extends State<ExerciseCard> {
   TempoMode _currentMode = TempoMode.beep;
 
   @override
+  void initState() {
+    super.initState();
+    // forceExpanded가 설정되어 있으면 초기값으로 사용
+    if (widget.forceExpanded != null) {
+      _isExpanded = widget.forceExpanded!;
+    }
+  }
+
+  @override
   void didUpdateWidget(ExerciseCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     // forceExpanded가 변경되면 _isExpanded 동기화
     if (widget.forceExpanded != null && widget.forceExpanded != oldWidget.forceExpanded) {
-      _isExpanded = widget.forceExpanded!;
+      setState(() {
+        _isExpanded = widget.forceExpanded!;
+      });
     }
   }
 

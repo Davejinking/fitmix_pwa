@@ -918,14 +918,11 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     
     return CustomScrollView(
       slivers: [
-        SliverReorderableList(
-          itemCount: _session.exercises.length,
-          itemBuilder: (context, index) {
-            final exercise = _session.exercises[index];
-            return ReorderableDragStartListener(
-              key: ValueKey('${exercise.name}_$index'),
-              index: index,
-              child: Dismissible(
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final exercise = _session.exercises[index];
+              return Dismissible(
                 key: ValueKey('${exercise.name}_dismiss_$index'),
                 direction: DismissDirection.endToStart,
                 background: Container(
@@ -974,38 +971,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                   isEditingEnabled: true,
                   forceExpanded: _allCardsExpanded,
                 ),
-              ),
-            );
-          },
-          onReorder: (oldIndex, newIndex) {
-            setState(() {
-              if (newIndex > oldIndex) newIndex -= 1;
-              final item = _session.exercises.removeAt(oldIndex);
-              _session.exercises.insert(newIndex, item);
-              HapticFeedback.mediumImpact();
-            });
-          },
-          proxyDecorator: (child, index, animation) {
-            return AnimatedBuilder(
-              animation: animation,
-              builder: (context, child) {
-                final double elevation = Tween<double>(begin: 0, end: 8).evaluate(animation);
-                return Material(
-                  elevation: elevation,
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.6), width: 2),
-                    ),
-                    child: child,
-                  ),
-                );
-              },
-              child: child,
-            );
-          },
+              );
+            },
+            childCount: _session.exercises.length,
+          ),
         ),
         // 운동 추가 버튼을 SliverToBoxAdapter로 추가
         SliverToBoxAdapter(

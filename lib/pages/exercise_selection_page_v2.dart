@@ -175,7 +175,7 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> with 
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(color: const Color(0xFF2196F3), borderRadius: BorderRadius.circular(16)),
-              child: Text('\${_selectedExercises.length}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+              child: Text('${_selectedExercises.length}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
         ]),
       ),
@@ -249,7 +249,7 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> with 
 
   Widget _buildExerciseList(AppLocalizations l10n) {
     if (_isLoading) return const Center(child: CircularProgressIndicator(color: Color(0xFF2196F3)));
-    if (_error != null) return Center(child: Text('Error: \$_error', style: const TextStyle(color: Colors.red)));
+    if (_error != null) return Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)));
     if (_filteredExercises.isEmpty) return Center(child: Text(l10n.noExercises, style: TextStyle(color: Colors.grey[600])));
 
     return ListView.builder(
@@ -274,7 +274,7 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> with 
               child: const Icon(Icons.fitness_center, color: Color(0xFF2196F3)),
             ),
             title: Text(ex.getLocalizedName(context), style: TextStyle(fontWeight: FontWeight.w600, color: sel ? const Color(0xFF2196F3) : Colors.white)),
-            subtitle: Text('\${_getLocalizedBodyPart(ex.targetPart)} • \${_getLocalizedEquipment(ex.equipmentType)}', style: TextStyle(color: Colors.grey[500])),
+            subtitle: Text('${_getLocalizedBodyPart(ex.targetPart)} • ${_getLocalizedEquipment(ex.equipmentType)}', style: TextStyle(color: Colors.grey[500])),
             trailing: Row(mainAxisSize: MainAxisSize.min, children: [
               IconButton(icon: Icon(bm ? Icons.bookmark : Icons.bookmark_border, color: bm ? const Color(0xFF2196F3) : Colors.grey[600]), onPressed: () => _toggleBookmark(ex.id)),
               Icon(sel ? Icons.check_circle : Icons.add_circle_outline, color: sel ? const Color(0xFF2196F3) : Colors.grey[600]),

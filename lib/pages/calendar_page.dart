@@ -338,14 +338,11 @@ class _CalendarPageState extends State<CalendarPage> {
         // 운동 리스트
         SliverPadding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          sliver: SliverReorderableList(
-            itemCount: _currentSession!.exercises.length,
-            itemBuilder: (context, index) {
-              final exercise = _currentSession!.exercises[index];
-              return ReorderableDragStartListener(
-                key: ValueKey(exercise),
-                index: index,
-                child: Dismissible(
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final exercise = _currentSession!.exercises[index];
+                return Dismissible(
                   key: ValueKey('${exercise.name}_$index'),
                   direction: DismissDirection.endToStart,
                   background: Container(
@@ -391,38 +388,10 @@ class _CalendarPageState extends State<CalendarPage> {
                     onSetAdded: () => _scrollToExercise(index),
                     forceExpanded: _allCardsExpanded,
                   ),
-                ),
-              );
-            },
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                if (newIndex > oldIndex) newIndex -= 1;
-                final item = _currentSession!.exercises.removeAt(oldIndex);
-                _currentSession!.exercises.insert(newIndex, item);
-                HapticFeedback.mediumImpact();
-              });
-            },
-            proxyDecorator: (child, index, animation) {
-              return AnimatedBuilder(
-                animation: animation,
-                builder: (context, child) {
-                  final double elevation = Tween<double>(begin: 0, end: 8).evaluate(animation);
-                  return Material(
-                    elevation: elevation,
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.6), width: 2),
-                      ),
-                      child: child,
-                    ),
-                  );
-                },
-                child: child,
-              );
-            },
+                );
+              },
+              childCount: _currentSession!.exercises.length,
+            ),
           ),
         ),
       ],
