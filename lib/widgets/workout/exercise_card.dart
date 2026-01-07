@@ -623,8 +623,8 @@ class _SetRowGridState extends State<_SetRowGrid> {
     final l10n = AppLocalizations.of(context);
     
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      margin: const EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
       child: Row(
         children: [
           // Set Number
@@ -632,16 +632,16 @@ class _SetRowGridState extends State<_SetRowGrid> {
             flex: 2,
             child: Center(
               child: Container(
-                width: 26,
-                height: 26,
+                width: 22,
+                height: 22,
                 decoration: BoxDecoration(
                   color: const Color(0xFF3A4452),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '${widget.setIndex + 1}',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
@@ -672,7 +672,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
             child: Center(
               child: widget.isWorkoutStarted
                   ? Transform.scale(
-                      scale: 0.85,
+                      scale: 0.75,
                       child: Checkbox(
                         value: set.isCompleted,
                         onChanged: (value) {
@@ -700,14 +700,14 @@ class _SetRowGridState extends State<_SetRowGrid> {
                           }
                         },
                         activeColor: const Color(0xFF2196F3),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
                       ),
                     )
                   : IconButton(
                       onPressed: widget.isEditingEnabled ? widget.onDelete : null,
-                      icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent, size: 22),
+                      icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent, size: 18),
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                     ),
             ),
           ),
@@ -723,24 +723,24 @@ class _SetRowGridState extends State<_SetRowGrid> {
     required bool isEnabled,
   }) {
     return Container(
-      height: 42,
-      margin: const EdgeInsets.symmetric(horizontal: 3),
+      height: 32,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: isEnabled ? const Color(0xFF2C2C2C) : const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: isEnabled ? Colors.grey.shade800 : Colors.grey.shade900,
-          width: 1,
+          width: 0.5,
         ),
       ),
       child: Stack(
         children: [
           Positioned(
-            top: 4,
-            left: 8,
+            top: 2,
+            left: 6,
             child: Text(
               label,
-              style: TextStyle(fontSize: 10, color: isEnabled ? Colors.grey.shade500 : Colors.grey.shade700),
+              style: TextStyle(fontSize: 9, color: isEnabled ? Colors.grey.shade500 : Colors.grey.shade700),
             ),
           ),
           Center(
@@ -750,7 +750,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
               keyboardType: keyboardType,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: isEnabled ? Colors.white : Colors.grey.shade600,
                 height: 1.0,
@@ -758,7 +758,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
               decoration: const InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 8),
+                contentPadding: EdgeInsets.symmetric(vertical: 4),
               ),
             ),
           ),

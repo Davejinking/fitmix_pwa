@@ -273,31 +273,69 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     if (_filteredExercises.isEmpty) return Center(child: Text(l10n.noExercises, style: TextStyle(color: Colors.grey[600], fontSize: 16)));
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: _filteredExercises.length,
       itemBuilder: (context, index) {
         final exercise = _filteredExercises[index];
         final isBookmarked = _bookmarkedIds.contains(exercise.id);
         
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(color: const Color(0xFF1E1E1E), borderRadius: BorderRadius.circular(12)),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: Container(
-              width: 50, height: 50,
-              decoration: BoxDecoration(color: const Color(0xFF2196F3).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-              child: const Icon(Icons.fitness_center, color: Color(0xFF2196F3), size: 24),
-            ),
-            title: Text(exercise.getLocalizedName(context), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white)),
-            subtitle: Text('${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
-            trailing: IconButton(
-              icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border, color: isBookmarked ? const Color(0xFF2196F3) : Colors.grey[600]),
-              onPressed: () => _toggleBookmark(exercise.id),
-            ),
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1E1E), 
+            borderRadius: BorderRadius.circular(10)
+          ),
+          child: InkWell(
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exerciseSelected(exercise.getLocalizedName(context))), backgroundColor: const Color(0xFF2196F3)));
             },
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  // 컴팩트한 아이콘
+                  Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2196F3).withValues(alpha: 0.15), 
+                      borderRadius: BorderRadius.circular(6)
+                    ),
+                    child: const Icon(Icons.fitness_center, color: Color(0xFF2196F3), size: 18),
+                  ),
+                  const SizedBox(width: 12),
+                  // 운동 정보
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          exercise.getLocalizedName(context), 
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}', 
+                          style: TextStyle(fontSize: 12, color: Colors.grey[500])
+                        ),
+                      ],
+                    ),
+                  ),
+                  // 북마크 버튼
+                  GestureDetector(
+                    onTap: () => _toggleBookmark(exercise.id),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        isBookmarked ? Icons.bookmark : Icons.bookmark_border, 
+                        color: isBookmarked ? const Color(0xFF2196F3) : Colors.grey[600], 
+                        size: 20
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },

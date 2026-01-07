@@ -146,24 +146,6 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  // 특정 운동 카드로 스크롤
-  void _scrollToExercise(int exerciseIndex) {
-    if (!_scrollController.hasClients) return;
-    
-    // 각 운동 카드의 대략적인 높이 (확장된 상태 기준)
-    const double estimatedCardHeight = 300.0;
-    const double padding = 8.0;
-    
-    final double targetOffset = (estimatedCardHeight + padding) * exerciseIndex;
-    
-    // 부드러운 스크롤 애니메이션
-    _scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOutCubic,
-    );
-  }
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -385,7 +367,6 @@ class _CalendarPageState extends State<CalendarPage> {
                       });
                     },
                     onUpdate: () => setState(() {}),
-                    onSetAdded: () => _scrollToExercise(index),
                     forceExpanded: _allCardsExpanded,
                   ),
                 );
@@ -614,7 +595,6 @@ class _ExerciseCard extends StatefulWidget {
   final int exerciseIndex;
   final VoidCallback onDelete;
   final VoidCallback onUpdate;
-  final VoidCallback onSetAdded;
   final bool forceExpanded; // 전체 열기/닫기 상태
 
   const _ExerciseCard({
@@ -622,7 +602,6 @@ class _ExerciseCard extends StatefulWidget {
     required this.exerciseIndex,
     required this.onDelete,
     required this.onUpdate,
-    required this.onSetAdded,
     this.forceExpanded = true,
   });
 
@@ -945,11 +924,6 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           }
                         });
                         widget.onUpdate();
-                        
-                        // 세트 추가 후 스크롤 (약간의 딜레이 후)
-                        Future.delayed(const Duration(milliseconds: 100), () {
-                          widget.onSetAdded();
-                        });
                       },
                       icon: const Icon(Icons.add, size: 16),
                       label: Text(l10n.addSet, style: const TextStyle(fontSize: 13)),
@@ -1022,18 +996,18 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      margin: const EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Center(
               child: Container(
-                width: 26, height: 26,
-                decoration: BoxDecoration(color: const Color(0xFF3A4452), borderRadius: BorderRadius.circular(5)),
+                width: 22, height: 22,
+                decoration: BoxDecoration(color: const Color(0xFF3A4452), borderRadius: BorderRadius.circular(4)),
                 alignment: Alignment.center,
-                child: Text('${widget.setIndex + 1}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+                child: Text('${widget.setIndex + 1}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
           ),
@@ -1043,10 +1017,10 @@ class _SetRowGridState extends State<_SetRowGrid> {
             flex: 2,
             child: Center(
               child: IconButton(
-                icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
+                icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 18),
                 onPressed: widget.onDelete,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
               ),
             ),
           ),
@@ -1057,23 +1031,23 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   Widget _buildInput(TextEditingController controller, String label, TextInputType keyboardType) {
     return Container(
-      height: 42,
-      margin: const EdgeInsets.symmetric(horizontal: 3),
+      height: 32,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.shade800, width: 1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.grey.shade800, width: 0.5),
       ),
       child: Stack(
         children: [
-          Positioned(top: 4, left: 8, child: Text(label, style: TextStyle(fontSize: 10, color: Colors.grey.shade500))),
+          Positioned(top: 2, left: 6, child: Text(label, style: TextStyle(fontSize: 9, color: Colors.grey.shade500))),
           Center(
             child: TextFormField(
               controller: controller,
               keyboardType: keyboardType,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white, height: 1.0),
-              decoration: const InputDecoration(isDense: true, border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 8)),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white, height: 1.0),
+              decoration: const InputDecoration(isDense: true, border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 4)),
             ),
           ),
         ],
