@@ -5,6 +5,36 @@ import '../models/exercise.dart';
 import '../core/constants.dart';
 import 'package:intl/intl.dart';
 
+/// 운동 기록 히스토리 항목
+class ExerciseHistoryRecord {
+  final String date; // yyyy-MM-dd
+  final List<ExerciseSet> sets;
+  
+  ExerciseHistoryRecord({
+    required this.date,
+    required this.sets,
+  });
+  
+  /// 최고 무게 반환
+  double get maxWeight => sets.isEmpty ? 0 : sets.map((s) => s.weight).reduce((a, b) => a > b ? a : b);
+  
+  /// 총 볼륨 계산
+  double get totalVolume => sets.fold(0, (sum, set) => sum + (set.weight * set.reps));
+  
+  /// 총 세트 수
+  int get totalSets => sets.length;
+  
+  /// 날짜를 MM/dd 형식으로 포맷
+  String get formattedDate {
+    try {
+      final dateTime = DateFormat('yyyy-MM-dd').parse(date);
+      return DateFormat('MM/dd').format(dateTime);
+    } catch (e) {
+      return date;
+    }
+  }
+}
+
 /// 세션 데이터 저장소 인터페이스
 abstract class SessionRepo {
   /// 저장소 초기화
@@ -46,6 +76,9 @@ abstract class SessionRepo {
   
   /// 운동 기록이 있는 날짜들만 조회
   Future<List<Session>> getWorkoutSessions();
+  
+  /// 특정 운동의 최근 기록들을 조회 (최대 5개)
+  Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5});
 }
 
 class HiveSessionRepo implements SessionRepo {
@@ -168,6 +201,39 @@ class HiveSessionRepo implements SessionRepo {
       return workoutSessions;
     } catch (e) {
       print('❌ 운동 세션 조회 중 오류: $e');
+      return [];
+    }
+  }
+
+  @override
+  Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5}) async {
+    try {
+      final allSessions = await listAll();
+      final records = <ExerciseHistoryRecord>[];
+      
+      // 최신 날짜부터 역순으로 정렬
+      allSessions.sort((a, b) => b.ymd.compareTo(a.ymd));
+      
+      for (final session in allSessions) {
+        if (records.length >= limit) break;
+        
+        // 해당 운동이 있는지 확인
+        final exercise = session.exercises.where((ex) => ex.name == exerciseName).firstOrNull;
+        if (exercise != null && exercise.sets.isNotEmpty) {
+          // 완료된 세트만 필터링
+          final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
+          if (completedSets.isNotEmpty) {
+            records.add(ExerciseHistoryRecord(
+              date: session.ymd,
+              sets: completedSets,
+            ));
+          }
+        }
+      }
+      
+      return records;
+    } catch (e) {
+      print('❌ 운동 기록 조회 중 오류: $e');
       return [];
     }
   }

@@ -174,6 +174,7 @@
   "tempoStart": "템포 시작 ({eccentric}/{concentric}s)",
   "memo": "메모",
   "recentRecord": "최근 기록",
+  "noRecentRecords": "최근 기록이 없습니다",
   "workingOut": "운동 중",
   "setsCompleted": "세트 완료",
   "restTimeSettings": "휴식 시간 설정",

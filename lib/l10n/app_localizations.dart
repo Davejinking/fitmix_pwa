@@ -1138,6 +1138,12 @@ abstract class AppLocalizations {
   /// **'최근 기록'**
   String get recentRecord;
 
+  /// No description provided for @noRecentRecords.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 기록이 없습니다'**
+  String get noRecentRecords;
+
   /// No description provided for @workingOut.
   ///
   /// In ko, this message translates to:

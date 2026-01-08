@@ -970,6 +970,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                   isWorkoutStarted: true,
                   isEditingEnabled: true,
                   forceExpanded: _allCardsExpanded,
+                  sessionRepo: widget.repo, // SessionRepo 전달
                 ),
               );
             },

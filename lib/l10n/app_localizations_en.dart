@@ -575,6 +575,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentRecord => 'Recent Record';
 
   @override
+  String get noRecentRecords => 'No recent records';
+
+  @override
   String get workingOut => 'Working Out';
 
   @override

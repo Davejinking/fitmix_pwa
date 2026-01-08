@@ -570,6 +570,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get recentRecord => '最近の記録';
 
   @override
+  String get noRecentRecords => '最近の記録がありません';
+
+  @override
   String get workingOut => 'ワークアウト中';
 
   @override

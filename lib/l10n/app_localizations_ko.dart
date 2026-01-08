@@ -570,6 +570,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get recentRecord => '최근 기록';
 
   @override
+  String get noRecentRecords => '최근 기록이 없습니다';
+
+  @override
   String get workingOut => '운동 중';
 
   @override
