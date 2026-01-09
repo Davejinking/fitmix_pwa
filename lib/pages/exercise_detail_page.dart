@@ -1,377 +1,545 @@
 import 'package:flutter/material.dart';
 import '../models/exercise_db.dart';
 import '../l10n/app_localizations.dart';
+import '../data/session_repo.dart';
+import '../data/exercise_library_repo.dart';
 
-class ExerciseDetailPage extends StatelessWidget {
-  final ExerciseDB exercise;
+class ExerciseDetailPage extends StatefulWidget {
+  final String exerciseName;
+  final SessionRepo? sessionRepo;
+  final ExerciseLibraryRepo? exerciseRepo;
 
   const ExerciseDetailPage({
     super.key,
-    required this.exercise,
+    required this.exerciseName,
+    this.sessionRepo,
+    this.exerciseRepo,
   });
+
+  @override
+  State<ExerciseDetailPage> createState() => _ExerciseDetailPageState();
+}
+
+class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
+  List<ExerciseHistoryRecord> _recentHistory = [];
+  bool _isLoadingHistory = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentHistory();
+  }
+
+  Future<void> _loadRecentHistory() async {
+    if (widget.sessionRepo == null) {
+      setState(() => _isLoadingHistory = false);
+      return;
+    }
+
+    try {
+      final history = await widget.sessionRepo!.getRecentExerciseHistory(widget.exerciseName);
+      if (mounted) {
+        setState(() {
+          _recentHistory = history;
+          _isLoadingHistory = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingHistory = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = l10n.localeName;
+    final localizedName = ExerciseDB.getExerciseNameLocalized(widget.exerciseName, locale);
+    final bodyPart = 'chest'; // 임시로 고정값 사용
+    final localizedBodyPart = ExerciseDB.getBodyPartLocalized(bodyPart, locale);
     
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
-        title: Text(
-          exercise.getLocalizedName(locale),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 운동 이미지/GIF
-            _buildExerciseImage(),
-            const SizedBox(height: 24),
-            
-            // 기본 정보
-            _buildBasicInfo(l10n, locale),
-            const SizedBox(height: 24),
-            
-            // 운동 설명
-            _buildInstructions(l10n, locale),
-            const SizedBox(height: 24),
-            
-            // 타겟 근육
-            _buildTargetMuscles(l10n, locale),
-            const SizedBox(height: 24),
-            
-            // 보조 근육
-            if (exercise.secondaryMuscles.isNotEmpty) ...[
-              _buildSecondaryMuscles(l10n, locale),
-              const SizedBox(height: 24),
-            ],
-            
-            // 운동 추가 버튼
-            _buildAddButton(l10n, context, locale),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildExerciseImage() {
-    return Container(
-      width: double.infinity,
-      height: 250,
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: exercise.isCustom || exercise.gifUrl.isEmpty
-            ? const Center(
-                child: Icon(
-                  Icons.fitness_center,
-                  size: 80,
-                  color: Color(0xFF4A9EFF),
-                ),
-              )
-            : Image.network(
-                exercise.gifUrl,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF4A9EFF),
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.fitness_center,
-                      size: 80,
-                      color: Color(0xFF4A9EFF),
-                    ),
-                  );
-                },
+      backgroundColor: const Color(0xFF0A0A0A),
+      body: CustomScrollView(
+        slivers: [
+          // 히어로 섹션 (Visual)
+          SliverAppBar(
+            expandedHeight: 280,
+            pinned: true,
+            backgroundColor: const Color(0xFF0A0A0A),
+            leading: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 24),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.more_vert, color: Colors.white, size: 24),
+                onPressed: () {},
               ),
-      ),
-    );
-  }
-
-  Widget _buildBasicInfo(AppLocalizations l10n, String locale) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            locale == 'ja' ? '基本情報' : locale == 'en' ? 'Basic Information' : '기본 정보',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              title: null, // 타이틀을 body에서 처리
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0xFF1A1D29),
+                      const Color(0xFF0A0A0A),
+                    ],
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    // 배경 이미지 (은은하게)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A1D29).withValues(alpha: 0.3),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.fitness_center,
+                            size: 120,
+                            color: Color(0xFF4A9EFF),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 그라데이션 오버레이
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              const Color(0xFF0A0A0A).withValues(alpha: 0.8),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          _buildInfoRow(
-            locale == 'ja' ? '部位' : locale == 'en' ? 'Body Part' : '부위', 
-            exercise.getTargetPart(locale)
-          ),
-          const SizedBox(height: 8),
-          _buildInfoRow(
-            locale == 'ja' ? '器具' : locale == 'en' ? 'Equipment' : '장비', 
-            exercise.getEquipmentType(locale)
-          ),
-          if (exercise.isCustom) ...[
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              locale == 'ja' ? 'タイプ' : locale == 'en' ? 'Type' : '타입',
-              locale == 'ja' ? 'カスタム運動' : locale == 'en' ? 'Custom Exercise' : '커스텀 운동'
+          
+          // 메인 콘텐츠
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 헤더 (중앙 정렬)
+                  Center(
+                    child: Column(
+                      children: [
+                        // 태그 (바벨, 가슴)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildTag('바벨'),
+                            const SizedBox(width: 8),
+                            _buildTag(localizedBodyPart),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        
+                        // 운동 이름
+                        Text(
+                          localizedName,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  
+                  // 마이 레코드 (Card-in-Card 구조 개선)
+                  _buildMyRecords(),
+                  const SizedBox(height: 24),
+                  
+                  // 최근 기록
+                  _buildRecentHistory(),
+                  const SizedBox(height: 24),
+                  
+                  // 운동 설명 (아코디언)
+                  _buildInstructionsAccordion(),
+                  const SizedBox(height: 24),
+                  
+                  // 타겟 근육
+                  _buildTargetMuscles(),
+                  const SizedBox(height: 100),
+                ],
+              ),
             ),
-          ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
+  Widget _buildTag(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4A9EFF).withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF4A9EFF).withValues(alpha: 0.5),
+        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF4A9EFF),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMyRecords() {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 60,
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF8E8E93),
-              fontWeight: FontWeight.w500,
-            ),
+        const Text(
+          '마이 레코드',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
+        const SizedBox(height: 16),
+        
+        // 3개 박스를 바로 배치 (Card-in-Card 구조 제거)
+        Row(
+          children: [
+            Expanded(
+              child: _buildRecordCard('최고 중량', '100kg', const Color(0xFF4A9EFF)),
             ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildRecordCard('최고 볼륨', '4980kg', const Color(0xFFFF6B35)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildRecordCard('총 세션', '24회', const Color(0xFF00C853)),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecordCard(String label, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1D29),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[400],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentHistory() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '최근 기록',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 16),
+        
+        if (_isLoadingHistory)
+          const Center(child: CircularProgressIndicator())
+        else if (_recentHistory.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1D29),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                '기록이 없습니다',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[400],
+                ),
+              ),
+            ),
+          )
+        else
+          Column(
+            children: _recentHistory.map((record) => _buildHistoryCard(record)).toList(),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildHistoryCard(ExerciseHistoryRecord record) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1D29),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          // 날짜 (배경색 제거, 텍스트만 강조)
+          Text(
+            record.formattedDate,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A9EFF),
+            ),
+          ),
+          const SizedBox(width: 16),
+          
+          // 세트 정보
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${record.sets.length}세트',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Wrap(
+                  spacing: 8,
+                  children: record.sets.map((set) => Text(
+                    '${set.weight}kg × ${set.reps}회',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[400],
+                    ),
+                  )).toList(),
+                ),
+              ],
+            ),
+          ),
+          
+          // 총 볼륨
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${record.totalVolume.toStringAsFixed(0)}kg',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                '총 볼륨',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[400],
+                ),
+              ),
+            ],
+          ),
+          
+          // 화살표 (중앙 정렬)
+          const SizedBox(width: 12),
+          const Icon(
+            Icons.chevron_right,
+            color: Colors.grey,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructionsAccordion() {
+    return ExpansionTile(
+      title: const Text(
+        '운동 방법',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      iconColor: const Color(0xFF4A9EFF),
+      collapsedIconColor: Colors.grey[400],
+      backgroundColor: const Color(0xFF1A1D29),
+      collapsedBackgroundColor: const Color(0xFF1A1D29),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      collapsedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '1. 벤치에 등을 대고 누워 바벨을 어깨 너비로 잡습니다.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[300],
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '2. 바벨을 가슴 중앙으로 천천히 내립니다.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[300],
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '3. 가슴 근육을 수축시키며 바벨을 위로 밀어 올립니다.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[300],
+                  height: 1.5,
+                ),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildInstructions(AppLocalizations l10n, String locale) {
-    final localizedInstructions = exercise.getLocalizedInstructions(locale);
-    
-    // 다국어 설명이 없으면 원본 instructions 사용
-    final instructions = localizedInstructions.isNotEmpty ? localizedInstructions : exercise.instructions;
-    
-    if (instructions.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            locale == 'ja' ? '運動方法' : locale == 'en' ? 'Instructions' : '운동 방법',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+  Widget _buildTargetMuscles() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '타겟 근육',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          const SizedBox(height: 12),
-          ...instructions.asMap().entries.map((entry) {
-            final index = entry.key;
-            final instruction = entry.value;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1D29),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF4A9EFF),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${index + 1}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  const Icon(
+                    Icons.my_location,
+                    color: Color(0xFF4A9EFF),
+                    size: 20,
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      instruction,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                        height: 1.4,
-                      ),
+                  const Text(
+                    '주요 근육',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '가슴',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[300],
                     ),
                   ),
                 ],
               ),
-            );
-          }).toList(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTargetMuscles(AppLocalizations l10n, String locale) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            locale == 'ja' ? '主要ターゲット筋肉' : locale == 'en' ? 'Primary Target Muscles' : '주요 타겟 근육',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF4A9EFF).withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: const Color(0xFF4A9EFF).withValues(alpha: 0.4),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              exercise.getLocalizedTarget(locale),
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF4A9EFF),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSecondaryMuscles(AppLocalizations l10n, String locale) {
-    final localizedSecondaryMuscles = exercise.getLocalizedSecondaryMuscles(locale);
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            locale == 'ja' ? '補助筋肉' : locale == 'en' ? 'Secondary Muscles' : '보조 근육',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: localizedSecondaryMuscles.map((muscle) {
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8E8E93).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFF8E8E93).withValues(alpha: 0.4),
-                    width: 1,
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.radio_button_unchecked,
+                    color: Colors.grey[400],
+                    size: 20,
                   ),
-                ),
-                child: Text(
-                  muscle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF8E8E93),
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(width: 12),
+                  Text(
+                    '보조 근육',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[300],
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddButton(AppLocalizations l10n, BuildContext context, String locale) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          // 운동을 계획에 추가하고 이전 화면으로 돌아가기
-          Navigator.of(context).pop(exercise);
-        },
-        icon: const Icon(Icons.add, size: 20),
-        label: Text(
-          locale == 'ja' ? 'ワークアウト計画に追加' : locale == 'en' ? 'Add to Workout Plan' : '운동 계획에 추가'
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF4A9EFF),
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+                  const Spacer(),
+                  Text(
+                    '어깨, 삼두',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

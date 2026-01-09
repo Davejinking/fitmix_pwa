@@ -56,24 +56,22 @@ Future<void> main() async {
   // 디버그 모드에서만 더미 데이터 생성
   if (kDebugMode) {
     try {
-      final dummyGenerator = DummyDataGenerator(sessionRepo);
-      // 기존 더미 데이터가 있는지 확인
-      final sessions = await sessionRepo.getWorkoutSessions();
-      print('📊 현재 저장된 운동 세션: ${sessions.length}개');
+      // 강제로 더미 데이터 재생성 (테스트용)
+      print('🗑️ 기존 운동 데이터 삭제 중...');
+      await sessionRepo.clearAllData();
       
-      if (sessions.isEmpty) {
-        print('🏋️ 더미 운동 데이터 생성 중...');
-        await dummyGenerator.generateLastWeekWorkouts();
-        
-        // 생성 확인
-        final newSessions = await sessionRepo.getWorkoutSessions();
-        print('✅ 더미 데이터 생성 완료! (${newSessions.length}개 세션)');
-        for (var session in newSessions) {
-          final volume = session.totalVolume;
-          print('  - ${session.ymd}: ${session.exercises.length}개 운동, 볼륨: ${volume.toStringAsFixed(0)}kg');
+      print('🏋️ 최근 기록 테스트용 더미 데이터 생성 중...');
+      await sessionRepo.seedDummyWorkoutData();
+      
+      // 생성 확인
+      final newSessions = await sessionRepo.getWorkoutSessions();
+      print('✅ 더미 데이터 생성 완료! (${newSessions.length}개 세션)');
+      for (var session in newSessions) {
+        final volume = session.totalVolume;
+        print('  - ${session.ymd}: ${session.exercises.length}개 운동, 볼륨: ${volume.toStringAsFixed(0)}kg');
+        for (var exercise in session.exercises) {
+          print('    * ${exercise.name}: ${exercise.sets.length}세트');
         }
-      } else {
-        print('ℹ️ 이미 운동 데이터가 존재합니다.');
       }
     } catch (e) {
       print('❌ 더미 데이터 생성 실패: $e');

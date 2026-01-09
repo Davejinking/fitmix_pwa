@@ -19,7 +19,7 @@ import '../services/achievement_service.dart';
 import '../models/achievement.dart';
 import '../services/gamification_service.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final SessionRepo sessionRepo;
   final UserRepo userRepo;
   final ExerciseLibraryRepo exerciseRepo;
@@ -31,162 +31,14 @@ class HomePage extends StatelessWidget {
       required this.sessionRepo,
       required this.userRepo,
       required this.exerciseRepo,
-      required this.settingsRepo, required this.authRepo});
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      style: TextStyle(
-        color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87,
-      ),
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // 헤더를 SliverAppBar로 변경
-            SliverToBoxAdapter(
-              child: _HeaderComponent(
-                userRepo: userRepo,
-                exerciseRepo: exerciseRepo,
-                settingsRepo: settingsRepo,
-                sessionRepo: sessionRepo,
-                authRepo: authRepo,
-              ),
-            ),
-            // 본문 콘텐츠
-            SliverToBoxAdapter(
-            child: _BodyComponent(
-              sessionRepo: sessionRepo,
-              userRepo: userRepo,
-              exerciseRepo: exerciseRepo,
-            ),
-          ),
-        ],
-        ),
-      ),
-    );
-  }
-}
-
-// 3.1 HeaderComponent (상단 헤더) - StatefulWidget으로 변경
-class _HeaderComponent extends StatefulWidget {
-  final UserRepo userRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-  final SettingsRepo settingsRepo;
-  final SessionRepo sessionRepo;
-  final AuthRepo authRepo;
-
-  const _HeaderComponent(
-      {required this.userRepo,
-      required this.exerciseRepo,
-      required this.settingsRepo,
-      required this.sessionRepo,
+      required this.settingsRepo, 
       required this.authRepo});
 
   @override
-  State<_HeaderComponent> createState() => _HeaderComponentState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HeaderComponentState extends State<_HeaderComponent> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      decoration: const BoxDecoration(
-        color: Color(0xFF121212),
-      ),
-      child: Row(
-        children: [
-          // Lifto 로고 (흰색, 22px)
-          const Text(
-            'Lifto',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: -0.3,
-            ),
-          ),
-          const Spacer(),
-          // 알림 아이콘
-          IconButton(
-            icon: const Icon(
-              Icons.notifications_outlined,
-              size: 24,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const NotificationsPage(),
-                ),
-              );
-            },
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-          ),
-          const SizedBox(width: 4),
-          // 설정 아이콘
-          IconButton(
-            icon: const Icon(
-              Icons.settings_outlined,
-              size: 24,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => SettingsPage(
-                    userRepo: widget.userRepo,
-                    exerciseRepo: widget.exerciseRepo,
-                    settingsRepo: widget.settingsRepo,
-                    sessionRepo: widget.sessionRepo,
-                    authRepo: widget.authRepo,
-                  ),
-                ),
-              );
-            },
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-          ),
-          const SizedBox(width: 4),
-          // 프로필 아이콘
-          IconButton(
-            icon: const Icon(
-              Icons.person_outlined,
-              size: 24,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UserInfoFormPage(
-                    userRepo: widget.userRepo,
-                  ),
-                ),
-              );
-            },
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// 3.2 BodyComponent (본문) - 애니메이션을 위해 StatefulWidget으로 변경
-class _BodyComponent extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final UserRepo userRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-
-  const _BodyComponent({required this.sessionRepo, required this.userRepo, required this.exerciseRepo});
-
-  @override
-  State<_BodyComponent> createState() => _BodyComponentState();
-}
-
-class _BodyComponentState extends State<_BodyComponent> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late List<Animation<Offset>> _slideAnimations;
 
@@ -222,590 +74,793 @@ class _BodyComponentState extends State<_BodyComponent> with SingleTickerProvide
 
   @override
   Widget build(BuildContext context) {
-    final cards = [
-      _XPLevelCard(sessionRepo: widget.sessionRepo),
-      _StreakCard(sessionRepo: widget.sessionRepo),
-      _TodaySummaryCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
-      _AchievementPreviewCard(sessionRepo: widget.sessionRepo),
-      _MyGoalCard(sessionRepo: widget.sessionRepo, userRepo: widget.userRepo, exerciseRepo: widget.exerciseRepo),
-      _ActivityTrendCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
-    ];
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: List.generate(cards.length, (index) {
-            return SlideTransition(
-              position: _slideAnimations[index],
-              child: FadeTransition(
-                opacity: _animationController,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: cards[index],
+    return Scaffold(
+      backgroundColor: const Color(0xFF121212),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF121212),
+        title: const Text(
+          'Iron Log - Home',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              // 히어로 섹션 (레벨 + 스트릭 통합 카드)
+              SlideTransition(
+                position: _slideAnimations[0],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: _buildHeroStatusCard(),
                 ),
               ),
-            );
-          }),
+              const SizedBox(height: 16),
+              
+              // 메인 액션 (오늘의 운동 시작) - 단일 버튼!
+              SlideTransition(
+                position: _slideAnimations[1],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: _buildMainActionCard(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // 주간 요약 (이번 주 운동 현황)
+              SlideTransition(
+                position: _slideAnimations[2],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: _buildWeeklyCalendar(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // 목표 진행률 (원형 차트)
+              SlideTransition(
+                position: _slideAnimations[3],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: _buildGoalProgress(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // 업적 미리보기
+              SlideTransition(
+                position: _slideAnimations[4],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: _AchievementPreviewCard(sessionRepo: widget.sessionRepo),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // 활동 트렌드
+              SlideTransition(
+                position: _slideAnimations[5],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: _ActivityTrendCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
+                ),
+              ),
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-// ⭐ XP/레벨 카드 (듀오링고 스타일)
-class _XPLevelCard extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  const _XPLevelCard({required this.sessionRepo});
+  // 히어로 섹션 (레벨 + 스트릭 통합 카드)
+  Widget _buildHeroStatusCard() {
+    return FutureBuilder<GamificationService?>(
+      future: _initGamificationService(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Container(
+            height: 140,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(16),
+            ),
+          );
+        }
 
-  @override
-  State<_XPLevelCard> createState() => _XPLevelCardState();
-}
+        final service = snapshot.data!;
+        final data = service.data;
 
-class _XPLevelCardState extends State<_XPLevelCard> {
-  GamificationService? _service;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _initService();
-  }
-
-  Future<void> _initService() async {
-    _service = GamificationService(sessionRepo: widget.sessionRepo);
-    await _service!.init();
-    if (mounted) setState(() => _isLoading = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading || _service == null) {
-      return Container(
-        height: 140,
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
-          borderRadius: BorderRadius.circular(16),
-        ),
-      );
-    }
-
-    final data = _service!.data;
-    final league = data.league;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [league.color.withValues(alpha: 0.3), const Color(0xFF1E1E1E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: league.color.withValues(alpha: 0.5), width: 1),
-      ),
-      child: Column(
-        children: [
-          // 상단: 리그 + 레벨 + 젬
-          Row(
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF1A1D29),
+                const Color(0xFF2A2D3A),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFF4A9EFF).withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Row(
             children: [
-              // 리그 뱃지
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: league.color.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: league.color),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+              // 좌측: 레벨 원형 그래프
+              Expanded(
+                flex: 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(league.icon, style: const TextStyle(fontSize: 16)),
-                    const SizedBox(width: 6),
                     Text(
-                      league.getName(context),
-                      style: TextStyle(
-                        color: league.color,
+                      'Level ${data.level}',
+                      style: const TextStyle(
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        color: Colors.white,
                       ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        // 레벨 프로그래스 바
+                        Expanded(
+                          child: Container(
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: FractionallySizedBox(
+                              alignment: Alignment.centerLeft,
+                              widthFactor: data.levelProgress,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF4A9EFF), Color(0xFF2196F3)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${data.totalXP}/${data.totalXP + data.xpToNextLevel} XP',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[400],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              const Spacer(),
-              // 파워 (클릭하면 상점으로)
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PowerShopPage(gamificationService: _service!),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C2C2E),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('💪', style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${data.power}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+              
+              const SizedBox(width: 20),
+              
+              // 우측: 스트릭 현황
+              Expanded(
+                flex: 4,
+                child: FutureBuilder<int>(
+                  future: _getStreak(),
+                  builder: (context, streakSnapshot) {
+                    final streak = streakSnapshot.data ?? 0;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Icon(
+                              Icons.local_fire_department,
+                              color: Color(0xFFFF6B35),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${streak}일 연속',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: 8),
+                        FutureBuilder<int>(
+                          future: _getWeeklyWorkouts(),
+                          builder: (context, weeklySnapshot) {
+                            final weeklyCount = weeklySnapshot.data ?? 0;
+                            return Text(
+                              '이번 주 $weeklyCount/7일 완료',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[400],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // 메인 액션 (오늘의 운동 시작) - 단일 버튼!
+  Widget _buildMainActionCard() {
+    return FutureBuilder<Session?>(
+      future: _getTodaySession(),
+      builder: (context, snapshot) {
+        final todaySession = snapshot.data;
+        final hasPlan = todaySession != null && 
+                       todaySession.isWorkoutDay && 
+                       todaySession.exercises.isNotEmpty;
+        final isRest = todaySession?.isRest ?? false;
+        final isCompleted = todaySession?.isCompleted ?? false;
+
+        if (isRest) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1D29),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.grey.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Column(
+              children: [
+                const Icon(
+                  Icons.event_busy,
+                  size: 48,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  context.l10n.rest,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '오늘은 휴식하는 날입니다',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[400],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (!hasPlan) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1D29),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.grey.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Column(
+              children: [
+                const Icon(
+                  Icons.add_circle_outline,
+                  size: 48,
+                  color: Color(0xFF4A9EFF),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  '오늘의 운동 계획',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '운동을 추가해서 오늘의 계획을 세워보세요',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[400],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      // 캘린더 탭으로 이동
+                      final shellState = context.findAncestorStateOfType<ShellPageState>();
+                      shellState?.navigateToCalendar();
+                    },
+                    icon: const Icon(Icons.add, size: 20),
+                    label: Text(context.l10n.planWorkout),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4A9EFF),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // 계획이 있는 경우
+        final exerciseCount = todaySession!.exercises.length;
+        final completedCount = todaySession.exercises.where((e) => 
+          e.sets.isNotEmpty && e.sets.every((s) => s.isCompleted)).length;
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isCompleted 
+                ? [const Color(0xFF00C853), const Color(0xFF4CAF50)]
+                : [const Color(0xFF4A9EFF), const Color(0xFF2196F3)],
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    isCompleted ? Icons.check_circle : Icons.play_circle_filled,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isCompleted ? '운동 완료!' : '오늘의 운동',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          '$completedCount/$exerciseCount 운동 완료',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // 캘린더 탭으로 이동
+                    final shellState = context.findAncestorStateOfType<ShellPageState>();
+                    shellState?.navigateToCalendar();
+                  },
+                  icon: Icon(
+                    isCompleted ? Icons.edit : Icons.play_arrow,
+                    size: 20,
+                  ),
+                  label: Text(
+                    isCompleted ? context.l10n.editWorkout : context.l10n.startWorkout,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: isCompleted ? const Color(0xFF00C853) : const Color(0xFF4A9EFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          // 레벨 + XP 바
-          Row(
+        );
+      },
+    );
+  }
+
+  // 주간 요약 (이번 주 운동 현황)
+  Widget _buildWeeklyCalendar() {
+    return FutureBuilder<Set<String>>(
+      future: _getWorkoutDates(),
+      builder: (context, snapshot) {
+        final workoutDates = snapshot.data ?? <String>{};
+        final now = DateTime.now();
+        final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+        
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1D29),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 레벨 원형
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [league.color, league.color.withValues(alpha: 0.6)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Center(
-                  child: Text(
-                    '${data.level}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
+              const Text(
+                '이번 주 운동',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 16),
-              // XP 진행바
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          context.l10n.level(data.level),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(7, (index) {
+                  final date = startOfWeek.add(Duration(days: index));
+                  final dateYmd = widget.sessionRepo.ymd(date);
+                  final hasWorkout = workoutDates.contains(dateYmd);
+                  final isToday = widget.sessionRepo.ymd(date) == widget.sessionRepo.ymd(now);
+                  final dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+                  
+                  return Column(
+                    children: [
+                      Text(
+                        dayNames[index],
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[400],
                         ),
-                        const Spacer(),
-                        Text(
-                          context.l10n.xpRemaining(data.xpToNextLevel),
-                          style: const TextStyle(
-                            color: Color(0xFFAAAAAA),
-                            fontSize: 12,
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: hasWorkout 
+                            ? const Color(0xFF4A9EFF)
+                            : isToday 
+                              ? Colors.grey[700]
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
+                          border: isToday && !hasWorkout
+                            ? Border.all(color: Colors.grey[600]!)
+                            : null,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: LinearProgressIndicator(
-                        value: data.levelProgress,
-                        backgroundColor: const Color(0xFF2C2C2E),
-                        color: league.color,
-                        minHeight: 10,
+                        child: Center(
+                          child: hasWorkout
+                            ? const Icon(
+                                Icons.local_fire_department,
+                                color: Colors.white,
+                                size: 16,
+                              )
+                            : Text(
+                                '${date.day}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isToday ? Colors.white : Colors.grey[500],
+                                ),
+                              ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      context.l10n.totalXpWeekly(data.totalXP, data.weeklyXP),
-                      style: const TextStyle(
-                        color: Color(0xFF888888),
-                        fontSize: 11,
+                    ],
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              FutureBuilder<Map<String, dynamic>>(
+                future: _getWeeklyStats(),
+                builder: (context, statsSnapshot) {
+                  final stats = statsSnapshot.data ?? {'volume': '0kg', 'time': '0분'};
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _buildWeeklyStat('총 볼륨', stats['volume'], Icons.bar_chart),
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildWeeklyStat('운동 시간', stats['time'], Icons.timer),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildWeeklyStat(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2A2D3A),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: const Color(0xFF4A9EFF)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[400],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
-}
 
-// 🔥 연속 운동 스트릭 카드
-class _StreakCard extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  const _StreakCard({required this.sessionRepo});
-
-  @override
-  State<_StreakCard> createState() => _StreakCardState();
-}
-
-class _StreakCardState extends State<_StreakCard> {
-  int _streak = 0;
-  int _longestStreak = 0;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadStreak());
+  // 목표 진행률 (원형 차트)
+  Widget _buildGoalProgress() {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _getGoalProgress(),
+      builder: (context, snapshot) {
+        final data = snapshot.data ?? {'progress': 0.0, 'completed': 0, 'total': 20};
+        final progress = data['progress'] as double;
+        final completed = data['completed'] as int;
+        final total = data['total'] as int;
+        
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1D29),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              // 원형 차트
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: Stack(
+                  children: [
+                    // 배경 원
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey[800]!,
+                          width: 8,
+                        ),
+                      ),
+                    ),
+                    // 진행률 원
+                    Transform.rotate(
+                      angle: -1.5708, // -90도 (12시 방향부터 시작)
+                      child: SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: CircularProgressIndicator(
+                          value: progress,
+                          strokeWidth: 8,
+                          backgroundColor: Colors.transparent,
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF4A9EFF),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 중앙 텍스트
+                    Center(
+                      child: Text(
+                        '${(progress * 100).toInt()}%',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 20),
+              // 목표 정보
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '이번 달 목표',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$total일 중 $completed일 완료',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${total - completed}일 남음',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  Future<void> _loadStreak() async {
-    final sessions = await widget.sessionRepo.getWorkoutSessions();
-    if (sessions.isEmpty) {
-      if (mounted) setState(() => _isLoading = false);
-      return;
-    }
+  // Helper methods
+  Future<GamificationService?> _initGamificationService() async {
+    final service = GamificationService(sessionRepo: widget.sessionRepo);
+    await service.init();
+    return service;
+  }
 
-    // 날짜별로 정렬 (최신순)
+  Future<Session?> _getTodaySession() async {
+    final today = widget.sessionRepo.ymd(DateTime.now());
+    return await widget.sessionRepo.get(today);
+  }
+
+  Future<int> _getStreak() async {
+    final sessions = await widget.sessionRepo.getWorkoutSessions();
+    if (sessions.isEmpty) return 0;
+
     sessions.sort((a, b) => b.ymd.compareTo(a.ymd));
     
     final today = DateTime.now();
     final todayYmd = widget.sessionRepo.ymd(today);
     final yesterdayYmd = widget.sessionRepo.ymd(today.subtract(const Duration(days: 1)));
     
-    // 현재 스트릭 계산
     int streak = 0;
     DateTime checkDate = today;
     
-    // 오늘 또는 어제부터 시작
     final hasToday = sessions.any((s) => s.ymd == todayYmd);
     final hasYesterday = sessions.any((s) => s.ymd == yesterdayYmd);
     
     if (!hasToday && !hasYesterday) {
-      streak = 0;
-    } else {
-      if (!hasToday) {
-        checkDate = today.subtract(const Duration(days: 1));
-      }
-      
-      while (true) {
-        final ymd = widget.sessionRepo.ymd(checkDate);
-        if (sessions.any((s) => s.ymd == ymd)) {
-          streak++;
-          checkDate = checkDate.subtract(const Duration(days: 1));
-        } else {
-          break;
-        }
-      }
+      return 0;
     }
-
-    // 최장 스트릭 계산
-    int longest = 0;
-    int current = 0;
-    DateTime? prevDate;
     
-    for (final session in sessions.reversed) {
-      final date = widget.sessionRepo.ymdToDateTime(session.ymd);
-      if (prevDate == null) {
-        current = 1;
+    if (!hasToday) {
+      checkDate = today.subtract(const Duration(days: 1));
+    }
+    
+    while (true) {
+      final ymd = widget.sessionRepo.ymd(checkDate);
+      if (sessions.any((s) => s.ymd == ymd)) {
+        streak++;
+        checkDate = checkDate.subtract(const Duration(days: 1));
       } else {
-        final diff = prevDate.difference(date).inDays;
-        if (diff == 1) {
-          current++;
-        } else {
-          longest = current > longest ? current : longest;
-          current = 1;
-        }
+        break;
       }
-      prevDate = date;
     }
-    longest = current > longest ? current : longest;
-
-    if (mounted) {
-      setState(() {
-        _streak = streak;
-        _longestStreak = longest;
-        _isLoading = false;
-      });
-    }
+    
+    return streak;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1E1E1E), Color(0xFF2A2A2A)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const SizedBox(height: 80),
-      );
-    }
+  Future<int> _getWeeklyWorkouts() async {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    
+    final sessions = await widget.sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
+    return sessions.where((s) => s.isWorkoutDay).length;
+  }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: _streak > 0 
-            ? [const Color(0xFFFF6B35), const Color(0xFFFF8C42)]
-            : [const Color(0xFF1E1E1E), const Color(0xFF2A2A2A)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          // 불꽃 아이콘
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Icon(
-              _streak > 0 ? Icons.local_fire_department : Icons.local_fire_department_outlined,
-              size: 32,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                          _streak > 0 ? context.l10n.streakMessage(_streak) : context.l10n.startWorkoutToday,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _longestStreak > 0 ? context.l10n.longestRecord(_longestStreak) : context.l10n.createFirstStreak,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.8),
-                          ),
-                        ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  Future<Set<String>> _getWorkoutDates() async {
+    final sessions = await widget.sessionRepo.getWorkoutSessions();
+    return sessions.map((s) => s.ymd).toSet();
+  }
+
+  Future<Map<String, dynamic>> _getWeeklyStats() async {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    
+    final sessions = await widget.sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
+    final totalVolume = sessions.fold(0.0, (sum, s) => sum + s.totalVolume);
+    
+    return {
+      'volume': '${(totalVolume / 1000).toStringAsFixed(1)}t',
+      'time': '${sessions.length * 60}분', // 임시로 세션당 60분으로 계산
+    };
+  }
+
+  Future<Map<String, dynamic>> _getGoalProgress() async {
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final endOfMonth = DateTime(now.year, now.month + 1, 0);
+    
+    final sessions = await widget.sessionRepo.getSessionsInRange(startOfMonth, endOfMonth);
+    final workoutDays = sessions.where((s) => s.isWorkoutDay).length;
+    final monthlyGoal = 20; // 기본 목표
+    
+    return {
+      'progress': (workoutDays / monthlyGoal).clamp(0.0, 1.0),
+      'completed': workoutDays,
+      'total': monthlyGoal,
+    };
   }
 }
-
-// 📊 오늘의 운동 요약 카드
-class _TodaySummaryCard extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-  const _TodaySummaryCard({required this.sessionRepo, required this.exerciseRepo});
-
-  @override
-  State<_TodaySummaryCard> createState() => _TodaySummaryCardState();
-}
-
-class _TodaySummaryCardState extends State<_TodaySummaryCard> {
-  Session? _todaySession;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadToday());
-  }
-
-  Future<void> _loadToday() async {
-    final today = widget.sessionRepo.ymd(DateTime.now());
-    final session = await widget.sessionRepo.get(today);
-    if (mounted) {
-      setState(() {
-        _todaySession = session;
-        _isLoading = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const SizedBox(height: 100),
-      );
-    }
-
-    final hasWorkout = _todaySession?.isWorkoutDay ?? false;
-    final isRest = _todaySession?.isRest ?? false;
-    final exerciseCount = _todaySession?.exercises.length ?? 0;
-    final totalSets = _todaySession?.exercises.fold<int>(0, (sum, e) => sum + e.sets.length) ?? 0;
-    final totalVolume = _todaySession?.totalVolume ?? 0;
-
-    return InkWell(
-      onTap: () {
-        // 캘린더 탭으로 이동 (오늘 날짜가 자동 선택됨)
-        final shellState = context.findAncestorStateOfType<ShellPageState>();
-        shellState?.navigateToCalendar();
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                context.l10n.todayWorkout,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: hasWorkout
-                      ? const Color(0xFF34C759)
-                      : (isRest ? const Color(0xFF007AFF) : const Color(0xFF2C2C2E)),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  hasWorkout
-                      ? context.l10n.completed
-                      : (isRest ? context.l10n.rest : context.l10n.notCompleted),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: (hasWorkout || isRest) ? Colors.white : const Color(0xFFAAAAAA),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (hasWorkout) ...[
-            Row(
-              children: [
-                _buildStatItem(Icons.fitness_center, context.l10n.exerciseUnit(exerciseCount), context.l10n.exercise),
-                const SizedBox(width: 24),
-                _buildStatItem(Icons.repeat, context.l10n.setsUnit(totalSets), context.l10n.totalSets),
-                const SizedBox(width: 24),
-                _buildStatItem(Icons.speed, '${(totalVolume / 1000).toStringAsFixed(1)}t', context.l10n.volume),
-              ],
-            ),
-          ] else if (isRest) ...[
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: Center(
-                child: Text(
-                  context.l10n.rest, // 휴식
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF007AFF),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            )
-          ] else ...[
-            InkWell(
-              onTap: () {
-                // 캘린더 탭으로 이동
-                final shellState = context.findAncestorStateOfType<ShellPageState>();
-                shellState?.navigateToCalendar();
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF007AFF).withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add, color: Color(0xFF007AFF), size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      context.l10n.startWorkoutNow,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF007AFF),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(IconData icon, String value, String label) {
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: const Color(0xFF007AFF), size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFFAAAAAA),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// 업데이트 배너 카드 제거 - 알림 아이콘으로 대체
 
 // 🏆 업적 미리보기 카드
 class _AchievementPreviewCard extends StatefulWidget {
@@ -916,201 +971,6 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
   }
 }
 
-class _MyGoalCard extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final UserRepo userRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-
-  const _MyGoalCard({required this.sessionRepo, required this.userRepo, required this.exerciseRepo});
-
-  @override
-  State<_MyGoalCard> createState() => _MyGoalCardState();
-}
-
-class _MyGoalCardState extends State<_MyGoalCard> {
-  // 두 가지 목표에 대한 상태
-  double? _daysProgress;
-  int? _workoutDays;
-  int? _monthlyGoal;
-  double? _volumeProgress;
-  double? _totalVolume;
-  double? _monthlyVolumeGoal;
-
-  bool get _isLoading => _daysProgress == null || _volumeProgress == null;
-
-  @override
-  void initState() {
-    super.initState();
-    // 위젯이 빌드된 후 데이터를 로드하여 자연스러운 애니메이션 보장
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadGoals());
-  }
-
-  Future<void> _loadGoals() async {
-    final now = DateTime.now();
-    final startOfMonth = DateTime(now.year, now.month, 1);
-    final endOfMonth = DateTime(now.year, now.month + 1, 0);
-
-    // Future.wait를 사용하여 두 비동기 작업을 병렬로 실행
-    final results = await Future.wait([
-      widget.sessionRepo.getSessionsInRange(startOfMonth, endOfMonth),
-      widget.userRepo.getUserProfile(),
-    ]);
-
-    final sessions = results[0] as List<dynamic>;
-    final profile = results[1] as UserProfile?;
-
-    // 1. 운동 일수 목표 계산
-    final workoutDays = sessions.where((s) => s.isWorkoutDay).length;
-    final monthlyGoal = profile?.monthlyWorkoutGoal ?? 20;
-
-    if (mounted) {
-      setState(() {
-        _daysProgress = (workoutDays / monthlyGoal).clamp(0.0, 1.0);
-        _workoutDays = workoutDays;
-        _monthlyGoal = monthlyGoal;
-      });
-    }
-
-    // 2. 운동 볼륨 목표 계산
-    final totalVolume = sessions.fold(0.0, (sum, s) => sum + (s as Session).totalVolume);
-    final monthlyVolumeGoal = profile?.monthlyVolumeGoal ?? 100000.0;
-
-    if (mounted) {
-      setState(() {
-        _volumeProgress = (totalVolume / monthlyVolumeGoal).clamp(0.0, 1.0);
-        _totalVolume = totalVolume;
-        _monthlyVolumeGoal = monthlyVolumeGoal;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: _isLoading
-          ? _buildLoadingSkeleton()
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      context.l10n.myGoal,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFFFFFFF),
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () async {
-                        final result = await Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => UserInfoFormPage(userRepo: widget.userRepo),
-                        ));
-                        if (result == true && mounted) {
-                          _loadGoals();
-                        }
-                      },
-                      child: Text(
-                        context.l10n.edit,
-                        style: const TextStyle(
-                          color: Color(0xFF007AFF),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                _buildGoalIndicator(
-                    text: context.l10n.workoutDaysGoal(_workoutDays!, _monthlyGoal!), progress: _daysProgress!),
-                const SizedBox(height: 20),
-                _buildGoalIndicator(
-                    text: context.l10n.workoutVolumeGoal(_totalVolume!.toStringAsFixed(0), _monthlyVolumeGoal!.toStringAsFixed(0)), progress: _volumeProgress!),
-                const SizedBox(height: 28),
-                ElevatedButton(
-                  onPressed: () {
-                    // 캘린더 탭으로 이동
-                    final shellState = context.findAncestorStateOfType<ShellPageState>();
-                    shellState?.navigateToCalendar();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF007AFF),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: Text(
-                    context.l10n.startWorkout,
-                    style: const TextStyle(
-                      color: Color(0xFFFFFFFF),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildGoalIndicator({required String text, required double progress}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 15,
-            color: Color(0xFFAAAAAA),
-          ),
-        ),
-        const SizedBox(height: 12),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: LinearProgressIndicator(
-            value: progress,
-            backgroundColor: const Color(0xFF2C2C2E),
-            color: const Color(0xFF007AFF),
-            minHeight: 10,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLoadingSkeleton() {
-    return Shimmer.fromColors(
-      baseColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      highlightColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(width: 100, height: 24, color: Theme.of(context).cardColor),
-          const SizedBox(height: 24),
-          Container(width: 200, height: 18, color: Theme.of(context).cardColor),
-          const SizedBox(height: 8),
-          Container(width: double.infinity, height: 10, color: Theme.of(context).cardColor),
-          const SizedBox(height: 16),
-          Container(width: 250, height: 18, color: Theme.of(context).cardColor),
-          const SizedBox(height: 8),
-          Container(width: double.infinity, height: 10, color: Theme.of(context).cardColor),
-          const SizedBox(height: 24),
-          Container(width: double.infinity, height: 50, color: Theme.of(context).cardColor, margin: const EdgeInsets.only(top: 8)),
-        ],
-      ),
-    );
-  }
-}
-
 class _ActivityTrendCard extends StatefulWidget {
   final SessionRepo sessionRepo;
   final ExerciseLibraryRepo exerciseRepo;
@@ -1130,17 +990,14 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
   @override
   void initState() {
     super.initState();
-    // 위젯이 빌드된 후 데이터를 로드하여 자연스러운 애니메이션 보장
     WidgetsBinding.instance.addPostFrameCallback((_) => _updateActivityTrend());
   }
   
   Future<void> _updateActivityTrend() async {
     try {
       final now = DateTime.now();
-      // 이번 주 월요일 ~ 일요일
       final startOfThisWeek = now.subtract(Duration(days: now.weekday - 1));
       final endOfThisWeek = startOfThisWeek.add(const Duration(days: 6));
-      // 저번 주 월요일 ~ 일요일
       final startOfLastWeek = startOfThisWeek.subtract(const Duration(days: 7));
       final endOfLastWeek = endOfThisWeek.subtract(const Duration(days: 7));
 
@@ -1151,7 +1008,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
       final lastWeekTotalVolume = _calculateTotalVolume(lastWeekSessions);
       final thisWeekTotalVolume = _calculateTotalVolume(thisWeekSessions);
 
-      final avgThisWeek = thisWeekTotalVolume / (now.weekday); // 이번주 오늘까지의 평균
+      final avgThisWeek = thisWeekTotalVolume / (now.weekday);
       final avgLastWeek = lastWeekTotalVolume / 7;
       final diff = avgThisWeek - avgLastWeek;
 
@@ -1221,95 +1078,95 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                Row(
-                  children: [
-                    _buildFilterTab(context.l10n.time, isSelected: true),
-                    const SizedBox(width: 8),
-                    _buildFilterTab(context.l10n.volume, isSelected: false),
-                    const SizedBox(width: 8),
-                    _buildFilterTab(context.l10n.density, isSelected: false),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.weeklyAverageVolume(_avgThisWeek!.toStringAsFixed(0)),
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Color(0xFFFFFFFF),
-                      ),
+                    Row(
+                      children: [
+                        _buildFilterTab(context.l10n.time, isSelected: true),
+                        const SizedBox(width: 8),
+                        _buildFilterTab(context.l10n.volume, isSelected: false),
+                        const SizedBox(width: 8),
+                        _buildFilterTab(context.l10n.density, isSelected: false),
+                      ],
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      context.l10n.weeklyComparison('${_diff! >= 0 ? '+' : ''}${_diff!.toStringAsFixed(0)}'),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF007AFF),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  height: 160,
-                  child: _weeklyVolumes!.every((v) => v == 0)
-                      ? _buildEmptyChart(context)
-                      : BarChart(
-                          BarChartData(
-                            alignment: BarChartAlignment.spaceAround,
-                            maxY: (_weeklyVolumes!.isEmpty ? 1000 : _weeklyVolumes!.reduce((a, b) => a > b ? a : b)) * 1.2,
-                            barTouchData: BarTouchData(enabled: false),
-                            gridData: const FlGridData(show: false), // 격자선 제거
-                            titlesData: FlTitlesData(
-                              leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitlesWidget: (value, meta) {
-                                    final days = [
-                                      context.l10n.weekdayMon,
-                                      context.l10n.weekdayTue,
-                                      context.l10n.weekdayWed,
-                                      context.l10n.weekdayThu,
-                                      context.l10n.weekdayFri,
-                                      context.l10n.weekdaySat,
-                                      context.l10n.weekdaySun,
-                                    ];
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        days[value.toInt() % 7],
-                                        style: const TextStyle(
-                                          color: Color(0xFFAAAAAA),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                            ),
-                            borderData: FlBorderData(show: false),
-                            barGroups: List.generate(7, (i) {
-                              return BarChartGroupData(x: i, barRods: [
-                                BarChartRodData(
-                                  toY: _weeklyVolumes![i] == 0 ? 0.1 : _weeklyVolumes![i],
-                                  color: const Color(0xFF007AFF),
-                                  width: 20,
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)), // 상단만 둥글게
-                                ),
-                              ]);
-                            }),
+                    const SizedBox(height: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.weeklyAverageVolume(_avgThisWeek!.toStringAsFixed(0)),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: Color(0xFFFFFFFF),
                           ),
                         ),
+                        const SizedBox(height: 6),
+                        Text(
+                          context.l10n.weeklyComparison('${_diff! >= 0 ? '+' : ''}${_diff!.toStringAsFixed(0)}'),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF007AFF),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      height: 160,
+                      child: _weeklyVolumes!.every((v) => v == 0)
+                          ? _buildEmptyChart(context)
+                          : BarChart(
+                              BarChartData(
+                                alignment: BarChartAlignment.spaceAround,
+                                maxY: (_weeklyVolumes!.isEmpty ? 1000 : _weeklyVolumes!.reduce((a, b) => a > b ? a : b)) * 1.2,
+                                barTouchData: BarTouchData(enabled: false),
+                                gridData: const FlGridData(show: false),
+                                titlesData: FlTitlesData(
+                                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      getTitlesWidget: (value, meta) {
+                                        final days = [
+                                          context.l10n.weekdayMon,
+                                          context.l10n.weekdayTue,
+                                          context.l10n.weekdayWed,
+                                          context.l10n.weekdayThu,
+                                          context.l10n.weekdayFri,
+                                          context.l10n.weekdaySat,
+                                          context.l10n.weekdaySun,
+                                        ];
+                                        return Padding(
+                                          padding: const EdgeInsets.only(top: 8),
+                                          child: Text(
+                                            days[value.toInt() % 7],
+                                            style: const TextStyle(
+                                              color: Color(0xFFAAAAAA),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                ),
+                                borderData: FlBorderData(show: false),
+                                barGroups: List.generate(7, (i) {
+                                  return BarChartGroupData(x: i, barRods: [
+                                    BarChartRodData(
+                                      toY: _weeklyVolumes![i] == 0 ? 0.1 : _weeklyVolumes![i],
+                                      color: const Color(0xFF007AFF),
+                                      width: 20,
+                                      borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                    ),
+                                  ]);
+                                }),
+                              ),
+                            ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
     );
   }
 
@@ -1350,7 +1207,6 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
     );
   }
 
-  // 빈 그래프 스켈레톤 UI
   Widget _buildEmptyChart(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -1389,7 +1245,6 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
     );
   }
 
-  // 데이터 없을 때 표시
   Widget _buildEmptyState(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1407,39 +1262,16 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
           child: Column(
             children: [
               const Icon(
-                Icons.show_chart,
-                size: 64,
-                color: Color(0xFF2C2C2E),
+                Icons.bar_chart,
+                size: 48,
+                color: Color(0xFFAAAAAA),
               ),
               const SizedBox(height: 16),
               Text(
-                context.l10n.noRecentWorkout,
+                '운동 기록이 없습니다',
                 style: const TextStyle(
                   fontSize: 16,
                   color: Color(0xFFAAAAAA),
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  // 캘린더 탭으로 이동
-                  final shellState = context.findAncestorStateOfType<ShellPageState>();
-                  shellState?.navigateToCalendar();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF007AFF),
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                  minimumSize: const Size(0, 50),
-                ),
-                child: Text(
-                  context.l10n.startWorkout,
-                  style: const TextStyle(
-                    color: Color(0xFFFFFFFF),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
                 ),
               ),
             ],

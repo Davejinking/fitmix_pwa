@@ -79,6 +79,9 @@ abstract class SessionRepo {
   
   /// 특정 운동의 최근 기록들을 조회 (최대 5개)
   Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5});
+  
+  /// 테스트용 더미 데이터 생성
+  Future<void> seedDummyWorkoutData();
 }
 
 class HiveSessionRepo implements SessionRepo {
@@ -208,7 +211,20 @@ class HiveSessionRepo implements SessionRepo {
   @override
   Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5}) async {
     try {
+      print('🔍 getRecentExerciseHistory 호출됨');
+      print('🔍 검색할 운동명: "$exerciseName"');
+      
       final allSessions = await listAll();
+      print('🔍 전체 세션 수: ${allSessions.length}');
+      
+      // 모든 세션의 운동 이름들을 출력
+      for (final session in allSessions) {
+        print('🔍 세션 ${session.ymd}:');
+        for (final exercise in session.exercises) {
+          print('  - 운동: "${exercise.name}"');
+        }
+      }
+      
       final records = <ExerciseHistoryRecord>[];
       
       // 최신 날짜부터 역순으로 정렬
@@ -217,24 +233,172 @@ class HiveSessionRepo implements SessionRepo {
       for (final session in allSessions) {
         if (records.length >= limit) break;
         
-        // 해당 운동이 있는지 확인
+        // 해당 운동이 있는지 확인 (정확한 매칭)
         final exercise = session.exercises.where((ex) => ex.name == exerciseName).firstOrNull;
         if (exercise != null && exercise.sets.isNotEmpty) {
+          print('✅ 매칭된 운동 발견: ${exercise.name}, 세트 수: ${exercise.sets.length}');
+          
           // 완료된 세트만 필터링
           final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
+          print('  - 완료된 세트 수: ${completedSets.length}');
+          
           if (completedSets.isNotEmpty) {
             records.add(ExerciseHistoryRecord(
               date: session.ymd,
               sets: completedSets,
             ));
+            print('  - 기록 추가됨: ${session.ymd}');
           }
         }
       }
       
+      print('🔍 최종 기록 수: ${records.length}');
       return records;
     } catch (e) {
       print('❌ 운동 기록 조회 중 오류: $e');
       return [];
+    }
+  }
+
+  @override
+  Future<void> seedDummyWorkoutData() async {
+    try {
+      final now = DateTime.now();
+      
+      // 지난 2주간의 더미 운동 데이터 생성 (다국어 지원)
+      final dummySessions = [
+        // 7일 전 - 벤치프레스, 스쿼트
+        Session(
+          ymd: ymd(now.subtract(const Duration(days: 7))),
+          exercises: [
+            Exercise(
+              name: 'ベンチプレス', // 일본어
+              bodyPart: '가슴',
+              sets: [
+                ExerciseSet(weight: 60, reps: 10, isCompleted: true),
+                ExerciseSet(weight: 65, reps: 8, isCompleted: true),
+                ExerciseSet(weight: 70, reps: 6, isCompleted: true),
+              ],
+            ),
+            Exercise(
+              name: 'スクワット', // 일본어
+              bodyPart: '하체',
+              sets: [
+                ExerciseSet(weight: 80, reps: 12, isCompleted: true),
+                ExerciseSet(weight: 85, reps: 10, isCompleted: true),
+                ExerciseSet(weight: 90, reps: 8, isCompleted: true),
+              ],
+            ),
+          ],
+          isCompleted: true,
+        ),
+        
+        // 5일 전 - 데드리프트, 랫풀다운
+        Session(
+          ymd: ymd(now.subtract(const Duration(days: 5))),
+          exercises: [
+            Exercise(
+              name: 'デッドリフト', // 일본어
+              bodyPart: '등',
+              sets: [
+                ExerciseSet(weight: 100, reps: 8, isCompleted: true),
+                ExerciseSet(weight: 110, reps: 6, isCompleted: true),
+                ExerciseSet(weight: 120, reps: 5, isCompleted: true),
+              ],
+            ),
+            Exercise(
+              name: 'ラットプルダウン', // 일본어
+              bodyPart: '등',
+              sets: [
+                ExerciseSet(weight: 45, reps: 12, isCompleted: true),
+                ExerciseSet(weight: 50, reps: 10, isCompleted: true),
+                ExerciseSet(weight: 55, reps: 8, isCompleted: true),
+              ],
+            ),
+          ],
+          isCompleted: true,
+        ),
+        
+        // 3일 전 - 벤치프레스 (진전된 기록)
+        Session(
+          ymd: ymd(now.subtract(const Duration(days: 3))),
+          exercises: [
+            Exercise(
+              name: 'ベンチプレス', // 일본어
+              bodyPart: '가슴',
+              sets: [
+                ExerciseSet(weight: 65, reps: 10, isCompleted: true),
+                ExerciseSet(weight: 70, reps: 8, isCompleted: true),
+                ExerciseSet(weight: 75, reps: 6, isCompleted: true),
+                ExerciseSet(weight: 75, reps: 5, isCompleted: true),
+              ],
+            ),
+            Exercise(
+              name: 'インクライン・ダンベル・プレス', // 일본어
+              bodyPart: '가슴',
+              sets: [
+                ExerciseSet(weight: 25, reps: 12, isCompleted: true),
+                ExerciseSet(weight: 30, reps: 10, isCompleted: true),
+                ExerciseSet(weight: 32.5, reps: 8, isCompleted: true),
+              ],
+            ),
+          ],
+          isCompleted: true,
+        ),
+        
+        // 1일 전 - 스쿼트 (진전된 기록)
+        Session(
+          ymd: ymd(now.subtract(const Duration(days: 1))),
+          exercises: [
+            Exercise(
+              name: 'スクワット', // 일본어
+              bodyPart: '하체',
+              sets: [
+                ExerciseSet(weight: 85, reps: 12, isCompleted: true),
+                ExerciseSet(weight: 90, reps: 10, isCompleted: true),
+                ExerciseSet(weight: 95, reps: 8, isCompleted: true),
+                ExerciseSet(weight: 100, reps: 6, isCompleted: true),
+              ],
+            ),
+            Exercise(
+              name: 'レッグプレス', // 일본어
+              bodyPart: '하체',
+              sets: [
+                ExerciseSet(weight: 150, reps: 15, isCompleted: true),
+                ExerciseSet(weight: 170, reps: 12, isCompleted: true),
+                ExerciseSet(weight: 180, reps: 10, isCompleted: true),
+              ],
+            ),
+          ],
+          isCompleted: true,
+        ),
+        
+        // 10일 전 - 오래된 벤치프레스 기록
+        Session(
+          ymd: ymd(now.subtract(const Duration(days: 10))),
+          exercises: [
+            Exercise(
+              name: 'ベンチプレス', // 일본어
+              bodyPart: '가슴',
+              sets: [
+                ExerciseSet(weight: 55, reps: 10, isCompleted: true),
+                ExerciseSet(weight: 60, reps: 8, isCompleted: true),
+                ExerciseSet(weight: 62.5, reps: 6, isCompleted: true),
+              ],
+            ),
+          ],
+          isCompleted: true,
+        ),
+      ];
+      
+      // 더미 데이터 저장
+      for (final session in dummySessions) {
+        await put(session);
+      }
+      
+      print('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (일본어)');
+    } catch (e) {
+      print('❌ 더미 데이터 생성 중 오류: $e');
     }
   }
 }

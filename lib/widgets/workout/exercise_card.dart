@@ -7,6 +7,8 @@ import '../../core/error_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/tempo_controller.dart';
 import '../../data/session_repo.dart';
+import '../../data/exercise_library_repo.dart';
+import '../../pages/exercise_detail_page.dart';
 import '../tempo_settings_modal.dart';
 import '../tempo_countdown_modal.dart';
 
@@ -21,6 +23,7 @@ class ExerciseCard extends StatefulWidget {
   final bool isEditingEnabled;
   final bool? forceExpanded; // null이면 개별 제어, true/false면 강제 적용
   final SessionRepo? sessionRepo; // 최근 기록 조회용
+  final ExerciseLibraryRepo? exerciseRepo; // 운동 상세정보용
 
   const ExerciseCard({
     super.key,
@@ -33,6 +36,7 @@ class ExerciseCard extends StatefulWidget {
     this.isEditingEnabled = true,
     this.forceExpanded,
     this.sessionRepo,
+    this.exerciseRepo,
   });
 
   @override
@@ -101,72 +105,15 @@ class _ExerciseCardState extends State<ExerciseCard> {
     );
   }
 
-  void _showRecentHistory(BuildContext context) async {
-    if (widget.sessionRepo == null) return;
-    
-    try {
-      final history = await widget.sessionRepo!.getRecentExerciseHistory(widget.exercise.name);
-      
-      if (!mounted) return;
-      
-      if (history.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).noRecentRecords),
-            backgroundColor: Colors.grey[700],
-            duration: const Duration(seconds: 2),
-          ),
-        );
-        return;
-      }
-      
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (context) => _RecentHistoryModal(
+  void _showExerciseDetail(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExerciseDetailPage(
           exerciseName: widget.exercise.name,
-          history: history,
-          onSelectRecord: (record) {
-            Navigator.pop(context);
-            _applyHistoryRecord(record);
-          },
+          sessionRepo: widget.sessionRepo,
+          exerciseRepo: widget.exerciseRepo,
         ),
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('기록 조회 중 오류가 발생했습니다: $e'),
-            backgroundColor: Colors.redAccent,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    }
-  }
-
-  void _applyHistoryRecord(ExerciseHistoryRecord record) {
-    setState(() {
-      // 현재 세트를 기록의 세트로 교체
-      widget.exercise.sets.clear();
-      for (final historySet in record.sets) {
-        widget.exercise.sets.add(ExerciseSet(
-          weight: historySet.weight,
-          reps: historySet.reps,
-          isCompleted: false, // 새로운 운동이므로 미완료 상태
-        ));
-      }
-    });
-    widget.onUpdate();
-    
-    // 성공 피드백
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${record.formattedDate} 기록을 적용했습니다'),
-        backgroundColor: const Color(0xFF2196F3),
-        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -295,24 +242,42 @@ class _ExerciseCardState extends State<ExerciseCard> {
             const SizedBox(width: 12),
             // 운동 이름
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(
-                    _getLocalizedExerciseName(widget.exercise.name, locale),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white.withValues(alpha: textOpacity),
-                      letterSpacing: -0.3,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getLocalizedExerciseName(widget.exercise.name, locale),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white.withValues(alpha: textOpacity),
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[500]?.withValues(alpha: textOpacity),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[500]?.withValues(alpha: textOpacity),
+                  // 운동 정보 아이콘
+                  GestureDetector(
+                    onTap: () => _showExerciseDetail(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.info_outline,
+                        size: 18,
+                        color: Colors.grey[500],
+                      ),
                     ),
                   ),
                 ],
@@ -360,15 +325,6 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 label: AppLocalizations.of(context).totalVolumeShort(totalVolume.toStringAsFixed(0)),
                 color: Colors.grey[600]!,
               ),
-              const SizedBox(width: 8),
-              // 최근 기록 버튼
-              if (widget.sessionRepo != null)
-                _buildInfoChip(
-                  icon: Icons.history,
-                  label: AppLocalizations.of(context).recentRecord,
-                  color: Colors.grey[600]!,
-                  onTap: () => _showRecentHistory(context),
-                ),
               const Spacer(),
               // 템포 버튼 (완료되지 않은 운동만 표시)
               if (widget.isEditingEnabled && !isCompleted)
@@ -845,206 +801,6 @@ class _SetRowGridState extends State<_SetRowGrid> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// 최근 기록 모달
-class _RecentHistoryModal extends StatelessWidget {
-  final String exerciseName;
-  final List<ExerciseHistoryRecord> history;
-  final Function(ExerciseHistoryRecord) onSelectRecord;
-
-  const _RecentHistoryModal({
-    required this.exerciseName,
-    required this.history,
-    required this.onSelectRecord,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF1A1D22),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 핸들
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(top: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[600],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          
-          // 헤더
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Icon(Icons.history, color: Colors.grey[400], size: 24),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.recentRecord,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        exerciseName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, color: Colors.grey[400]),
-                ),
-              ],
-            ),
-          ),
-          
-          // 기록 리스트
-          Flexible(
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: history.length,
-              itemBuilder: (context, index) {
-                final record = history[index];
-                return _HistoryRecordTile(
-                  record: record,
-                  onTap: () => onSelectRecord(record),
-                );
-              },
-            ),
-          ),
-          
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
-  }
-}
-
-/// 기록 항목 타일
-class _HistoryRecordTile extends StatelessWidget {
-  final ExerciseHistoryRecord record;
-  final VoidCallback onTap;
-
-  const _HistoryRecordTile({
-    required this.record,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF252932),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800]!, width: 1),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 날짜와 요약 정보
-              Row(
-                children: [
-                  // 날짜
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2196F3).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      record.formattedDate,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2196F3),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // 세트 수
-                  Text(
-                    '${record.totalSets}세트',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[300],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  // 총 볼륨
-                  Text(
-                    '${record.totalVolume.toStringAsFixed(0)}kg',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[500]),
-                ],
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // 세트 상세 정보
-              Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                children: record.sets.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final set = entry.value;
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3A4452),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${index + 1}. ${set.weight}kg × ${set.reps}회',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[300],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
