@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 /// GitHub-style Contribution Heatmap for Workout Tracking
 /// Industrial/Noir aesthetic with intensity-based color scaling
-class WorkoutHeatmap extends StatelessWidget {
+class WorkoutHeatmap extends StatefulWidget {
   final Map<DateTime, double> workoutData; // DateTime -> Volume (kg)
   final int monthsToShow;
   final Function(DateTime)? onDayTap;
@@ -16,9 +16,17 @@ class WorkoutHeatmap extends StatelessWidget {
   });
 
   @override
+  State<WorkoutHeatmap> createState() => _WorkoutHeatmapState();
+}
+
+class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
+  DateTime? _selectedDate;
+  double? _selectedVolume;
+
+  @override
   Widget build(BuildContext context) {
     final endDate = DateTime.now();
-    final startDate = DateTime(endDate.year, endDate.month - monthsToShow, endDate.day);
+    final startDate = DateTime(endDate.year, endDate.month - widget.monthsToShow, endDate.day);
     
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -33,6 +41,9 @@ class WorkoutHeatmap extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: _buildHeatmapGrid(startDate, endDate),
           ),
+          const SizedBox(height: 12),
+          // Selected date info
+          if (_selectedDate != null) _buildSelectedDateInfo(),
           const SizedBox(height: 12),
           // Legend
           _buildLegend(),
@@ -89,6 +100,8 @@ class WorkoutHeatmap extends StatelessWidget {
     
     // Adjust start to Monday
     final startMonday = start.subtract(Duration(days: start.weekday - 1));
+    final today = DateTime.now();
+    final todayNormalized = DateTime(today.year, today.month, today.day);
     
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,25 +111,47 @@ class WorkoutHeatmap extends StatelessWidget {
           child: Column(
             children: List.generate(7, (dayIndex) {
               final date = startMonday.add(Duration(days: weekIndex * 7 + dayIndex));
+              final normalizedDate = _normalizeDate(date);
               
               // Skip if date is outside range
               if (date.isBefore(start) || date.isAfter(end)) {
                 return const SizedBox(width: 14, height: 14);
               }
               
-              final volume = workoutData[_normalizeDate(date)] ?? 0.0;
+              final volume = widget.workoutData[normalizedDate] ?? 0.0;
               final intensity = _calculateIntensity(volume);
+              final isToday = normalizedDate.isAtSameMomentAs(todayNormalized);
+              final isSelected = _selectedDate != null && 
+                                normalizedDate.isAtSameMomentAs(_selectedDate!);
               
               return Padding(
                 padding: const EdgeInsets.only(bottom: 2),
-                child: GestureDetector(
-                  onTap: () => onDayTap?.call(date),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _selectedDate = normalizedDate;
+                      _selectedVolume = volume;
+                    });
+                    widget.onDayTap?.call(date);
+                  },
+                  borderRadius: BorderRadius.circular(2),
                   child: Container(
                     width: 14,
                     height: 14,
                     decoration: BoxDecoration(
                       color: _getColorForIntensity(intensity),
                       borderRadius: BorderRadius.circular(2),
+                      border: isToday
+                          ? Border.all(
+                              color: Colors.white,
+                              width: 1.5,
+                            )
+                          : isSelected
+                              ? Border.all(
+                                  color: const Color(0xFF007AFF),
+                                  width: 1.5,
+                                )
+                              : null,
                     ),
                   ),
                 ),
@@ -128,38 +163,120 @@ class WorkoutHeatmap extends StatelessWidget {
     );
   }
 
+  Widget _buildSelectedDateInfo() {
+    if (_selectedDate == null) return const SizedBox.shrink();
+    
+    final dateStr = DateFormat('MMM dd, yyyy').format(_selectedDate!);
+    final volumeStr = _selectedVolume! > 0
+        ? '${(_selectedVolume! / 1000).toStringAsFixed(1)}t'
+        : 'Rest Day';
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1C1C1E),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: const Color(0xFF2C2C2E),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _selectedVolume! > 0 ? Icons.fitness_center : Icons.event_busy,
+            size: 14,
+            color: _selectedVolume! > 0 
+                ? const Color(0xFF007AFF) 
+                : Colors.grey[600],
+          ),
+          const SizedBox(width: 8),
+          Text(
+            dateStr,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              fontFamily: 'Courier',
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: _selectedVolume! > 0
+                  ? const Color(0xFF007AFF).withValues(alpha: 0.2)
+                  : Colors.grey[800],
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              volumeStr,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: _selectedVolume! > 0
+                    ? const Color(0xFF007AFF)
+                    : Colors.grey[500],
+                fontFamily: 'Courier',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLegend() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        const Text(
+        Icon(
+          Icons.wb_sunny_outlined,
+          size: 12,
+          color: Colors.grey[600],
+        ),
+        const SizedBox(width: 4),
+        Text(
           'Less',
           style: TextStyle(
-            fontSize: 10,
-            color: Color(0xFF505050),
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[600],
           ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 8),
         ...List.generate(5, (index) {
           return Padding(
-            padding: const EdgeInsets.only(left: 2),
+            padding: const EdgeInsets.only(left: 3),
             child: Container(
               width: 12,
               height: 12,
               decoration: BoxDecoration(
                 color: _getColorForIntensity(index),
                 borderRadius: BorderRadius.circular(2),
+                border: Border.all(
+                  color: const Color(0xFF1C1C1E),
+                  width: 0.5,
+                ),
               ),
             ),
           );
         }),
-        const SizedBox(width: 6),
-        const Text(
+        const SizedBox(width: 8),
+        Text(
           'More',
           style: TextStyle(
-            fontSize: 10,
-            color: Color(0xFF505050),
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[600],
           ),
+        ),
+        const SizedBox(width: 4),
+        Icon(
+          Icons.local_fire_department,
+          size: 12,
+          color: const Color(0xFFFF6B35),
         ),
       ],
     );
@@ -183,7 +300,7 @@ class WorkoutHeatmap extends StatelessWidget {
   Color _getColorForIntensity(int intensity) {
     switch (intensity) {
       case 0:
-        return const Color(0xFF2C2C2C); // Inactive: Dark Grey
+        return Colors.white.withValues(alpha: 0.05); // Inactive: Subtle grey
       case 1:
         return const Color(0xFF4D1F1F); // Level 1: Dark Red
       case 2:
@@ -193,7 +310,7 @@ class WorkoutHeatmap extends StatelessWidget {
       case 4:
         return const Color(0xFFFF0033); // Level 4: Neon Red
       default:
-        return const Color(0xFF2C2C2C);
+        return Colors.white.withValues(alpha: 0.05);
     }
   }
 }
