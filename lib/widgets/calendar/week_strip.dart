@@ -253,6 +253,11 @@ class _WeekStripState extends State<WeekStrip> {
               // Custom builders for markers
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, events) {
+                  // Hide marker on selected day to avoid overlap with blue background
+                  if (isSameDay(day, widget.selectedDay)) {
+                    return const SizedBox.shrink();
+                  }
+                  
                   if (events.isEmpty) return const SizedBox.shrink();
                   
                   final dayYmd = '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';

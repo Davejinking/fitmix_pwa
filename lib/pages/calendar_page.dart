@@ -244,6 +244,8 @@ class _CalendarPageState extends State<CalendarPage> {
             onPressed: _goToPlanPage,
             tooltip: 'Add Plan',
           ),
+          // Spacing to align with body content (16px padding)
+          const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(
