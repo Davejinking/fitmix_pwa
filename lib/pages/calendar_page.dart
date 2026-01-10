@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import '../core/service_locator.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/session_repo.dart';
@@ -239,26 +240,49 @@ class _CalendarPageState extends State<CalendarPage> {
     final isToday = _selectedDay.year == DateTime.now().year &&
         _selectedDay.month == DateTime.now().month &&
         _selectedDay.day == DateTime.now().day;
+    
+    // Format month/year for AppBar title
+    final locale = Localizations.localeOf(context);
+    final monthFormat = locale.languageCode == 'ja'
+        ? DateFormat('yyyy年M月', locale.toString())
+        : locale.languageCode == 'ko'
+            ? DateFormat('yyyy년 M월', locale.toString())
+            : DateFormat('MMM yyyy', locale.toString());
+    final monthYear = monthFormat.format(_focusedDay);
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
-        title: const Text(
-          'Iron Log',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        // Tappable title to open calendar modal
+        title: InkWell(
+          onTap: _showCalendarModal,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  monthYear,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
-          // 캘린더 모달 버튼
-          IconButton(
-            icon: const Icon(Icons.calendar_month_outlined, color: Colors.white),
-            onPressed: _showCalendarModal,
-            tooltip: 'Calendar',
-          ),
           // 오늘로 이동 버튼
           IconButton(
             icon: Icon(
