@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-import '../../core/burn_fit_style.dart';
 import '../../data/session_repo.dart';
 import '../../data/exercise_library_repo.dart';
 import '../../pages/plan_page.dart';
@@ -34,6 +33,10 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
   late DateTime _focusedMonth;
   late PageController _pageController;
   static const int _initialPage = 500;
+  
+  // 세션 상태 캐싱을 위한 변수들
+  Map<String, dynamic> _sessionCache = {};
+  bool _isLoadingSession = false;
 
   @override
   void initState() {
@@ -41,6 +44,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
     _tempSelectedDate = widget.initialDate;
     _focusedMonth = widget.initialDate;
     _pageController = PageController(initialPage: _initialPage);
+    _loadSessionStatus(_tempSelectedDate); // 초기 세션 로드
   }
 
   @override
@@ -75,15 +79,32 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
     return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  Future<dynamic> _getSessionStatus() async {
-    return await widget.repo.get(_getYmd(_tempSelectedDate));
+  Future<void> _loadSessionStatus(DateTime date) async {
+    final ymd = _getYmd(date);
+    if (_sessionCache.containsKey(ymd)) return; // 이미 캐시된 경우 스킵
+    
+    setState(() => _isLoadingSession = true);
+    try {
+      final session = await widget.repo.get(ymd);
+      _sessionCache[ymd] = session;
+    } catch (e) {
+      _sessionCache[ymd] = null;
+    }
+    if (mounted) {
+      setState(() => _isLoadingSession = false);
+    }
+  }
+
+  dynamic _getCachedSessionStatus(DateTime date) {
+    final ymd = _getYmd(date);
+    return _sessionCache[ymd];
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF1E1E1E), // 다크 테마 배경색으로 변경
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -96,7 +117,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey[600], // 다크 테마에 맞는 핸들 색상
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -107,7 +128,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: BurnFitStyle.darkGrayText,
+                color: Colors.white, // 다크 테마 텍스트 색상
               ),
             ),
             const SizedBox(height: 16),
@@ -122,7 +143,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: BurnFitStyle.darkGrayText,
+                      color: Colors.white, // 다크 테마 텍스트 색상
                     ),
                   ),
                   Row(
@@ -130,14 +151,14 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                       IconButton(
                         icon: Icon(
                           Icons.chevron_left,
-                          color: BurnFitStyle.primaryBlue,
+                          color: Color(0xFF4A9EFF), // 테마의 primary 색상 사용
                         ),
                         onPressed: _goToPreviousMonth,
                       ),
                       IconButton(
                         icon: Icon(
                           Icons.chevron_right,
-                          color: BurnFitStyle.primaryBlue,
+                          color: Color(0xFF4A9EFF), // 테마의 primary 색상 사용
                         ),
                         onPressed: _goToNextMonth,
                       ),
@@ -174,6 +195,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                         setState(() {
                           _tempSelectedDate = selectedDay;
                         });
+                        _loadSessionStatus(selectedDay); // 새로운 날짜의 세션 상태 로드
                       },
                       daysOfWeekHeight: 40,
                       rowHeight: 48,
@@ -182,18 +204,18 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                         // 오늘
                         todayDecoration: BoxDecoration(
                           border: Border.all(
-                            color: BurnFitStyle.primaryBlue.withValues(alpha: 0.3),
+                            color: Color(0xFF4A9EFF).withValues(alpha: 0.3), // 테마 primary 색상
                             width: 1.5,
                           ),
                           shape: BoxShape.circle,
                         ),
                         todayTextStyle: const TextStyle(
-                          color: BurnFitStyle.darkGrayText,
+                          color: Colors.white, // 다크 테마 텍스트
                           fontWeight: FontWeight.w600,
                         ),
                         // 선택된 날짜
                         selectedDecoration: BoxDecoration(
-                          color: BurnFitStyle.primaryBlue,
+                          color: Color(0xFF4A9EFF), // 테마 primary 색상
                           shape: BoxShape.circle,
                         ),
                         selectedTextStyle: const TextStyle(
@@ -203,19 +225,19 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                         ),
                         // 기본
                         defaultTextStyle: TextStyle(
-                          color: BurnFitStyle.darkGrayText,
+                          color: Colors.white, // 다크 테마 텍스트
                           fontWeight: FontWeight.w500,
                           fontSize: 15,
                         ),
                         // 주말
                         weekendTextStyle: TextStyle(
-                          color: BurnFitStyle.darkGrayText,
+                          color: Colors.white, // 다크 테마 텍스트
                           fontWeight: FontWeight.w500,
                           fontSize: 15,
                         ),
                         // 다른 달
                         outsideTextStyle: TextStyle(
-                          color: Colors.grey[350],
+                          color: Colors.grey[600], // 다크 테마에 맞는 회색
                           fontSize: 15,
                         ),
                       ),
@@ -238,7 +260,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: BurnFitStyle.secondaryGrayText,
+                                color: Colors.grey[400], // 다크 테마에 맞는 회색
                               ),
                             ),
                           );
@@ -269,7 +291,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                                 width: 6,
                                 height: 6,
                                 decoration: const BoxDecoration(
-                                  color: BurnFitStyle.primaryBlue,
+                                  color: Color(0xFF4A9EFF), // 테마 primary 색상
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -287,181 +309,185 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
             // 버튼 영역 (조건부 표시)
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-              child: FutureBuilder<dynamic>(
-                future: _getSessionStatus(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: null,
-                        child: const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  final session = snapshot.data as dynamic;
-                  final isRest = session?.isRest ?? false;
-                  final hasExercises = session?.hasExercises ?? false;
-
-                  // 휴식 상태: "운동 휴식 해제" 버튼
-                  if (isRest) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          await widget.repo.markRest(
-                            _getYmd(_tempSelectedDate),
-                            rest: false,
-                          );
-                          if (context.mounted) {
-                            Navigator.pop(context, true); // true를 반환하여 새로고침 신호
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: BurnFitStyle.primaryBlue,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context).cancelRest,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  // 운동이 있는 경우: "운동 편집" 버튼
-                  if (hasExercises) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PlanPage(
-                                date: _tempSelectedDate,
-                                repo: widget.repo,
-                                exerciseRepo: widget.exerciseRepo,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: BurnFitStyle.primaryBlue,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context).editExercise,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  // 기본: "운동 계획하기" + "운동 휴식하기" 버튼 (2개 버튼)
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PlanPage(
-                                    date: _tempSelectedDate,
-                                    repo: widget.repo,
-                                    exerciseRepo: widget.exerciseRepo,
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: BurnFitStyle.primaryBlue,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              AppLocalizations.of(context).planWorkout,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: OutlinedButton(
-                            onPressed: () async {
-                              await widget.repo.markRest(
-                                _getYmd(_tempSelectedDate),
-                                rest: true,
-                              );
-                              if (context.mounted) {
-                                Navigator.pop(context, true); // true를 반환하여 새로고침 신호
-                              }
-                            },
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: BurnFitStyle.primaryBlue,
-                              side: const BorderSide(
-                                color: BurnFitStyle.primaryBlue,
-                                width: 1.5,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              AppLocalizations.of(context).markRest,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+              child: _buildButtonArea(),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildButtonArea() {
+    if (_isLoadingSession) {
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton(
+          onPressed: null,
+          child: const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final session = _getCachedSessionStatus(_tempSelectedDate);
+    final isRest = session?.isRest ?? false;
+    final hasExercises = session?.hasExercises ?? false;
+
+    // 휴식 상태: "운동 휴식 해제" 버튼
+    if (isRest) {
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton(
+          onPressed: () async {
+            await widget.repo.markRest(
+              _getYmd(_tempSelectedDate),
+              rest: false,
+            );
+            // 캐시 업데이트
+            _sessionCache[_getYmd(_tempSelectedDate)] = null;
+            if (mounted) {
+              Navigator.pop(context, true); // true를 반환하여 새로고침 신호
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF4A9EFF), // 테마 primary 색상
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text(
+            AppLocalizations.of(context).cancelRest,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 운동이 있는 경우: "운동 편집" 버튼
+    if (hasExercises) {
+      return SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => PlanPage(
+                  date: _tempSelectedDate,
+                  repo: widget.repo,
+                  exerciseRepo: widget.exerciseRepo,
+                ),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF4A9EFF), // 테마 primary 색상
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text(
+            AppLocalizations.of(context).editExercise,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 기본: "운동 계획하기" + "운동 휴식하기" 버튼 (2개 버튼)
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlanPage(
+                      date: _tempSelectedDate,
+                      repo: widget.repo,
+                      exerciseRepo: widget.exerciseRepo,
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF4A9EFF), // 테마 primary 색상
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                AppLocalizations.of(context).planWorkout,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton(
+              onPressed: () async {
+                await widget.repo.markRest(
+                  _getYmd(_tempSelectedDate),
+                  rest: true,
+                );
+                // 캐시 업데이트
+                final ymd = _getYmd(_tempSelectedDate);
+                _sessionCache[ymd] = await widget.repo.get(ymd);
+                if (mounted) {
+                  Navigator.pop(context, true); // true를 반환하여 새로고침 신호
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Color(0xFF4A9EFF), // 테마 primary 색상
+                side: const BorderSide(
+                  color: Color(0xFF4A9EFF), // 테마 primary 색상
+                  width: 1.5,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                AppLocalizations.of(context).markRest,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

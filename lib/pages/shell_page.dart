@@ -5,6 +5,7 @@ import '../data/settings_repo.dart';
 import '../data/user_repo.dart';
 import '../data/exercise_library_repo.dart';
 import '../core/l10n_extensions.dart';
+import '../core/iron_theme.dart';
 import '../widgets/common/fm_bottom_nav.dart';
 import 'analysis_page.dart';
 import 'calendar_page.dart';
@@ -32,7 +33,7 @@ class ShellPage extends StatefulWidget {
 }
 
 class ShellPageState extends State<ShellPage> {
-  int _currentIndex = 0;
+  int _currentIndex = 0; // 홈 화면을 기본값으로 설정
 
   // IndexedStack을 사용하여 각 페이지의 상태를 보존
   late final List<Widget> _pages;
@@ -69,7 +70,7 @@ class ShellPageState extends State<ShellPage> {
         exerciseRepo: widget.exerciseRepo,
       ),
       Scaffold(
-        backgroundColor: const Color(0xFF121212),
+        backgroundColor: IronTheme.background,
         body: LibraryPageV2(
           sessionRepo: widget.sessionRepo,
           exerciseRepo: widget.exerciseRepo,
@@ -89,7 +90,7 @@ class ShellPageState extends State<ShellPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // 다크 모드 배경 고정
+      backgroundColor: IronTheme.background, // 다크 모드 배경 고정
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,

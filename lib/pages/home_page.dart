@@ -5,19 +5,15 @@ import '../data/user_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/auth_repo.dart';
-import '../models/user_profile.dart';
 import '../core/l10n_extensions.dart';
+import '../core/iron_theme.dart';
 import 'package:shimmer/shimmer.dart';
-import 'user_info_form_page.dart';
 import 'shell_page.dart';
 import '../models/session.dart';
-import './settings_page.dart';
-import './notifications_page.dart';
-import './achievements_page.dart';
-import './power_shop_page.dart';
 import '../services/achievement_service.dart';
 import '../models/achievement.dart';
 import '../services/gamification_service.dart';
+import 'achievements_page.dart';
 
 class HomePage extends StatefulWidget {
   final SessionRepo sessionRepo;
@@ -75,24 +71,24 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: IronTheme.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
-        title: const Text(
+        backgroundColor: IronTheme.background,
+        title: Text(
           'Iron Log - Home',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: IronTheme.textHigh,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            icon: Icon(Icons.notifications_outlined, color: IronTheme.textHigh),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white),
+            icon: Icon(Icons.settings_outlined, color: IronTheme.textHigh),
             onPressed: () {},
           ),
         ],
@@ -177,7 +173,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           return Container(
             height: 140,
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E),
+              color: IronTheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
           );
@@ -193,13 +189,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF1A1D29),
-                const Color(0xFF2A2D3A),
+                IronTheme.surface.withValues(alpha: 0.8),
+                IronTheme.surface.withValues(alpha: 1.0),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFF4A9EFF).withValues(alpha: 0.3),
+              color: IronTheme.primary.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -213,10 +209,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   children: [
                     Text(
                       'Level ${data.level}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: IronTheme.textHigh,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -235,8 +231,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                               widthFactor: data.levelProgress,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF4A9EFF), Color(0xFF2196F3)],
+                                  gradient: LinearGradient(
+                                    colors: [IronTheme.primary, IronTheme.primary.withValues(alpha: 0.8)],
                                   ),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
@@ -249,7 +245,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           '${data.totalXP}/${data.totalXP + data.xpToNextLevel} XP',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[400],
+                            color: IronTheme.textMedium,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -276,7 +272,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           children: [
                             const Icon(
                               Icons.local_fire_department,
-                              color: Color(0xFFFF6B35),
+                              color: IronTheme.secondary,
                               size: 20,
                             ),
                             const SizedBox(width: 4),
@@ -299,7 +295,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                               '이번 주 $weeklyCount/7일 완료',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[400],
+                                color: IronTheme.textMedium,
                               ),
                             );
                           },
@@ -332,7 +328,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1D29),
+              color: IronTheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: Colors.grey.withValues(alpha: 0.3),
@@ -359,7 +355,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   '오늘은 휴식하는 날입니다',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[400],
+                    color: IronTheme.textMedium,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -372,7 +368,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1D29),
+              color: IronTheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: Colors.grey.withValues(alpha: 0.3),
@@ -383,7 +379,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 const Icon(
                   Icons.add_circle_outline,
                   size: 48,
-                  color: Color(0xFF4A9EFF),
+                  color: IronTheme.primary,
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -399,7 +395,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   '운동을 추가해서 오늘의 계획을 세워보세요',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[400],
+                    color: IronTheme.textMedium,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -416,7 +412,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     icon: const Icon(Icons.add, size: 20),
                     label: Text(context.l10n.planWorkout),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A9EFF),
+                      backgroundColor: IronTheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -430,7 +426,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         }
 
         // 계획이 있는 경우
-        final exerciseCount = todaySession!.exercises.length;
+        final exerciseCount = todaySession.exercises.length;
         final completedCount = todaySession.exercises.where((e) => 
           e.sets.isNotEmpty && e.sets.every((s) => s.isCompleted)).length;
 
@@ -442,7 +438,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               end: Alignment.bottomRight,
               colors: isCompleted 
                 ? [const Color(0xFF00C853), const Color(0xFF4CAF50)]
-                : [const Color(0xFF4A9EFF), const Color(0xFF2196F3)],
+                : [IronTheme.primary, IronTheme.primary.withValues(alpha: 0.8)],
             ),
             borderRadius: BorderRadius.circular(16),
           ),
@@ -504,7 +500,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: isCompleted ? const Color(0xFF00C853) : const Color(0xFF4A9EFF),
+                    foregroundColor: isCompleted ? const Color(0xFF00C853) : IronTheme.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -530,7 +526,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1D29),
+            color: IronTheme.surface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -560,7 +556,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         dayNames[index],
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[400],
+                          color: IronTheme.textMedium,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -569,7 +565,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         height: 32,
                         decoration: BoxDecoration(
                           color: hasWorkout 
-                            ? const Color(0xFF4A9EFF)
+                            ? IronTheme.primary
                             : isToday 
                               ? Colors.grey[700]
                               : Colors.transparent,
@@ -628,12 +624,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2D3A),
+        color: IronTheme.surface.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF4A9EFF)),
+          Icon(icon, size: 16, color: IronTheme.primary),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -651,7 +647,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   label,
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey[400],
+                    color: IronTheme.textMedium,
                   ),
                 ),
               ],
@@ -675,7 +671,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1D29),
+            color: IronTheme.surface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
@@ -708,8 +704,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           value: progress,
                           strokeWidth: 8,
                           backgroundColor: Colors.transparent,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFF4A9EFF),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            IronTheme.primary,
                           ),
                         ),
                       ),
@@ -747,7 +743,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       '$total일 중 $completed일 완료',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[400],
+                        color: IronTheme.textMedium,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -784,26 +780,24 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final sessions = await widget.sessionRepo.getWorkoutSessions();
     if (sessions.isEmpty) return 0;
 
-    sessions.sort((a, b) => b.ymd.compareTo(a.ymd));
+    sessions.sort((a, b) => b.ymd.compareTo(a.ymd)); // 최신순 정렬
     
     final today = DateTime.now();
     final todayYmd = widget.sessionRepo.ymd(today);
     final yesterdayYmd = widget.sessionRepo.ymd(today.subtract(const Duration(days: 1)));
     
-    int streak = 0;
-    DateTime checkDate = today;
-    
+    // 오늘이나 어제 운동했는지 확인
     final hasToday = sessions.any((s) => s.ymd == todayYmd);
     final hasYesterday = sessions.any((s) => s.ymd == yesterdayYmd);
     
     if (!hasToday && !hasYesterday) {
-      return 0;
+      return 0; // 연속 기록이 끊어짐
     }
     
-    if (!hasToday) {
-      checkDate = today.subtract(const Duration(days: 1));
-    }
+    int streak = 0;
+    DateTime checkDate = hasToday ? today : today.subtract(const Duration(days: 1));
     
+    // 연속일 계산
     while (true) {
       final ymd = widget.sessionRepo.ymd(checkDate);
       if (sessions.any((s) => s.ymd == ymd)) {
@@ -912,7 +906,7 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
+          color: IronTheme.surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -922,22 +916,22 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
               children: [
                 Text(
                   '🏆 ${context.l10n.achievement}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: IronTheme.textHigh,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '$_totalUnlocked/${Achievements.all.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFFAAAAAA),
+                    color: IronTheme.textMedium,
                   ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.chevron_right, color: Color(0xFFAAAAAA), size: 20),
+                const Icon(Icons.chevron_right, color: IronTheme.textMedium, size: 20),
               ],
             ),
             const SizedBox(height: 16),
@@ -946,7 +940,7 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
             else if (_recentUnlocked.isEmpty)
               Text(
                 context.l10n.achieveFirst,
-                style: const TextStyle(color: Color(0xFFAAAAAA), fontSize: 14),
+                style: TextStyle(color: IronTheme.textMedium, fontSize: 14),
               )
             else
               Row(
@@ -1049,7 +1043,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
+        color: IronTheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: _isLoading
@@ -1063,17 +1057,17 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                       children: [
                         Text(
                           context.l10n.activityTrend,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFFFFFFFF),
+                            color: IronTheme.textHigh,
                           ),
                         ),
                         const Spacer(),
                         const Icon(
                           Icons.arrow_forward_ios,
                           size: 16,
-                          color: Color(0xFFAAAAAA),
+                          color: IronTheme.textMedium,
                         ),
                       ],
                     ),
@@ -1093,17 +1087,17 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                       children: [
                         Text(
                           context.l10n.weeklyAverageVolume(_avgThisWeek!.toStringAsFixed(0)),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
-                            color: Color(0xFFFFFFFF),
+                            color: IronTheme.textHigh,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           context.l10n.weeklyComparison('${_diff! >= 0 ? '+' : ''}${_diff!.toStringAsFixed(0)}'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF007AFF),
+                            color: IronTheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -1139,8 +1133,8 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                                           padding: const EdgeInsets.only(top: 8),
                                           child: Text(
                                             days[value.toInt() % 7],
-                                            style: const TextStyle(
-                                              color: Color(0xFFAAAAAA),
+                                            style: TextStyle(
+                                              color: IronTheme.textMedium,
                                               fontSize: 12,
                                             ),
                                           ),
@@ -1156,7 +1150,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                                   return BarChartGroupData(x: i, barRods: [
                                     BarChartRodData(
                                       toY: _weeklyVolumes![i] == 0 ? 0.1 : _weeklyVolumes![i],
-                                      color: const Color(0xFF007AFF),
+                                      color: IronTheme.primary,
                                       width: 20,
                                       borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
                                     ),
@@ -1193,13 +1187,13 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF007AFF) : const Color(0xFF2C2C2E),
+        color: isSelected ? IronTheme.primary : IronTheme.surface.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: isSelected ? const Color(0xFFFFFFFF) : const Color(0xFFAAAAAA),
+          color: isSelected ? IronTheme.textHigh : IronTheme.textMedium,
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -1219,7 +1213,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
               width: 20,
               height: 40 + (i * 10.0 % 60),
               decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2E),
+                color: IronTheme.surface.withValues(alpha: 0.8),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
               ),
             ),
@@ -1234,8 +1228,8 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
                 context.l10n.weekdaySat,
                 context.l10n.weekdaySun,
               ][i],
-              style: const TextStyle(
-                color: Color(0xFFAAAAAA),
+              style: TextStyle(
+                color: IronTheme.textMedium,
                 fontSize: 12,
               ),
             ),
@@ -1251,10 +1245,10 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
       children: [
         Text(
           context.l10n.activityTrend,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: Color(0xFFFFFFFF),
+            color: IronTheme.textHigh,
           ),
         ),
         const SizedBox(height: 40),
@@ -1264,14 +1258,14 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
               const Icon(
                 Icons.bar_chart,
                 size: 48,
-                color: Color(0xFFAAAAAA),
+                color: IronTheme.textMedium,
               ),
               const SizedBox(height: 16),
               Text(
                 '운동 기록이 없습니다',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Color(0xFFAAAAAA),
+                  color: IronTheme.textMedium,
                 ),
               ),
             ],

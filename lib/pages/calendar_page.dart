@@ -12,6 +12,7 @@ import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
 import '../pages/exercise_detail_page.dart';
+import '../widgets/modals/exercise_detail_modal.dart';
 import 'active_workout_page.dart';
 import 'exercise_selection_page_v2.dart';
 
@@ -877,15 +878,11 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         // 운동 정보 아이콘 (i)
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            showExerciseDetailModal(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => ExerciseDetailPage(
-                                  exerciseName: widget.exercise.name,
-                                  sessionRepo: widget.sessionRepo,
-                                  exerciseRepo: widget.exerciseRepo,
-                                ),
-                              ),
+                              exerciseName: widget.exercise.name,
+                              sessionRepo: widget.sessionRepo,
+                              exerciseRepo: widget.exerciseRepo,
                             );
                           },
                           child: Container(

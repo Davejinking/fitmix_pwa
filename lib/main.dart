@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/constants.dart';
+import 'core/iron_theme.dart';
 import 'data/session_repo.dart';
 import 'data/exercise_library_repo.dart';
 import 'data/settings_repo.dart';
@@ -14,7 +15,6 @@ import 'pages/login_page.dart';
 import 'data/user_repo.dart';
 import 'pages/splash_page.dart';
 import 'pages/library_page_v2.dart';
-import 'utils/dummy_data_generator.dart';
 import 'models/session.dart';
 import 'models/exercise_library.dart';
 import 'services/exercise_seeding_service.dart';
@@ -122,8 +122,8 @@ class _IronLogAppState extends State<IronLogApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: AppConstants.appName,
-      theme: AppConstants.darkTheme, // 다크 모드로 고정
-      darkTheme: AppConstants.darkTheme,
+      theme: IronTheme.darkTheme, // Iron 테마 적용
+      darkTheme: IronTheme.darkTheme,
       themeMode: ThemeMode.dark, // 항상 다크 모드
       locale: null, // 시스템 언어 자동 감지
       supportedLocales: const [

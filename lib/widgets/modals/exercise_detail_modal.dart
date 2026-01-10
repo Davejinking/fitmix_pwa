@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import '../models/exercise_db.dart';
-import '../models/exercise_set.dart';
-import '../l10n/app_localizations.dart';
-import '../data/session_repo.dart';
-import '../data/exercise_library_repo.dart';
+import '../../models/exercise_db.dart';
+import '../../l10n/app_localizations.dart';
+import '../../data/session_repo.dart';
+import '../../data/exercise_library_repo.dart';
+import '../../core/iron_theme.dart';
 
-class ExerciseDetailPage extends StatefulWidget {
+class ExerciseDetailModal extends StatefulWidget {
   final String exerciseName;
   final SessionRepo? sessionRepo;
   final ExerciseLibraryRepo? exerciseRepo;
 
-  const ExerciseDetailPage({
+  const ExerciseDetailModal({
     super.key,
     required this.exerciseName,
     this.sessionRepo,
@@ -18,10 +18,10 @@ class ExerciseDetailPage extends StatefulWidget {
   });
 
   @override
-  State<ExerciseDetailPage> createState() => _ExerciseDetailPageState();
+  State<ExerciseDetailModal> createState() => _ExerciseDetailModalState();
 }
 
-class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
+class _ExerciseDetailModalState extends State<ExerciseDetailModal> {
   List<ExerciseHistoryRecord> _recentHistory = [];
   bool _isLoadingHistory = true;
 
@@ -60,114 +60,71 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     final bodyPart = 'chest'; // 임시로 고정값 사용
     final localizedBodyPart = ExerciseDB.getBodyPartLocalized(bodyPart, locale);
     
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
-      body: CustomScrollView(
-        slivers: [
-          // 히어로 섹션 (Visual)
-          SliverAppBar(
-            expandedHeight: 280,
-            pinned: true,
-            backgroundColor: const Color(0xFF0A0A0A),
-            leading: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white, size: 24),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white, size: 24),
-                onPressed: () {},
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              title: null, // 타이틀을 body에서 처리
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      const Color(0xFF1A1D29),
-                      const Color(0xFF0A0A0A),
-                    ],
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    // 배경 이미지 (은은하게)
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1D29).withValues(alpha: 0.3),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.fitness_center,
-                            size: 120,
-                            color: Color(0xFF4A9EFF),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // 그라데이션 오버레이
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              const Color(0xFF0A0A0A).withValues(alpha: 0.8),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      decoration: BoxDecoration(
+        color: IronTheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          // 핸들바
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 8),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: IronTheme.textMedium,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
           
-          // 메인 콘텐츠
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+          // 헤더
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 태그들
+                      Row(
+                        children: [
+                          _buildTag('바벨'),
+                          const SizedBox(width: 8),
+                          _buildTag(localizedBodyPart),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // 운동 이름
+                      Text(
+                        localizedName,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: IronTheme.textHigh,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: IronTheme.textHigh),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          
+          // 스크롤 가능한 콘텐츠
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 헤더 (중앙 정렬)
-                  Center(
-                    child: Column(
-                      children: [
-                        // 태그 (바벨, 가슴)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildTag('바벨'),
-                            const SizedBox(width: 8),
-                            _buildTag(localizedBodyPart),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        
-                        // 운동 이름
-                        Text(
-                          localizedName,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  
-                  // 마이 레코드 (Card-in-Card 구조 개선)
+                  // 마이 레코드
                   _buildMyRecords(),
                   const SizedBox(height: 24),
                   
@@ -175,13 +132,13 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                   _buildRecentHistory(),
                   const SizedBox(height: 24),
                   
-                  // 운동 설명 (아코디언)
+                  // 운동 설명
                   _buildInstructionsAccordion(),
                   const SizedBox(height: 24),
                   
                   // 타겟 근육
                   _buildTargetMuscles(),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -195,18 +152,18 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF4A9EFF).withValues(alpha: 0.2),
+        color: IronTheme.primary.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF4A9EFF).withValues(alpha: 0.5),
+          color: IronTheme.primary.withValues(alpha: 0.5),
         ),
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF4A9EFF),
+          color: IronTheme.primary,
         ),
       ),
     );
@@ -216,25 +173,24 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '마이 레코드',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: IronTheme.textHigh,
           ),
         ),
         const SizedBox(height: 16),
         
-        // 3개 박스를 바로 배치 (Card-in-Card 구조 제거)
         Row(
           children: [
             Expanded(
-              child: _buildRecordCard('최고 중량', '100kg', const Color(0xFF4A9EFF)),
+              child: _buildRecordCard('최고 중량', '100kg', IronTheme.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildRecordCard('최고 볼륨', '4980kg', const Color(0xFFFF6B35)),
+              child: _buildRecordCard('최고 볼륨', '4980kg', IronTheme.secondary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -250,7 +206,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1D29),
+        color: IronTheme.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: color.withValues(alpha: 0.3),
@@ -271,7 +227,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[400],
+              color: IronTheme.textMedium,
             ),
             textAlign: TextAlign.center,
           ),
@@ -284,12 +240,12 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '최근 기록',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: IronTheme.textHigh,
           ),
         ),
         const SizedBox(height: 16),
@@ -300,7 +256,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1D29),
+              color: IronTheme.background,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -308,7 +264,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                 '기록이 없습니다',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[400],
+                  color: IronTheme.textMedium,
                 ),
               ),
             ),
@@ -326,33 +282,31 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1D29),
+        color: IronTheme.background,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          // 날짜 (배경색 제거, 텍스트만 강조)
           Text(
             record.formattedDate,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF4A9EFF),
+              color: IronTheme.primary,
             ),
           ),
           const SizedBox(width: 16),
           
-          // 세트 정보
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '${record.sets.length}세트',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: IronTheme.textHigh,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -362,7 +316,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                     '${set.weight}kg × ${set.reps}회',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[400],
+                      color: IronTheme.textMedium,
                     ),
                   )).toList(),
                 ),
@@ -370,33 +324,31 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
             ),
           ),
           
-          // 총 볼륨
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 '${record.totalVolume.toStringAsFixed(0)}kg',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: IronTheme.textHigh,
                 ),
               ),
               Text(
                 '총 볼륨',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[400],
+                  color: IronTheme.textMedium,
                 ),
               ),
             ],
           ),
           
-          // 화살표 (중앙 정렬)
           const SizedBox(width: 12),
-          const Icon(
+          Icon(
             Icons.chevron_right,
-            color: Colors.grey,
+            color: IronTheme.textMedium,
             size: 20,
           ),
         ],
@@ -405,61 +357,66 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
   }
 
   Widget _buildInstructionsAccordion() {
-    return ExpansionTile(
-      title: const Text(
-        '운동 방법',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dividerColor: Colors.transparent,
       ),
-      iconColor: const Color(0xFF4A9EFF),
-      collapsedIconColor: Colors.grey[400],
-      backgroundColor: const Color(0xFF1A1D29),
-      collapsedBackgroundColor: const Color(0xFF1A1D29),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      collapsedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '1. 벤치에 등을 대고 누워 바벨을 어깨 너비로 잡습니다.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[300],
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '2. 바벨을 가슴 중앙으로 천천히 내립니다.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[300],
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '3. 가슴 근육을 수축시키며 바벨을 위로 밀어 올립니다.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[300],
-                  height: 1.5,
-                ),
-              ),
-            ],
+      child: ExpansionTile(
+        title: Text(
+          '운동 방법',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: IronTheme.textHigh,
           ),
         ),
-      ],
+        iconColor: IronTheme.primary,
+        collapsedIconColor: IronTheme.textMedium,
+        backgroundColor: IronTheme.background,
+        collapsedBackgroundColor: IronTheme.background,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '1. 벤치에 등을 대고 누워 바벨을 어깨 너비로 잡습니다.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: IronTheme.textMedium,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '2. 바벨을 가슴 중앙으로 천천히 내립니다.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: IronTheme.textMedium,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '3. 가슴 근육을 수축시키며 바벨을 위로 밀어 올립니다.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: IronTheme.textMedium,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -467,37 +424,37 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '타겟 근육',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: IronTheme.textHigh,
           ),
         ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1D29),
+            color: IronTheme.background,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.my_location,
-                    color: Color(0xFF4A9EFF),
+                    color: IronTheme.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
-                  const Text(
+                  Text(
                     '주요 근육',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: IronTheme.textHigh,
                     ),
                   ),
                   const Spacer(),
@@ -505,7 +462,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                     '가슴',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[300],
+                      color: IronTheme.textMedium,
                     ),
                   ),
                 ],
@@ -515,7 +472,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                 children: [
                   Icon(
                     Icons.radio_button_unchecked,
-                    color: Colors.grey[400],
+                    color: IronTheme.textMedium,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -524,7 +481,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[300],
+                      color: IronTheme.textMedium,
                     ),
                   ),
                   const Spacer(),
@@ -532,7 +489,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                     '어깨, 삼두',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[400],
+                      color: IronTheme.textMedium,
                     ),
                   ),
                 ],
@@ -543,4 +500,23 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
       ],
     );
   }
+}
+
+// 모달을 띄우는 헬퍼 함수
+void showExerciseDetailModal(
+  BuildContext context, {
+  required String exerciseName,
+  SessionRepo? sessionRepo,
+  ExerciseLibraryRepo? exerciseRepo,
+}) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => ExerciseDetailModal(
+      exerciseName: exerciseName,
+      sessionRepo: sessionRepo,
+      exerciseRepo: exerciseRepo,
+    ),
+  );
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/exercise_seeding_service.dart';
 import '../models/exercise_library.dart';
 import '../l10n/app_localizations.dart';
-import '../pages/exercise_detail_page.dart';
+import '../widgets/modals/exercise_detail_modal.dart';
 import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';
 
@@ -329,15 +329,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                 // 운동 상세 정보 버튼 (i) - 캘린더와 동일한 스타일
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
+                    showExerciseDetailModal(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => ExerciseDetailPage(
-                          exerciseName: exercise.nameEn,
-                          sessionRepo: widget.sessionRepo,
-                          exerciseRepo: widget.exerciseRepo,
-                        ),
-                      ),
+                      exerciseName: exercise.nameEn,
+                      sessionRepo: widget.sessionRepo,
+                      exerciseRepo: widget.exerciseRepo,
                     );
                   },
                   child: Container(

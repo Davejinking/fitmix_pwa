@@ -233,8 +233,8 @@ class HiveSessionRepo implements SessionRepo {
       for (final session in allSessions) {
         if (records.length >= limit) break;
         
-        // 해당 운동이 있는지 확인 (정확한 매칭)
-        final exercise = session.exercises.where((ex) => ex.name == exerciseName).firstOrNull;
+        // 해당 운동이 있는지 확인 (다국어 매칭 지원)
+        final exercise = session.exercises.where((ex) => _isExerciseNameMatch(ex.name, exerciseName)).firstOrNull;
         if (exercise != null && exercise.sets.isNotEmpty) {
           print('✅ 매칭된 운동 발견: ${exercise.name}, 세트 수: ${exercise.sets.length}');
           
@@ -260,19 +260,56 @@ class HiveSessionRepo implements SessionRepo {
     }
   }
 
+  /// 운동 이름 매칭 (다국어 지원)
+  bool _isExerciseNameMatch(String storedName, String searchName) {
+    // 정확한 매칭
+    if (storedName == searchName) return true;
+    
+    // 다국어 매칭 - ExerciseDB의 매핑을 활용
+    // 영어 → 한국어/일본어 매칭
+    const exerciseNameMap = {
+      'Bench Press': ['벤치프레스', 'ベンチプレス'],
+      'Squat': ['스쿼트', 'スクワット'],
+      'Deadlift': ['데드리프트', 'デッドリフト'],
+      'Lat Pulldown': ['랫풀다운', 'ラットプルダウン'],
+      'Incline Dumbbell Press': ['인클라인 덤벨 프레스', 'インクライン・ダンベル・プレス'],
+      'Leg Press': ['레그 프레스', 'レッグプレス'],
+    };
+    
+    // 저장된 이름이 영어인 경우, 검색 이름이 번역된 이름인지 확인
+    if (exerciseNameMap.containsKey(storedName)) {
+      return exerciseNameMap[storedName]!.contains(searchName);
+    }
+    
+    // 검색 이름이 영어인 경우, 저장된 이름이 번역된 이름인지 확인
+    if (exerciseNameMap.containsKey(searchName)) {
+      return exerciseNameMap[searchName]!.contains(storedName);
+    }
+    
+    // 번역된 이름들 간의 매칭
+    for (final entry in exerciseNameMap.entries) {
+      final translations = entry.value;
+      if (translations.contains(storedName) && translations.contains(searchName)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
   @override
   Future<void> seedDummyWorkoutData() async {
     try {
       final now = DateTime.now();
       
-      // 지난 2주간의 더미 운동 데이터 생성 (다국어 지원)
+      // 지난 2주간의 더미 운동 데이터 생성 (영어 원본명 사용)
       final dummySessions = [
         // 7일 전 - 벤치프레스, 스쿼트
         Session(
           ymd: ymd(now.subtract(const Duration(days: 7))),
           exercises: [
             Exercise(
-              name: 'ベンチプレス', // 일본어
+              name: 'Bench Press', // 영어 원본명
               bodyPart: '가슴',
               sets: [
                 ExerciseSet(weight: 60, reps: 10, isCompleted: true),
@@ -281,7 +318,7 @@ class HiveSessionRepo implements SessionRepo {
               ],
             ),
             Exercise(
-              name: 'スクワット', // 일본어
+              name: 'Squat', // 영어 원본명
               bodyPart: '하체',
               sets: [
                 ExerciseSet(weight: 80, reps: 12, isCompleted: true),
@@ -298,7 +335,7 @@ class HiveSessionRepo implements SessionRepo {
           ymd: ymd(now.subtract(const Duration(days: 5))),
           exercises: [
             Exercise(
-              name: 'デッドリフト', // 일본어
+              name: 'Deadlift', // 영어 원본명
               bodyPart: '등',
               sets: [
                 ExerciseSet(weight: 100, reps: 8, isCompleted: true),
@@ -307,7 +344,7 @@ class HiveSessionRepo implements SessionRepo {
               ],
             ),
             Exercise(
-              name: 'ラットプルダウン', // 일본어
+              name: 'Lat Pulldown', // 영어 원본명
               bodyPart: '등',
               sets: [
                 ExerciseSet(weight: 45, reps: 12, isCompleted: true),
@@ -324,7 +361,7 @@ class HiveSessionRepo implements SessionRepo {
           ymd: ymd(now.subtract(const Duration(days: 3))),
           exercises: [
             Exercise(
-              name: 'ベンチプレス', // 일본어
+              name: 'Bench Press', // 영어 원본명
               bodyPart: '가슴',
               sets: [
                 ExerciseSet(weight: 65, reps: 10, isCompleted: true),
@@ -334,7 +371,7 @@ class HiveSessionRepo implements SessionRepo {
               ],
             ),
             Exercise(
-              name: 'インクライン・ダンベル・プレス', // 일본어
+              name: 'Incline Dumbbell Press', // 영어 원본명
               bodyPart: '가슴',
               sets: [
                 ExerciseSet(weight: 25, reps: 12, isCompleted: true),
@@ -351,7 +388,7 @@ class HiveSessionRepo implements SessionRepo {
           ymd: ymd(now.subtract(const Duration(days: 1))),
           exercises: [
             Exercise(
-              name: 'スクワット', // 일본어
+              name: 'Squat', // 영어 원본명
               bodyPart: '하체',
               sets: [
                 ExerciseSet(weight: 85, reps: 12, isCompleted: true),
@@ -361,7 +398,7 @@ class HiveSessionRepo implements SessionRepo {
               ],
             ),
             Exercise(
-              name: 'レッグプレス', // 일본어
+              name: 'Leg Press', // 영어 원본명
               bodyPart: '하체',
               sets: [
                 ExerciseSet(weight: 150, reps: 15, isCompleted: true),
@@ -378,7 +415,7 @@ class HiveSessionRepo implements SessionRepo {
           ymd: ymd(now.subtract(const Duration(days: 10))),
           exercises: [
             Exercise(
-              name: 'ベンチプレス', // 일본어
+              name: 'Bench Press', // 영어 원본명
               bodyPart: '가슴',
               sets: [
                 ExerciseSet(weight: 55, reps: 10, isCompleted: true),
@@ -396,7 +433,7 @@ class HiveSessionRepo implements SessionRepo {
         await put(session);
       }
       
-      print('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (일본어)');
+      print('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (영어 원본명)');
     } catch (e) {
       print('❌ 더미 데이터 생성 중 오류: $e');
     }
