@@ -1094,4 +1094,41 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get workoutTimeLabel => 'ワークアウト時間';
+
+  @override
+  String thisWeekCompleted(int count) {
+    return '今週 $count/7日完了';
+  }
+
+  @override
+  String daysCompleted(int completed, int total) {
+    return '$completed/$total日完了';
+  }
+
+  @override
+  String daysRemaining(int days) {
+    return '残り$days日';
+  }
+
+  @override
+  String get addExerciseToPlan => '運動を追加して今日の計画を立てましょう';
+
+  @override
+  String get restDayMessage => '今日は休息日です';
+
+  @override
+  String get workoutCompleteTitle => 'ワークアウト完了！';
+
+  @override
+  String get todayWorkoutTitle => '今日のワークアウト';
+
+  @override
+  String exercisesCompleted(int completed, int total) {
+    return '$completed/$total 運動完了';
+  }
+
+  @override
+  String minutesUnit(int minutes) {
+    return '$minutes分';
+  }
 }

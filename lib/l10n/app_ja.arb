@@ -426,5 +426,62 @@
     }
   },
   "totalVolumeLabel": "総ボリューム",
-  "workoutTimeLabel": "ワークアウト時間"
+  "workoutTimeLabel": "ワークアウト時間",
+  "thisWeekCompleted": "今週 {count}/7日完了",
+  "@thisWeekCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "daysCompleted": "{completed}/{total}日完了",
+  "@daysCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "10"
+      },
+      "total": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "daysRemaining": "残り{days}日",
+  "@daysRemaining": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "addExerciseToPlan": "運動を追加して今日の計画を立てましょう",
+  "restDayMessage": "今日は休息日です",
+  "workoutCompleteTitle": "ワークアウト完了！",
+  "todayWorkoutTitle": "今日のワークアウト",
+  "exercisesCompleted": "{completed}/{total} 運動完了",
+  "@exercisesCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "2"
+      },
+      "total": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "minutesUnit": "{minutes}分",
+  "@minutesUnit": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "180"
+      }
+    }
+  }
 }

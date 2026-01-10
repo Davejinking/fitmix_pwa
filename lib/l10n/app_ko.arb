@@ -426,5 +426,62 @@
     }
   },
   "totalVolumeLabel": "총 볼륨",
-  "workoutTimeLabel": "운동 시간"
+  "workoutTimeLabel": "운동 시간",
+  "thisWeekCompleted": "이번 주 {count}/7일 완료",
+  "@thisWeekCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "daysCompleted": "{completed}/{total}일 완료",
+  "@daysCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "10"
+      },
+      "total": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "daysRemaining": "{days}일 남음",
+  "@daysRemaining": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "addExerciseToPlan": "운동을 추가해서 오늘의 계획을 세워보세요",
+  "restDayMessage": "오늘은 휴식하는 날입니다",
+  "workoutCompleteTitle": "운동 완료!",
+  "todayWorkoutTitle": "오늘의 운동",
+  "exercisesCompleted": "{completed}/{total} 운동 완료",
+  "@exercisesCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "2"
+      },
+      "total": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "minutesUnit": "{minutes}분",
+  "@minutesUnit": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "180"
+      }
+    }
+  }
 }

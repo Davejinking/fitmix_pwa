@@ -1094,4 +1094,41 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get workoutTimeLabel => '운동 시간';
+
+  @override
+  String thisWeekCompleted(int count) {
+    return '이번 주 $count/7일 완료';
+  }
+
+  @override
+  String daysCompleted(int completed, int total) {
+    return '$completed/$total일 완료';
+  }
+
+  @override
+  String daysRemaining(int days) {
+    return '$days일 남음';
+  }
+
+  @override
+  String get addExerciseToPlan => '운동을 추가해서 오늘의 계획을 세워보세요';
+
+  @override
+  String get restDayMessage => '오늘은 휴식하는 날입니다';
+
+  @override
+  String get workoutCompleteTitle => '운동 완료!';
+
+  @override
+  String get todayWorkoutTitle => '오늘의 운동';
+
+  @override
+  String exercisesCompleted(int completed, int total) {
+    return '$completed/$total 운동 완료';
+  }
+
+  @override
+  String minutesUnit(int minutes) {
+    return '$minutes분';
+  }
 }

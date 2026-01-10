@@ -426,5 +426,62 @@
     }
   },
   "totalVolumeLabel": "Total Volume",
-  "workoutTimeLabel": "Workout Time"
+  "workoutTimeLabel": "Workout Time",
+  "thisWeekCompleted": "This week {count}/7 days completed",
+  "@thisWeekCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "daysCompleted": "{completed}/{total} days completed",
+  "@daysCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "10"
+      },
+      "total": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "daysRemaining": "{days} days remaining",
+  "@daysRemaining": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "addExerciseToPlan": "Add exercises to plan your workout today",
+  "restDayMessage": "Today is a rest day",
+  "workoutCompleteTitle": "Workout Complete!",
+  "todayWorkoutTitle": "Today's Workout",
+  "exercisesCompleted": "{completed}/{total} exercises completed",
+  "@exercisesCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "2"
+      },
+      "total": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "minutesUnit": "{minutes} min",
+  "@minutesUnit": {
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "180"
+      }
+    }
+  }
 }

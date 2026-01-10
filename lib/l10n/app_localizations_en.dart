@@ -1105,4 +1105,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutTimeLabel => 'Workout Time';
+
+  @override
+  String thisWeekCompleted(int count) {
+    return 'This week $count/7 days completed';
+  }
+
+  @override
+  String daysCompleted(int completed, int total) {
+    return '$completed/$total days completed';
+  }
+
+  @override
+  String daysRemaining(int days) {
+    return '$days days remaining';
+  }
+
+  @override
+  String get addExerciseToPlan => 'Add exercises to plan your workout today';
+
+  @override
+  String get restDayMessage => 'Today is a rest day';
+
+  @override
+  String get workoutCompleteTitle => 'Workout Complete!';
+
+  @override
+  String get todayWorkoutTitle => 'Today\'s Workout';
+
+  @override
+  String exercisesCompleted(int completed, int total) {
+    return '$completed/$total exercises completed';
+  }
+
+  @override
+  String minutesUnit(int minutes) {
+    return '$minutes min';
+  }
 }

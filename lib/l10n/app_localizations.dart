@@ -2120,6 +2120,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'운동 시간'**
   String get workoutTimeLabel;
+
+  /// No description provided for @thisWeekCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 주 {count}/7일 완료'**
+  String thisWeekCompleted(int count);
+
+  /// No description provided for @daysCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'{completed}/{total}일 완료'**
+  String daysCompleted(int completed, int total);
+
+  /// No description provided for @daysRemaining.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 남음'**
+  String daysRemaining(int days);
+
+  /// No description provided for @addExerciseToPlan.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동을 추가해서 오늘의 계획을 세워보세요'**
+  String get addExerciseToPlan;
+
+  /// No description provided for @restDayMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘은 휴식하는 날입니다'**
+  String get restDayMessage;
+
+  /// No description provided for @workoutCompleteTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 완료!'**
+  String get workoutCompleteTitle;
+
+  /// No description provided for @todayWorkoutTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘의 운동'**
+  String get todayWorkoutTitle;
+
+  /// No description provided for @exercisesCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'{completed}/{total} 운동 완료'**
+  String exercisesCompleted(int completed, int total);
+
+  /// No description provided for @minutesUnit.
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분'**
+  String minutesUnit(int minutes);
 }
 
 class _AppLocalizationsDelegate

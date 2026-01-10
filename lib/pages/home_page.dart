@@ -296,7 +296,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           builder: (context, weeklySnapshot) {
                             final weeklyCount = weeklySnapshot.data ?? 0;
                             return Text(
-                              '이번 주 $weeklyCount/7일 완료',
+                              context.l10n.thisWeekCompleted(weeklyCount),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: IronTheme.textMedium,
@@ -356,7 +356,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '오늘은 휴식하는 날입니다',
+                  context.l10n.restDayMessage,
                   style: TextStyle(
                     fontSize: 14,
                     color: IronTheme.textMedium,
@@ -396,7 +396,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '운동을 추가해서 오늘의 계획을 세워보세요',
+                  context.l10n.addExerciseToPlan,
                   style: TextStyle(
                     fontSize: 14,
                     color: IronTheme.textMedium,
@@ -462,7 +462,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isCompleted ? '운동 완료!' : '오늘의 운동',
+                          isCompleted ? context.l10n.workoutCompleteTitle : context.l10n.todayWorkoutTitle,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -470,7 +470,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           ),
                         ),
                         Text(
-                          '$completedCount/$exerciseCount 운동 완료',
+                          context.l10n.exercisesCompleted(completedCount, exerciseCount),
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.white70,
@@ -552,7 +552,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   final dateYmd = sessionRepo.ymd(date);
                   final hasWorkout = workoutDates.contains(dateYmd);
                   final isToday = sessionRepo.ymd(date) == sessionRepo.ymd(now);
-                  final dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+                  final dayNames = [
+                    context.l10n.weekdayMon,
+                    context.l10n.weekdayTue,
+                    context.l10n.weekdayWed,
+                    context.l10n.weekdayThu,
+                    context.l10n.weekdayFri,
+                    context.l10n.weekdaySat,
+                    context.l10n.weekdaySun,
+                  ];
                   
                   return Column(
                     children: [
@@ -603,15 +611,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               FutureBuilder<Map<String, dynamic>>(
                 future: _getWeeklyStats(),
                 builder: (context, statsSnapshot) {
-                  final stats = statsSnapshot.data ?? {'volume': '0kg', 'time': '0분'};
+                  final stats = statsSnapshot.data ?? {'volume': '0', 'timeMinutes': 0};
+                  final volumeText = '${stats['volume']}t';
+                  final timeText = context.l10n.minutesUnit(stats['timeMinutes'] as int);
                   return Row(
                     children: [
                       Expanded(
-                        child: _buildWeeklyStat(context.l10n.totalVolumeLabel, stats['volume'], Icons.bar_chart),
+                        child: _buildWeeklyStat(context.l10n.totalVolumeLabel, volumeText, Icons.bar_chart),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: _buildWeeklyStat(context.l10n.workoutTimeLabel, stats['time'], Icons.timer),
+                        child: _buildWeeklyStat(context.l10n.workoutTimeLabel, timeText, Icons.timer),
                       ),
                     ],
                   );
@@ -744,7 +754,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '$total일 중 $completed일 완료',
+                      context.l10n.daysCompleted(completed, total),
                       style: TextStyle(
                         fontSize: 14,
                         color: IronTheme.textMedium,
@@ -752,7 +762,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${total - completed}일 남음',
+                      context.l10n.daysRemaining(total - completed),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[500],
@@ -838,8 +848,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final totalVolume = sessions.fold(0.0, (sum, s) => sum + s.totalVolume);
     
     return {
-      'volume': '${(totalVolume / 1000).toStringAsFixed(1)}t',
-      'time': '${sessions.length * 60}분', // 임시로 세션당 60분으로 계산
+      'volume': (totalVolume / 1000).toStringAsFixed(1),
+      'timeMinutes': sessions.length * 60, // 숫자로 반환
     };
   }
 
@@ -1266,7 +1276,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
               ),
               const SizedBox(height: 16),
               Text(
-                '운동 기록이 없습니다',
+                context.l10n.noWorkoutRecords,
                 style: TextStyle(
                   fontSize: 16,
                   color: IronTheme.textMedium,
