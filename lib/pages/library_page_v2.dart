@@ -326,56 +326,39 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     ],
                   ),
                 ),
-                // 운동 상세 정보 버튼 (i) - 더 크고 명확하게
-                Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ExerciseDetailPage(
-                              exerciseName: exercise.nameEn,
-                              sessionRepo: widget.sessionRepo,
-                              exerciseRepo: widget.exerciseRepo,
-                            ),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2196F3).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: const Color(0xFF2196F3).withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.info_outline,
-                          size: 18,
-                          color: Color(0xFF2196F3),
+                // 운동 상세 정보 버튼 (i) - 캘린더와 동일한 스타일
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExerciseDetailPage(
+                          exerciseName: exercise.nameEn,
+                          sessionRepo: widget.sessionRepo,
+                          exerciseRepo: widget.exerciseRepo,
                         ),
                       ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Colors.grey[500],
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
                 // 북마크 버튼
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _toggleBookmark(exercise.id),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Icon(
-                        isBookmarked ? Icons.bookmark : Icons.bookmark_border, 
-                        color: isBookmarked ? const Color(0xFF2196F3) : Colors.grey[600], 
-                        size: 20
-                      ),
+                GestureDetector(
+                  onTap: () => _toggleBookmark(exercise.id),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      isBookmarked ? Icons.bookmark : Icons.bookmark_border, 
+                      color: isBookmarked ? const Color(0xFF2196F3) : Colors.grey[600], 
+                      size: 20
                     ),
                   ),
                 ),
