@@ -12,7 +12,6 @@ import '../widgets/calendar/week_strip.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
-import '../pages/exercise_detail_page.dart';
 import '../widgets/modals/exercise_detail_modal.dart';
 import 'active_workout_page.dart';
 import 'exercise_selection_page_v2.dart';
@@ -165,7 +164,7 @@ class _CalendarPageState extends State<CalendarPage> {
     await _saveSession();
     
     if (mounted) {
-      final result = await Navigator.of(context).push<bool>(
+      await Navigator.of(context).push<bool>(
         MaterialPageRoute(
           fullscreenDialog: true, // 전체 화면 모달
           builder: (context) => ActiveWorkoutPage(
@@ -792,7 +791,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
     // 햅틱 피드백 - 경고성 액션임을 알림
     HapticFeedback.mediumImpact();
     
-    final result = await showModalBottomSheet<bool>(
+    final result = await showModalBottomSheet<bool?>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
