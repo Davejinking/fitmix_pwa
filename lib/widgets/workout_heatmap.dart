@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 
 /// GitHub-style Contribution Heatmap for Workout Tracking
 /// Industrial/Noir aesthetic with intensity-based color scaling
@@ -25,6 +26,8 @@ class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
     final endDate = DateTime.now();
     final startDate = DateTime(endDate.year, endDate.month - widget.monthsToShow, endDate.day);
     
@@ -34,7 +37,7 @@ class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Month labels
-          _buildMonthLabels(startDate, endDate),
+          _buildMonthLabels(startDate, endDate, locale),
           const SizedBox(height: 8),
           // Heatmap grid
           SingleChildScrollView(
@@ -43,23 +46,38 @@ class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
           ),
           const SizedBox(height: 12),
           // Selected date info
-          if (_selectedDate != null) _buildSelectedDateInfo(),
+          if (_selectedDate != null) _buildSelectedDateInfo(l10n, locale),
           const SizedBox(height: 12),
           // Legend
-          _buildLegend(),
+          _buildLegend(l10n),
         ],
       ),
     );
   }
 
-  Widget _buildMonthLabels(DateTime start, DateTime end) {
+  Widget _buildMonthLabels(DateTime start, DateTime end, Locale locale) {
     final months = <String>[];
     final monthWidths = <double>[];
     
+    // Determine date format based on locale
+    final dateFormat = locale.languageCode == 'ja'
+        ? DateFormat.M(locale.toString())  // "1", "2", "3"
+        : locale.languageCode == 'ko'
+            ? DateFormat.M(locale.toString())  // "1", "2", "3"
+            : DateFormat.MMM(locale.toString()); // "JAN", "FEB", "MAR"
+    
     DateTime current = DateTime(start.year, start.month, 1);
     while (current.isBefore(end) || current.month == end.month) {
-      final monthName = DateFormat('MMM').format(current);
-      months.add(monthName.toUpperCase());
+      String monthLabel = dateFormat.format(current).toUpperCase();
+      
+      // Add suffix for Korean and Japanese
+      if (locale.languageCode == 'ko') {
+        monthLabel = '$monthLabel월';
+      } else if (locale.languageCode == 'ja') {
+        monthLabel = '$monthLabel月';
+      }
+      
+      months.add(monthLabel);
       
       // Calculate weeks in this month
       final daysInMonth = DateTime(current.year, current.month + 1, 0).day;
@@ -163,13 +181,19 @@ class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
     );
   }
 
-  Widget _buildSelectedDateInfo() {
+  Widget _buildSelectedDateInfo(AppLocalizations l10n, Locale locale) {
     if (_selectedDate == null) return const SizedBox.shrink();
     
-    final dateStr = DateFormat('MMM dd, yyyy').format(_selectedDate!);
+    final dateFormat = locale.languageCode == 'ja'
+        ? DateFormat('yyyy年M月d日', locale.toString())
+        : locale.languageCode == 'ko'
+            ? DateFormat('yyyy년 M월 d일', locale.toString())
+            : DateFormat('MMM dd, yyyy', locale.toString());
+    
+    final dateStr = dateFormat.format(_selectedDate!);
     final volumeStr = _selectedVolume! > 0
         ? '${(_selectedVolume! / 1000).toStringAsFixed(1)}t'
-        : 'Rest Day';
+        : l10n.restDay;
     
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -227,7 +251,7 @@ class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
     );
   }
 
-  Widget _buildLegend() {
+  Widget _buildLegend(AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -238,7 +262,7 @@ class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
         ),
         const SizedBox(width: 4),
         Text(
-          'Less',
+          l10n.heatmapLess,
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w500,
@@ -265,7 +289,7 @@ class _WorkoutHeatmapState extends State<WorkoutHeatmap> {
         }),
         const SizedBox(width: 8),
         Text(
-          'More',
+          l10n.heatmapMore,
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w500,

@@ -2127,6 +2127,42 @@ abstract class AppLocalizations {
   /// **'이번 주 {count}/7일 완료'**
   String thisWeekCompleted(int count);
 
+  /// No description provided for @workoutConsistency.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 일관성'**
+  String get workoutConsistency;
+
+  /// No description provided for @activityPastMonths.
+  ///
+  /// In ko, this message translates to:
+  /// **'지난 {months}개월간의 활동'**
+  String activityPastMonths(int months);
+
+  /// No description provided for @heatmapLess.
+  ///
+  /// In ko, this message translates to:
+  /// **'적음'**
+  String get heatmapLess;
+
+  /// No description provided for @heatmapMore.
+  ///
+  /// In ko, this message translates to:
+  /// **'많음'**
+  String get heatmapMore;
+
+  /// No description provided for @restDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴식일'**
+  String get restDay;
+
+  /// No description provided for @dayStreak.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 연속'**
+  String dayStreak(int days);
+
   /// No description provided for @daysCompleted.
   ///
   /// In ko, this message translates to:

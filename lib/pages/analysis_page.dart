@@ -93,7 +93,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'WORKOUT CONSISTENCY',
+                                  l10n.workoutConsistency.toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
@@ -103,7 +103,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Your activity over the past 6 months',
+                                  l10n.activityPastMonths(6),
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey[500],
@@ -147,6 +147,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
   }
 
   Widget _buildStatsSummary() {
+    final l10n = AppLocalizations.of(context);
     final totalWorkouts = workoutData.values.where((v) => v > 0).length;
     final totalVolume = workoutData.values.fold(0.0, (sum, v) => sum + v);
     final avgVolume = totalWorkouts > 0 ? totalVolume / totalWorkouts : 0;
@@ -195,7 +196,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
               ),
               const SizedBox(width: 8),
               Text(
-                '$currentStreak Day Streak',
+                l10n.dayStreak(currentStreak),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,

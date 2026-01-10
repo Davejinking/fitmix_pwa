@@ -436,6 +436,28 @@
       }
     }
   },
+  "workoutConsistency": "Workout Consistency",
+  "activityPastMonths": "Your activity over the past {months} months",
+  "@activityPastMonths": {
+    "placeholders": {
+      "months": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
+  "heatmapLess": "Less",
+  "heatmapMore": "More",
+  "restDay": "Rest Day",
+  "dayStreak": "{days} Day Streak",
+  "@dayStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "daysCompleted": "{completed}/{total} days completed",
   "@daysCompleted": {
     "placeholders": {

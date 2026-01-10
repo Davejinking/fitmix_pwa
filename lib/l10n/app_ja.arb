@@ -436,6 +436,28 @@
       }
     }
   },
+  "workoutConsistency": "トレーニング一貫性",
+  "activityPastMonths": "過去{months}ヶ月間のアクティビティ",
+  "@activityPastMonths": {
+    "placeholders": {
+      "months": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
+  "heatmapLess": "少",
+  "heatmapMore": "多",
+  "restDay": "休息日",
+  "dayStreak": "{days}日ストリーク",
+  "@dayStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "daysCompleted": "{completed}/{total}日完了",
   "@daysCompleted": {
     "placeholders": {

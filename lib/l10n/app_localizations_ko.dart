@@ -1101,6 +1101,28 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get workoutConsistency => '운동 일관성';
+
+  @override
+  String activityPastMonths(int months) {
+    return '지난 $months개월간의 활동';
+  }
+
+  @override
+  String get heatmapLess => '적음';
+
+  @override
+  String get heatmapMore => '많음';
+
+  @override
+  String get restDay => '휴식일';
+
+  @override
+  String dayStreak(int days) {
+    return '$days일 연속';
+  }
+
+  @override
   String daysCompleted(int completed, int total) {
     return '$completed/$total일 완료';
   }

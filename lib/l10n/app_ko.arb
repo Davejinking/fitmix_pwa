@@ -436,6 +436,28 @@
       }
     }
   },
+  "workoutConsistency": "운동 일관성",
+  "activityPastMonths": "지난 {months}개월간의 활동",
+  "@activityPastMonths": {
+    "placeholders": {
+      "months": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
+  "heatmapLess": "적음",
+  "heatmapMore": "많음",
+  "restDay": "휴식일",
+  "dayStreak": "{days}일 연속",
+  "@dayStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "daysCompleted": "{completed}/{total}일 완료",
   "@daysCompleted": {
     "placeholders": {

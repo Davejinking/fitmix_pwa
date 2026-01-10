@@ -1112,6 +1112,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get workoutConsistency => 'Workout Consistency';
+
+  @override
+  String activityPastMonths(int months) {
+    return 'Your activity over the past $months months';
+  }
+
+  @override
+  String get heatmapLess => 'Less';
+
+  @override
+  String get heatmapMore => 'More';
+
+  @override
+  String get restDay => 'Rest Day';
+
+  @override
+  String dayStreak(int days) {
+    return '$days Day Streak';
+  }
+
+  @override
   String daysCompleted(int completed, int total) {
     return '$completed/$total days completed';
   }
