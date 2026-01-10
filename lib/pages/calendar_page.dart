@@ -297,7 +297,14 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget _buildExerciseList() {
     final l10n = AppLocalizations.of(context);
     final exerciseCount = _currentSession!.exercises.length;
+    final isCompleted = _currentSession!.isCompleted;
     
+    // 완료된 운동은 Receipt 스타일로 표시
+    if (isCompleted) {
+      return _buildReceiptStyleLog();
+    }
+    
+    // 진행 중인 운동은 기존 카드 스타일로 표시
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
@@ -612,6 +619,118 @@ class _CalendarPageState extends State<CalendarPage> {
       });
       await _saveSession();
     }
+  }
+
+  /// Receipt 스타일 운동 기록 표시 (완료된 운동용)
+  Widget _buildReceiptStyleLog() {
+    final totalSets = _currentSession!.exercises.fold(0, (sum, e) => sum + e.sets.length);
+    final duration = totalSets * 3; // Estimate: 3 min per set
+
+    return SingleChildScrollView(
+      controller: _scrollController,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Summary Strip
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: const BoxDecoration(
+                color: Color(0xFF1C1C1E),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildSummaryItem('DURATION', '${duration}m'),
+                  _buildDivider(),
+                  _buildSummaryItem('VOLUME', '${(_currentSession!.totalVolume / 1000).toStringAsFixed(1)}t'),
+                  _buildDivider(),
+                  _buildSummaryItem('SETS', '$totalSets'),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Exercise Log Header
+            Text(
+              'EXERCISE LOG',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey[600],
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Exercise List
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _currentSession!.exercises.length,
+              separatorBuilder: (context, index) => _buildDashedDivider(),
+              itemBuilder: (context, index) {
+                final exercise = _currentSession!.exercises[index];
+                return _ReceiptExerciseTile(exercise: exercise);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryItem(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[600],
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+            fontFamily: 'Courier',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDivider() {
+    return Container(
+      width: 1,
+      height: 40,
+      color: const Color(0xFF2C2C2E),
+    );
+  }
+
+  Widget _buildDashedDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: List.generate(
+          40,
+          (index) => Expanded(
+            child: Container(
+              height: 1,
+              color: index.isEven ? const Color(0xFF2C2C2E) : Colors.transparent,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -1247,6 +1366,261 @@ class _ReorderExercisesModalState extends State<_ReorderExercisesModal> {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+// Receipt 스타일 운동 타일 (완료된 운동 기록용)
+class _ReceiptExerciseTile extends StatefulWidget {
+  final Exercise exercise;
+
+  const _ReceiptExerciseTile({required this.exercise});
+
+  @override
+  State<_ReceiptExerciseTile> createState() => _ReceiptExerciseTileState();
+}
+
+class _ReceiptExerciseTileState extends State<_ReceiptExerciseTile> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final maxWeightSet = widget.exercise.sets.reduce((a, b) => 
+      a.weight > b.weight ? a : b
+    );
+    final totalVolume = widget.exercise.sets.fold(0.0, 
+      (sum, set) => sum + (set.weight * set.reps)
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Collapsed State
+        InkWell(
+          onTap: () => setState(() => _isExpanded = !_isExpanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                // Exercise Name
+                Expanded(
+                  child: Text(
+                    widget.exercise.name.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                // Summary
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${widget.exercise.sets.length} SETS',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[500],
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'BEST: ${maxWeightSet.weight.toStringAsFixed(0)}kg',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF007AFF),
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  color: Colors.grey[600],
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        // Expanded State
+        if (_isExpanded) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0A0A0A),
+              border: Border.all(
+                color: const Color(0xFF2C2C2E),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              children: [
+                // Table Header
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      child: Text(
+                        'SET',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey[600],
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'WEIGHT',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey[600],
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'REPS',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey[600],
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 60,
+                      child: Text(
+                        'VOLUME',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey[600],
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Divider(height: 1, color: Color(0xFF2C2C2E)),
+                const SizedBox(height: 8),
+                // Table Rows
+                ...widget.exercise.sets.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final set = entry.value;
+                  final volume = set.weight * set.reps;
+                  final isMaxWeight = set.weight == maxWeightSet.weight;
+                  
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[500],
+                              fontFamily: 'Courier',
+                        ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${set.weight.toStringAsFixed(1)}kg',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: isMaxWeight ? const Color(0xFFFF6B35) : Colors.white,
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${set.reps}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 60,
+                          child: Text(
+                            '${volume.toStringAsFixed(0)}kg',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[400],
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                const SizedBox(height: 8),
+                const Divider(height: 1, color: Color(0xFF2C2C2E)),
+                const SizedBox(height: 8),
+                // Total Row
+                Row(
+                  children: [
+                    const SizedBox(width: 40),
+                    const Expanded(
+                      child: Text(
+                        'TOTAL',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF007AFF),
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: SizedBox()),
+                    SizedBox(
+                      width: 60,
+                      child: Text(
+                        '${totalVolume.toStringAsFixed(0)}kg',
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF007AFF),
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

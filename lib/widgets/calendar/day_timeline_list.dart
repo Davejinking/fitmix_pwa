@@ -4,6 +4,7 @@ import '../../data/exercise_library_repo.dart';
 import '../../data/session_repo.dart';
 import '../../models/session.dart';
 import '../../pages/plan_page.dart';
+import '../../pages/log_detail_page.dart';
 import '../../l10n/app_localizations.dart';
 
 class DayTimelineList extends StatelessWidget {
@@ -131,117 +132,61 @@ class _WorkoutSessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 헤더
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF007AFF).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.fitness_center,
-                      color: Color(0xFF007AFF),
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.workoutRecord,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFFFFFFFF),
-                        ),
-                      ),
-                      Text(
-                        l10n.totalVolume(session.totalVolume.toStringAsFixed(0)),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFFAAAAAA),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit, size: 22, color: Color(0xFF007AFF)),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PlanPage(
-                        date: repo.ymdToDateTime(session.ymd),
-                        repo: repo,
-                        exerciseRepo: exerciseRepo,
-                      ),
-                    ),
-                  );
-                },
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ],
+    return GestureDetector(
+      onTap: () {
+        // Open Receipt-style detail view
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => LogDetailPage(
+              session: session,
+              repo: repo,
+              exerciseRepo: exerciseRepo,
+            ),
           ),
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: Color(0xFF2C2C2E)),
-          const SizedBox(height: 16),
-          // 운동 목록
-          ...session.exercises.map((exercise) {
-            // 세트 정보 요약 (예: 4세트, 최고 80kg x 6회)
-            final setCount = exercise.sets.length;
-            final maxWeightSet = exercise.sets.reduce((a, b) => 
-              a.weight > b.weight ? a : b
-            );
-            final setInfo = '$setCount세트 • 최고 ${maxWeightSet.weight.toStringAsFixed(0)}kg × ${maxWeightSet.reps}회';
-            
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 5,
-                    height: 5,
-                    margin: const EdgeInsets.only(top: 6),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF007AFF),
-                      shape: BoxShape.circle,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 헤더
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF007AFF).withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.fitness_center,
+                        color: Color(0xFF007AFF),
+                        size: 22,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
+                    const SizedBox(width: 12),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          exercise.name,
+                          l10n.workoutRecord,
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
                             color: Color(0xFFFFFFFF),
                           ),
                         ),
-                        const SizedBox(height: 4),
                         Text(
-                          setInfo,
+                          l10n.totalVolume(session.totalVolume.toStringAsFixed(0)),
                           style: const TextStyle(
                             fontSize: 13,
                             color: Color(0xFFAAAAAA),
@@ -249,12 +194,71 @@ class _WorkoutSessionCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
+                  ],
+                ),
+                const Icon(
+                  Icons.chevron_right,
+                  color: Color(0xFF007AFF),
+                  size: 24,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1, color: Color(0xFF2C2C2E)),
+            const SizedBox(height: 16),
+            // 운동 목록
+            ...session.exercises.map((exercise) {
+              // 세트 정보 요약 (예: 4세트, 최고 80kg x 6회)
+              final setCount = exercise.sets.length;
+              final maxWeightSet = exercise.sets.reduce((a, b) => 
+                a.weight > b.weight ? a : b
+              );
+              final setInfo = '$setCount세트 • 최고 ${maxWeightSet.weight.toStringAsFixed(0)}kg × ${maxWeightSet.reps}회';
+              
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 5,
+                      height: 5,
+                      margin: const EdgeInsets.only(top: 6),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF007AFF),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            exercise.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFFFFFFF),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            setInfo,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFFAAAAAA),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

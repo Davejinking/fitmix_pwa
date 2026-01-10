@@ -45,27 +45,20 @@ class WeekStrip extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+      decoration: const BoxDecoration(
+        color: Color(0xFF000000), // Pure Black background
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // 이전 주 버튼
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C2E),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.chevron_left, size: 22),
-              onPressed: _goToPreviousWeek,
-              padding: const EdgeInsets.all(6),
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-              color: const Color(0xFFFFFFFF),
-            ),
+          // 이전 주 버튼 (Simple, no background)
+          IconButton(
+            icon: const Icon(Icons.chevron_left, size: 24),
+            onPressed: _goToPreviousWeek,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            color: const Color(0xFFFFFFFF),
           ),
           // 7일 버튼
           ...weekDays.map((day) {
@@ -73,6 +66,7 @@ class WeekStrip extends StatelessWidget {
             final isToday = isSameDay(day, DateTime.now());
             final dayYmd = '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
             final hasWorkout = workoutDates.contains(dayYmd);
+            final isRest = restDates.contains(dayYmd);
             final weekdays = [
               l10n.weekdayMon,
               l10n.weekdayTue,
@@ -87,55 +81,57 @@ class WeekStrip extends StatelessWidget {
             return Expanded(
               child: InkWell(
                 onTap: () => onDaySelected(day),
-                borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? const Color(0xFF007AFF)
-                        : Colors.transparent,
-                    border: isToday && !isSelected
-                        ? Border.all(
-                            color: const Color(0xFF007AFF),
-                            width: 1.5,
+                    // Selected: Sharp underline (Terminal cursor style)
+                    border: isSelected
+                        ? const Border(
+                            bottom: BorderSide(
+                              color: Color(0xFF007AFF), // Accent Blue
+                              width: 3,
+                            ),
                           )
                         : null,
-                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // Weekday label (Small, Low contrast)
                       Text(
                         weekdays[weekdayIndex],
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected
-                              ? const Color(0xFFFFFFFF)
-                              : const Color(0xFFAAAAAA),
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF505050), // Dark Grey
+                          letterSpacing: 0.5,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
+                      // Date number (Large, High contrast)
                       Text(
                         '${day.day}',
                         style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                           color: isSelected
-                              ? const Color(0xFFFFFFFF)
-                              : const Color(0xFFFFFFFF),
+                              ? const Color(0xFFFFFFFF) // Selected: White
+                              : isToday
+                                  ? const Color(0xFF007AFF) // Today: Accent Blue
+                                  : const Color(0xFFFFFFFF), // Default: White
+                          fontFamily: 'Courier', // Monospace for terminal feel
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      // 운동 기록 점 표시 (파란색) 또는 휴식 점 표시 (빨간색)
+                      const SizedBox(height: 6),
+                      // Workout indicator (Minimal dot)
                       Container(
-                        width: 5,
-                        height: 5,
+                        width: 4,
+                        height: 4,
                         decoration: BoxDecoration(
                           color: hasWorkout
-                              ? const Color(0xFF007AFF)
-                              : restDates.contains(dayYmd)
-                                  ? Colors.red
+                              ? const Color(0xFF007AFF) // Blue dot for workout
+                              : isRest
+                                  ? const Color(0xFFFF6B35) // Orange dot for rest
                                   : Colors.transparent,
                           shape: BoxShape.circle,
                         ),
@@ -146,19 +142,13 @@ class WeekStrip extends StatelessWidget {
               ),
             );
           }),
-          // 다음 주 버튼
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C2E),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.chevron_right, size: 22),
-              onPressed: _goToNextWeek,
-              padding: const EdgeInsets.all(6),
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-              color: const Color(0xFFFFFFFF),
-            ),
+          // 다음 주 버튼 (Simple, no background)
+          IconButton(
+            icon: const Icon(Icons.chevron_right, size: 24),
+            onPressed: _goToNextWeek,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            color: const Color(0xFFFFFFFF),
           ),
         ],
       ),
