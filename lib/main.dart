@@ -102,12 +102,39 @@ class _IronLogAppState extends State<IronLogApp> {
       theme: IronTheme.darkTheme, // Iron 테마 적용
       darkTheme: IronTheme.darkTheme,
       themeMode: ThemeMode.dark, // 항상 다크 모드
+      
+      // 🌍 Bulletproof Localization Logic
       locale: null, // 시스템 언어 자동 감지
       supportedLocales: const [
-        Locale('ko', 'KR'),
-        Locale('ja', 'JP'),
-        Locale('en', 'US'),
+        Locale('ko'), // 한국어 (기본값)
+        Locale('ja'), // 일본어
+        Locale('en'), // 영어
       ],
+      
+      // 🎯 Custom Locale Resolution Callback
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        // 디버그 로깅
+        print('🌐 Detected Device Locale: $deviceLocale');
+        
+        // 기기 언어가 null인 경우 기본값 반환
+        if (deviceLocale == null) {
+          print('⚠️ Device locale is null, using default: ko');
+          return supportedLocales.first; // ko
+        }
+        
+        // 기기 언어 코드가 지원 언어 목록에 있는지 확인
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == deviceLocale.languageCode) {
+            print('✅ Matched locale: ${supportedLocale.languageCode}');
+            return supportedLocale;
+          }
+        }
+        
+        // 매칭되는 언어가 없으면 기본값(한국어) 반환
+        print('⚠️ No match found, using default: ko');
+        return supportedLocales.first; // ko
+      },
+      
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
