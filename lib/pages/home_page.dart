@@ -87,6 +87,25 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           ),
         ),
         actions: [
+          // Demo 버튼 (디버그 모드에서만 표시)
+          if (const bool.fromEnvironment('dart.vm.product') == false)
+            PopupMenuButton<String>(
+              icon: Icon(Icons.science_outlined, color: IronTheme.textHigh),
+              tooltip: 'Demo Pages',
+              onSelected: (value) {
+                Navigator.pushNamed(context, value);
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: '/demo/exercise-log-card',
+                  child: Text('Exercise Log Card'),
+                ),
+                const PopupMenuItem(
+                  value: '/demo/workout-heatmap',
+                  child: Text('Workout Heatmap'),
+                ),
+              ],
+            ),
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: IronTheme.textHigh),
             onPressed: () {},
