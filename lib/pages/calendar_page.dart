@@ -686,16 +686,7 @@ class _CalendarPageState extends State<CalendarPage> {
             // Exercise List
             ...List.generate(_currentSession!.exercises.length, (index) {
               final exercise = _currentSession!.exercises[index];
-              return Column(
-                children: [
-                  _buildInvoiceExerciseItem(exercise, index + 1),
-                  if (index < _currentSession!.exercises.length - 1)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: _buildDashedDivider(),
-                    ),
-                ],
-              );
+              return _buildInvoiceExerciseItem(exercise, index + 1);
             }),
             
             const SizedBox(height: 20),
@@ -797,139 +788,149 @@ class _CalendarPageState extends State<CalendarPage> {
       (sum, set) => sum + (set.weight * set.reps),
     );
 
-    return Theme(
-      data: Theme.of(context).copyWith(
-        dividerColor: Colors.transparent, // Remove default divider
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey[900]!,
+            width: 1,
+          ),
+        ),
       ),
-      child: ExpansionTile(
-        initiallyExpanded: true,
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: const EdgeInsets.only(top: 8, bottom: 12),
-        // Header (Collapsed State)
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                '#${itemNumber.toString().padLeft(2, '0')} ${exercise.name.toUpperCase()}',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey[300],
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-          ],
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent, // Remove default divider
         ),
-        // Summary (Trailing)
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '${exercise.sets.length} SETS | ${exerciseVolume.toStringAsFixed(0)}kg',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
-                fontFamily: 'Courier',
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.keyboard_arrow_down,
-              color: Colors.grey[600],
-              size: 20,
-            ),
-          ],
-        ),
-        iconColor: Colors.grey[600],
-        collapsedIconColor: Colors.grey[600],
-        // Body (Expanded State)
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: ExpansionTile(
+          initiallyExpanded: true,
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(top: 12, bottom: 16),
+          // Header (Collapsed State)
+          title: Row(
             children: [
-              // Sets breakdown
-              ...exercise.sets.asMap().entries.map((entry) {
-                final setIndex = entry.key;
-                final set = entry.value;
-                final isBest = maxWeightSet != null && set.weight == maxWeightSet.weight;
-                final setVolume = set.weight * set.reps;
-                
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    children: [
-                      // Set number
-                      SizedBox(
-                        width: 40,
-                        child: Text(
-                          '#${(setIndex + 1).toString().padLeft(2, '0')}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[600],
-                            fontFamily: 'Courier',
-                          ),
-                        ),
-                      ),
-                      // Reps x Weight
-                      Expanded(
-                        child: Text(
-                          '${set.reps.toString().padLeft(2, ' ')} x ${set.weight.toStringAsFixed(1).padLeft(6, ' ')}kg',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isBest ? const Color(0xFF2962FF) : Colors.grey[400],
-                            fontFamily: 'Courier',
-                          ),
-                        ),
-                      ),
-                      // Volume (right-aligned like price)
-                      Text(
-                        '${setVolume.toStringAsFixed(0).padLeft(6, ' ')}kg',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[500],
-                          fontFamily: 'Courier',
-                        ),
-                      ),
-                    ],
+              Expanded(
+                child: Text(
+                  '#${itemNumber.toString().padLeft(2, '0')} ${exercise.name.toUpperCase()}',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey[300],
+                    letterSpacing: 0.5,
                   ),
-                );
-              }),
-              
-              const SizedBox(height: 8),
-              // Exercise subtotal
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'SUBTOTAL',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.grey[600],
-                      letterSpacing: 1.0,
-                      fontFamily: 'Courier',
-                    ),
-                  ),
-                  Text(
-                    '${exerciseVolume.toStringAsFixed(0)}kg',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.grey[400],
-                      fontFamily: 'Courier',
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),
-        ],
+          // Summary (Trailing)
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${exercise.sets.length} SETS | ${exerciseVolume.toStringAsFixed(0)}kg',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
+                  fontFamily: 'Courier',
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.keyboard_arrow_down,
+                color: Colors.grey[600],
+                size: 20,
+              ),
+            ],
+          ),
+          iconColor: Colors.grey[600],
+          collapsedIconColor: Colors.grey[600],
+          // Body (Expanded State)
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sets breakdown
+                ...exercise.sets.asMap().entries.map((entry) {
+                  final setIndex = entry.key;
+                  final set = entry.value;
+                  final isBest = maxWeightSet != null && set.weight == maxWeightSet.weight;
+                  final setVolume = set.weight * set.reps;
+                  
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        // Set number
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            '#${(setIndex + 1).toString().padLeft(2, '0')}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[600],
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                        ),
+                        // Reps x Weight
+                        Expanded(
+                          child: Text(
+                            '${set.reps.toString().padLeft(2, ' ')} x ${set.weight.toStringAsFixed(1).padLeft(6, ' ')}kg',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isBest ? const Color(0xFF2962FF) : Colors.grey[400],
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                        ),
+                        // Volume (right-aligned like price)
+                        Text(
+                          '${setVolume.toStringAsFixed(0).padLeft(6, ' ')}kg',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[500],
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                
+                const SizedBox(height: 8),
+                // Exercise subtotal
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'SUBTOTAL',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey[600],
+                        letterSpacing: 1.0,
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                    Text(
+                      '${exerciseVolume.toStringAsFixed(0)}kg',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey[400],
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
