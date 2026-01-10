@@ -797,12 +797,16 @@ class _CalendarPageState extends State<CalendarPage> {
       (sum, set) => sum + (set.weight * set.reps),
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Exercise Header
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dividerColor: Colors.transparent, // Remove default divider
+      ),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: const EdgeInsets.only(top: 8, bottom: 12),
+        // Header (Collapsed State)
+        title: Row(
           children: [
             Expanded(
               child: Text(
@@ -815,97 +819,118 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
               ),
             ),
+          ],
+        ),
+        // Summary (Trailing)
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Text(
-              '${exercise.sets.length} SETS',
+              '${exercise.sets.length} SETS | ${exerciseVolume.toStringAsFixed(0)}kg',
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: Colors.grey[600],
                 fontFamily: 'Courier',
+                letterSpacing: 0.5,
               ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.grey[600],
+              size: 20,
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        
-        // Sets breakdown
-        ...exercise.sets.asMap().entries.map((entry) {
-          final setIndex = entry.key;
-          final set = entry.value;
-          final isBest = maxWeightSet != null && set.weight == maxWeightSet.weight;
-          final setVolume = set.weight * set.reps;
-          
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Row(
-              children: [
-                // Set number
-                SizedBox(
-                  width: 40,
-                  child: Text(
-                    '#${(setIndex + 1).toString().padLeft(2, '0')}',
+        iconColor: Colors.grey[600],
+        collapsedIconColor: Colors.grey[600],
+        // Body (Expanded State)
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Sets breakdown
+              ...exercise.sets.asMap().entries.map((entry) {
+                final setIndex = entry.key;
+                final set = entry.value;
+                final isBest = maxWeightSet != null && set.weight == maxWeightSet.weight;
+                final setVolume = set.weight * set.reps;
+                
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    children: [
+                      // Set number
+                      SizedBox(
+                        width: 40,
+                        child: Text(
+                          '#${(setIndex + 1).toString().padLeft(2, '0')}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600],
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      // Reps x Weight
+                      Expanded(
+                        child: Text(
+                          '${set.reps.toString().padLeft(2, ' ')} x ${set.weight.toStringAsFixed(1).padLeft(6, ' ')}kg',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isBest ? const Color(0xFF2962FF) : Colors.grey[400],
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      // Volume (right-aligned like price)
+                      Text(
+                        '${setVolume.toStringAsFixed(0).padLeft(6, ' ')}kg',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[500],
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              
+              const SizedBox(height: 8),
+              // Exercise subtotal
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'SUBTOTAL',
                     style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
                       color: Colors.grey[600],
+                      letterSpacing: 1.0,
                       fontFamily: 'Courier',
                     ),
                   ),
-                ),
-                // Reps x Weight
-                Expanded(
-                  child: Text(
-                    '${set.reps.toString().padLeft(2, ' ')} x ${set.weight.toStringAsFixed(1).padLeft(6, ' ')}kg',
+                  Text(
+                    '${exerciseVolume.toStringAsFixed(0)}kg',
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isBest ? const Color(0xFF2962FF) : Colors.grey[400],
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey[400],
                       fontFamily: 'Courier',
                     ),
                   ),
-                ),
-                // Volume (right-aligned like price)
-                Text(
-                  '${setVolume.toStringAsFixed(0).padLeft(6, ' ')}kg',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[500],
-                    fontFamily: 'Courier',
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-        
-        const SizedBox(height: 8),
-        // Exercise subtotal
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'SUBTOTAL',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: Colors.grey[600],
-                letterSpacing: 1.0,
-                fontFamily: 'Courier',
+                ],
               ),
-            ),
-            Text(
-              '${exerciseVolume.toStringAsFixed(0)}kg',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: Colors.grey[400],
-                fontFamily: 'Courier',
-              ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
