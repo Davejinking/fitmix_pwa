@@ -1077,4 +1077,21 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get currentPower => '보유 파워';
+
+  @override
+  String get todayWorkoutPlan => '오늘의 운동 계획';
+
+  @override
+  String get thisWeekWorkout => '이번 주 운동';
+
+  @override
+  String get thisMonthGoal => '이번 달 목표';
+
+  @override
+  String streakDays(int days) {
+    return '$days일 연속';
+  }
+
+  @override
+  String get workoutTimeLabel => '운동 시간';
 }

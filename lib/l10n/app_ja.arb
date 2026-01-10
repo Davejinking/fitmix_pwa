@@ -412,5 +412,19 @@
     }
   },
   "encouragingMessage": "よくやっています！",
-  "encouragingDesc": "継続的なワークアウトで目標を達成できます"
+  "encouragingDesc": "継続的なワークアウトで目標を達成できます",
+  "todayWorkoutPlan": "今日のワークアウト計画",
+  "thisWeekWorkout": "今週のワークアウト",
+  "thisMonthGoal": "今月の目標",
+  "streakDays": "{days}日連続",
+  "@streakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "totalVolumeLabel": "総ボリューム",
+  "workoutTimeLabel": "ワークアウト時間"
 }

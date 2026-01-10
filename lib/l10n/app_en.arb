@@ -412,5 +412,19 @@
     }
   },
   "encouragingMessage": "You're doing great!",
-  "encouragingDesc": "You can achieve your goals with consistent workouts"
+  "encouragingDesc": "You can achieve your goals with consistent workouts",
+  "todayWorkoutPlan": "Today's Workout Plan",
+  "thisWeekWorkout": "This Week's Workout",
+  "thisMonthGoal": "This Month's Goal",
+  "streakDays": "{days} day streak",
+  "@streakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "totalVolumeLabel": "Total Volume",
+  "workoutTimeLabel": "Workout Time"
 }

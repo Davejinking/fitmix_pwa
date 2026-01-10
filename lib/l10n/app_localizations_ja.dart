@@ -1077,4 +1077,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get currentPower => '現在のパワー';
+
+  @override
+  String get todayWorkoutPlan => '今日のワークアウト計画';
+
+  @override
+  String get thisWeekWorkout => '今週のワークアウト';
+
+  @override
+  String get thisMonthGoal => '今月の目標';
+
+  @override
+  String streakDays(int days) {
+    return '$days日連続';
+  }
+
+  @override
+  String get workoutTimeLabel => 'ワークアウト時間';
 }

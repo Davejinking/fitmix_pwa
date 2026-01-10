@@ -412,5 +412,19 @@
     }
   },
   "encouragingMessage": "잘하고 있어요!",
-  "encouragingDesc": "꾸준히 운동하면 목표를 달성할 수 있어요"
+  "encouragingDesc": "꾸준히 운동하면 목표를 달성할 수 있어요",
+  "todayWorkoutPlan": "오늘의 운동 계획",
+  "thisWeekWorkout": "이번 주 운동",
+  "thisMonthGoal": "이번 달 목표",
+  "streakDays": "{days}일 연속",
+  "@streakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "totalVolumeLabel": "총 볼륨",
+  "workoutTimeLabel": "운동 시간"
 }

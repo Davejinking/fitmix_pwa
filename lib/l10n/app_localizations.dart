@@ -2090,6 +2090,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'보유 파워'**
   String get currentPower;
+
+  /// No description provided for @todayWorkoutPlan.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘의 운동 계획'**
+  String get todayWorkoutPlan;
+
+  /// No description provided for @thisWeekWorkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 주 운동'**
+  String get thisWeekWorkout;
+
+  /// No description provided for @thisMonthGoal.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 달 목표'**
+  String get thisMonthGoal;
+
+  /// No description provided for @streakDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 연속'**
+  String streakDays(int days);
+
+  /// No description provided for @workoutTimeLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'운동 시간'**
+  String get workoutTimeLabel;
 }
 
 class _AppLocalizationsDelegate

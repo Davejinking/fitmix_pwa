@@ -281,7 +281,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${streak}일 연속',
+                              context.l10n.streakDays(streak),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -386,8 +386,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   color: IronTheme.primary,
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  '오늘의 운동 계획',
+                Text(
+                  context.l10n.todayWorkoutPlan,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -536,8 +536,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '이번 주 운동',
+              Text(
+                context.l10n.thisWeekWorkout,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -607,11 +607,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   return Row(
                     children: [
                       Expanded(
-                        child: _buildWeeklyStat('총 볼륨', stats['volume'], Icons.bar_chart),
+                        child: _buildWeeklyStat(context.l10n.totalVolumeLabel, stats['volume'], Icons.bar_chart),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: _buildWeeklyStat('운동 시간', stats['time'], Icons.timer),
+                        child: _buildWeeklyStat(context.l10n.workoutTimeLabel, stats['time'], Icons.timer),
                       ),
                     ],
                   );
@@ -734,8 +734,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '이번 달 목표',
+                    Text(
+                      context.l10n.thisMonthGoal,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

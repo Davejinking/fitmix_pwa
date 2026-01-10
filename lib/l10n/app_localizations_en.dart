@@ -1088,4 +1088,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currentPower => 'Current Power';
+
+  @override
+  String get todayWorkoutPlan => 'Today\'s Workout Plan';
+
+  @override
+  String get thisWeekWorkout => 'This Week\'s Workout';
+
+  @override
+  String get thisMonthGoal => 'This Month\'s Goal';
+
+  @override
+  String streakDays(int days) {
+    return '$days day streak';
+  }
+
+  @override
+  String get workoutTimeLabel => 'Workout Time';
 }
