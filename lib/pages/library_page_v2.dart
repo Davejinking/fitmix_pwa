@@ -295,71 +295,82 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
             color: const Color(0xFF1E1E1E), 
             borderRadius: BorderRadius.circular(10)
           ),
-          child: InkWell(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exerciseSelected(exercise.getLocalizedName(context))), backgroundColor: const Color(0xFF2196F3)));
-            },
-            borderRadius: BorderRadius.circular(10),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                children: [
-                  // 컴팩트한 아이콘
-                  Container(
-                    width: 32, height: 32,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2196F3).withValues(alpha: 0.15), 
-                      borderRadius: BorderRadius.circular(6)
-                    ),
-                    child: const Icon(Icons.fitness_center, color: Color(0xFF2196F3), size: 18),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                // 컴팩트한 아이콘
+                Container(
+                  width: 32, height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2196F3).withValues(alpha: 0.15), 
+                    borderRadius: BorderRadius.circular(6)
                   ),
-                  const SizedBox(width: 12),
-                  // 운동 정보
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          exercise.getLocalizedName(context), 
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}', 
-                          style: TextStyle(fontSize: 12, color: Colors.grey[500])
-                        ),
-                      ],
-                    ),
+                  child: const Icon(Icons.fitness_center, color: Color(0xFF2196F3), size: 18),
+                ),
+                const SizedBox(width: 12),
+                // 운동 정보
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        exercise.getLocalizedName(context), 
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}', 
+                        style: TextStyle(fontSize: 12, color: Colors.grey[500])
+                      ),
+                    ],
                   ),
-                  // 운동 상세 정보 버튼 (i)
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ExerciseDetailPage(
-                            exerciseName: exercise.nameEn, // nameEn 사용
-                            sessionRepo: widget.sessionRepo,
-                            exerciseRepo: widget.exerciseRepo,
+                ),
+                // 운동 상세 정보 버튼 (i) - 더 크고 명확하게
+                Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExerciseDetailPage(
+                              exerciseName: exercise.nameEn,
+                              sessionRepo: widget.sessionRepo,
+                              exerciseRepo: widget.exerciseRepo,
+                            ),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2196F3).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: const Color(0xFF2196F3).withValues(alpha: 0.3),
                           ),
                         ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.info_outline,
-                        size: 18,
-                        color: Colors.grey[500],
+                        child: const Icon(
+                          Icons.info_outline,
+                          size: 18,
+                          color: Color(0xFF2196F3),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  // 북마크 버튼
-                  GestureDetector(
+                ),
+                // 북마크 버튼
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
                     onTap: () => _toggleBookmark(exercise.id),
+                    borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(8),
                       child: Icon(
                         isBookmarked ? Icons.bookmark : Icons.bookmark_border, 
                         color: isBookmarked ? const Color(0xFF2196F3) : Colors.grey[600], 
@@ -367,8 +378,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
