@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import '../core/service_locator.dart';
 import '../data/settings_repo.dart';
 
 class OnboardingPage extends StatefulWidget {
-  final SettingsRepo settingsRepo;
   final VoidCallback onComplete;
 
   const OnboardingPage({
     super.key,
-    required this.settingsRepo,
     required this.onComplete,
   });
 
@@ -18,6 +17,13 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  late SettingsRepo settingsRepo;
+  
+  @override
+  void initState() {
+    super.initState();
+    settingsRepo = getIt<SettingsRepo>();
+  }
 
   final List<_OnboardingData> _pages = [
     _OnboardingData(
@@ -64,7 +70,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _completeOnboarding() async {
-    await widget.settingsRepo.setOnboardingComplete(true);
+    await settingsRepo.setOnboardingComplete(true);
     widget.onComplete();
   }
 

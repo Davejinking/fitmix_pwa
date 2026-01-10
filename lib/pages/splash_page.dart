@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import '../core/service_locator.dart';
 import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/settings_repo.dart';
@@ -10,17 +11,7 @@ import 'shell_page.dart';
 import 'onboarding_page.dart';
 
 class SplashPage extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-  final UserRepo userRepo;
-  final SettingsRepo settingsRepo;
-  final AuthRepo authRepo;
-  const SplashPage(
-      {super.key,
-      required this.sessionRepo,
-      required this.exerciseRepo,
-      required this.userRepo,
-      required this.settingsRepo, required this.authRepo});
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -62,7 +53,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     if (!mounted) return;
 
     // 온보딩 완료 여부 확인
-    final isOnboardingComplete = await widget.settingsRepo.isOnboardingComplete();
+    final settingsRepo = getIt<SettingsRepo>();
+    final isOnboardingComplete = await settingsRepo.isOnboardingComplete();
 
     if (!mounted) return;
 
@@ -77,17 +69,10 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => OnboardingPage(
-          settingsRepo: widget.settingsRepo,
           onComplete: () {
             Navigator.of(context).pushReplacement(
               PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) => ShellPage(
-                  sessionRepo: widget.sessionRepo,
-                  exerciseRepo: widget.exerciseRepo,
-                  userRepo: widget.userRepo,
-                  settingsRepo: widget.settingsRepo,
-                  authRepo: widget.authRepo,
-                ),
+                pageBuilder: (context, animation, secondaryAnimation) => const ShellPage(),
                 transitionDuration: const Duration(milliseconds: 400),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                   return FadeTransition(opacity: animation, child: child);
@@ -107,13 +92,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   void _goToShell() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => ShellPage(
-          sessionRepo: widget.sessionRepo,
-          exerciseRepo: widget.exerciseRepo,
-          userRepo: widget.userRepo,
-          settingsRepo: widget.settingsRepo,
-          authRepo: widget.authRepo,
-        ),
+        pageBuilder: (context, animation, secondaryAnimation) => const ShellPage(),
         transitionDuration: const Duration(milliseconds: 600),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);

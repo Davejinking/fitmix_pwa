@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/service_locator.dart';
 import '../data/session_repo.dart';
 import '../data/auth_repo.dart';
 import '../data/settings_repo.dart';
@@ -13,20 +14,7 @@ import 'home_page.dart';
 import 'library_page_v2.dart';
 
 class ShellPage extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-  final UserRepo userRepo;
-  final SettingsRepo settingsRepo;
-  final AuthRepo authRepo;
-
-  const ShellPage({
-    super.key,
-    required this.sessionRepo,
-    required this.exerciseRepo,
-    required this.userRepo,
-    required this.settingsRepo,
-    required this.authRepo,
-  });
+  const ShellPage({super.key});
 
   @override
   State<ShellPage> createState() => ShellPageState();
@@ -58,28 +46,13 @@ class ShellPageState extends State<ShellPage> {
   void initState() {
     super.initState();
     _pages = [
-      HomePage(
-        sessionRepo: widget.sessionRepo,
-        userRepo: widget.userRepo,
-        exerciseRepo: widget.exerciseRepo,
-        settingsRepo: widget.settingsRepo,
-        authRepo: widget.authRepo,
-      ),
-      CalendarPage(
-        repo: widget.sessionRepo,
-        exerciseRepo: widget.exerciseRepo,
-      ),
-      Scaffold(
+      const HomePage(),
+      const CalendarPage(),
+      const Scaffold(
         backgroundColor: IronTheme.background,
-        body: LibraryPageV2(
-          sessionRepo: widget.sessionRepo,
-          exerciseRepo: widget.exerciseRepo,
-        ),
+        body: LibraryPageV2(),
       ),
-      AnalysisPage(
-        repo: widget.sessionRepo,
-        userRepo: widget.userRepo,
-      ),
+      const AnalysisPage(),
     ];
   }
 

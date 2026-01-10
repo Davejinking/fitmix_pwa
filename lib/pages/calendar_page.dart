@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../core/service_locator.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/session_repo.dart';
 import '../models/session.dart';
@@ -18,16 +19,25 @@ import 'exercise_selection_page_v2.dart';
 
 /// 캘린더 페이지 - 운동 계획 및 기록 관리
 class CalendarPage extends StatefulWidget {
-  final SessionRepo repo;
-  final ExerciseLibraryRepo exerciseRepo;
-
-  const CalendarPage({super.key, required this.repo, required this.exerciseRepo});
+  const CalendarPage({super.key});
 
   @override
   State<CalendarPage> createState() => _CalendarPageState();
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  late SessionRepo repo;
+  late ExerciseLibraryRepo exerciseRepo;
+  
+  @override
+  void initState() {
+    super.initState();
+    repo = getIt<SessionRepo>();
+    exerciseRepo = getIt<ExerciseLibraryRepo>();
+    _loadSession();
+    _loadWorkoutDates();
+    _loadRestDates();
+  }
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   
@@ -53,7 +63,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _loadSession() async {
     setState(() => _isLoading = true);
     try {
-      final session = await widget.repo.get(widget.repo.ymd(_selectedDay));
+      final session = await repo.get(repo.ymd(_selectedDay));
       if (mounted) {
         setState(() {
           _currentSession = session;
@@ -70,7 +80,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<void> _loadWorkoutDates() async {
     try {
-      final sessions = await widget.repo.getWorkoutSessions();
+      final sessions = await repo.getWorkoutSessions();
       if (mounted) {
         setState(() {
           _workoutDates = sessions.map((s) => s.ymd).toSet();
@@ -83,7 +93,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<void> _loadRestDates() async {
     try {
-      final allSessions = await widget.repo.listAll();
+      final allSessions = await repo.listAll();
       if (mounted) {
         setState(() {
           _restDates = allSessions.where((s) => s.isRest).map((s) => s.ymd).toSet();
@@ -96,7 +106,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<void> _saveRestDay() async {
     try {
-      await widget.repo.markRest(widget.repo.ymd(_selectedDay), rest: true);
+      await repo.markRest(repo.ymd(_selectedDay), rest: true);
       await _loadRestDates();
       if (mounted) {
         setState(() {});
@@ -111,7 +121,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<void> _cancelRestDay() async {
     try {
-      await widget.repo.markRest(widget.repo.ymd(_selectedDay), rest: false);
+      await repo.markRest(repo.ymd(_selectedDay), rest: false);
       await _loadRestDates();
       if (mounted) {
         setState(() {});
@@ -137,7 +147,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _saveSession() async {
     if (_currentSession != null) {
       try {
-        await widget.repo.put(_currentSession!);
+        await repo.put(_currentSession!);
         await _loadWorkoutDates();
         await _loadRestDates();
       } catch (e) {
@@ -168,8 +178,8 @@ class _CalendarPageState extends State<CalendarPage> {
           fullscreenDialog: true, // 전체 화면 모달
           builder: (context) => ActiveWorkoutPage(
             session: _currentSession!,
-            repo: widget.repo,
-            exerciseRepo: widget.exerciseRepo,
+            repo: repo,
+            exerciseRepo: exerciseRepo,
             date: _selectedDay,
           ),
         ),
@@ -222,8 +232,8 @@ class _CalendarPageState extends State<CalendarPage> {
                   focusedDay: _focusedDay,
                   selectedDay: _selectedDay,
                   onDateSelected: _onDaySelected,
-                  repo: widget.repo,
-                  exerciseRepo: widget.exerciseRepo,
+                  repo: repo,
+                  exerciseRepo: exerciseRepo,
                   workoutDates: _workoutDates,
                   restDates: _restDates,
                   onRestStatusChanged: () async {
@@ -263,7 +273,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Widget _buildEmptyState() {
-    final selectedYmd = widget.repo.ymd(_selectedDay);
+    final selectedYmd = repo.ymd(_selectedDay);
     final isRest = _restDates.contains(selectedYmd);
     final l10n = AppLocalizations.of(context);
 
@@ -391,7 +401,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     },
                     onUpdate: () => setState(() {}),
                     forceExpanded: _allCardsExpanded,
-                    sessionRepo: widget.repo, // SessionRepo 전달
+                    sessionRepo: repo, // SessionRepo 전달
                   ),
                 );
               },
@@ -426,7 +436,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
 
   Widget _buildBottomBar(bool hasPlan) {
-    final selectedYmd = widget.repo.ymd(_selectedDay);
+    final selectedYmd = repo.ymd(_selectedDay);
     final isRest = _restDates.contains(selectedYmd);
     final l10n = AppLocalizations.of(context);
 
@@ -599,7 +609,7 @@ class _CalendarPageState extends State<CalendarPage> {
       setState(() {
         if (_currentSession == null || _currentSession!.isRest) {
           _currentSession = Session(
-            ymd: widget.repo.ymd(_selectedDay),
+            ymd: repo.ymd(_selectedDay),
             exercises: selected,
             isRest: false,
           );
@@ -882,7 +892,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                               context,
                               exerciseName: widget.exercise.name,
                               sessionRepo: widget.sessionRepo,
-                              exerciseRepo: widget.exerciseRepo,
+                              exerciseRepo: exerciseRepo,
                             );
                           },
                           child: Container(

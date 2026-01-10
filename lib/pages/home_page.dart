@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../core/service_locator.dart';
 import '../data/session_repo.dart';
 import '../data/user_repo.dart';
 import '../data/settings_repo.dart';
@@ -16,19 +17,7 @@ import '../services/gamification_service.dart';
 import 'achievements_page.dart';
 
 class HomePage extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final UserRepo userRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-  final SettingsRepo settingsRepo;
-  final AuthRepo authRepo;
-
-  const HomePage(
-      {super.key,
-      required this.sessionRepo,
-      required this.userRepo,
-      required this.exerciseRepo,
-      required this.settingsRepo, 
-      required this.authRepo});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -37,10 +26,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late List<Animation<Offset>> _slideAnimations;
+  
+  // GetIt으로 가져온 repositories를 저장할 변수들
+  late SessionRepo sessionRepo;
+  late UserRepo userRepo;
+  late ExerciseLibraryRepo exerciseRepo;
+  late SettingsRepo settingsRepo;
+  late AuthRepo authRepo;
 
   @override
   void initState() {
     super.initState();
+    
+    // GetIt에서 repositories 가져오기
+    sessionRepo = getIt<SessionRepo>();
+    userRepo = getIt<UserRepo>();
+    exerciseRepo = getIt<ExerciseLibraryRepo>();
+    settingsRepo = getIt<SettingsRepo>();
+    authRepo = getIt<AuthRepo>();
+    
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -143,7 +147,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 position: _slideAnimations[4],
                 child: FadeTransition(
                   opacity: _animationController,
-                  child: _AchievementPreviewCard(sessionRepo: widget.sessionRepo),
+                  child: _AchievementPreviewCard(sessionRepo: sessionRepo),
                 ),
               ),
               const SizedBox(height: 16),
@@ -153,7 +157,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 position: _slideAnimations[5],
                 child: FadeTransition(
                   opacity: _animationController,
-                  child: _ActivityTrendCard(sessionRepo: widget.sessionRepo, exerciseRepo: widget.exerciseRepo),
+                  child: _ActivityTrendCard(sessionRepo: sessionRepo, exerciseRepo: exerciseRepo),
                 ),
               ),
               const SizedBox(height: 100),
@@ -545,9 +549,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List.generate(7, (index) {
                   final date = startOfWeek.add(Duration(days: index));
-                  final dateYmd = widget.sessionRepo.ymd(date);
+                  final dateYmd = sessionRepo.ymd(date);
                   final hasWorkout = workoutDates.contains(dateYmd);
-                  final isToday = widget.sessionRepo.ymd(date) == widget.sessionRepo.ymd(now);
+                  final isToday = sessionRepo.ymd(date) == sessionRepo.ymd(now);
                   final dayNames = ['월', '화', '수', '목', '금', '토', '일'];
                   
                   return Column(
@@ -766,25 +770,25 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   // Helper methods
   Future<GamificationService?> _initGamificationService() async {
-    final service = GamificationService(sessionRepo: widget.sessionRepo);
+    final service = GamificationService(sessionRepo: sessionRepo);
     await service.init();
     return service;
   }
 
   Future<Session?> _getTodaySession() async {
-    final today = widget.sessionRepo.ymd(DateTime.now());
-    return await widget.sessionRepo.get(today);
+    final today = sessionRepo.ymd(DateTime.now());
+    return await sessionRepo.get(today);
   }
 
   Future<int> _getStreak() async {
-    final sessions = await widget.sessionRepo.getWorkoutSessions();
+    final sessions = await sessionRepo.getWorkoutSessions();
     if (sessions.isEmpty) return 0;
 
     sessions.sort((a, b) => b.ymd.compareTo(a.ymd)); // 최신순 정렬
     
     final today = DateTime.now();
-    final todayYmd = widget.sessionRepo.ymd(today);
-    final yesterdayYmd = widget.sessionRepo.ymd(today.subtract(const Duration(days: 1)));
+    final todayYmd = sessionRepo.ymd(today);
+    final yesterdayYmd = sessionRepo.ymd(today.subtract(const Duration(days: 1)));
     
     // 오늘이나 어제 운동했는지 확인
     final hasToday = sessions.any((s) => s.ymd == todayYmd);
@@ -799,7 +803,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     
     // 연속일 계산
     while (true) {
-      final ymd = widget.sessionRepo.ymd(checkDate);
+      final ymd = sessionRepo.ymd(checkDate);
       if (sessions.any((s) => s.ymd == ymd)) {
         streak++;
         checkDate = checkDate.subtract(const Duration(days: 1));
@@ -816,12 +820,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
     
-    final sessions = await widget.sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
+    final sessions = await sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
     return sessions.where((s) => s.isWorkoutDay).length;
   }
 
   Future<Set<String>> _getWorkoutDates() async {
-    final sessions = await widget.sessionRepo.getWorkoutSessions();
+    final sessions = await sessionRepo.getWorkoutSessions();
     return sessions.map((s) => s.ymd).toSet();
   }
 
@@ -830,7 +834,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
     
-    final sessions = await widget.sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
+    final sessions = await sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
     final totalVolume = sessions.fold(0.0, (sum, s) => sum + s.totalVolume);
     
     return {
@@ -844,7 +848,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final startOfMonth = DateTime(now.year, now.month, 1);
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
     
-    final sessions = await widget.sessionRepo.getSessionsInRange(startOfMonth, endOfMonth);
+    final sessions = await sessionRepo.getSessionsInRange(startOfMonth, endOfMonth);
     final workoutDays = sessions.where((s) => s.isWorkoutDay).length;
     final monthlyGoal = 20; // 기본 목표
     
@@ -878,7 +882,7 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
   }
 
   Future<void> _initService() async {
-    _service = AchievementService(sessionRepo: widget.sessionRepo);
+    _service = AchievementService(sessionRepo: sessionRepo);
     await _service!.init();
     await _service!.checkNewUnlocks();
     
@@ -995,8 +999,8 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
       final startOfLastWeek = startOfThisWeek.subtract(const Duration(days: 7));
       final endOfLastWeek = endOfThisWeek.subtract(const Duration(days: 7));
 
-      final thisWeekSessions = await widget.sessionRepo.getSessionsInRange(startOfThisWeek, endOfThisWeek);
-      final lastWeekSessions = await widget.sessionRepo.getSessionsInRange(startOfLastWeek, endOfLastWeek);
+      final thisWeekSessions = await sessionRepo.getSessionsInRange(startOfThisWeek, endOfThisWeek);
+      final lastWeekSessions = await sessionRepo.getSessionsInRange(startOfLastWeek, endOfLastWeek);
 
       final thisWeekVolumes = _calculateDailyVolumes(thisWeekSessions, startOfThisWeek);
       final lastWeekTotalVolume = _calculateTotalVolume(lastWeekSessions);
@@ -1030,7 +1034,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
   List<double> _calculateDailyVolumes(List<dynamic> sessions, DateTime startOfWeek) {
     List<double> dailyVolumes = List.filled(7, 0.0);
     for (var session in sessions) {
-      final dayIndex = widget.sessionRepo.ymdToDateTime(session.ymd).difference(startOfWeek).inDays;
+      final dayIndex = sessionRepo.ymdToDateTime(session.ymd).difference(startOfWeek).inDays;
       if (dayIndex >= 0 && dayIndex < 7) {
         dailyVolumes[dayIndex] = session.totalVolume;
       }

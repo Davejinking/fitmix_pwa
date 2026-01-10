@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/burn_fit_style.dart';
+import '../core/service_locator.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/session_repo.dart';
 import '../data/settings_repo.dart';
@@ -10,20 +11,7 @@ import 'splash_page.dart';
 import 'user_info_form_page.dart';
 
 class LoginPage extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-  final UserRepo userRepo;
-  final SettingsRepo settingsRepo;
-  final AuthRepo authRepo;
-
-  const LoginPage({
-    super.key,
-    required this.sessionRepo,
-    required this.exerciseRepo,
-    required this.userRepo,
-    required this.settingsRepo,
-    required this.authRepo,
-  });
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -39,13 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   void _navigateToSplash(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => SplashPage(
-          sessionRepo: widget.sessionRepo,
-          exerciseRepo: widget.exerciseRepo,
-          userRepo: widget.userRepo,
-          settingsRepo: widget.settingsRepo,
-          authRepo: widget.authRepo,
-        ),
+        builder: (context) => const SplashPage(),
       ),
     );
   }
@@ -87,8 +69,9 @@ class _LoginPageState extends State<LoginPage> {
                   icon: const Icon(Icons.person),
                   label: const Text('게스트로 계속하기'),
                   onPressed: () async {
+                    final userRepo = getIt<UserRepo>();
                     final result = await Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => UserInfoFormPage(userRepo: widget.userRepo)),
+                      MaterialPageRoute(builder: (context) => UserInfoFormPage(userRepo: userRepo)),
                     );
                     if (result == true && context.mounted) {
                       _navigateToSplash(context);
@@ -106,12 +89,14 @@ class _LoginPageState extends State<LoginPage> {
                   label: Text(AppLocalizations.of(context).loginWithGoogle),
                   onPressed: () {
                     _setLoading(true);
-                    widget.authRepo.signIn().then((account) async {
+                    final authRepo = getIt<AuthRepo>();
+                    final userRepo = getIt<UserRepo>();
+                    authRepo.signIn().then((account) async {
                       if (account != null) {
-                        final profile = await widget.userRepo.getUserProfile();
+                        final profile = await userRepo.getUserProfile();
                         if (profile == null && mounted) {
                           final result = await Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => UserInfoFormPage(userRepo: widget.userRepo)));
+                              builder: (context) => UserInfoFormPage(userRepo: userRepo)));
                           if (result == true) _navigateToSplash(context);
                         } else {
                           _navigateToSplash(context);

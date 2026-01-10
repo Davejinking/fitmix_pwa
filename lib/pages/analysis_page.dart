@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
+import '../core/service_locator.dart';
 import '../data/session_repo.dart';
 import '../data/user_repo.dart';
 import '../core/iron_theme.dart';
 import '../l10n/app_localizations.dart';
 
 class AnalysisPage extends StatefulWidget {
-  final SessionRepo repo;
-  final UserRepo userRepo;
-
-  const AnalysisPage({super.key, required this.repo, required this.userRepo});
+  const AnalysisPage({super.key});
 
   @override
   State<AnalysisPage> createState() => _AnalysisPageState();
 }
 
 class _AnalysisPageState extends State<AnalysisPage> {
+  late SessionRepo repo;
+  late UserRepo userRepo;
+  
+  @override
+  void initState() {
+    super.initState();
+    repo = getIt<SessionRepo>();
+    userRepo = getIt<UserRepo>();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);

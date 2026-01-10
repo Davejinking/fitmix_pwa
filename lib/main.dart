@@ -7,12 +7,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/constants.dart';
 import 'core/iron_theme.dart';
+import 'core/service_locator.dart';
 import 'data/session_repo.dart';
-import 'data/exercise_library_repo.dart';
-import 'data/settings_repo.dart';
-import 'data/auth_repo.dart';
-import 'pages/login_page.dart';
 import 'data/user_repo.dart';
+import 'pages/login_page.dart';
 import 'pages/splash_page.dart';
 import 'pages/library_page_v2.dart';
 import 'models/session.dart';
@@ -27,19 +25,8 @@ Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ExerciseLibraryItemAdapter());
 
-  final sessionRepo = HiveSessionRepo();
-  await sessionRepo.init();
-
-  final exerciseRepo = HiveExerciseLibraryRepo();
-  await exerciseRepo.init();
-
-  final userRepo = HiveUserRepo();
-  await userRepo.init();
-
-  final settingsRepo = HiveSettingsRepo();
-  await settingsRepo.init();
-
-  final authRepo = GoogleAuthRepo();
+  // Service Locator 설정 (의존성 주입)
+  await setupServiceLocator();
 
   // 🏋️ Iron Log 운동 라이브러리 시딩
   try {
@@ -56,6 +43,8 @@ Future<void> main() async {
   // 디버그 모드에서만 더미 데이터 생성
   if (kDebugMode) {
     try {
+      final sessionRepo = getIt<SessionRepo>();
+      
       // 강제로 더미 데이터 재생성 (테스트용)
       print('🗑️ 기존 운동 데이터 삭제 중...');
       await sessionRepo.clearAllData();
@@ -79,33 +68,21 @@ Future<void> main() async {
   }
 
   // 사용자 프로필이 있는지 확인하여 첫 화면 결정
+  final userRepo = getIt<UserRepo>();
   final userProfile = await userRepo.getUserProfile();
 
   runApp(IronLogApp(
-    sessionRepo: sessionRepo,
-    exerciseRepo: exerciseRepo,
-    userRepo: userRepo,
-    settingsRepo: settingsRepo,
-    authRepo: authRepo,
     isLoggedIn: userProfile != null,
   ));
 }
 
 class IronLogApp extends StatefulWidget {
-  final SessionRepo sessionRepo;
-  final ExerciseLibraryRepo exerciseRepo;
-  final UserRepo userRepo;
-  final SettingsRepo settingsRepo;
-  final AuthRepo authRepo;
   final bool isLoggedIn;
-  const IronLogApp(
-      {super.key,
-      required this.sessionRepo,
-      required this.exerciseRepo,
-      required this.userRepo,
-      required this.settingsRepo,
-      required this.authRepo,
-      required this.isLoggedIn});
+  
+  const IronLogApp({
+    super.key,
+    required this.isLoggedIn,
+  });
 
   @override
   State<IronLogApp> createState() => _IronLogAppState();
@@ -138,36 +115,15 @@ class _IronLogAppState extends State<IronLogApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       routes: {
-        '/library': (context) => LibraryPageV2(
-          sessionRepo: widget.sessionRepo,
-          exerciseRepo: widget.exerciseRepo,
-        ),
+        '/library': (context) => const LibraryPageV2(),
       },
       home: kDebugMode
           // 디버그 모드: 로그인 여부와 상관없이 바로 SplashPage 진입
-          ? SplashPage(
-              sessionRepo: widget.sessionRepo,
-              exerciseRepo: widget.exerciseRepo,
-              userRepo: widget.userRepo,
-              settingsRepo: widget.settingsRepo,
-              authRepo: widget.authRepo,
-            )
+          ? const SplashPage()
           // 릴리즈/프로파일 모드: 기존 로직 유지
           : (widget.isLoggedIn
-              ? SplashPage(
-                  sessionRepo: widget.sessionRepo,
-                  exerciseRepo: widget.exerciseRepo,
-                  userRepo: widget.userRepo,
-                  settingsRepo: widget.settingsRepo,
-                  authRepo: widget.authRepo,
-                )
-              : LoginPage(
-                  sessionRepo: widget.sessionRepo,
-                  exerciseRepo: widget.exerciseRepo,
-                  userRepo: widget.userRepo,
-                  settingsRepo: widget.settingsRepo,
-                  authRepo: widget.authRepo,
-                )),
+              ? const SplashPage()
+              : const LoginPage()),
     );
   }
 }

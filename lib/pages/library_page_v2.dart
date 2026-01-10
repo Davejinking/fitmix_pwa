@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/service_locator.dart';
 import '../services/exercise_seeding_service.dart';
 import '../models/exercise_library.dart';
 import '../l10n/app_localizations.dart';
@@ -7,14 +8,7 @@ import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';
 
 class LibraryPageV2 extends StatefulWidget {
-  final SessionRepo? sessionRepo;
-  final ExerciseLibraryRepo? exerciseRepo;
-
-  const LibraryPageV2({
-    super.key,
-    this.sessionRepo,
-    this.exerciseRepo,
-  });
+  const LibraryPageV2({super.key});
 
   @override
   State<LibraryPageV2> createState() => _LibraryPageV2State();
@@ -332,8 +326,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     showExerciseDetailModal(
                       context,
                       exerciseName: exercise.nameEn,
-                      sessionRepo: widget.sessionRepo,
-                      exerciseRepo: widget.exerciseRepo,
+                      sessionRepo: getIt<SessionRepo>(),
+                      exerciseRepo: getIt<ExerciseLibraryRepo>(),
                     );
                   },
                   child: Container(
