@@ -7,14 +7,15 @@ import '../models/session.dart';
 import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../models/exercise_db.dart';
-import '../widgets/calendar/month_header.dart';
 import '../widgets/calendar/week_strip.dart';
+import '../widgets/calendar/calendar_modal_sheet.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
 import '../widgets/modals/exercise_detail_modal.dart';
 import 'active_workout_page.dart';
 import 'exercise_selection_page_v2.dart';
+import 'plan_page.dart';
 
 /// 캘린더 페이지 - 운동 계획 및 기록 관리
 class CalendarPage extends StatefulWidget {
@@ -157,7 +158,6 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
 
-  // 운동 시작 - 전체 화면 모달로 이동
   Future<void> _startWorkout() async {
     if (_currentSession == null) return;
     
@@ -184,18 +184,68 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
+  // 오늘로 이동
+  void _goToToday() {
+    final today = DateTime.now();
+    setState(() {
+      _selectedDay = today;
+      _focusedDay = today;
+    });
+    _loadSession();
+  }
+
+  // 캘린더 모달 표시
+  Future<void> _showCalendarModal() async {
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CalendarModalSheet(
+        initialDate: _selectedDay,
+        repo: repo,
+        exerciseRepo: exerciseRepo,
+        workoutDates: _workoutDates,
+        restDates: _restDates,
+      ),
+    );
+    
+    // 휴식 상태가 변경되었으면 새로고침
+    if (result == true && mounted) {
+      await _loadRestDates();
+      await _loadSession();
+      setState(() {});
+    }
+  }
+
+  // 플랜 페이지로 이동
+  void _goToPlanPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlanPage(
+          date: _selectedDay,
+          repo: repo,
+          exerciseRepo: exerciseRepo,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool hasPlan = _currentSession != null && 
                          _currentSession!.isWorkoutDay && 
                          _currentSession!.exercises.isNotEmpty;
+    
+    final isToday = _selectedDay.year == DateTime.now().year &&
+        _selectedDay.month == DateTime.now().month &&
+        _selectedDay.day == DateTime.now().day;
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         title: const Text(
-          'Iron Log - 캘린더',
+          'Iron Log',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -203,13 +253,26 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
         actions: [
+          // 캘린더 모달 버튼
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
-            onPressed: () {},
+            icon: const Icon(Icons.calendar_month_outlined, color: Colors.white),
+            onPressed: _showCalendarModal,
+            tooltip: 'Calendar',
           ),
+          // 오늘로 이동 버튼
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white),
-            onPressed: () {},
+            icon: Icon(
+              Icons.calendar_today,
+              color: isToday ? const Color(0xFF007AFF) : Colors.white,
+            ),
+            onPressed: _goToToday,
+            tooltip: 'Today',
+          ),
+          // 플랜 추가 버튼
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+            onPressed: _goToPlanPage,
+            tooltip: 'Add Plan',
           ),
         ],
       ),
@@ -219,20 +282,7 @@ class _CalendarPageState extends State<CalendarPage> {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Column(
               children: [
-                MonthHeader(
-                  focusedDay: _focusedDay,
-                  selectedDay: _selectedDay,
-                  onDateSelected: _onDaySelected,
-                  repo: repo,
-                  exerciseRepo: exerciseRepo,
-                  workoutDates: _workoutDates,
-                  restDates: _restDates,
-                  onRestStatusChanged: () async {
-                    await _loadRestDates();
-                    await _loadSession();
-                    if (mounted) setState(() {});
-                  },
-                ),
+                // WeekStrip (Expandable Calendar)
                 WeekStrip(
                   focusedDay: _focusedDay,
                   selectedDay: _selectedDay,
@@ -247,6 +297,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     _loadSession();
                   },
                 ),
+                // Content Area (Expanded to fill remaining space)
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
