@@ -138,7 +138,10 @@ class _IronLogAppState extends State<IronLogApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       routes: {
-        '/library': (context) => const LibraryPageV2(),
+        '/library': (context) => LibraryPageV2(
+          sessionRepo: widget.sessionRepo,
+          exerciseRepo: widget.exerciseRepo,
+        ),
       },
       home: kDebugMode
           // 디버그 모드: 로그인 여부와 상관없이 바로 SplashPage 진입

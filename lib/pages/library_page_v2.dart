@@ -2,9 +2,19 @@ import 'package:flutter/material.dart';
 import '../services/exercise_seeding_service.dart';
 import '../models/exercise_library.dart';
 import '../l10n/app_localizations.dart';
+import '../pages/exercise_detail_page.dart';
+import '../data/session_repo.dart';
+import '../data/exercise_library_repo.dart';
 
 class LibraryPageV2 extends StatefulWidget {
-  const LibraryPageV2({super.key});
+  final SessionRepo? sessionRepo;
+  final ExerciseLibraryRepo? exerciseRepo;
+
+  const LibraryPageV2({
+    super.key,
+    this.sessionRepo,
+    this.exerciseRepo,
+  });
 
   @override
   State<LibraryPageV2> createState() => _LibraryPageV2State();
@@ -321,6 +331,30 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                       ],
                     ),
                   ),
+                  // 운동 상세 정보 버튼 (i)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ExerciseDetailPage(
+                            exerciseName: exercise.nameEn, // nameEn 사용
+                            sessionRepo: widget.sessionRepo,
+                            exerciseRepo: widget.exerciseRepo,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.info_outline,
+                        size: 18,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   // 북마크 버튼
                   GestureDetector(
                     onTap: () => _toggleBookmark(exercise.id),
