@@ -882,7 +882,7 @@ class _AchievementPreviewCardState extends State<_AchievementPreviewCard> {
   }
 
   Future<void> _initService() async {
-    _service = AchievementService(sessionRepo: sessionRepo);
+    _service = AchievementService(sessionRepo: widget.sessionRepo);
     await _service!.init();
     await _service!.checkNewUnlocks();
     
@@ -999,8 +999,8 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
       final startOfLastWeek = startOfThisWeek.subtract(const Duration(days: 7));
       final endOfLastWeek = endOfThisWeek.subtract(const Duration(days: 7));
 
-      final thisWeekSessions = await sessionRepo.getSessionsInRange(startOfThisWeek, endOfThisWeek);
-      final lastWeekSessions = await sessionRepo.getSessionsInRange(startOfLastWeek, endOfLastWeek);
+      final thisWeekSessions = await widget.sessionRepo.getSessionsInRange(startOfThisWeek, endOfThisWeek);
+      final lastWeekSessions = await widget.sessionRepo.getSessionsInRange(startOfLastWeek, endOfLastWeek);
 
       final thisWeekVolumes = _calculateDailyVolumes(thisWeekSessions, startOfThisWeek);
       final lastWeekTotalVolume = _calculateTotalVolume(lastWeekSessions);
@@ -1034,7 +1034,7 @@ class _ActivityTrendCardState extends State<_ActivityTrendCard> {
   List<double> _calculateDailyVolumes(List<dynamic> sessions, DateTime startOfWeek) {
     List<double> dailyVolumes = List.filled(7, 0.0);
     for (var session in sessions) {
-      final dayIndex = sessionRepo.ymdToDateTime(session.ymd).difference(startOfWeek).inDays;
+      final dayIndex = widget.sessionRepo.ymdToDateTime(session.ymd).difference(startOfWeek).inDays;
       if (dayIndex >= 0 && dayIndex < 7) {
         dailyVolumes[dayIndex] = session.totalVolume;
       }

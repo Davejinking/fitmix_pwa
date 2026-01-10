@@ -52,14 +52,6 @@ class _CalendarPageState extends State<CalendarPage> {
   // 운동 카드 전체 열기/닫기 상태
   bool _allCardsExpanded = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSession();
-    _loadWorkoutDates();
-    _loadRestDates();
-  }
-
   Future<void> _loadSession() async {
     setState(() => _isLoading = true);
     try {
@@ -402,6 +394,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     onUpdate: () => setState(() {}),
                     forceExpanded: _allCardsExpanded,
                     sessionRepo: repo, // SessionRepo 전달
+                    exerciseRepo: exerciseRepo, // ExerciseLibraryRepo 전달
                   ),
                 );
               },
@@ -892,7 +885,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                               context,
                               exerciseName: widget.exercise.name,
                               sessionRepo: widget.sessionRepo,
-                              exerciseRepo: exerciseRepo,
+                              exerciseRepo: widget.exerciseRepo,
                             );
                           },
                           child: Container(
