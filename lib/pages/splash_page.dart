@@ -104,29 +104,25 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // 다크 모드 배경
+      backgroundColor: Colors.black, // Pure black void
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // IRON LOG text logo - Tactical Noir style
               ScaleTransition(
                 scale: _scaleAnimation,
-                child: const Icon(
-                  Icons.fitness_center,
-                  size: 80,
-                  color: Color(0xFFFFFFFF),
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Lifto',
-                style: TextStyle(
-                  fontSize: 42,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFFFFFFFF),
-                  letterSpacing: -0.5,
+                child: const Text(
+                  'IRON LOG',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 8.0,
+                    fontFamily: 'Courier', // Monospace tactical
+                  ),
                 ),
               ),
             ],

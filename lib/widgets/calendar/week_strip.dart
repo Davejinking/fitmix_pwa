@@ -122,166 +122,187 @@ class _WeekStripState extends State<WeekStrip> {
           ),
           
           // Date Control Module Container with TableCalendar
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E), // Matches Exercise Card
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1), // Subtle border
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(12), // Rounded module
-            ),
-            child: TableCalendar(
-              firstDay: DateTime.utc(2020, 1, 1),
-              lastDay: DateTime.utc(2030, 12, 31),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(day, widget.selectedDay),
-              calendarFormat: _calendarFormat,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              
-              // Hide default header (we have custom header above)
-              headerVisible: false,
-              
-              // Callbacks
-              onDaySelected: _onDaySelected,
-              onPageChanged: _onPageChanged,
-              onFormatChanged: (format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              },
-              
-              // Styling
-              calendarStyle: CalendarStyle(
-                // Today style
-                todayDecoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.blueAccent,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                todayTextStyle: const TextStyle(
-                  color: Colors.blueAccent,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  fontFamily: 'Courier',
-                ),
+          // Pure black background - no card effect
+          Column(
+            children: [
+              TableCalendar(
+                firstDay: DateTime.utc(2020, 1, 1),
+                lastDay: DateTime.utc(2030, 12, 31),
+                focusedDay: _focusedDay,
+                selectedDayPredicate: (day) => isSameDay(day, widget.selectedDay),
+                calendarFormat: _calendarFormat,
+                startingDayOfWeek: StartingDayOfWeek.monday,
                 
-                // Selected day style
-                selectedDecoration: BoxDecoration(
-                  color: const Color(0xFF2962FF), // Electric Blue
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                selectedTextStyle: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  fontFamily: 'Courier',
-                ),
+                // Hide default header (we have custom header above)
+                headerVisible: false,
                 
-                // Default day style
-                defaultDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                defaultTextStyle: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  fontFamily: 'Courier',
-                ),
-                
-                // Weekend style
-                weekendDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                weekendTextStyle: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  fontFamily: 'Courier',
-                ),
-                
-                // Outside month style
-                outsideDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                outsideTextStyle: TextStyle(
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  fontFamily: 'Courier',
-                ),
-                
-                // Markers
-                markerDecoration: const BoxDecoration(
-                  color: Color(0xFF2962FF),
-                  shape: BoxShape.circle,
-                ),
-                markerSize: 4,
-                markersMaxCount: 1,
-              ),
-              
-              // Days of week style
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[600],
-                  letterSpacing: 0.5,
-                ),
-                weekendStyle: TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[600],
-                  letterSpacing: 0.5,
-                ),
-              ),
-              
-              // Event loader for markers
-              eventLoader: (day) {
-                final dayYmd = '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
-                if (widget.workoutDates.contains(dayYmd)) {
-                  return ['workout'];
-                } else if (widget.restDates.contains(dayYmd)) {
-                  return ['rest'];
-                }
-                return [];
-              },
-              
-              // Custom builders for markers
-              calendarBuilders: CalendarBuilders(
-                markerBuilder: (context, day, events) {
-                  // Hide marker on selected day to avoid overlap with blue background
-                  if (isSameDay(day, widget.selectedDay)) {
-                    return const SizedBox.shrink();
-                  }
-                  
-                  if (events.isEmpty) return const SizedBox.shrink();
-                  
-                  final dayYmd = '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
-                  final hasWorkout = widget.workoutDates.contains(dayYmd);
-                  final isRest = widget.restDates.contains(dayYmd);
-                  
-                  return Positioned(
-                    bottom: 4,
-                    child: Container(
-                      width: 4,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: hasWorkout
-                            ? const Color(0xFF2962FF) // Blue for workout
-                            : isRest
-                                ? const Color(0xFFFF6B35) // Orange for rest
-                                : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  );
+                // Callbacks
+                onDaySelected: _onDaySelected,
+                onPageChanged: _onPageChanged,
+                onFormatChanged: (format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
                 },
+                
+                // Styling - Iron Calendar Design
+                calendarStyle: CalendarStyle(
+                  // Cell decoration with grid lines
+                  cellMargin: const EdgeInsets.all(0), // Remove spacing for grid effect
+                  cellPadding: const EdgeInsets.all(4),
+                  
+                  // Today style - NO BOX, just text color change (Stealth grid)
+                  todayDecoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF0A0A0A), // Very dark grey (almost black)
+                      width: 0.5,
+                    ),
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  todayTextStyle: const TextStyle(
+                    color: Color(0xFF00BCD4), // Cyan accent for "today"
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                    fontFamily: 'Courier',
+                  ),
+                  
+                  // Selected day style - Blue stroke only (no fill) - THINNER
+                  selectedDecoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF2962FF), // Electric Blue
+                      width: 1.5, // Reduced from 3 to 1.5
+                    ),
+                    borderRadius: BorderRadius.zero, // Square corners
+                  ),
+                  selectedTextStyle: const TextStyle(
+                    color: const Color(0xFF2962FF), // Blue text
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                    fontFamily: 'Courier',
+                  ),
+                  
+                  // Default day style - Grid cell (Stealth mode)
+                  defaultDecoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF0A0A0A), // Very dark - barely visible
+                      width: 0.5,
+                    ),
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  defaultTextStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontFamily: 'Courier',
+                  ),
+                  
+                  // Weekend style - Same grid (Stealth mode)
+                  weekendDecoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF0A0A0A),
+                      width: 0.5,
+                    ),
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  weekendTextStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontFamily: 'Courier',
+                  ),
+                  
+                  // Outside month style - Dimmed grid (Stealth mode)
+                  outsideDecoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF0A0A0A),
+                      width: 0.5,
+                    ),
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  outsideTextStyle: TextStyle(
+                    color: Colors.grey[800],
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    fontFamily: 'Courier',
+                  ),
+                  
+                  // Markers - Square dots
+                  markerDecoration: const BoxDecoration(
+                    color: Color(0xFF2962FF),
+                    shape: BoxShape.rectangle, // Square marker
+                  ),
+                  markerSize: 3,
+                  markersMaxCount: 1,
+                ),
+                
+                // Days of week style
+                daysOfWeekStyle: DaysOfWeekStyle(
+                  weekdayStyle: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[600],
+                    letterSpacing: 0.5,
+                  ),
+                  weekendStyle: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[600],
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                
+                // Event loader for markers
+                eventLoader: (day) {
+                  final dayYmd = '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
+                  if (widget.workoutDates.contains(dayYmd)) {
+                    return ['workout'];
+                  } else if (widget.restDates.contains(dayYmd)) {
+                    return ['rest'];
+                  }
+                  return [];
+                },
+                
+                // Custom builders for markers
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, day, events) {
+                    // Hide marker on selected day to avoid overlap with blue background
+                    if (isSameDay(day, widget.selectedDay)) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    if (events.isEmpty) return const SizedBox.shrink();
+                    
+                    final dayYmd = '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
+                    final hasWorkout = widget.workoutDates.contains(dayYmd);
+                    final isRest = widget.restDates.contains(dayYmd);
+                    
+                    return Positioned(
+                      bottom: 4,
+                      child: Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: hasWorkout
+                              ? const Color(0xFF2962FF) // Blue for workout
+                              : isRest
+                                  ? const Color(0xFFFF6B35) // Orange for rest
+                                  : Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
+              // Hard line separator below calendar
+              Divider(
+                color: Colors.grey[800],
+                height: 1,
+                thickness: 1,
+              ),
+              // Breathing space between calendar and stats
+              const SizedBox(height: 24),
+            ],
           ),
         ],
       ),

@@ -1,0 +1,20 @@
+<svg width="1200" height="1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- IRON LOG Splash Logo Template -->
+  <!-- 이 SVG를 PNG로 변환하여 사용하세요 -->
+  
+  <!-- Background (투명) -->
+  <rect width="1200" height="1200" fill="none"/>
+  
+  <!-- Text: IRON LOG -->
+  <text 
+    x="600" 
+    y="650" 
+    font-family="Courier, monospace" 
+    font-size="140" 
+    font-weight="900" 
+    fill="#FFFFFF" 
+    text-anchor="middle"
+    letter-spacing="20">
+    IRON LOG
+  </text>
+</svg>

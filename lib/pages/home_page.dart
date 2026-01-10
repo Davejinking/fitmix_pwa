@@ -13,8 +13,8 @@ import 'shell_page.dart';
 import '../models/session.dart';
 import '../services/achievement_service.dart';
 import '../models/achievement.dart';
-import '../services/gamification_service.dart';
 import 'achievements_page.dart';
+import '../widgets/common/iron_app_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -76,16 +76,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: IronTheme.background,
-      appBar: AppBar(
-        backgroundColor: IronTheme.background,
-        title: Text(
-          'Iron Log - Home',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: IronTheme.textHigh,
-          ),
-        ),
+      appBar: IronAppBar(
         actions: [
           // Demo 버튼 (디버그 모드에서만 표시)
           if (const bool.fromEnvironment('dart.vm.product') == false)
@@ -121,17 +112,19 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              // 히어로 섹션 (레벨 + 스트릭 통합 카드)
+              // DELETED: Level/XP/Streak section (gamification removed)
+              
+              // Weekly Status Module (Wireframe HUD)
               SlideTransition(
                 position: _slideAnimations[0],
                 child: FadeTransition(
                   opacity: _animationController,
-                  child: _buildHeroStatusCard(),
+                  child: _buildWeeklyCalendar(),
                 ),
               ),
               const SizedBox(height: 16),
               
-              // 메인 액션 (오늘의 운동 시작) - 단일 버튼!
+              // Today's Plan Module (Wireframe HUD)
               SlideTransition(
                 position: _slideAnimations[1],
                 child: FadeTransition(
@@ -141,42 +134,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ),
               const SizedBox(height: 16),
               
-              // 주간 요약 (이번 주 운동 현황)
+              // Monthly Goal Module (Wireframe HUD)
               SlideTransition(
                 position: _slideAnimations[2],
                 child: FadeTransition(
                   opacity: _animationController,
-                  child: _buildWeeklyCalendar(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // 목표 진행률 (원형 차트)
-              SlideTransition(
-                position: _slideAnimations[3],
-                child: FadeTransition(
-                  opacity: _animationController,
                   child: _buildGoalProgress(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // 업적 미리보기
-              SlideTransition(
-                position: _slideAnimations[4],
-                child: FadeTransition(
-                  opacity: _animationController,
-                  child: _AchievementPreviewCard(sessionRepo: sessionRepo),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // 활동 트렌드
-              SlideTransition(
-                position: _slideAnimations[5],
-                child: FadeTransition(
-                  opacity: _animationController,
-                  child: _ActivityTrendCard(sessionRepo: sessionRepo, exerciseRepo: exerciseRepo),
                 ),
               ),
               const SizedBox(height: 100),
@@ -184,154 +147,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           ),
         ),
       ),
-    );
-  }
-
-  // 히어로 섹션 (레벨 + 스트릭 통합 카드)
-  Widget _buildHeroStatusCard() {
-    return FutureBuilder<GamificationService?>(
-      future: _initGamificationService(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Container(
-            height: 140,
-            decoration: BoxDecoration(
-              color: IronTheme.surface,
-              borderRadius: BorderRadius.circular(16),
-            ),
-          );
-        }
-
-        final service = snapshot.data!;
-        final data = service.data;
-
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                IronTheme.surface.withValues(alpha: 0.8),
-                IronTheme.surface.withValues(alpha: 1.0),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: IronTheme.primary.withValues(alpha: 0.3),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              // 좌측: 레벨 원형 그래프
-              Expanded(
-                flex: 5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Level ${data.level}',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: IronTheme.textHigh,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        // 레벨 프로그래스 바
-                        Expanded(
-                          child: Container(
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: FractionallySizedBox(
-                              alignment: Alignment.centerLeft,
-                              widthFactor: data.levelProgress,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [IronTheme.primary, IronTheme.primary.withValues(alpha: 0.8)],
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${data.totalXP}/${data.totalXP + data.xpToNextLevel} XP',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: IronTheme.textMedium,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(width: 20),
-              
-              // 우측: 스트릭 현황
-              Expanded(
-                flex: 4,
-                child: FutureBuilder<int>(
-                  future: _getStreak(),
-                  builder: (context, streakSnapshot) {
-                    final streak = streakSnapshot.data ?? 0;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Icon(
-                              Icons.local_fire_department,
-                              color: IronTheme.secondary,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              context.l10n.streakDays(streak),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        FutureBuilder<int>(
-                          future: _getWeeklyWorkouts(),
-                          builder: (context, weeklySnapshot) {
-                            final weeklyCount = weeklySnapshot.data ?? 0;
-                            return Text(
-                              context.l10n.thisWeekCompleted(weeklyCount),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: IronTheme.textMedium,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -348,196 +163,153 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         final isCompleted = todaySession?.isCompleted ?? false;
 
         if (isRest) {
-          return Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: IronTheme.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.grey.withValues(alpha: 0.3),
+          return Column(
+            children: [
+              const SizedBox(height: 60),
+              Text(
+                'STATUS: RESTING',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey[700],
+                  fontFamily: 'Courier',
+                  letterSpacing: 2.0,
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.event_busy,
-                  size: 48,
-                  color: Colors.grey,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  context.l10n.rest,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  context.l10n.restDayMessage,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: IronTheme.textMedium,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+              const SizedBox(height: 60),
+            ],
           );
         }
 
         if (!hasPlan) {
-          return Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: IronTheme.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.grey.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.add_circle_outline,
-                  size: 48,
-                  color: IronTheme.primary,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  context.l10n.todayWorkoutPlan,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  context.l10n.addExerciseToPlan,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: IronTheme.textMedium,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      // 캘린더 탭으로 이동
-                      final shellState = context.findAncestorStateOfType<ShellPageState>();
-                      shellState?.navigateToCalendar();
-                    },
-                    icon: const Icon(Icons.add, size: 20),
-                    label: Text(context.l10n.planWorkout),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: IronTheme.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        // 계획이 있는 경우
-        final exerciseCount = todaySession.exercises.length;
-        final completedCount = todaySession.exercises.where((e) => 
-          e.sets.isNotEmpty && e.sets.every((s) => s.isCompleted)).length;
-
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isCompleted 
-                ? [const Color(0xFF00C853), const Color(0xFF4CAF50)]
-                : [IronTheme.primary, IronTheme.primary.withValues(alpha: 0.8)],
-            ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Column(
             children: [
-              Row(
-                children: [
-                  Icon(
-                    isCompleted ? Icons.check_circle : Icons.play_circle_filled,
-                    size: 32,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isCompleted ? context.l10n.workoutCompleteTitle : context.l10n.todayWorkoutTitle,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          context.l10n.exercisesCompleted(completedCount, exerciseCount),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 60),
+              // Status text - minimalist
+              Text(
+                'NO ACTIVE SESSION',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey[700],
+                  fontFamily: 'Courier',
+                  letterSpacing: 2.0,
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
+              // Ghost button - transparent
               SizedBox(
                 width: double.infinity,
-                height: 48,
-                child: ElevatedButton.icon(
+                height: 56,
+                child: OutlinedButton(
                   onPressed: () {
-                    // 캘린더 탭으로 이동
                     final shellState = context.findAncestorStateOfType<ShellPageState>();
                     shellState?.navigateToCalendar();
                   },
-                  icon: Icon(
-                    isCompleted ? Icons.edit : Icons.play_arrow,
-                    size: 20,
-                  ),
-                  label: Text(
-                    isCompleted ? context.l10n.editWorkout : context.l10n.startWorkout,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white, width: 1.5),
+                    shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
                     ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: isCompleted ? const Color(0xFF00C853) : IronTheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  child: Text(
+                    'INITIATE WORKOUT',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
+                      fontFamily: 'Courier',
                     ),
                   ),
                 ),
               ),
+              const SizedBox(height: 60),
             ],
-          ),
+          );
+        }
+
+        // Has plan - minimalist typography
+        final exerciseCount = todaySession.exercises.length;
+        final completedCount = todaySession.exercises.where((e) => 
+          e.sets.isNotEmpty && e.sets.every((s) => s.isCompleted)).length;
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 60),
+            // Status
+            Text(
+              isCompleted ? 'SESSION COMPLETE' : 'SESSION READY',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: isCompleted ? Colors.white : Colors.grey[700],
+                fontFamily: 'Courier',
+                letterSpacing: 2.0,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Exercise count
+            Text(
+              '$completedCount / $exerciseCount',
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w300,
+                color: Colors.white,
+                fontFamily: 'Courier',
+                letterSpacing: 4.0,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'EXERCISES',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey[800],
+                fontFamily: 'Courier',
+                letterSpacing: 2.0,
+              ),
+            ),
+            const SizedBox(height: 40),
+            // Ghost button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: OutlinedButton(
+                onPressed: () {
+                  final shellState = context.findAncestorStateOfType<ShellPageState>();
+                  shellState?.navigateToCalendar();
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.white, width: 1.5),
+                  shape: BeveledRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(
+                  isCompleted ? 'EDIT SESSION' : 'START SESSION',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2.0,
+                    fontFamily: 'Courier',
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 60),
+          ],
         );
       },
     );
   }
 
-  // 주간 요약 (이번 주 운동 현황)
+  // Weekly Status - Minimalist (No Container)
   Widget _buildWeeklyCalendar() {
     return FutureBuilder<Set<String>>(
       future: _getWorkoutDates(),
@@ -546,152 +318,70 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         final now = DateTime.now();
         final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
         
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: IronTheme.surface,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n.thisWeekWorkout,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title - Monospace
+            Text(
+              'WEEKLY STATUS',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                color: Colors.grey[700],
+                fontFamily: 'Courier',
+                letterSpacing: 2.0,
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(7, (index) {
-                  final date = startOfWeek.add(Duration(days: index));
-                  final dateYmd = sessionRepo.ymd(date);
-                  final hasWorkout = workoutDates.contains(dateYmd);
-                  final isToday = sessionRepo.ymd(date) == sessionRepo.ymd(now);
-                  final dayNames = [
-                    context.l10n.weekdayMon,
-                    context.l10n.weekdayTue,
-                    context.l10n.weekdayWed,
-                    context.l10n.weekdayThu,
-                    context.l10n.weekdayFri,
-                    context.l10n.weekdaySat,
-                    context.l10n.weekdaySun,
-                  ];
-                  
-                  return Column(
-                    children: [
-                      Text(
-                        dayNames[index],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: IronTheme.textMedium,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: hasWorkout 
-                            ? IronTheme.primary
-                            : isToday 
-                              ? Colors.grey[700]
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(16),
-                          border: isToday && !hasWorkout
-                            ? Border.all(color: Colors.grey[600]!)
-                            : null,
-                        ),
-                        child: Center(
-                          child: hasWorkout
-                            ? const Icon(
-                                Icons.local_fire_department,
-                                color: Colors.white,
-                                size: 16,
-                              )
-                            : Text(
-                                '${date.day}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: isToday ? Colors.white : Colors.grey[500],
-                                ),
-                              ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-              const SizedBox(height: 16),
-              FutureBuilder<Map<String, dynamic>>(
-                future: _getWeeklyStats(),
-                builder: (context, statsSnapshot) {
-                  final stats = statsSnapshot.data ?? {'volume': '0', 'timeMinutes': 0};
-                  final volumeText = '${stats['volume']}t';
-                  final timeText = context.l10n.minutesUnit(stats['timeMinutes'] as int);
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: _buildWeeklyStat(context.l10n.totalVolumeLabel, volumeText, Icons.bar_chart),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildWeeklyStat(context.l10n.workoutTimeLabel, timeText, Icons.timer),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 24),
+            // Day Labels - M T W T F S S
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day) {
+                return SizedBox(
+                  width: 12,
+                  child: Text(
+                    day,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey[700],
+                      fontFamily: 'Courier',
+                      letterSpacing: 0,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 8),
+            // Dot Matrix - 7 squares
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(7, (index) {
+                final date = startOfWeek.add(Duration(days: index));
+                final dateYmd = sessionRepo.ymd(date);
+                final hasWorkout = workoutDates.contains(dateYmd);
+                
+                return Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: hasWorkout ? const Color(0xFF2196F3) : Colors.grey[900],
+                    borderRadius: BorderRadius.zero, // Square
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 32),
+            Divider(color: Colors.grey[900], thickness: 1, height: 1),
+            const SizedBox(height: 32),
+          ],
         );
       },
     );
   }
 
-  Widget _buildWeeklyStat(String label, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: IronTheme.surface.withValues(alpha: 0.8),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: IronTheme.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: IronTheme.textMedium,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 목표 진행률 (원형 차트)
+  // Monthly Goal - Minimalist (No Container)
   Widget _buildGoalProgress() {
     return FutureBuilder<Map<String, dynamic>>(
       future: _getGoalProgress(),
@@ -701,175 +391,75 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         final completed = data['completed'] as int;
         final total = data['total'] as int;
         
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: IronTheme.surface,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              // 원형 차트
-              SizedBox(
-                width: 80,
-                height: 80,
-                child: Stack(
-                  children: [
-                    // 배경 원
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.grey[800]!,
-                          width: 8,
-                        ),
-                      ),
-                    ),
-                    // 진행률 원
-                    Transform.rotate(
-                      angle: -1.5708, // -90도 (12시 방향부터 시작)
-                      child: SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: CircularProgressIndicator(
-                          value: progress,
-                          strokeWidth: 8,
-                          backgroundColor: Colors.transparent,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            IronTheme.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // 중앙 텍스트
-                    Center(
-                      child: Text(
-                        '${(progress * 100).toInt()}%',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title - Monospace
+            Text(
+              'MONTHLY GOAL',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                color: Colors.grey[700],
+                fontFamily: 'Courier',
+                letterSpacing: 2.0,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Progress number - big
+            Text(
+              '${(progress * 100).toInt()}%',
+              style: const TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.w300,
+                color: Colors.white,
+                fontFamily: 'Courier',
+                letterSpacing: 4.0,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Details
+            Text(
+              '$completed / $total DAYS',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey[700],
+                fontFamily: 'Courier',
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Progress Bar - Visual Anchor
+            Center(
+              child: SizedBox(
+                width: 150,
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 2.0,
+                  backgroundColor: Colors.grey[900],
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
+                  borderRadius: BorderRadius.zero, // Sharp edges
                 ),
               ),
-              const SizedBox(width: 20),
-              // 목표 정보
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.thisMonthGoal,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      context.l10n.daysCompleted(completed, total),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: IronTheme.textMedium,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      context.l10n.daysRemaining(total - completed),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 32),
+            Divider(color: Colors.grey[900], thickness: 1, height: 1),
+          ],
         );
       },
     );
   }
 
   // Helper methods
-  Future<GamificationService?> _initGamificationService() async {
-    final service = GamificationService(sessionRepo: sessionRepo);
-    await service.init();
-    return service;
-  }
-
   Future<Session?> _getTodaySession() async {
     final today = sessionRepo.ymd(DateTime.now());
     return await sessionRepo.get(today);
   }
 
-  Future<int> _getStreak() async {
-    final sessions = await sessionRepo.getWorkoutSessions();
-    if (sessions.isEmpty) return 0;
-
-    sessions.sort((a, b) => b.ymd.compareTo(a.ymd)); // 최신순 정렬
-    
-    final today = DateTime.now();
-    final todayYmd = sessionRepo.ymd(today);
-    final yesterdayYmd = sessionRepo.ymd(today.subtract(const Duration(days: 1)));
-    
-    // 오늘이나 어제 운동했는지 확인
-    final hasToday = sessions.any((s) => s.ymd == todayYmd);
-    final hasYesterday = sessions.any((s) => s.ymd == yesterdayYmd);
-    
-    if (!hasToday && !hasYesterday) {
-      return 0; // 연속 기록이 끊어짐
-    }
-    
-    int streak = 0;
-    DateTime checkDate = hasToday ? today : today.subtract(const Duration(days: 1));
-    
-    // 연속일 계산
-    while (true) {
-      final ymd = sessionRepo.ymd(checkDate);
-      if (sessions.any((s) => s.ymd == ymd)) {
-        streak++;
-        checkDate = checkDate.subtract(const Duration(days: 1));
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
-  }
-
-  Future<int> _getWeeklyWorkouts() async {
-    final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6));
-    
-    final sessions = await sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
-    return sessions.where((s) => s.isWorkoutDay).length;
-  }
-
   Future<Set<String>> _getWorkoutDates() async {
     final sessions = await sessionRepo.getWorkoutSessions();
     return sessions.map((s) => s.ymd).toSet();
-  }
-
-  Future<Map<String, dynamic>> _getWeeklyStats() async {
-    final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6));
-    
-    final sessions = await sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
-    final totalVolume = sessions.fold(0.0, (sum, s) => sum + s.totalVolume);
-    
-    return {
-      'volume': (totalVolume / 1000).toStringAsFixed(1),
-      'timeMinutes': sessions.length * 60, // 숫자로 반환
-    };
   }
 
   Future<Map<String, dynamic>> _getGoalProgress() async {

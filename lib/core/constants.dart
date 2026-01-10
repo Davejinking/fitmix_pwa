@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// 앱 전체에서 사용되는 상수들을 중앙 관리
 class AppConstants {
   // 앱 정보
-  static const String appName = 'Lifto';
+  static const String appName = 'Iron Log';
   static const String appVersion = '1.0.0';
   
   // 날짜 관련

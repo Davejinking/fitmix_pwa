@@ -20,29 +20,40 @@ class FMBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      selectedItemColor: selectedItemColor ?? const Color(0xFF007AFF), // 스카이 블루
-      unselectedItemColor: unselectedItemColor ?? const Color(0xFF8E8E93), // 어두운 회색
-      showUnselectedLabels: true,
-      type: BottomNavigationBarType.fixed,
-      elevation: 0,
-      backgroundColor: backgroundColor ?? const Color(0xFF1E1E1E),
-      selectedFontSize: 12,
-      unselectedFontSize: 12,
-      items: items.map((item) {
-        final index = items.indexOf(item);
-        final isSelected = currentIndex == index;
-        
-        return BottomNavigationBarItem(
-          icon: Icon(
-            isSelected ? item.activeIcon : item.icon,
-            size: 24,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black, // Pure black void
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey[900]!, // Subtle hairline
+            width: 1.0,
           ),
-          label: item.label,
-        );
-      }).toList(),
+        ),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: onTap,
+        selectedItemColor: selectedItemColor ?? const Color(0xFF2196F3), // Signature blue
+        unselectedItemColor: unselectedItemColor ?? Colors.grey[700], // Dark grey
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0, // No shadow
+        backgroundColor: Colors.black, // Pure black
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        items: items.map((item) {
+          final index = items.indexOf(item);
+          final isSelected = currentIndex == index;
+          
+          return BottomNavigationBarItem(
+            icon: Icon(
+              isSelected ? item.activeIcon : item.icon,
+              size: 24,
+            ),
+            label: item.label,
+          );
+        }).toList(),
+      ),
     );
   }
 }

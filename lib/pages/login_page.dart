@@ -51,19 +51,27 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(flex: 2),
-                const Icon(Icons.fitness_center, size: 80, color: Colors.white),
+                // IRON LOG branding - Tactical Noir
+                const Text(
+                  'IRON LOG',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 8.0,
+                    fontFamily: 'Courier',
+                  ),
+                ),
                 const SizedBox(height: 16),
-                const Text('Lifto',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 2.0)),
-                const SizedBox(height: 8),
-                Text('운동의 모든 것을 한 곳에서',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.8))),
+                Text(
+                  '운동의 모든 것을 한 곳에서',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
                 const Spacer(flex: 3),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.person),

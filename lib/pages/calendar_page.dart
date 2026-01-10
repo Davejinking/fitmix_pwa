@@ -8,6 +8,7 @@ import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../models/exercise_db.dart';
 import '../widgets/calendar/week_strip.dart';
+import '../widgets/common/iron_app_bar.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
@@ -217,17 +218,8 @@ class _CalendarPageState extends State<CalendarPage> {
         _selectedDay.day == DateTime.now().day;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
-        title: const Text(
-          'Iron Log',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
+      backgroundColor: Colors.black, // Pure black void
+      appBar: IronAppBar(
         actions: [
           // 오늘로 이동 버튼
           IconButton(
@@ -467,7 +459,7 @@ class _CalendarPageState extends State<CalendarPage> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF121212),
+          color: Colors.black, // Pure black - seamless
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, -4))],
         ),
         child: SafeArea(
@@ -476,31 +468,53 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: 56, // Reduced from 60
                 child: ElevatedButton.icon(
                   onPressed: _addExercise,
                   icon: const Icon(Icons.add, size: 22),
-                  label: Text(l10n.planWorkout, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  label: Text(
+                    l10n.planWorkout.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                      fontFamily: 'Courier', // Monospace tactical
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2196F3),
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
+                    shape: BeveledRectangleBorder( // Tactical cut
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: 56, // Reduced from 60
                 child: OutlinedButton.icon(
                   onPressed: _saveRestDay,
                   icon: const Icon(Icons.event_busy, size: 22),
-                  label: Text(l10n.markRest, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  label: Text(
+                    l10n.markRest.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                      fontFamily: 'Courier', // Monospace tactical
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF2196F3),
-                    side: const BorderSide(color: Color(0xFF2196F3), width: 1.5),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
+                    side: BorderSide(color: Colors.grey[700]!, width: 1.5),
+                    shape: BeveledRectangleBorder( // Tactical cut
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                   ),
                 ),
               ),
@@ -515,20 +529,31 @@ class _CalendarPageState extends State<CalendarPage> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF121212),
+          color: Colors.black, // Pure black - seamless
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, -4))],
         ),
         child: SafeArea(
           child: ElevatedButton.icon(
             onPressed: _cancelRestDay,
             icon: const Icon(Icons.check_circle, size: 22),
-            label: Text(l10n.cancelRestDay, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            label: Text(
+              l10n.cancelRestDay.toUpperCase(),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.2,
+                fontFamily: 'Courier', // Monospace tactical
+              ),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2196F3),
               foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 56),
+              minimumSize: const Size(double.infinity, 56), // Reduced
+              padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: BeveledRectangleBorder( // Tactical cut
+                borderRadius: BorderRadius.circular(5),
+              ),
             ),
           ),
         ),
@@ -543,13 +568,13 @@ class _CalendarPageState extends State<CalendarPage> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF121212),
+          color: Colors.black, // Pure black - seamless
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, -4))],
         ),
         child: SafeArea(
           child: SizedBox(
             width: double.infinity,
-            height: 52,
+            height: 56, // Reduced
             child: OutlinedButton.icon(
               onPressed: () {
                 setState(() {
@@ -557,11 +582,22 @@ class _CalendarPageState extends State<CalendarPage> {
                 });
               },
               icon: const Icon(Icons.edit, size: 20),
-              label: Text(l10n.editWorkout, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              label: Text(
+                l10n.editWorkout.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                  fontFamily: 'Courier', // Monospace tactical
+                ),
+              ),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
-                side: BorderSide(color: Colors.grey[600]!, width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
+                side: BorderSide(color: Colors.grey[700]!, width: 1.5),
+                shape: BeveledRectangleBorder( // Tactical cut
+                  borderRadius: BorderRadius.circular(5),
+                ),
               ),
             ),
           ),
@@ -573,7 +609,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF121212),
+        color: Colors.black, // Pure black - seamless
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, -4))],
       ),
       child: SafeArea(
@@ -582,15 +618,26 @@ class _CalendarPageState extends State<CalendarPage> {
             Expanded(
               flex: 4,
               child: SizedBox(
-                height: 52,
+                height: 56, // Reduced
                 child: OutlinedButton.icon(
                   onPressed: _addExercise,
                   icon: const Icon(Icons.add, size: 18),
-                  label: Text(l10n.addWorkout, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    l10n.addWorkout.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.8,
+                      fontFamily: 'Courier', // Monospace tactical
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
                     side: BorderSide(color: Colors.grey[700]!, width: 1.5),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: BeveledRectangleBorder( // Tactical cut
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                   ),
                 ),
               ),
@@ -599,16 +646,27 @@ class _CalendarPageState extends State<CalendarPage> {
             Expanded(
               flex: 6,
               child: SizedBox(
-                height: 52,
+                height: 56, // Reduced
                 child: ElevatedButton.icon(
                   onPressed: _startWorkout,
                   icon: const Icon(Icons.play_arrow, size: 22),
-                  label: Text(l10n.startWorkout, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  label: Text(
+                    l10n.startWorkout.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.0,
+                      fontFamily: 'Courier', // Monospace tactical
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2196F3),
                     foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: BeveledRectangleBorder( // Tactical cut
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                   ),
                 ),
               ),
@@ -658,30 +716,27 @@ class _CalendarPageState extends State<CalendarPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Invoice Header
-            _buildInvoiceHeader(),
-            const SizedBox(height: 16),
-            _buildDashedDivider(),
-            const SizedBox(height: 16),
-            
-            // Summary Section (Receipt style)
+            // Summary Section (Receipt style) - Starts immediately
             _buildInvoiceSummary(duration, totalVolume, totalSets),
             const SizedBox(height: 16),
             _buildDashedDivider(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24), // More breathing space
             
             // Exercise Log Section
-            Text(
-              'WORKOUT BREAKDOWN',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: Colors.grey[500],
-                letterSpacing: 1.5,
-                fontFamily: 'Courier',
+            Padding(
+              padding: const EdgeInsets.only(top: 8), // Additional top padding
+              child: Text(
+                'WORKOUT BREAKDOWN',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey[500],
+                  letterSpacing: 1.5,
+                  fontFamily: 'Courier',
+                ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16), // More space before exercises
             
             // Exercise List
             ...List.generate(_currentSession!.exercises.length, (index) {
@@ -701,71 +756,38 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  Widget _buildInvoiceHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'IRON LOG',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: Colors.grey[300],
-            letterSpacing: 3.0,
-            fontFamily: 'Courier',
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'WORKOUT INVOICE',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[600],
-            letterSpacing: 1.5,
-            fontFamily: 'Courier',
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          repo.ymd(_selectedDay),
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[500],
-            fontFamily: 'Courier',
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildInvoiceSummary(int duration, double totalVolume, int totalSets) {
-    return Column(
-      children: [
-        _buildInvoiceRow('DURATION', '${duration}m'),
-        const SizedBox(height: 8),
-        _buildInvoiceRow('TOTAL SETS', '$totalSets'),
-        const SizedBox(height: 8),
-        _buildInvoiceRow('TOTAL VOLUME', '${(totalVolume / 1000).toStringAsFixed(2)}t', isHighlight: true),
-      ],
+    // Compact horizontal layout - single row
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildCompactStat('DURATION', '${duration}m'),
+          Container(width: 1, height: 16, color: Colors.grey[800]),
+          _buildCompactStat('SETS', '$totalSets'),
+          Container(width: 1, height: 16, color: Colors.grey[800]),
+          _buildCompactStat('VOL', '${(totalVolume / 1000).toStringAsFixed(2)}t', isHighlight: true),
+        ],
+      ),
     );
   }
 
-  Widget _buildInvoiceRow(String label, String value, {bool isHighlight = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildCompactStat(String label, String value, {bool isHighlight = false}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[500],
+            color: Colors.grey[600],
             letterSpacing: 1.0,
             fontFamily: 'Courier',
           ),
         ),
+        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
@@ -797,25 +819,49 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
       ),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent, // Remove default divider
-        ),
-        child: ExpansionTile(
-          initiallyExpanded: true,
-          tilePadding: EdgeInsets.zero,
-          childrenPadding: const EdgeInsets.only(top: 12, bottom: 16),
+      child: Column(
+        children: [
+          Theme(
+            data: Theme.of(context).copyWith(
+              dividerColor: Colors.transparent, // Remove default divider
+            ),
+            child: ExpansionTile(
+              initiallyExpanded: false, // Collapsed by default
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: const EdgeInsets.only(top: 12, bottom: 16),
+              // Pure black/transparent - no grey boxes
+              collapsedBackgroundColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
+              shape: const Border(), // Remove default borders
           // Header (Collapsed State)
           title: Row(
             children: [
               Expanded(
-                child: Text(
-                  '#${itemNumber.toString().padLeft(2, '0')} ${exercise.name.toUpperCase()}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.grey[300],
-                    letterSpacing: 0.5,
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      // Number - Dimmed, Monospace
+                      TextSpan(
+                        text: '#${itemNumber.toString().padLeft(2, '0')} ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600], // Dimmed
+                          fontFamily: 'Courier', // Monospace
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      // Name - Bright, Bold
+                      TextSpan(
+                        text: exercise.name.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white, // High contrast
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -858,12 +904,12 @@ class _CalendarPageState extends State<CalendarPage> {
                   final setVolume = set.weight * set.reps;
                   
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
+                    padding: const EdgeInsets.only(bottom: 4), // Tighter spacing
                     child: Row(
                       children: [
-                        // Set number
+                        // Set number (Flex 1)
                         SizedBox(
-                          width: 40,
+                          width: 35,
                           child: Text(
                             '#${(setIndex + 1).toString().padLeft(2, '0')}',
                             style: TextStyle(
@@ -874,10 +920,11 @@ class _CalendarPageState extends State<CalendarPage> {
                             ),
                           ),
                         ),
-                        // Reps x Weight
+                        // Reps x Weight (Flex 3 - closer to index)
                         Expanded(
+                          flex: 3,
                           child: Text(
-                            '${set.reps.toString().padLeft(2, ' ')} x ${set.weight.toStringAsFixed(1).padLeft(6, ' ')}kg',
+                            '${set.reps.toString().padLeft(2, ' ')} x ${set.weight.toStringAsFixed(1).padLeft(5, ' ')}kg',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -886,14 +933,18 @@ class _CalendarPageState extends State<CalendarPage> {
                             ),
                           ),
                         ),
-                        // Volume (right-aligned like price)
-                        Text(
-                          '${setVolume.toStringAsFixed(0).padLeft(6, ' ')}kg',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[500],
-                            fontFamily: 'Courier',
+                        // Volume (Flex 2 - right-aligned but not too far)
+                        SizedBox(
+                          width: 70,
+                          child: Text(
+                            '${setVolume.toStringAsFixed(0)}kg',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[500],
+                              fontFamily: 'Courier',
+                            ),
                           ),
                         ),
                       ],
@@ -931,6 +982,14 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
           ],
         ),
+          ),
+          // Subtle divider between exercises
+          Divider(
+            color: Colors.grey[900],
+            height: 1,
+            thickness: 1,
+          ),
+        ],
       ),
     );
   }
