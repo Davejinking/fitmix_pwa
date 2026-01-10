@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import '../core/service_locator.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/session_repo.dart';
@@ -9,7 +8,6 @@ import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../models/exercise_db.dart';
 import '../widgets/calendar/week_strip.dart';
-import '../widgets/calendar/calendar_modal_sheet.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
@@ -195,29 +193,6 @@ class _CalendarPageState extends State<CalendarPage> {
     _loadSession();
   }
 
-  // 캘린더 모달 표시
-  Future<void> _showCalendarModal() async {
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => CalendarModalSheet(
-        initialDate: _selectedDay,
-        repo: repo,
-        exerciseRepo: exerciseRepo,
-        workoutDates: _workoutDates,
-        restDates: _restDates,
-      ),
-    );
-    
-    // 휴식 상태가 변경되었으면 새로고침
-    if (result == true && mounted) {
-      await _loadRestDates();
-      await _loadSession();
-      setState(() {});
-    }
-  }
-
   // 플랜 페이지로 이동
   void _goToPlanPage() {
     Navigator.of(context).push(
@@ -240,46 +215,17 @@ class _CalendarPageState extends State<CalendarPage> {
     final isToday = _selectedDay.year == DateTime.now().year &&
         _selectedDay.month == DateTime.now().month &&
         _selectedDay.day == DateTime.now().day;
-    
-    // Format month/year for AppBar title
-    final locale = Localizations.localeOf(context);
-    final monthFormat = locale.languageCode == 'ja'
-        ? DateFormat('yyyy年M月', locale.toString())
-        : locale.languageCode == 'ko'
-            ? DateFormat('yyyy년 M월', locale.toString())
-            : DateFormat('MMM yyyy', locale.toString());
-    final monthYear = monthFormat.format(_focusedDay);
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
-        // Tappable title to open calendar modal
-        title: InkWell(
-          onTap: _showCalendarModal,
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  monthYear,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ],
-            ),
+        title: const Text(
+          'Iron Log',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         actions: [
@@ -306,7 +252,7 @@ class _CalendarPageState extends State<CalendarPage> {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Column(
               children: [
-                // WeekStrip (Expandable Calendar)
+                // WeekStrip (Expandable Calendar with built-in header)
                 WeekStrip(
                   focusedDay: _focusedDay,
                   selectedDay: _selectedDay,
