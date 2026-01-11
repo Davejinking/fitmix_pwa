@@ -527,7 +527,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String exerciseCount(Object count) {
+  String exerciseCount(int count) {
     return '$count개 운동';
   }
 
@@ -1153,4 +1153,68 @@ class AppLocalizationsKo extends AppLocalizations {
   String minutesUnit(int minutes) {
     return '$minutes분';
   }
+
+  @override
+  String get saveRoutine => '루틴 저장';
+
+  @override
+  String get loadRoutine => '루틴 불러오기';
+
+  @override
+  String get routines => '루틴';
+
+  @override
+  String get routineName => '루틴 이름';
+
+  @override
+  String get enterRoutineName => '루틴 이름 입력 (예: 가슴 A)';
+
+  @override
+  String get routineSaved => '루틴이 저장되었습니다';
+
+  @override
+  String get routineLoaded => '루틴을 불러왔습니다';
+
+  @override
+  String get routineDeleted => '루틴이 삭제되었습니다';
+
+  @override
+  String get deleteRoutine => '루틴 삭제';
+
+  @override
+  String deleteRoutineConfirm(Object name) {
+    return '\'$name\' 루틴을 삭제하시겠습니까?';
+  }
+
+  @override
+  String get noRoutines => '저장된 루틴이 없습니다';
+
+  @override
+  String get loadThisRoutine => '이 루틴으로 시작하시겠습니까?';
+
+  @override
+  String get archiveRoutine => '루틴 보관';
+
+  @override
+  String get createRoutine => '새 루틴 만들기';
+
+  @override
+  String get editRoutine => '루틴 수정';
+
+  @override
+  String get createRoutineHint => '위 버튼을 눌러 첫 루틴을 만들어보세요';
+
+  @override
+  String get routineLimitReached => '루틴 저장 제한';
+
+  @override
+  String routineLimitMessage(int limit) {
+    return '무료 사용자는 최대 $limit개의 루틴만 저장할 수 있습니다.\nPRO로 업그레이드하면 무제한으로 저장할 수 있습니다.';
+  }
+
+  @override
+  String get upgradeToPro => 'PRO로 업그레이드';
+
+  @override
+  String get upgradeToProShort => '업그레이드';
 }

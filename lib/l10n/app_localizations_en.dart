@@ -530,7 +530,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String exerciseCount(Object count) {
+  String exerciseCount(int count) {
     return '$count exercises';
   }
 
@@ -1164,4 +1164,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String minutesUnit(int minutes) {
     return '$minutes min';
   }
+
+  @override
+  String get saveRoutine => 'Save Routine';
+
+  @override
+  String get loadRoutine => 'Load Routine';
+
+  @override
+  String get routines => 'Routines';
+
+  @override
+  String get routineName => 'Routine Name';
+
+  @override
+  String get enterRoutineName => 'Enter Name (e.g. Push A)';
+
+  @override
+  String get routineSaved => 'Routine Saved';
+
+  @override
+  String get routineLoaded => 'Routine Loaded';
+
+  @override
+  String get routineDeleted => 'Routine Deleted';
+
+  @override
+  String get deleteRoutine => 'Delete Routine';
+
+  @override
+  String deleteRoutineConfirm(Object name) {
+    return 'Delete \'$name\' routine?';
+  }
+
+  @override
+  String get noRoutines => 'No saved routines';
+
+  @override
+  String get loadThisRoutine => 'Start with this routine?';
+
+  @override
+  String get archiveRoutine => 'Archive Routine';
+
+  @override
+  String get createRoutine => 'Create New Routine';
+
+  @override
+  String get editRoutine => 'Edit Routine';
+
+  @override
+  String get createRoutineHint =>
+      'Tap the button above to create your first routine';
+
+  @override
+  String get routineLimitReached => 'Routine Limit Reached';
+
+  @override
+  String routineLimitMessage(int limit) {
+    return 'Free users can only store $limit routines.\nUpgrade to PRO for unlimited storage.';
+  }
+
+  @override
+  String get upgradeToPro => 'Upgrade to PRO';
+
+  @override
+  String get upgradeToProShort => 'Upgrade';
 }

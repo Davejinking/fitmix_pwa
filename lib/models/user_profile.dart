@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 part 'user_profile.g.dart';
 
-@HiveType(typeId: 4)
+@HiveType(typeId: 5)
 class UserProfile extends HiveObject {
   @HiveField(0)
   double weight;
@@ -26,6 +26,9 @@ class UserProfile extends HiveObject {
   @HiveField(6)
   double monthlyVolumeGoal;
 
+  @HiveField(7)
+  bool isPro; // PRO 사용자 여부
+
   UserProfile({
     required this.weight,
     required this.height,
@@ -34,5 +37,6 @@ class UserProfile extends HiveObject {
     this.monthlyWorkoutGoal = 20, // 기본 목표 20일
     this.profileImage,
     this.monthlyVolumeGoal = 100000.0, // 기본 볼륨 목표 100,000 kg
+    this.isPro = false, // 기본값: 무료 사용자
   });
 }

@@ -505,5 +505,42 @@
         "example": "180"
       }
     }
-  }
+  },
+  "saveRoutine": "ルーティン保存",
+  "loadRoutine": "ルーティン読み込み",
+  "routines": "ルーティン",
+  "routineName": "ルーティン名",
+  "enterRoutineName": "名前を入力 (例: プッシュA)",
+  "routineSaved": "ルーティンが保存されました",
+  "routineLoaded": "ルーティンを読み込みました",
+  "routineDeleted": "ルーティンが削除されました",
+  "deleteRoutine": "ルーティン削除",
+  "deleteRoutineConfirm": "'{name}'ルーティンを削除しますか？",
+  "noRoutines": "保存されたルーティンがありません",
+  "exerciseCount": "{count}個の運動",
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "loadThisRoutine": "このルーティンで始めますか？",
+  "archiveRoutine": "ルーティンをアーカイブ",
+  "createRoutine": "新しいルーティンを作成",
+  "editRoutine": "ルーティン編集",
+  "createRoutineHint": "上のボタンを押して最初のルーティンを作成してください",
+  "routineLimitReached": "ルーティン制限に達しました",
+  "routineLimitMessage": "無料ユーザーは最大{limit}個のルーティンのみ保存できます。\nPROにアップグレードすると無制限に保存できます。",
+  "@routineLimitMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "upgradeToPro": "PROにアップグレード",
+  "upgradeToProShort": "アップグレード"
 }

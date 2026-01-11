@@ -527,7 +527,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String exerciseCount(Object count) {
+  String exerciseCount(int count) {
     return '$count個の運動';
   }
 
@@ -1153,4 +1153,68 @@ class AppLocalizationsJa extends AppLocalizations {
   String minutesUnit(int minutes) {
     return '$minutes分';
   }
+
+  @override
+  String get saveRoutine => 'ルーティン保存';
+
+  @override
+  String get loadRoutine => 'ルーティン読み込み';
+
+  @override
+  String get routines => 'ルーティン';
+
+  @override
+  String get routineName => 'ルーティン名';
+
+  @override
+  String get enterRoutineName => '名前を入力 (例: プッシュA)';
+
+  @override
+  String get routineSaved => 'ルーティンが保存されました';
+
+  @override
+  String get routineLoaded => 'ルーティンを読み込みました';
+
+  @override
+  String get routineDeleted => 'ルーティンが削除されました';
+
+  @override
+  String get deleteRoutine => 'ルーティン削除';
+
+  @override
+  String deleteRoutineConfirm(Object name) {
+    return '\'$name\'ルーティンを削除しますか？';
+  }
+
+  @override
+  String get noRoutines => '保存されたルーティンがありません';
+
+  @override
+  String get loadThisRoutine => 'このルーティンで始めますか？';
+
+  @override
+  String get archiveRoutine => 'ルーティンをアーカイブ';
+
+  @override
+  String get createRoutine => '新しいルーティンを作成';
+
+  @override
+  String get editRoutine => 'ルーティン編集';
+
+  @override
+  String get createRoutineHint => '上のボタンを押して最初のルーティンを作成してください';
+
+  @override
+  String get routineLimitReached => 'ルーティン制限に達しました';
+
+  @override
+  String routineLimitMessage(int limit) {
+    return '無料ユーザーは最大$limit個のルーティンのみ保存できます。\nPROにアップグレードすると無制限に保存できます。';
+  }
+
+  @override
+  String get upgradeToPro => 'PROにアップグレード';
+
+  @override
+  String get upgradeToProShort => 'アップグレード';
 }

@@ -6,6 +6,7 @@ import '../data/user_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/auth_repo.dart';
+import '../data/routine_repo.dart';
 import '../core/l10n_extensions.dart';
 import '../core/iron_theme.dart';
 import 'package:shimmer/shimmer.dart';
@@ -20,10 +21,10 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => HomePageState(); // 🔥 public으로 변경
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin { // 🔥 public으로 변경
   late AnimationController _animationController;
   late List<Animation<Offset>> _slideAnimations;
   
@@ -33,6 +34,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   late ExerciseLibraryRepo exerciseRepo;
   late SettingsRepo settingsRepo;
   late AuthRepo authRepo;
+  late RoutineRepo routineRepo;
+
+  // 🔥 새로고침을 위한 키
+  int _refreshKey = 0;
+
+  // 🔥 외부에서 호출 가능한 refresh 메서드
+  void refresh() {
+    setState(() {
+      _refreshKey++;
+    });
+  }
 
   @override
   void initState() {
@@ -44,6 +56,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     exerciseRepo = getIt<ExerciseLibraryRepo>();
     settingsRepo = getIt<SettingsRepo>();
     authRepo = getIt<AuthRepo>();
+    routineRepo = getIt<RoutineRepo>();
     
     _animationController = AnimationController(
       vsync: this,
@@ -157,6 +170,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   // 메인 액션 (오늘의 운동 시작) - 단일 버튼!
   Widget _buildMainActionCard() {
     return FutureBuilder<Session?>(
+      key: ValueKey('main_action_$_refreshKey'), // 🔥 refreshKey 사용
       future: _getTodaySession(),
       builder: (context, snapshot) {
         final todaySession = snapshot.data;
@@ -234,10 +248,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           );
         }
 
-        // Has plan - minimalist typography
+        // Has plan - display simple, honest info
         final exerciseCount = todaySession.exercises.length;
         final completedCount = todaySession.exercises.where((e) => 
           e.sets.isNotEmpty && e.sets.every((s) => s.isCompleted)).length;
+        
+        // Display routine name if available, otherwise "FREESTYLE"
+        final displayTitle = todaySession.routineName?.toUpperCase() ?? 'FREESTYLE';
+        
+        print('🔍 [HOME] Session ymd: ${todaySession.ymd}');
+        print('🔍 [HOME] Session routineName: ${todaySession.routineName}');
+        print('🔍 [HOME] Display title: $displayTitle');
+        print('🔍 [HOME] Exercise count: $exerciseCount');
         
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,35 +269,56 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             Text(
               isCompleted ? 'SESSION COMPLETE' : 'SESSION READY',
               style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
                 color: isCompleted ? Colors.white : Colors.grey[700],
                 fontFamily: 'Courier',
                 letterSpacing: 2.0,
               ),
             ),
-            const SizedBox(height: 12),
-            // Exercise count
+            const SizedBox(height: 16),
+            // Routine Name (Dynamic!)
             Text(
-              '$completedCount / $exerciseCount',
+              displayTitle,
               style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w300,
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
                 color: Colors.white,
                 fontFamily: 'Courier',
-                letterSpacing: 4.0,
+                letterSpacing: 1.5,
+                height: 1.0,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'EXERCISES',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: Colors.grey[800],
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
-              ),
+            const SizedBox(height: 12),
+            // Exercise counter (Tactical Style)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                // Big Number
+                Text(
+                  '$completedCount / $exerciseCount',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: 'Courier',
+                    letterSpacing: 2.0,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Small Label
+                Text(
+                  'EXERCISES',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey[700],
+                    fontFamily: 'Courier',
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 40),
             // Ghost button
@@ -313,7 +356,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  // Weekly Status - Minimalist (No Container)
+  // Weekly Status - Dynamic with Today Highlight
   Widget _buildWeeklyCalendar() {
     return FutureBuilder<Set<String>>(
       future: _getWorkoutDates(),
@@ -321,6 +364,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         final workoutDates = snapshot.data ?? <String>{};
         final now = DateTime.now();
         final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+        
+        // Generate current week dates (Mon-Sun)
+        final weekDays = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
         
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,44 +383,61 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ),
             ),
             const SizedBox(height: 24),
-            // Day Labels - M T W T F S S
+            // Day Labels + Dots - Dynamic
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day) {
-                return SizedBox(
-                  width: 12,
-                  child: Text(
-                    day,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.grey[700],
-                      fontFamily: 'Courier',
-                      letterSpacing: 0,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-            // Dot Matrix - 7 squares
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(7, (index) {
-                final date = startOfWeek.add(Duration(days: index));
+              children: weekDays.map((date) {
+                // Check if this is TODAY
+                final isToday = date.year == now.year && 
+                                date.month == now.month && 
+                                date.day == now.day;
+                
+                // Check workout status
                 final dateYmd = sessionRepo.ymd(date);
                 final hasWorkout = workoutDates.contains(dateYmd);
                 
-                return Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: hasWorkout ? Colors.white : const Color(0xFF0A0A0A), // White for active, very dark for inactive
-                    borderRadius: BorderRadius.zero, // Square
-                  ),
+                // Day label (M, T, W, T, F, S, S)
+                final dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                final dayLabel = dayLabels[date.weekday - 1];
+                
+                return Column(
+                  children: [
+                    // A. Day Label (Highlight TODAY)
+                    SizedBox(
+                      width: 12,
+                      child: Text(
+                        dayLabel,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: isToday ? FontWeight.w900 : FontWeight.w700,
+                          color: isToday ? Colors.white : Colors.grey[700],
+                          fontFamily: 'Courier',
+                          letterSpacing: 0,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // B. Status Chip (Rounded Square)
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        // Solid white for workout, hollow for inactive
+                        color: hasWorkout ? Colors.white : Colors.transparent,
+                        // Border for hollow look (inactive days)
+                        border: hasWorkout ? null : Border.all(
+                          color: Colors.white.withValues(alpha: 0.3), 
+                          width: 1.0,
+                        ),
+                        // Tactical rounded square (matching Calendar)
+                        borderRadius: BorderRadius.circular(2.0),
+                        shape: BoxShape.rectangle,
+                      ),
+                    ),
+                  ],
                 );
-              }),
+              }).toList(),
             ),
             const SizedBox(height: 32),
             Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider

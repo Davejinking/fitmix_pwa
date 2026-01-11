@@ -1,47 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'session.dart';
+part of 'routine.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class SessionAdapter extends TypeAdapter<Session> {
+class RoutineAdapter extends TypeAdapter<Routine> {
   @override
-  final int typeId = 2;
+  final int typeId = 4;
 
   @override
-  Session read(BinaryReader reader) {
+  Routine read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Session(
-      ymd: fields[0] as String,
-      exercises: (fields[1] as List?)?.cast<Exercise>(),
-      isRest: fields[2] as bool,
-      durationInSeconds: fields[3] as int,
-      isCompleted: fields[4] as bool,
-      routineName: fields[5] as String?,
+    return Routine(
+      id: fields[0] as String,
+      name: fields[1] as String,
+      exercises: (fields[2] as List).cast<Exercise>(),
+      createdAt: fields[3] as DateTime?,
+      lastUsedAt: fields[4] as DateTime?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Session obj) {
+  void write(BinaryWriter writer, Routine obj) {
     writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.ymd)
-      ..writeByte(1)
-      ..write(obj.exercises)
-      ..writeByte(2)
-      ..write(obj.isRest)
-      ..writeByte(3)
-      ..write(obj.durationInSeconds)
-      ..writeByte(4)
-      ..write(obj.isCompleted)
       ..writeByte(5)
-      ..write(obj.routineName);
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.exercises)
+      ..writeByte(3)
+      ..write(obj.createdAt)
+      ..writeByte(4)
+      ..write(obj.lastUsedAt);
   }
 
   @override
@@ -50,7 +47,7 @@ class SessionAdapter extends TypeAdapter<Session> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SessionAdapter &&
+      other is RoutineAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

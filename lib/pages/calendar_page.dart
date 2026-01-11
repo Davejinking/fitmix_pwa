@@ -3,13 +3,17 @@ import 'package:flutter/services.dart';
 import '../core/service_locator.dart';
 import '../data/exercise_library_repo.dart';
 import '../data/session_repo.dart';
+import '../data/routine_repo.dart';
+import '../data/user_repo.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
 import '../models/exercise_set.dart';
 import '../models/exercise_db.dart';
+import '../models/routine.dart';
 import '../widgets/calendar/week_strip.dart';
 import '../widgets/common/iron_app_bar.dart';
 import '../core/error_handler.dart';
+import '../core/subscription_limits.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
 import '../widgets/modals/exercise_detail_modal.dart';
@@ -603,7 +607,7 @@ class _CalendarPageState extends State<CalendarPage> {
       );
     }
 
-    // Not Completed - "운동 추가" + "운동 시작"
+    // Not Completed - "운동 추가" + "루틴 저장" + "운동 시작"
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
@@ -611,59 +615,90 @@ class _CalendarPageState extends State<CalendarPage> {
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, -4))],
       ),
       child: SafeArea(
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              flex: 4,
-              child: SizedBox(
-                height: 56, // Reduced
-                child: OutlinedButton.icon(
-                  onPressed: _addExercise,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: Text(
-                    l10n.addWorkout.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.8,
-                      fontFamily: 'Courier', // Monospace tactical
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
-                    side: BorderSide(color: Colors.grey[700]!, width: 1.5),
-                    shape: BeveledRectangleBorder( // Tactical cut
-                      borderRadius: BorderRadius.circular(5),
+            // Row 1: 운동 추가 + 루틴 저장
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: _addExercise,
+                      icon: const Icon(Icons.add, size: 18),
+                      label: Text(
+                        l10n.addWorkout.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(color: Colors.grey[700]!, width: 1.5),
+                        shape: BeveledRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 6,
-              child: SizedBox(
-                height: 56, // Reduced
-                child: ElevatedButton.icon(
-                  onPressed: _startWorkout,
-                  icon: const Icon(Icons.play_arrow, size: 22),
-                  label: Text(
-                    l10n.startWorkout.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.0,
-                      fontFamily: 'Courier', // Monospace tactical
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: _saveAsRoutine,
+                      icon: const Icon(Icons.bookmark_add_outlined, size: 18),
+                      label: Text(
+                        l10n.saveRoutine.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(color: Colors.grey[700]!, width: 1.5),
+                        shape: BeveledRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
                     ),
                   ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white, width: 1.5), // White ghost style
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: BeveledRectangleBorder( // Tactical cut
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Row 2: 운동 시작
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                onPressed: _startWorkout,
+                icon: const Icon(Icons.play_arrow, size: 22),
+                label: Text(
+                  l10n.startWorkout.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                    fontFamily: 'Courier',
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.white, width: 1.5),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: BeveledRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ),
               ),
@@ -1041,6 +1076,158 @@ class _CalendarPageState extends State<CalendarPage> {
             color: index.isEven ? Colors.grey[800] : Colors.transparent,
           ),
         ),
+      ),
+    );
+  }
+
+  // Save current session as routine
+  Future<void> _saveAsRoutine() async {
+    if (_currentSession == null || _currentSession!.exercises.isEmpty) {
+      ErrorHandler.showErrorSnackBar(context, context.l10n.noExercises);
+      return;
+    }
+
+    // 🚨 CHECKPOINT: Check routine limit
+    final routineRepo = getIt<RoutineRepo>();
+    final userRepo = getIt<UserRepo>();
+    
+    final routines = await routineRepo.listAll();
+    final userProfile = await userRepo.getUserProfile();
+    final isPro = userProfile?.isPro ?? false;
+    
+    // Check if user can save more routines
+    if (!SubscriptionLimits.canSaveMoreRoutines(
+      isPro: isPro,
+      currentCount: routines.length,
+    )) {
+      // 🚫 BLOCKED: Show upgrade dialog
+      _showUpgradeDialog();
+      return;
+    }
+
+    // ✅ ALLOWED: Proceed to save
+    String routineName = "";
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            context.l10n.saveRoutine.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Courier',
+              letterSpacing: 1.5,
+            ),
+          ),
+          content: TextField(
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: context.l10n.enterRoutineName,
+              hintStyle: const TextStyle(color: Colors.grey),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white, width: 2),
+              ),
+            ),
+            onChanged: (val) => routineName = val,
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              child: Text(context.l10n.cancel),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            TextButton(
+              child: Text(
+                context.l10n.save.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && routineName.isNotEmpty && mounted) {
+      try {
+        final routine = Routine(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: routineName,
+          exercises: _currentSession!.exercises.map((e) => e.copyWith()).toList(),
+        );
+        await routineRepo.save(routine);
+        if (mounted) {
+          ErrorHandler.showSuccessSnackBar(context, context.l10n.routineSaved);
+        }
+      } catch (e) {
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(context, context.l10n.errorOccurred(e.toString()));
+        }
+      }
+    }
+  }
+
+  // Show upgrade to PRO dialog
+  void _showUpgradeDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text(
+          context.l10n.routineLimitReached.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Courier',
+            letterSpacing: 1.5,
+          ),
+        ),
+        content: Text(
+          context.l10n.routineLimitMessage(SubscriptionLimits.freeRoutineLimit),
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text(
+              context.l10n.cancel.toUpperCase(),
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+            onPressed: () => Navigator.pop(ctx),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: Text(
+              context.l10n.upgradeToProShort.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              // TODO: Navigate to subscription/upgrade page
+              Navigator.pushNamed(context, '/upgrade');
+            },
+          ),
+        ],
       ),
     );
   }

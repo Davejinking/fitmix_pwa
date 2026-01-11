@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import '../core/service_locator.dart';
 import '../services/exercise_seeding_service.dart';
 import '../models/exercise_library.dart';
+import '../models/routine.dart';
+import '../models/session.dart';
+import '../models/exercise.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/modals/exercise_detail_modal.dart';
 import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';
+import '../data/routine_repo.dart';
+import '../data/user_repo.dart';
+import '../core/error_handler.dart';
+import '../core/subscription_limits.dart';
+import 'shell_page.dart';
+import 'exercise_selection_page_v2.dart';
 
 class LibraryPageV2 extends StatefulWidget {
   const LibraryPageV2({super.key});
@@ -19,7 +28,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   late TabController _tabController;
   
   final List<String> _mainTabKeys = [
-    'favorites', 'chest', 'back', 'legs', 'shoulders', 'arms', 'abs', 'cardio', 'stretching', 'fullBody',
+    'routines', 'favorites', 'chest', 'back', 'legs', 'shoulders', 'arms', 'abs', 'cardio', 'stretching', 'fullBody',
   ];
   
   final List<String> _equipmentFilterKeys = ['all', 'bodyweight', 'machine', 'barbell', 'dumbbell', 'cable', 'band'];
@@ -33,6 +42,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   final Set<String> _bookmarkedIds = {};
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  
+  // 🔥 루틴 목록 새로고침을 위한 키
+  int _routineListKey = 0;
 
   @override
   void initState() {
@@ -75,17 +87,20 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     final currentTabKey = _mainTabKeys[_tabController.index];
     
     setState(() {
-      if (currentTabKey == 'favorites') {
+      if (currentTabKey == 'routines') {
+        // Routines tab - don't filter exercises
+        _filteredExercises = [];
+      } else if (currentTabKey == 'favorites') {
         _filteredExercises = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
       } else {
         _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == currentTabKey.toLowerCase()).toList();
       }
       
-      if (_selectedEquipmentKey != 'all') {
+      if (_selectedEquipmentKey != 'all' && currentTabKey != 'routines') {
         _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey.toLowerCase()).toList();
       }
       
-      if (_searchQuery.isNotEmpty) {
+      if (_searchQuery.isNotEmpty && currentTabKey != 'routines') {
         _filteredExercises = _filteredExercises.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
       }
     });
@@ -93,6 +108,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   
   String _getTabLabel(AppLocalizations l10n, String key) {
     switch (key) {
+      case 'routines': return l10n.routines;
       case 'favorites': return l10n.favorites;
       case 'chest': return l10n.chest;
       case 'back': return l10n.back;
@@ -163,14 +179,16 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final currentTabKey = _mainTabKeys[_tabController.index];
+    final isRoutinesTab = currentTabKey == 'routines';
     
     return Column(
       children: [
         _buildHeader(l10n),
-        _buildSearchBar(l10n),
+        if (!isRoutinesTab) _buildSearchBar(l10n),
         _buildBodyPartTabs(l10n),
-        _buildEquipmentFilter(l10n),
-        Expanded(child: _buildExerciseList(l10n)),
+        if (!isRoutinesTab) _buildEquipmentFilter(l10n),
+        Expanded(child: isRoutinesTab ? _buildRoutinesList(l10n) : _buildExerciseList(l10n)),
       ],
     );
   }
@@ -355,6 +373,659 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  // Routines List Widget
+  Widget _buildRoutinesList(AppLocalizations l10n) {
+    final routineRepo = getIt<RoutineRepo>();
+    
+    return FutureBuilder<List<Routine>>(
+      key: ValueKey('routines_$_routineListKey'), // 🔥 키를 사용해서 강제 새로고침
+      future: routineRepo.listAll(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF2196F3)));
+        }
+        
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              l10n.errorOccurred(snapshot.error.toString()),
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        }
+        
+        final routines = snapshot.data ?? [];
+        
+        return Column(
+          children: [
+            // "새 루틴 만들기" 버튼
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _createNewRoutine,
+                  icon: const Icon(Icons.add, size: 20),
+                  label: Text(
+                    l10n.createRoutine.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2196F3),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            
+            // 루틴 목록
+            if (routines.isEmpty)
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.bookmark_border, size: 64, color: Colors.grey[600]),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.noRoutines,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.createRoutineHint,
+                        style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: routines.length,
+                  itemBuilder: (context, index) {
+                    final routine = routines[index];
+                    
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E1E1E),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        routine.name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        l10n.exerciseCount(routine.exercises.length),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[500],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // Edit button
+                                IconButton(
+                                  icon: Icon(Icons.edit_outlined, color: Colors.grey[400]),
+                                  onPressed: () => _editRoutine(routine),
+                                ),
+                                // Delete button
+                                IconButton(
+                                  icon: Icon(Icons.delete_outline, color: Colors.grey[600]),
+                                  onPressed: () => _deleteRoutine(routine, l10n),
+                                ),
+                              ],
+                            ),
+                            // 🔥 운동 목록 표시
+                            if (routine.exercises.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Builder(
+                                  builder: (context) {
+                                    print('🔍 [UI] Displaying routine "${routine.name}" with ${routine.exercises.length} exercises');
+                                    for (var i = 0; i < routine.exercises.length; i++) {
+                                      print('  [$i] ${routine.exercises[i].name}');
+                                    }
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ...routine.exercises.take(3).map((exercise) => Padding(
+                                          padding: const EdgeInsets.only(bottom: 6),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.fitness_center,
+                                                size: 14,
+                                                color: Colors.grey[600],
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  exercise.name,
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[300],
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                        if (routine.exercises.length > 3)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 4),
+                                            child: Text(
+                                              '+${routine.exercises.length - 3} more',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[600],
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 12),
+                            // Load button
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () => _loadRoutine(routine, l10n),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF2196F3),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: Text(
+                                  l10n.loadRoutine.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Load Routine
+  Future<void> _loadRoutine(Routine routine, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text(
+          l10n.loadRoutine,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          l10n.loadThisRoutine,
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            child: Text(l10n.cancel),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          TextButton(
+            child: Text(
+              l10n.loadRoutine.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2196F3),
+              ),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed == true && mounted) {
+      try {
+        final sessionRepo = getIt<SessionRepo>();
+        final routineRepo = getIt<RoutineRepo>();
+        final today = DateTime.now();
+        final todayYmd = sessionRepo.ymd(today);
+        
+        print('🔍 Loading routine: ${routine.name}');
+        print('🔍 Exercises count: ${routine.exercises.length}');
+        for (var ex in routine.exercises) {
+          print('  - ${ex.name}');
+        }
+        
+        // Create new session with routine exercises AND routine name
+        final session = Session(
+          ymd: todayYmd,
+          exercises: routine.exercises.map((e) => e.copyWith()).toList(),
+          routineName: routine.name, // 🔥 루틴 이름 저장!
+        );
+        
+        print('🔍 Session created with routineName: ${session.routineName}');
+        print('🔍 Session exercises count: ${session.exercises.length}');
+        
+        await sessionRepo.put(session);
+        await routineRepo.updateLastUsed(routine.id);
+        
+        if (mounted) {
+          ErrorHandler.showSuccessSnackBar(context, l10n.routineLoaded);
+          
+          // Navigate to calendar (home)
+          final shellState = context.findAncestorStateOfType<ShellPageState>();
+          shellState?.navigateToCalendar();
+        }
+      } catch (e) {
+        print('❌ Error loading routine: $e');
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(context, l10n.errorOccurred(e.toString()));
+        }
+      }
+    }
+  }
+
+  // Delete Routine
+  Future<void> _deleteRoutine(Routine routine, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text(
+          l10n.deleteRoutine,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          '${l10n.deleteRoutine} "${routine.name}"?',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            child: Text(l10n.cancel),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          TextButton(
+            child: Text(
+              l10n.delete.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed == true && mounted) {
+      try {
+        final routineRepo = getIt<RoutineRepo>();
+        await routineRepo.delete(routine.id);
+        
+        if (mounted) {
+          setState(() {
+            _routineListKey++; // 🔥 키를 증가시켜서 FutureBuilder 강제 새로고침
+          });
+          ErrorHandler.showSuccessSnackBar(context, l10n.routineDeleted);
+        }
+      } catch (e) {
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(context, l10n.errorOccurred(e.toString()));
+        }
+      }
+    }
+  }
+
+  // Create New Routine
+  Future<void> _createNewRoutine() async {
+    // 🚨 CHECKPOINT: Check routine limit BEFORE selecting exercises
+    final routineRepo = getIt<RoutineRepo>();
+    final userRepo = getIt<UserRepo>();
+    
+    final routines = await routineRepo.listAll();
+    final userProfile = await userRepo.getUserProfile();
+    final isPro = userProfile?.isPro ?? false;
+    
+    // Check if user can save more routines
+    if (!SubscriptionLimits.canSaveMoreRoutines(
+      isPro: isPro,
+      currentCount: routines.length,
+    )) {
+      // 🚫 BLOCKED: Show upgrade dialog
+      _showUpgradeDialog();
+      return;
+    }
+
+    // ✅ ALLOWED: Proceed to create
+    // Step 1: Select exercises
+    final selected = await Navigator.push<List<Exercise>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ExerciseSelectionPageV2(),
+      ),
+    );
+
+    if (selected == null || selected.isEmpty || !mounted) return;
+
+    // Step 2: Enter routine name
+    String routineName = "";
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            l10n.createRoutine.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Courier',
+              letterSpacing: 1.5,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.exerciseCount(selected.length),
+                style: TextStyle(color: Colors.grey[400], fontSize: 13),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: l10n.enterRoutineName,
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 2),
+                  ),
+                ),
+                onChanged: (val) => routineName = val,
+                autofocus: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(l10n.cancel),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            TextButton(
+              child: Text(
+                l10n.save.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2196F3),
+                ),
+              ),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && routineName.isNotEmpty && mounted) {
+      try {
+        print('🔍 [CREATE] Selected exercises count: ${selected.length}');
+        for (var i = 0; i < selected.length; i++) {
+          print('  [$i] ${selected[i].name}');
+        }
+        
+        final routine = Routine(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: routineName,
+          exercises: selected.map((e) => e.copyWith()).toList(),
+        );
+        
+        print('🔍 [CREATE] Routine created with ${routine.exercises.length} exercises');
+        for (var i = 0; i < routine.exercises.length; i++) {
+          print('  [$i] ${routine.exercises[i].name}');
+        }
+        
+        await routineRepo.save(routine);
+        
+        // Verify what was saved
+        final saved = await routineRepo.get(routine.id);
+        print('🔍 [CREATE] Saved routine has ${saved?.exercises.length ?? 0} exercises');
+        if (saved != null) {
+          for (var i = 0; i < saved.exercises.length; i++) {
+            print('  [$i] ${saved.exercises[i].name}');
+          }
+        }
+        
+        if (mounted) {
+          setState(() {
+            _routineListKey++; // 🔥 키를 증가시켜서 FutureBuilder 강제 새로고침
+          });
+          ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context).routineSaved);
+        }
+      } catch (e) {
+        print('❌ [CREATE] Error: $e');
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(context, AppLocalizations.of(context).errorOccurred(e.toString()));
+        }
+      }
+    }
+  }
+
+  // Edit Routine
+  Future<void> _editRoutine(Routine routine) async {
+    // Step 1: Select exercises (pre-fill with existing)
+    final selected = await Navigator.push<List<Exercise>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ExerciseSelectionPageV2(),
+      ),
+    );
+
+    if (selected == null || selected.isEmpty || !mounted) return;
+
+    // Step 2: Edit routine name
+    String routineName = routine.name;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            l10n.editRoutine.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Courier',
+              letterSpacing: 1.5,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.exerciseCount(selected.length),
+                style: TextStyle(color: Colors.grey[400], fontSize: 13),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                controller: TextEditingController(text: routineName),
+                decoration: InputDecoration(
+                  hintText: l10n.enterRoutineName,
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 2),
+                  ),
+                ),
+                onChanged: (val) => routineName = val,
+                autofocus: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(l10n.cancel),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            TextButton(
+              child: Text(
+                l10n.save.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2196F3),
+                ),
+              ),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && routineName.isNotEmpty && mounted) {
+      try {
+        final routineRepo = getIt<RoutineRepo>();
+        final updatedRoutine = routine.copyWith(
+          name: routineName,
+          exercises: selected.map((e) => e.copyWith()).toList(),
+        );
+        await routineRepo.save(updatedRoutine);
+        if (mounted) {
+          setState(() {
+            _routineListKey++; // 🔥 키를 증가시켜서 FutureBuilder 강제 새로고침
+          });
+          ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context).routineSaved);
+        }
+      } catch (e) {
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(context, AppLocalizations.of(context).errorOccurred(e.toString()));
+        }
+      }
+    }
+  }
+
+  // Show upgrade to PRO dialog
+  void _showUpgradeDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            l10n.routineLimitReached.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Courier',
+              letterSpacing: 1.5,
+            ),
+          ),
+          content: Text(
+            l10n.routineLimitMessage(SubscriptionLimits.freeRoutineLimit),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                l10n.cancel.toUpperCase(),
+                style: TextStyle(color: Colors.grey[400]),
+              ),
+              onPressed: () => Navigator.pop(ctx),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: Text(
+                l10n.upgradeToProShort.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(ctx);
+                // TODO: Navigate to subscription/upgrade page
+                Navigator.pushNamed(context, '/upgrade');
+              },
+            ),
+          ],
         );
       },
     );

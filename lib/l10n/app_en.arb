@@ -505,5 +505,42 @@
         "example": "180"
       }
     }
-  }
+  },
+  "saveRoutine": "Save Routine",
+  "loadRoutine": "Load Routine",
+  "routines": "Routines",
+  "routineName": "Routine Name",
+  "enterRoutineName": "Enter Name (e.g. Push A)",
+  "routineSaved": "Routine Saved",
+  "routineLoaded": "Routine Loaded",
+  "routineDeleted": "Routine Deleted",
+  "deleteRoutine": "Delete Routine",
+  "deleteRoutineConfirm": "Delete '{name}' routine?",
+  "noRoutines": "No saved routines",
+  "exerciseCount": "{count} exercises",
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "loadThisRoutine": "Start with this routine?",
+  "archiveRoutine": "Archive Routine",
+  "createRoutine": "Create New Routine",
+  "editRoutine": "Edit Routine",
+  "createRoutineHint": "Tap the button above to create your first routine",
+  "routineLimitReached": "Routine Limit Reached",
+  "routineLimitMessage": "Free users can only store {limit} routines.\nUpgrade to PRO for unlimited storage.",
+  "@routineLimitMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "upgradeToPro": "Upgrade to PRO",
+  "upgradeToProShort": "Upgrade"
 }

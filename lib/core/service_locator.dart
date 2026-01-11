@@ -4,6 +4,7 @@ import '../data/exercise_library_repo.dart';
 import '../data/user_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/auth_repo.dart';
+import '../data/routine_repo.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -23,10 +24,14 @@ Future<void> setupServiceLocator() async {
 
   final authRepo = GoogleAuthRepo();
 
+  final routineRepo = HiveRoutineRepo();
+  await routineRepo.init();
+
   // GetIt에 싱글톤으로 등록
   getIt.registerSingleton<SessionRepo>(sessionRepo);
   getIt.registerSingleton<ExerciseLibraryRepo>(exerciseRepo);
   getIt.registerSingleton<UserRepo>(userRepo);
   getIt.registerSingleton<SettingsRepo>(settingsRepo);
   getIt.registerSingleton<AuthRepo>(authRepo);
+  getIt.registerSingleton<RoutineRepo>(routineRepo);
 }

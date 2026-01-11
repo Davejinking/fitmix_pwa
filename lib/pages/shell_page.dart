@@ -25,6 +25,9 @@ class ShellPageState extends State<ShellPage> {
 
   // IndexedStack을 사용하여 각 페이지의 상태를 보존
   late final List<Widget> _pages;
+  
+  // 🔥 HomePage의 GlobalKey
+  final GlobalKey<HomePageState> _homePageKey = GlobalKey<HomePageState>();
 
   // 라이브러리 탭으로 이동하는 메서드
   void navigateToLibrary({String? bodyPart}) {
@@ -40,13 +43,15 @@ class ShellPageState extends State<ShellPage> {
   // 캘린더 탭으로 이동하는 메서드
   void navigateToCalendar() {
     setState(() => _currentIndex = 1); // 캘린더는 인덱스 1
+    // 🔥 홈 화면 새로고침 (루틴 불러오기 후 홈으로 돌아올 때)
+    _homePageKey.currentState?.refresh();
   }
 
   @override
   void initState() {
     super.initState();
     _pages = [
-      const HomePage(),
+      HomePage(key: _homePageKey), // 🔥 Key 추가
       const CalendarPage(),
       const Scaffold(
         backgroundColor: IronTheme.background,

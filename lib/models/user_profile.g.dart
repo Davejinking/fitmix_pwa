@@ -8,7 +8,7 @@ part of 'user_profile.dart';
 
 class UserProfileAdapter extends TypeAdapter<UserProfile> {
   @override
-  final int typeId = 4;
+  final int typeId = 5;
 
   @override
   UserProfile read(BinaryReader reader) {
@@ -24,13 +24,14 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       monthlyWorkoutGoal: fields[4] as int,
       profileImage: fields[5] as Uint8List?,
       monthlyVolumeGoal: fields[6] as double,
+      isPro: fields[7] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.weight)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(5)
       ..write(obj.profileImage)
       ..writeByte(6)
-      ..write(obj.monthlyVolumeGoal);
+      ..write(obj.monthlyVolumeGoal)
+      ..writeByte(7)
+      ..write(obj.isPro);
   }
 
   @override

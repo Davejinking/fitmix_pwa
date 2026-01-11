@@ -21,12 +21,16 @@ class Session extends HiveObject {
   @HiveField(4)
   bool isCompleted; // 운동 완료 여부
 
+  @HiveField(5)
+  String? routineName; // 루틴 이름 (루틴에서 불러온 경우)
+
   Session({
     required this.ymd,
     List<Exercise>? exercises,
     this.isRest = false,
     this.durationInSeconds = 0,
     this.isCompleted = false,
+    this.routineName,
   }) : exercises = exercises ?? [];
 
   /// Session 객체를 복사하여 새로운 인스턴스를 생성합니다.
@@ -36,6 +40,7 @@ class Session extends HiveObject {
     bool? isRest,
     int? durationInSeconds,
     bool? isCompleted,
+    String? routineName,
   }) {
     return Session(
       ymd: ymd ?? this.ymd,
@@ -43,6 +48,7 @@ class Session extends HiveObject {
       isRest: isRest ?? this.isRest,
       durationInSeconds: durationInSeconds ?? this.durationInSeconds,
       isCompleted: isCompleted ?? this.isCompleted,
+      routineName: routineName ?? this.routineName,
     );
   }
 
@@ -86,3 +92,4 @@ extension SessionVolume on Session {
     return volume;
   }
 }
+

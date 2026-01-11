@@ -1064,7 +1064,7 @@ abstract class AppLocalizations {
   ///
   /// In ko, this message translates to:
   /// **'{count}개 운동'**
-  String exerciseCount(Object count);
+  String exerciseCount(int count);
 
   /// No description provided for @cannotChangeDateDuringWorkout.
   ///
@@ -2210,6 +2210,126 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{minutes}분'**
   String minutesUnit(int minutes);
+
+  /// No description provided for @saveRoutine.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 저장'**
+  String get saveRoutine;
+
+  /// No description provided for @loadRoutine.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 불러오기'**
+  String get loadRoutine;
+
+  /// No description provided for @routines.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴'**
+  String get routines;
+
+  /// No description provided for @routineName.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 이름'**
+  String get routineName;
+
+  /// No description provided for @enterRoutineName.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 이름 입력 (예: 가슴 A)'**
+  String get enterRoutineName;
+
+  /// No description provided for @routineSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴이 저장되었습니다'**
+  String get routineSaved;
+
+  /// No description provided for @routineLoaded.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴을 불러왔습니다'**
+  String get routineLoaded;
+
+  /// No description provided for @routineDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴이 삭제되었습니다'**
+  String get routineDeleted;
+
+  /// No description provided for @deleteRoutine.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 삭제'**
+  String get deleteRoutine;
+
+  /// No description provided for @deleteRoutineConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'\'{name}\' 루틴을 삭제하시겠습니까?'**
+  String deleteRoutineConfirm(Object name);
+
+  /// No description provided for @noRoutines.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 루틴이 없습니다'**
+  String get noRoutines;
+
+  /// No description provided for @loadThisRoutine.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 루틴으로 시작하시겠습니까?'**
+  String get loadThisRoutine;
+
+  /// No description provided for @archiveRoutine.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 보관'**
+  String get archiveRoutine;
+
+  /// No description provided for @createRoutine.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 루틴 만들기'**
+  String get createRoutine;
+
+  /// No description provided for @editRoutine.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 수정'**
+  String get editRoutine;
+
+  /// No description provided for @createRoutineHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'위 버튼을 눌러 첫 루틴을 만들어보세요'**
+  String get createRoutineHint;
+
+  /// No description provided for @routineLimitReached.
+  ///
+  /// In ko, this message translates to:
+  /// **'루틴 저장 제한'**
+  String get routineLimitReached;
+
+  /// No description provided for @routineLimitMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'무료 사용자는 최대 {limit}개의 루틴만 저장할 수 있습니다.\nPRO로 업그레이드하면 무제한으로 저장할 수 있습니다.'**
+  String routineLimitMessage(int limit);
+
+  /// No description provided for @upgradeToPro.
+  ///
+  /// In ko, this message translates to:
+  /// **'PRO로 업그레이드'**
+  String get upgradeToPro;
+
+  /// No description provided for @upgradeToProShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'업그레이드'**
+  String get upgradeToProShort;
 }
 
 class _AppLocalizationsDelegate
