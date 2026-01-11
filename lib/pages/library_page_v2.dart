@@ -216,14 +216,22 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           hintText: l10n.searchExercise.toUpperCase(),
           hintStyle: const TextStyle(
             color: Colors.grey,
-            fontSize: 12,
+            fontSize: 14.0, // 🔥 IRON STANDARD
             fontFamily: 'Courier',
             letterSpacing: 1.0,
           ),
-          prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 18),
+          prefixIcon: const Icon(
+            Icons.search,
+            color: Colors.grey,
+            size: 20.0, // 🔥 IRON STANDARD
+          ),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
+                  icon: const Icon(
+                    Icons.clear,
+                    color: Colors.grey,
+                    size: 20.0, // 🔥 IRON STANDARD
+                  ),
                   onPressed: () {
                     _searchController.clear();
                     setState(() {
@@ -235,19 +243,19 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
               : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0), // 🔥 Sharp corners
+            borderRadius: BorderRadius.circular(4.0),
             borderSide: const BorderSide(color: Colors.white24, width: 1.0),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(4.0),
-            borderSide: const BorderSide(color: Colors.white, width: 1.5), // 🔥 Highlight when active
+            borderSide: const BorderSide(color: Colors.white, width: 1.5),
           ),
           filled: true,
-          fillColor: Colors.black, // 🔥 Tactical black
+          fillColor: Colors.black,
           isDense: true,
         ),
         style: const TextStyle(
-          fontSize: 13,
+          fontSize: 14.0, // 🔥 IRON STANDARD
           color: Colors.white,
           fontFamily: 'Courier',
         ),
@@ -324,19 +332,33 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     );
   }
 
-  // 🔥 루틴 검색바 (Tactical Style)
+  // 🔥 루틴 검색바 (IRON STANDARD)
   Widget _buildRoutineSearchBar(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: TextField(
         controller: _routineSearchController,
+        cursorColor: Colors.white,
         decoration: InputDecoration(
           hintText: "ルーティン検索", // TODO: Add i18n
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 13, fontFamily: 'Courier'),
-          prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 20),
+          hintStyle: const TextStyle(
+            color: Colors.grey,
+            fontSize: 14.0, // 🔥 IRON STANDARD
+            fontFamily: 'Courier',
+            letterSpacing: 1.0,
+          ),
+          prefixIcon: const Icon(
+            Icons.search,
+            color: Colors.grey,
+            size: 20.0, // 🔥 IRON STANDARD
+          ),
           suffixIcon: _routineSearchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
+                  icon: const Icon(
+                    Icons.clear,
+                    color: Colors.grey,
+                    size: 20.0, // 🔥 IRON STANDARD
+                  ),
                   onPressed: () {
                     _routineSearchController.clear();
                     setState(() {
@@ -348,17 +370,22 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
               : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: const BorderSide(color: Colors.white24, width: 1),
+            borderRadius: BorderRadius.circular(4.0),
+            borderSide: const BorderSide(color: Colors.white24, width: 1.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(4.0),
             borderSide: const BorderSide(color: Colors.white, width: 1.5),
           ),
           filled: true,
           fillColor: Colors.black,
+          isDense: true,
         ),
-        style: const TextStyle(fontSize: 13, color: Colors.white, fontFamily: 'Courier'),
+        style: const TextStyle(
+          fontSize: 14.0, // 🔥 IRON STANDARD
+          color: Colors.white,
+          fontFamily: 'Courier',
+        ),
         onChanged: (query) {
           setState(() {
             _routineSearchQuery = query;
