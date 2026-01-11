@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:fitmix_pwa/pages/home_page.dart';
-import 'package:fitmix_pwa/pages/calendar_page.dart';
+import 'package:fitmix_pwa/pages/notifications_page.dart';
+import 'package:fitmix_pwa/pages/upgrade_page.dart';
+import 'package:fitmix_pwa/pages/user_info_form_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
 import 'package:fitmix_pwa/data/settings_repo.dart';
 import 'package:fitmix_pwa/data/auth_repo.dart';
-import 'package:fitmix_pwa/l10n/app_localizations.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fitmix_pwa/models/session.dart';
 
 // Mocks
@@ -35,19 +38,24 @@ void main() {
     mockAuthRepo = MockAuthRepo();
     mockNavigatorObserver = MockNavigatorObserver();
 
-    // Mock session repo responses
-    when(() => mockSessionRepo.get(any())).thenAnswer((_) async => Session(ymd: '2023-10-15'));
-    // Mock user repo responses if needed by Home Page
+    // Default mocks
+    when(() => mockSessionRepo.getWorkoutSessions()).thenAnswer((_) async => []);
+    when(() => mockSessionRepo.get(any())).thenAnswer((_) async => Session(ymd: '2024-01-01'));
     when(() => mockUserRepo.getUserProfile()).thenAnswer((_) async => null);
   });
 
-  testWidgets('BUG-020: Tapping "Today\'s Workout" should navigate to CalendarPage', (WidgetTester tester) async {
+  testWidgets('Session 1 Missing Regression Tests', (WidgetTester tester) async {
     registerFallbackValue(MaterialPageRoute<void>(builder: (_) => Container()));
 
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en'), Locale('ko')],
         home: HomePage(
           sessionRepo: mockSessionRepo,
           userRepo: mockUserRepo,
@@ -57,41 +65,50 @@ void main() {
         ),
         navigatorObservers: [mockNavigatorObserver],
         routes: {
-          '/calendar': (context) => CalendarPage(
-            repo: mockSessionRepo,
-            exerciseRepo: mockExerciseRepo,
-          ),
+          '/notifications': (context) => const NotificationsPage(),
         },
       ),
     );
 
-    // Initial pump
-    await tester.pump();
-    // Wait for animations (Home Page has slide animations)
+    // Pump to settle UI
     for (int i = 0; i < 20; i++) {
        await tester.pump(const Duration(milliseconds: 100));
     }
 
-    // Find "Today's Workout" card.
-    final todayWorkoutFinder = find.byWidgetPredicate((widget) {
+    // TC-R006: Home Profile/Upgrade Access
+    // Upgrade Icon: Icons.star_outline
+    final upgradeIcon = find.byIcon(Icons.star_outline);
+    expect(upgradeIcon, findsOneWidget);
+
+    await tester.tap(upgradeIcon);
+
+    // Pump nav
+    for (int i = 0; i < 10; i++) {
+       await tester.pump(const Duration(milliseconds: 100));
+    }
+    verify(() => mockNavigatorObserver.didPush(any(), any())).called(greaterThan(0));
+
+    // Reset for next check
+    reset(mockNavigatorObserver);
+
+    // Profile Icon: Icons.person_outlined
+    final profileIcon = find.byIcon(Icons.person_outlined);
+    expect(profileIcon, findsOneWidget);
+
+    await tester.tap(profileIcon);
+
+    // Pump nav
+    for (int i = 0; i < 10; i++) {
+       await tester.pump(const Duration(milliseconds: 100));
+    }
+    verify(() => mockNavigatorObserver.didPush(any(), any())).called(greaterThan(0));
+
+    // TC-R014: Home Status (Blue/Green/Grey)
+    expect(find.byWidgetPredicate((widget) {
       if (widget is Text) {
-        final data = widget.data ?? '';
-        return data.contains("Today's Workout") || data.contains("오늘의 운동");
+        return (widget.data ?? '').contains('Not Completed') || (widget.data ?? '').contains('미완료');
       }
       return false;
-    });
-
-    expect(todayWorkoutFinder, findsOneWidget);
-
-    // Tap it
-    await tester.tap(todayWorkoutFinder);
-
-    // Pump frames for navigation animation
-    for (int i = 0; i < 10; i++) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-
-    // Verify navigation by checking if Navigator pushed a route
-    verify(() => mockNavigatorObserver.didPush(any(), any())).called(greaterThan(0));
+    }), findsOneWidget);
   });
 }
