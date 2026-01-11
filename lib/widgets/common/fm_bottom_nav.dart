@@ -25,7 +25,7 @@ class FMBottomNav extends StatelessWidget {
         color: Colors.black, // Pure black void
         border: Border(
           top: BorderSide(
-            color: Colors.grey[900]!, // Subtle hairline
+            color: Colors.white24, // 🔥 Tactical border
             width: 1.0,
           ),
         ),
@@ -33,14 +33,24 @@ class FMBottomNav extends StatelessWidget {
       child: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: onTap,
-        selectedItemColor: selectedItemColor ?? const Color(0xFF2196F3), // Signature blue
-        unselectedItemColor: unselectedItemColor ?? Colors.grey[700], // Dark grey
+        selectedItemColor: selectedItemColor ?? Colors.white, // 🔥 Active: Bright White
+        unselectedItemColor: unselectedItemColor ?? Colors.grey[600], // 🔥 Inactive: Dark Grey
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         elevation: 0, // No shadow
         backgroundColor: Colors.black, // Pure black
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
+        selectedFontSize: 11, // 🔥 Tactical font size
+        unselectedFontSize: 10, // 🔥 Smaller when inactive
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w700, // 🔥 Bold when active
+          fontFamily: 'Courier',
+          letterSpacing: 0.5,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          fontFamily: 'Courier',
+          letterSpacing: 0.5,
+        ),
         items: items.map((item) {
           final index = items.indexOf(item);
           final isSelected = currentIndex == index;

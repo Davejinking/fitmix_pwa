@@ -25,21 +25,25 @@ class LibraryPageV2 extends StatefulWidget {
   State<LibraryPageV2> createState() => _LibraryPageV2State();
 }
 
-class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProviderStateMixin {
+class _LibraryPageV2State extends State<LibraryPageV2> {
   final ExerciseSeedingService _seedingService = ExerciseSeedingService();
-  late TabController _tabController;
   
-  final List<String> _mainTabKeys = [
-    'routines', 'favorites', 'chest', 'back', 'legs', 'shoulders', 'arms', 'abs', 'cardio', 'stretching', 'fullBody',
+  // 🔥 TACTICAL SWITCH: Routine Mode vs Exercise Mode
+  bool _isRoutineMode = true;
+  
+  // Exercise Tab State
+  String _selectedBodyPart = 'all'; // 🔥 Default: ALL
+  final List<String> _bodyPartKeys = [
+    'all', 'favorites', 'chest', 'back', 'legs', 'shoulders', 'arms', 'abs', 'cardio', 'stretching', 'fullBody',
   ];
   
   final List<String> _equipmentFilterKeys = ['all', 'bodyweight', 'machine', 'barbell', 'dumbbell', 'cable', 'band'];
   String _selectedEquipmentKey = 'all';
   
-  // 🔥 루틴 필터 키 추가 (동적으로 생성됨)
+  // Routine Tab State
   final List<String> _systemRoutineFilterKeys = ['all', 'push', 'pull', 'legs', 'upper', 'lower', 'fullBody'];
   String _selectedRoutineFilterKey = 'all';
-  List<String> _allRoutineFilterKeys = []; // System + User tags
+  List<String> _allRoutineFilterKeys = [];
   
   List<ExerciseLibraryItem> _allExercises = [];
   List<ExerciseLibraryItem> _filteredExercises = [];
@@ -50,33 +54,22 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   
-  // 🔥 루틴 검색 컨트롤러 추가
   String _routineSearchQuery = '';
   final TextEditingController _routineSearchController = TextEditingController();
   
-  // 🔥 루틴 목록 새로고침을 위한 키
   int _routineListKey = 0;
   
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _mainTabKeys.length, vsync: this);
-    _tabController.addListener(_onTabChanged);
     _loadAllExercises();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     _searchController.dispose();
-    _routineSearchController.dispose(); // 🔥 루틴 검색 컨트롤러 dispose
+    _routineSearchController.dispose();
     super.dispose();
-  }
-
-  void _onTabChanged() {
-    if (_tabController.indexIsChanging) {
-      _applyFilter();
-    }
   }
 
   Future<void> _loadAllExercises() async {
@@ -96,44 +89,32 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   }
 
   void _applyFilter() {
-    final currentTabKey = _mainTabKeys[_tabController.index];
-    
     setState(() {
-      if (currentTabKey == 'routines') {
-        // Routines tab - don't filter exercises
-        _filteredExercises = [];
-      } else if (currentTabKey == 'favorites') {
+      // 🔥 Step 1: Body Part Filter
+      if (_selectedBodyPart == 'all') {
+        // Show ALL exercises
+        _filteredExercises = List.from(_allExercises);
+      } else if (_selectedBodyPart == 'favorites') {
+        // Show only bookmarked exercises
         _filteredExercises = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
       } else {
-        _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == currentTabKey.toLowerCase()).toList();
+        // Show exercises matching body part
+        _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
       }
       
-      if (_selectedEquipmentKey != 'all' && currentTabKey != 'routines') {
+      // 🔥 Step 2: Equipment Filter
+      if (_selectedEquipmentKey != 'all') {
         _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey.toLowerCase()).toList();
       }
       
-      if (_searchQuery.isNotEmpty && currentTabKey != 'routines') {
+      // 🔥 Step 3: Search Query Filter
+      if (_searchQuery.isNotEmpty) {
         _filteredExercises = _filteredExercises.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
       }
     });
   }
   
-  String _getTabLabel(AppLocalizations l10n, String key) {
-    switch (key) {
-      case 'routines': return l10n.routines;
-      case 'favorites': return l10n.favorites;
-      case 'chest': return l10n.chest;
-      case 'back': return l10n.back;
-      case 'legs': return l10n.legs;
-      case 'shoulders': return l10n.shoulders;
-      case 'arms': return l10n.arms;
-      case 'abs': return l10n.abs;
-      case 'cardio': return l10n.cardio;
-      case 'stretching': return l10n.stretching;
-      case 'fullBody': return l10n.fullBody;
-      default: return key;
-    }
-  }
+
   
   String _getEquipmentLabel(AppLocalizations l10n, String key) {
     switch (key) {
@@ -184,25 +165,96 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       } else {
         _bookmarkedIds.add(id);
       }
-      if (_mainTabKeys[_tabController.index] == 'favorites') _applyFilter();
+      if (_selectedBodyPart == 'favorites') _applyFilter();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final currentTabKey = _mainTabKeys[_tabController.index];
-    final isRoutinesTab = currentTabKey == 'routines';
     
     return Column(
       children: [
-        // 🔥 검색바: 루틴 탭과 운동 탭 모두 표시 (내용만 다름)
-        isRoutinesTab ? _buildRoutineSearchBar(l10n) : _buildSearchBar(l10n),
-        _buildBodyPartTabs(l10n),
-        // 🔥 필터: 루틴 탭과 운동 탭 모두 표시 (내용만 다름)
-        isRoutinesTab ? _buildRoutineFilter(l10n) : _buildEquipmentFilter(l10n),
-        Expanded(child: isRoutinesTab ? _buildRoutinesList(l10n) : _buildExerciseList(l10n)),
+        // 🔥 TACTICAL TOGGLE SWITCH
+        _buildTacticalSwitch(l10n),
+        
+        // Content based on mode
+        if (_isRoutineMode) ...[
+          _buildRoutineSearchBar(l10n),
+          _buildRoutineFilter(l10n),
+          Expanded(child: _buildRoutinesList(l10n)),
+        ] else ...[
+          _buildSearchBar(l10n),
+          _buildBodyPartTabs(l10n),
+          _buildEquipmentFilter(l10n),
+          Expanded(child: _buildExerciseList(l10n)),
+        ],
       ],
+    );
+  }
+  
+  // 🔥 TACTICAL TOGGLE SWITCH
+  Widget _buildTacticalSwitch(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          border: Border.all(color: Colors.white24, width: 1.0),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          children: [
+            // Left: ROUTINES
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _isRoutineMode = true),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: _isRoutineMode ? Colors.white : Colors.transparent,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.routines.toUpperCase(),
+                    style: TextStyle(
+                      color: _isRoutineMode ? Colors.black : Colors.grey,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Right: EXERCISES
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _isRoutineMode = false),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: !_isRoutineMode ? Colors.white : Colors.transparent,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'EXERCISES', // TODO: Add i18n
+                    style: TextStyle(
+                      color: !_isRoutineMode ? Colors.black : Colors.grey,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -271,19 +323,70 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
 
   Widget _buildBodyPartTabs(AppLocalizations l10n) {
     return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(vertical: 10),
       color: IronTheme.background,
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: true,
-        labelColor: IronTheme.primary,
-        unselectedLabelColor: IronTheme.textMedium,
-        indicatorColor: IronTheme.primary,
-        indicatorWeight: 3,
-        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        tabAlignment: TabAlignment.start,
-        tabs: _mainTabKeys.map((key) => Tab(text: _getTabLabel(l10n, key))).toList(),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _bodyPartKeys.length,
+        itemBuilder: (context, index) {
+          final key = _bodyPartKeys[index];
+          final isSelected = key == _selectedBodyPart;
+          
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilterChip(
+              label: Text(
+                _getBodyPartLabel(l10n, key),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Courier',
+                  letterSpacing: 0.5,
+                  color: isSelected ? Colors.white : Colors.grey,
+                ),
+              ),
+              selected: isSelected,
+              onSelected: (_) {
+                setState(() {
+                  _selectedBodyPart = key;
+                  _applyFilter();
+                });
+              },
+              backgroundColor: Colors.transparent,
+              selectedColor: Colors.transparent,
+              showCheckmark: false,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+                side: BorderSide(
+                  color: isSelected ? Colors.white : Colors.white24,
+                  width: isSelected ? 1.5 : 1.0,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
+  }
+  
+  String _getBodyPartLabel(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'all': return l10n.all; // 🔥 ALL (全て)
+      case 'favorites': return l10n.favorites; // お気に入り
+      case 'chest': return l10n.chest;
+      case 'back': return l10n.back;
+      case 'legs': return l10n.legs;
+      case 'shoulders': return l10n.shoulders;
+      case 'arms': return l10n.arms;
+      case 'abs': return l10n.abs;
+      case 'cardio': return l10n.cardio;
+      case 'stretching': return l10n.stretching;
+      case 'fullBody': return l10n.fullBody;
+      default: return key;
+    }
   }
 
   Widget _buildEquipmentFilter(AppLocalizations l10n) {
@@ -677,182 +780,12 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                   itemBuilder: (context, index) {
                     final routine = routines[index];
                     
-                    // 🎯 TACTICAL DATA CARD
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.black, // Pure black background
-                        border: Border.all(
-                          color: Colors.white24, // Subtle border
-                          width: 1.0,
-                        ),
-                        borderRadius: BorderRadius.circular(4.0), // Sharp corners
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // HEADER
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        routine.name.toUpperCase(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 16,
-                                          fontFamily: 'Courier',
-                                          letterSpacing: 1.0,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${routine.exercises.length} EXERCISES',
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w700,
-                                          fontFamily: 'Courier',
-                                          letterSpacing: 1.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Edit/Delete Icons
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
-                                      onPressed: () => _editRoutine(routine),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
-                                      onPressed: () => _deleteRoutine(routine, l10n),
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          
-                          // DIVIDER
-                          if (routine.exercises.isNotEmpty)
-                            const Divider(color: Colors.white24, height: 1),
-                          
-                          // EXERCISE LIST PREVIEW
-                          if (routine.exercises.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ...routine.exercises.take(3).map((exercise) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 6),
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.fitness_center,
-                                          size: 12,
-                                          color: Colors.grey,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            exercise.name,
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.white70,
-                                              fontFamily: 'Courier',
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                                  if (routine.exercises.length > 3)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2),
-                                      child: Text(
-                                        '+${routine.exercises.length - 3} MORE',
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.grey,
-                                          fontFamily: 'Courier',
-                                          letterSpacing: 1.0,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          
-                          // ACTION BUTTON (Tactical Invert on Press)
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 45,
-                              child: OutlinedButton(
-                                onPressed: () => _loadRoutine(routine, l10n),
-                                style: ButtonStyle(
-                                  // 1. Border: Always White
-                                  side: WidgetStateProperty.all(
-                                    const BorderSide(color: Colors.white, width: 1.5),
-                                  ),
-                                  // 2. Shape: Sharp corners
-                                  shape: WidgetStateProperty.all(
-                                    const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                                    ),
-                                  ),
-                                  // 3. BACKGROUND: Transparent → White when pressed
-                                  backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                                    if (states.contains(WidgetState.pressed)) {
-                                      return Colors.white; // 🔥 Fill white when pressed
-                                    }
-                                    return Colors.transparent; // Transparent normally
-                                  }),
-                                  // 4. TEXT COLOR: White → Black when pressed (THE FIX!)
-                                  foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                                    if (states.contains(WidgetState.pressed)) {
-                                      return Colors.black; // 🔥 Turn BLACK when pressed
-                                    }
-                                    return Colors.white; // White normally
-                                  }),
-                                  // 5. Remove default overlay for crisp effect
-                                  overlayColor: WidgetStateProperty.all(Colors.transparent),
-                                  padding: WidgetStateProperty.all(
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                  ),
-                                ),
-                                child: Text(
-                                  l10n.loadRoutine.toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 1.5,
-                                    fontFamily: 'Courier',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    // 🎯 TACTICAL ACCORDION CARD
+                    return _RoutineAccordionCard(
+                      routine: routine,
+                      onEdit: () => _editRoutine(routine),
+                      onDelete: () => _deleteRoutine(routine, l10n),
+                      onLoad: () => _loadRoutine(routine, l10n),
                     );
                   },
                 ),
@@ -1494,6 +1427,238 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
           },
         ),
       ],
+    );
+  }
+}
+
+
+// 🔥 Routine Accordion Card (Collapsible)
+class _RoutineAccordionCard extends StatefulWidget {
+  final Routine routine;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onLoad;
+
+  const _RoutineAccordionCard({
+    required this.routine,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onLoad,
+  });
+
+  @override
+  State<_RoutineAccordionCard> createState() => _RoutineAccordionCardState();
+}
+
+class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
+  bool _isExpanded = false; // Default: Collapsed
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        border: Border.all(
+          color: _isExpanded ? Colors.white : Colors.white24, // 🔥 Highlight when open
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: Column(
+        children: [
+          // HEADER (Clickable)
+          InkWell(
+            onTap: () => setState(() => _isExpanded = !_isExpanded),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                children: [
+                  // Title & Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.routine.name.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                            fontFamily: 'Courier',
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text(
+                              '${widget.routine.exercises.length} EXERCISES',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Courier',
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            // Tags
+                            if (widget.routine.tags.isNotEmpty) ...[
+                              const SizedBox(width: 8),
+                              ...widget.routine.tags.take(2).map((tag) => Container(
+                                margin: const EdgeInsets.only(right: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.white12,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                                child: Text(
+                                  tag,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 9,
+                                    fontFamily: 'Courier',
+                                  ),
+                                ),
+                              )),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Edit/Delete Icons
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.grey),
+                        onPressed: widget.onEdit,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 16, color: Colors.grey),
+                        onPressed: widget.onDelete,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                      ),
+                      const SizedBox(width: 4),
+                      // Chevron Icon
+                      Icon(
+                        _isExpanded ? Icons.expand_less : Icons.expand_more,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // BODY (Expandable)
+          if (_isExpanded) ...[
+            const Divider(color: Colors.white24, height: 1),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Exercise List with Sets x Reps
+                  ...widget.routine.exercises.map((exercise) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Exercise Name
+                        Expanded(
+                          child: Row(
+                            children: [
+                              const Text(
+                                '•',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  exercise.name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontFamily: 'Courier',
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Target Sets x Reps
+                        Text(
+                          '${exercise.targetSets} × ${exercise.targetReps}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 11,
+                            fontFamily: 'Courier',
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 12),
+                  // Load Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 40,
+                    child: OutlinedButton(
+                      onPressed: widget.onLoad,
+                      style: ButtonStyle(
+                        side: WidgetStateProperty.all(
+                          const BorderSide(color: Colors.white, width: 1.5),
+                        ),
+                        shape: WidgetStateProperty.all(
+                          const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                          ),
+                        ),
+                        backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(WidgetState.pressed)) {
+                            return Colors.white;
+                          }
+                          return Colors.transparent;
+                        }),
+                        foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(WidgetState.pressed)) {
+                            return Colors.black;
+                          }
+                          return Colors.white;
+                        }),
+                        overlayColor: WidgetStateProperty.all(Colors.transparent),
+                      ),
+                      child: Text(
+                        l10n.loadRoutine.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.5,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

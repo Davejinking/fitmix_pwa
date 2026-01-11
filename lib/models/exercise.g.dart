@@ -23,13 +23,15 @@ class ExerciseAdapter extends TypeAdapter<Exercise> {
       eccentricSeconds: fields[3] as int,
       concentricSeconds: fields[4] as int,
       isTempoEnabled: fields[5] as bool,
+      targetSets: fields[6] as int? ?? 3, // 🔥 Default: 3
+      targetReps: fields[7] as String? ?? '10', // 🔥 Default: '10'
     );
   }
 
   @override
   void write(BinaryWriter writer, Exercise obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -41,7 +43,11 @@ class ExerciseAdapter extends TypeAdapter<Exercise> {
       ..writeByte(4)
       ..write(obj.concentricSeconds)
       ..writeByte(5)
-      ..write(obj.isTempoEnabled);
+      ..write(obj.isTempoEnabled)
+      ..writeByte(6)
+      ..write(obj.targetSets)
+      ..writeByte(7)
+      ..write(obj.targetReps);
   }
 
   @override

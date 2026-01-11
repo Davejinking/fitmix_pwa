@@ -24,6 +24,12 @@ class Exercise extends HiveObject {
   @HiveField(5)
   bool isTempoEnabled; // Toggle for tempo mode
 
+  @HiveField(6)
+  int targetSets; // 🔥 Target sets for routine planning (e.g., 3)
+
+  @HiveField(7)
+  String targetReps; // 🔥 Target reps for routine planning (e.g., "8-12" or "5")
+
   Exercise({
     required this.name,
     required this.bodyPart,
@@ -31,6 +37,8 @@ class Exercise extends HiveObject {
     this.eccentricSeconds = 4,
     this.concentricSeconds = 2,
     this.isTempoEnabled = false,
+    this.targetSets = 3, // Default: 3 sets
+    this.targetReps = '10', // Default: 10 reps
   }) : sets = sets ?? [ExerciseSet()];
 
   /// Exercise 객체를 복사하여 새로운 인스턴스를 생성합니다.
@@ -41,6 +49,8 @@ class Exercise extends HiveObject {
     int? eccentricSeconds,
     int? concentricSeconds,
     bool? isTempoEnabled,
+    int? targetSets,
+    String? targetReps,
   }) {
     return Exercise(
       name: name ?? this.name,
@@ -49,6 +59,8 @@ class Exercise extends HiveObject {
       eccentricSeconds: eccentricSeconds ?? this.eccentricSeconds,
       concentricSeconds: concentricSeconds ?? this.concentricSeconds,
       isTempoEnabled: isTempoEnabled ?? this.isTempoEnabled,
+      targetSets: targetSets ?? this.targetSets,
+      targetReps: targetReps ?? this.targetReps,
     );
   }
 
@@ -58,14 +70,16 @@ class Exercise extends HiveObject {
     return other is Exercise &&
            other.name == name &&
            other.bodyPart == bodyPart &&
-           listEquals(other.sets, sets);
+           listEquals(other.sets, sets) &&
+           other.targetSets == targetSets &&
+           other.targetReps == targetReps;
   }
 
   @override
-  int get hashCode => name.hashCode ^ bodyPart.hashCode ^ sets.hashCode;
+  int get hashCode => name.hashCode ^ bodyPart.hashCode ^ sets.hashCode ^ targetSets.hashCode ^ targetReps.hashCode;
 
   @override
   String toString() {
-    return 'Exercise(name: $name, bodyPart: $bodyPart, sets: ${sets.length})';
+    return 'Exercise(name: $name, bodyPart: $bodyPart, sets: ${sets.length}, target: ${targetSets}x$targetReps)';
   }
 }
