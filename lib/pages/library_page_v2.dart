@@ -37,8 +37,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     'all', 'favorites', 'chest', 'back', 'legs', 'shoulders', 'arms', 'abs', 'cardio', 'stretching', 'fullBody',
   ];
   
-  final List<String> _equipmentFilterKeys = ['all', 'bodyweight', 'machine', 'barbell', 'dumbbell', 'cable', 'band'];
-  String _selectedEquipmentKey = 'all';
+  String? _selectedEquipmentKey; // 🔥 Nullable: null = ALL
   
   // Routine Tab State
   final List<String> _systemRoutineFilterKeys = ['all', 'push', 'pull', 'legs', 'upper', 'lower', 'fullBody'];
@@ -88,6 +87,26 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     }
   }
 
+  // 🔥 SMART AMMO CHECK: Get exercises filtered by body part only (before equipment filter)
+  List<ExerciseLibraryItem> get _bodyPartFilteredExercises {
+    if (_selectedBodyPart == 'all') {
+      return List.from(_allExercises);
+    } else if (_selectedBodyPart == 'favorites') {
+      return _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
+    } else {
+      return _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
+    }
+  }
+  
+  // 🔥 DYNAMIC EQUIPMENT TAGS: Extract available equipment from body part filtered exercises
+  List<String> get _availableEquipmentKeys {
+    return _bodyPartFilteredExercises
+        .map((ex) => ex.equipmentType.toLowerCase())
+        .toSet() // Remove duplicates
+        .toList()
+      ..sort(); // Sort alphabetically
+  }
+
   void _applyFilter() {
     setState(() {
       // 🔥 Step 1: Body Part Filter
@@ -102,9 +121,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
       }
       
-      // 🔥 Step 2: Equipment Filter
-      if (_selectedEquipmentKey != 'all') {
-        _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey.toLowerCase()).toList();
+      // 🔥 Step 2: Equipment Filter (null = ALL)
+      if (_selectedEquipmentKey != null) {
+        _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey!.toLowerCase()).toList();
       }
       
       // 🔥 Step 3: Search Query Filter
@@ -118,7 +137,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   
   String _getEquipmentLabel(AppLocalizations l10n, String key) {
     switch (key) {
-      case 'all': return l10n.all;
       case 'bodyweight': return l10n.bodyweight;
       case 'machine': return l10n.machine;
       case 'barbell': return l10n.barbell;
@@ -186,7 +204,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         ] else ...[
           _buildSearchBar(l10n),
           _buildBodyPartTabs(l10n),
-          _buildEquipmentFilter(l10n),
+          // 🔥 CONDITIONAL: Show equipment filter ONLY when specific body part is selected
+          if (_selectedBodyPart != 'all' && _selectedBodyPart != 'favorites')
+            _buildEquipmentFilter(l10n),
           Expanded(child: _buildExerciseList(l10n)),
         ],
       ],
@@ -260,7 +280,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
 
   Widget _buildSearchBar(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), // 🔥 Reduced vertical padding
       child: TextField(
         controller: _searchController,
         cursorColor: Colors.white,
@@ -323,8 +343,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
 
   Widget _buildBodyPartTabs(AppLocalizations l10n) {
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      height: 48, // 🔥 Reduced height
+      padding: const EdgeInsets.symmetric(vertical: 6), // 🔥 Tighter padding
       color: IronTheme.background,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -351,6 +371,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
               onSelected: (_) {
                 setState(() {
                   _selectedBodyPart = key;
+                  // 🔥 Reset equipment filter when changing body part
+                  _selectedEquipmentKey = null;
                   _applyFilter();
                 });
               },
@@ -390,41 +412,54 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   }
 
   Widget _buildEquipmentFilter(AppLocalizations l10n) {
+    // 🔥 SMART AMMO CHECK: Only show equipment tags that exist for current body part
+    final availableKeys = _availableEquipmentKeys;
+    
+    // 🔥 If no equipment available (empty list), don't render anything
+    if (availableKeys.isEmpty) return const SizedBox.shrink();
+    
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      height: 44, // 🔥 Reduced height
+      padding: const EdgeInsets.symmetric(vertical: 6), // 🔥 Tighter padding
       color: IronTheme.background,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _equipmentFilterKeys.length,
+        itemCount: availableKeys.length,
         itemBuilder: (context, index) {
-          final key = _equipmentFilterKeys[index];
+          final key = availableKeys[index];
           final isSelected = key == _selectedEquipmentKey;
           
           return Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: 6), // 🔥 Tighter spacing
             child: FilterChip(
               label: Text(
                 _getEquipmentLabel(l10n, key),
                 style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 10, // 🔥 Smaller font (secondary filter)
+                  fontWeight: FontWeight.w600,
                   fontFamily: 'Courier',
                   letterSpacing: 0.5,
-                  color: isSelected ? Colors.white : Colors.grey,
+                  color: isSelected ? Colors.white : Colors.grey[700], // 🔥 Darker when unselected
                 ),
               ),
               selected: isSelected,
-              onSelected: (_) { setState(() { _selectedEquipmentKey = key; _applyFilter(); }); },
+              onSelected: (_) {
+                setState(() {
+                  // 🔥 Toggle Logic: Click again to deselect (return to ALL)
+                  _selectedEquipmentKey = isSelected ? null : key;
+                  _applyFilter();
+                });
+              },
               backgroundColor: Colors.transparent,
-              selectedColor: Colors.transparent, // 🔥 No flashbang!
-              showCheckmark: false, // 🔥 Remove checkmark
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              selectedColor: Colors.transparent,
+              showCheckmark: false,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), // 🔥 Compact padding
+              visualDensity: VisualDensity.compact, // 🔥 Thinner chips
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4), // Sharp corners
+                borderRadius: BorderRadius.circular(4),
                 side: BorderSide(
-                  color: isSelected ? Colors.white : Colors.white24, // Subtle difference
+                  color: isSelected ? Colors.white : Colors.white12, // 🔥 Dimmer border
                   width: isSelected ? 1.5 : 1.0,
                 ),
               ),
@@ -435,10 +470,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     );
   }
 
-  // 🔥 루틴 검색바 (IRON STANDARD)
   Widget _buildRoutineSearchBar(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), // 🔥 Reduced vertical padding
       child: TextField(
         controller: _routineSearchController,
         cursorColor: Colors.white,
@@ -502,8 +536,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   // 🔥 루틴 필터 (Dynamic Tags)
   Widget _buildRoutineFilter(AppLocalizations l10n) {
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      height: 48, // 🔥 Reduced height
+      padding: const EdgeInsets.symmetric(vertical: 6), // 🔥 Tighter padding
       color: IronTheme.background,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
