@@ -960,73 +960,24 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
 
     if (selected == null || selected.isEmpty || !mounted) return;
 
-    // Step 2: Enter routine name
-    String routineName = "";
-    final confirmed = await showDialog<bool>(
+    // Step 2: Enter routine name and select tags
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) {
-        final l10n = AppLocalizations.of(context);
-        return AlertDialog(
-          backgroundColor: IronTheme.surface,
-          title: Text(
-            l10n.createRoutine.toUpperCase(),
-            style: const TextStyle(
-              color: IronTheme.textHigh,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Courier',
-              letterSpacing: 1.5,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.exerciseCount(selected.length),
-                style: TextStyle(color: IronTheme.textMedium, fontSize: 13),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                style: const TextStyle(color: IronTheme.textHigh),
-                decoration: InputDecoration(
-                  hintText: l10n.enterRoutineName,
-                  hintStyle: const TextStyle(color: IronTheme.textLow),
-                  enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: IronTheme.textHigh),
-                  ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: IronTheme.textHigh, width: 2),
-                  ),
-                ),
-                onChanged: (val) => routineName = val,
-                autofocus: true,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(l10n.cancel),
-              onPressed: () => Navigator.pop(context, false),
-            ),
-            TextButton(
-              child: Text(
-                l10n.save.toUpperCase(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: IronTheme.primary,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context, true),
-            ),
-          ],
-        );
-      },
+      builder: (context) => _SaveRoutineDialog(
+        exerciseCount: selected.length,
+        existingTags: _allRoutineFilterKeys.where((t) => t != 'all').toList(),
+      ),
     );
 
-    if (confirmed == true && routineName.isNotEmpty && mounted) {
+    if (result == null || !mounted) return;
+    
+    final routineName = result['name'] as String;
+    final selectedTags = result['tags'] as List<String>;
+
+    if (routineName.isNotEmpty && mounted) {
       try {
         print('🔍 [CREATE] Selected exercises count: ${selected.length}');
+        print('🔍 [CREATE] Selected tags: $selectedTags');
         for (var i = 0; i < selected.length; i++) {
           print('  [$i] ${selected[i].name}');
         }
@@ -1035,9 +986,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           name: routineName,
           exercises: selected.map((e) => e.copyWith()).toList(),
+          tags: selectedTags,
         );
         
-        print('🔍 [CREATE] Routine created with ${routine.exercises.length} exercises');
+        print('🔍 [CREATE] Routine created with ${routine.exercises.length} exercises and ${routine.tags.length} tags');
         for (var i = 0; i < routine.exercises.length; i++) {
           print('  [$i] ${routine.exercises[i].name}');
         }
@@ -1217,6 +1169,273 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           ],
         );
       },
+    );
+  }
+}
+
+
+// 🔥 Save Routine Dialog with Tag Selection
+class _SaveRoutineDialog extends StatefulWidget {
+  final int exerciseCount;
+  final List<String> existingTags;
+
+  const _SaveRoutineDialog({
+    required this.exerciseCount,
+    required this.existingTags,
+  });
+
+  @override
+  State<_SaveRoutineDialog> createState() => _SaveRoutineDialogState();
+}
+
+class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _customTagController = TextEditingController();
+  final Set<String> _selectedTags = {};
+  
+  // System preset tags
+  final List<String> _systemTags = ['PUSH', 'PULL', 'LEGS', 'UPPER', 'LOWER', 'FULL BODY'];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _customTagController.dispose();
+    super.dispose();
+  }
+
+  void _toggleTag(String tag) {
+    setState(() {
+      if (_selectedTags.contains(tag)) {
+        _selectedTags.remove(tag);
+      } else {
+        _selectedTags.add(tag);
+      }
+    });
+  }
+
+  void _addCustomTag() {
+    final tag = _customTagController.text.trim().toUpperCase();
+    if (tag.isNotEmpty && !_selectedTags.contains(tag)) {
+      setState(() {
+        _selectedTags.add(tag);
+        _customTagController.clear();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    return AlertDialog(
+      backgroundColor: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+        side: const BorderSide(color: Colors.white24, width: 1),
+      ),
+      title: Text(
+        l10n.createRoutine.toUpperCase(),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w900,
+          fontFamily: 'Courier',
+          letterSpacing: 1.5,
+        ),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Exercise count
+            Text(
+              '${widget.exerciseCount} EXERCISES',
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 11,
+                fontFamily: 'Courier',
+                letterSpacing: 1.0,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Routine name input
+            TextField(
+              controller: _nameController,
+              style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
+              decoration: InputDecoration(
+                hintText: l10n.enterRoutineName,
+                hintStyle: const TextStyle(color: Colors.grey, fontFamily: 'Courier'),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white24),
+                ),
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width: 1.5),
+                ),
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 24),
+            
+            // Tags section
+            const Text(
+              'TAGS',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Courier',
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            // System preset tags
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _systemTags.map((tag) {
+                final isSelected = _selectedTags.contains(tag);
+                return GestureDetector(
+                  onTap: () => _toggleTag(tag),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.white : Colors.transparent,
+                      border: Border.all(
+                        color: isSelected ? Colors.white : Colors.white24,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      tag,
+                      style: TextStyle(
+                        color: isSelected ? Colors.black : Colors.grey,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Courier',
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 12),
+            
+            // Custom tag input
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _customTagController,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontFamily: 'Courier',
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: '+ CUSTOM TAG',
+                      hintStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 11,
+                        fontFamily: 'Courier',
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white, width: 1.5),
+                      ),
+                      isDense: true,
+                    ),
+                    onSubmitted: (_) => _addCustomTag(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.add, color: Colors.white, size: 20),
+                  onPressed: _addCustomTag,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                ),
+              ],
+            ),
+            
+            // Selected tags display
+            if (_selectedTags.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: _selectedTags.map((tag) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          tag,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: () => _toggleTag(tag),
+                          child: const Icon(Icons.close, size: 14, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          child: Text(
+            l10n.cancel.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontFamily: 'Courier',
+              letterSpacing: 1.0,
+            ),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        TextButton(
+          child: Text(
+            l10n.save.toUpperCase(),
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              fontFamily: 'Courier',
+              letterSpacing: 1.5,
+            ),
+          ),
+          onPressed: () {
+            final name = _nameController.text.trim();
+            if (name.isNotEmpty) {
+              Navigator.pop(context, {
+                'name': name,
+                'tags': _selectedTags.toList(),
+              });
+            }
+          },
+        ),
+      ],
     );
   }
 }
