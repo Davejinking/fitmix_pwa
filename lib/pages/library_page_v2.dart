@@ -36,6 +36,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   final List<String> _equipmentFilterKeys = ['all', 'bodyweight', 'machine', 'barbell', 'dumbbell', 'cable', 'band'];
   String _selectedEquipmentKey = 'all';
   
+  // 🔥 루틴 필터 키 추가
+  final List<String> _routineFilterKeys = ['all', 'push', 'pull', 'legs', 'upper', 'lower', 'fullBody'];
+  String _selectedRoutineFilterKey = 'all';
+  
   List<ExerciseLibraryItem> _allExercises = [];
   List<ExerciseLibraryItem> _filteredExercises = [];
   bool _isLoading = false;
@@ -44,6 +48,13 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   final Set<String> _bookmarkedIds = {};
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  
+  // 🔥 루틴 검색 컨트롤러 추가
+  String _routineSearchQuery = '';
+  final TextEditingController _routineSearchController = TextEditingController();
+  
+  // 🔥 루틴 목록 새로고침을 위한 키
+  int _routineListKey = 0;
   
   @override
   void initState() {
@@ -57,6 +68,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _routineSearchController.dispose(); // 🔥 루틴 검색 컨트롤러 dispose
     super.dispose();
   }
 
@@ -183,9 +195,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     
     return Column(
       children: [
-        if (!isRoutinesTab) _buildSearchBar(l10n),
+        // 🔥 검색바: 루틴 탭과 운동 탭 모두 표시 (내용만 다름)
+        isRoutinesTab ? _buildRoutineSearchBar(l10n) : _buildSearchBar(l10n),
         _buildBodyPartTabs(l10n),
-        if (!isRoutinesTab) _buildEquipmentFilter(l10n),
+        // 🔥 필터: 루틴 탭과 운동 탭 모두 표시 (내용만 다름)
+        isRoutinesTab ? _buildRoutineFilter(l10n) : _buildEquipmentFilter(l10n),
         Expanded(child: isRoutinesTab ? _buildRoutinesList(l10n) : _buildExerciseList(l10n)),
       ],
     );
@@ -276,6 +290,117 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
         },
       ),
     );
+  }
+
+  // 🔥 루틴 검색바 (Tactical Style)
+  Widget _buildRoutineSearchBar(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: TextField(
+        controller: _routineSearchController,
+        decoration: InputDecoration(
+          hintText: "ルーティン検索", // TODO: Add i18n
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 13, fontFamily: 'Courier'),
+          prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 20),
+          suffixIcon: _routineSearchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
+                  onPressed: () {
+                    _routineSearchController.clear();
+                    setState(() {
+                      _routineSearchQuery = '';
+                      _routineListKey++;
+                    });
+                  },
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: const BorderSide(color: Colors.white24, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: const BorderSide(color: Colors.white, width: 1.5),
+          ),
+          filled: true,
+          fillColor: Colors.black,
+        ),
+        style: const TextStyle(fontSize: 13, color: Colors.white, fontFamily: 'Courier'),
+        onChanged: (query) {
+          setState(() {
+            _routineSearchQuery = query;
+            _routineListKey++;
+          });
+        },
+      ),
+    );
+  }
+
+  // 🔥 루틴 필터 (Tactical Style)
+  Widget _buildRoutineFilter(AppLocalizations l10n) {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      color: IronTheme.background,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _routineFilterKeys.length,
+        itemBuilder: (context, index) {
+          final key = _routineFilterKeys[index];
+          final isSelected = key == _selectedRoutineFilterKey;
+          
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilterChip(
+              label: Text(
+                _getRoutineFilterLabel(l10n, key),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Courier',
+                  letterSpacing: 0.5,
+                  color: isSelected ? Colors.white : Colors.grey,
+                ),
+              ),
+              selected: isSelected,
+              onSelected: (_) {
+                setState(() {
+                  _selectedRoutineFilterKey = key;
+                  _routineListKey++;
+                });
+              },
+              backgroundColor: Colors.transparent,
+              selectedColor: Colors.transparent,
+              showCheckmark: false,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+                side: BorderSide(
+                  color: isSelected ? Colors.white : Colors.white24,
+                  width: isSelected ? 1.5 : 1.0,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // 🔥 루틴 필터 라벨
+  String _getRoutineFilterLabel(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'all': return l10n.all;
+      case 'push': return 'PUSH';
+      case 'pull': return 'PULL';
+      case 'legs': return l10n.legs.toUpperCase();
+      case 'upper': return 'UPPER';
+      case 'lower': return 'LOWER';
+      case 'fullBody': return l10n.fullBody.toUpperCase();
+      default: return key.toUpperCase();
+    }
   }
 
   Widget _buildExerciseList(AppLocalizations l10n) {
@@ -374,12 +499,27 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     return ValueListenableBuilder<Box<Routine>>(
       valueListenable: routineRepo.listenable(),
       builder: (context, box, child) {
-        final routines = box.values.toList()
+        var routines = box.values.toList()
           ..sort((a, b) {
             final aTime = a.lastUsedAt ?? a.createdAt;
             final bTime = b.lastUsedAt ?? b.createdAt;
             return bTime.compareTo(aTime);
           });
+
+        // 🔥 검색 필터 적용
+        if (_routineSearchQuery.isNotEmpty) {
+          routines = routines.where((routine) {
+            return routine.name.toLowerCase().contains(_routineSearchQuery.toLowerCase()) ||
+                   routine.exercises.any((ex) => ex.name.toLowerCase().contains(_routineSearchQuery.toLowerCase()));
+          }).toList();
+        }
+
+        // 🔥 카테고리 필터 적용 (TODO: 루틴에 카테고리 필드 추가 필요)
+        // if (_selectedRoutineFilterKey != 'all') {
+        //   routines = routines.where((routine) {
+        //     return routine.category?.toLowerCase() == _selectedRoutineFilterKey.toLowerCase();
+        //   }).toList();
+        // }
 
         return Column(
           children: [
