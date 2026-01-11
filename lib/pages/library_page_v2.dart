@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../core/service_locator.dart';
-import '../services/exercise_seeding_service.dart';
-import '../models/exercise_library.dart';
 import '../models/routine.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
 import '../l10n/app_localizations.dart';
-import '../widgets/modals/exercise_detail_modal.dart';
+import '../widgets/tactical_exercise_list.dart';
 import '../data/session_repo.dart';
-import '../data/exercise_library_repo.dart';
 import '../data/routine_repo.dart';
 import '../data/user_repo.dart';
 import '../core/error_handler.dart';
@@ -26,32 +23,13 @@ class LibraryPageV2 extends StatefulWidget {
 }
 
 class _LibraryPageV2State extends State<LibraryPageV2> {
-  final ExerciseSeedingService _seedingService = ExerciseSeedingService();
-  
   // 🔥 TACTICAL SWITCH: Routine Mode vs Exercise Mode
   bool _isRoutineMode = true;
-  
-  // Exercise Tab State
-  String _selectedBodyPart = 'all'; // 🔥 Default: ALL
-  final List<String> _bodyPartKeys = [
-    'all', 'favorites', 'chest', 'back', 'legs', 'shoulders', 'arms', 'abs', 'cardio', 'stretching', 'fullBody',
-  ];
-  
-  String? _selectedEquipmentKey; // 🔥 Nullable: null = ALL
   
   // Routine Tab State
   final List<String> _systemRoutineFilterKeys = ['all', 'push', 'pull', 'legs', 'upper', 'lower', 'fullBody'];
   String _selectedRoutineFilterKey = 'all';
   List<String> _allRoutineFilterKeys = [];
-  
-  List<ExerciseLibraryItem> _allExercises = [];
-  List<ExerciseLibraryItem> _filteredExercises = [];
-  bool _isLoading = false;
-  String? _error;
-  
-  final Set<String> _bookmarkedIds = {};
-  String _searchQuery = '';
-  final TextEditingController _searchController = TextEditingController();
   
   String _routineSearchQuery = '';
   final TextEditingController _routineSearchController = TextEditingController();
@@ -61,130 +39,12 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   @override
   void initState() {
     super.initState();
-    _loadAllExercises();
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
     _routineSearchController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadAllExercises() async {
-    setState(() { _isLoading = true; _error = null; });
-
-    try {
-      await _seedingService.initializeAndSeed();
-      final exercises = await _seedingService.getAllExercises();
-      
-      if (mounted) {
-        setState(() { _allExercises = exercises; _isLoading = false; });
-        _applyFilter();
-      }
-    } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _isLoading = false; });
-    }
-  }
-
-  // 🔥 SMART AMMO CHECK: Get exercises filtered by body part only (before equipment filter)
-  List<ExerciseLibraryItem> get _bodyPartFilteredExercises {
-    if (_selectedBodyPart == 'all') {
-      return List.from(_allExercises);
-    } else if (_selectedBodyPart == 'favorites') {
-      return _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
-    } else {
-      return _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
-    }
-  }
-  
-  // 🔥 DYNAMIC EQUIPMENT TAGS: Extract available equipment from body part filtered exercises
-  List<String> get _availableEquipmentKeys {
-    return _bodyPartFilteredExercises
-        .map((ex) => ex.equipmentType.toLowerCase())
-        .toSet() // Remove duplicates
-        .toList()
-      ..sort(); // Sort alphabetically
-  }
-
-  void _applyFilter() {
-    setState(() {
-      // 🔥 Step 1: Body Part Filter
-      if (_selectedBodyPart == 'all') {
-        // Show ALL exercises
-        _filteredExercises = List.from(_allExercises);
-      } else if (_selectedBodyPart == 'favorites') {
-        // Show only bookmarked exercises
-        _filteredExercises = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
-      } else {
-        // Show exercises matching body part
-        _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
-      }
-      
-      // 🔥 Step 2: Equipment Filter (null = ALL)
-      if (_selectedEquipmentKey != null) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey!.toLowerCase()).toList();
-      }
-      
-      // 🔥 Step 3: Search Query Filter
-      if (_searchQuery.isNotEmpty) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
-      }
-    });
-  }
-  
-
-  
-  String _getEquipmentLabel(AppLocalizations l10n, String key) {
-    switch (key) {
-      case 'bodyweight': return l10n.bodyweight;
-      case 'machine': return l10n.machine;
-      case 'barbell': return l10n.barbell;
-      case 'dumbbell': return l10n.dumbbell;
-      case 'cable': return l10n.cable;
-      case 'band': return l10n.band;
-      default: return key;
-    }
-  }
-  
-  String _getLocalizedBodyPart(String targetPart) {
-    final l10n = AppLocalizations.of(context);
-    switch (targetPart.toLowerCase()) {
-      case 'chest': return l10n.chest;
-      case 'back': return l10n.back;
-      case 'legs': return l10n.legs;
-      case 'shoulders': return l10n.shoulders;
-      case 'arms': return l10n.arms;
-      case 'abs': return l10n.abs;
-      case 'cardio': return l10n.cardio;
-      case 'stretching': return l10n.stretching;
-      case 'fullbody': return l10n.fullBody;
-      default: return targetPart;
-    }
-  }
-  
-  String _getLocalizedEquipment(String equipmentType) {
-    final l10n = AppLocalizations.of(context);
-    switch (equipmentType.toLowerCase()) {
-      case 'barbell': return l10n.barbell;
-      case 'dumbbell': return l10n.dumbbell;
-      case 'machine': return l10n.machine;
-      case 'cable': return l10n.cable;
-      case 'bodyweight': return l10n.bodyweight;
-      case 'band': return l10n.band;
-      default: return equipmentType;
-    }
-  }
-
-  void _toggleBookmark(String id) {
-    setState(() {
-      if (_bookmarkedIds.contains(id)) {
-        _bookmarkedIds.remove(id);
-      } else {
-        _bookmarkedIds.add(id);
-      }
-      if (_selectedBodyPart == 'favorites') _applyFilter();
-    });
   }
 
   @override
@@ -202,12 +62,13 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           _buildRoutineFilter(l10n),
           Expanded(child: _buildRoutinesList(l10n)),
         ] else ...[
-          _buildSearchBar(l10n),
-          _buildBodyPartTabs(l10n),
-          // 🔥 CONDITIONAL: Show equipment filter ONLY when specific body part is selected
-          if (_selectedBodyPart != 'all' && _selectedBodyPart != 'favorites')
-            _buildEquipmentFilter(l10n),
-          Expanded(child: _buildExerciseList(l10n)),
+          // 🔥 REFACTORED: Use TacticalExerciseList component in View Mode
+          Expanded(
+            child: TacticalExerciseList(
+              isSelectionMode: false,
+              showBookmarks: true,
+            ),
+          ),
         ],
       ],
     );
@@ -274,198 +135,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSearchBar(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), // 🔥 Reduced vertical padding
-      child: TextField(
-        controller: _searchController,
-        cursorColor: Colors.white,
-        decoration: InputDecoration(
-          hintText: l10n.searchExercise.toUpperCase(),
-          hintStyle: const TextStyle(
-            color: Colors.grey,
-            fontSize: 14.0, // 🔥 IRON STANDARD
-            fontFamily: 'Courier',
-            letterSpacing: 1.0,
-          ),
-          prefixIcon: const Icon(
-            Icons.search,
-            color: Colors.grey,
-            size: 20.0, // 🔥 IRON STANDARD
-          ),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(
-                    Icons.clear,
-                    color: Colors.grey,
-                    size: 20.0, // 🔥 IRON STANDARD
-                  ),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {
-                      _searchQuery = '';
-                      _applyFilter();
-                    });
-                  },
-                )
-              : null,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0),
-            borderSide: const BorderSide(color: Colors.white24, width: 1.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0),
-            borderSide: const BorderSide(color: Colors.white, width: 1.5),
-          ),
-          filled: true,
-          fillColor: Colors.black,
-          isDense: true,
-        ),
-        style: const TextStyle(
-          fontSize: 14.0, // 🔥 IRON STANDARD
-          color: Colors.white,
-          fontFamily: 'Courier',
-        ),
-        onChanged: (query) {
-          setState(() {
-            _searchQuery = query;
-            _applyFilter();
-          });
-        },
-      ),
-    );
-  }
-
-  Widget _buildBodyPartTabs(AppLocalizations l10n) {
-    return Container(
-      height: 48, // 🔥 Reduced height
-      padding: const EdgeInsets.symmetric(vertical: 6), // 🔥 Tighter padding
-      color: IronTheme.background,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _bodyPartKeys.length,
-        itemBuilder: (context, index) {
-          final key = _bodyPartKeys[index];
-          final isSelected = key == _selectedBodyPart;
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(
-                _getBodyPartLabel(l10n, key),
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Courier',
-                  letterSpacing: 0.5,
-                  color: isSelected ? Colors.white : Colors.grey,
-                ),
-              ),
-              selected: isSelected,
-              onSelected: (_) {
-                setState(() {
-                  _selectedBodyPart = key;
-                  // 🔥 Reset equipment filter when changing body part
-                  _selectedEquipmentKey = null;
-                  _applyFilter();
-                });
-              },
-              backgroundColor: Colors.transparent,
-              selectedColor: Colors.transparent,
-              showCheckmark: false,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-                side: BorderSide(
-                  color: isSelected ? Colors.white : Colors.white24,
-                  width: isSelected ? 1.5 : 1.0,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-  
-  String _getBodyPartLabel(AppLocalizations l10n, String key) {
-    switch (key) {
-      case 'all': return l10n.all; // 🔥 ALL (全て)
-      case 'favorites': return l10n.favorites; // お気に入り
-      case 'chest': return l10n.chest;
-      case 'back': return l10n.back;
-      case 'legs': return l10n.legs;
-      case 'shoulders': return l10n.shoulders;
-      case 'arms': return l10n.arms;
-      case 'abs': return l10n.abs;
-      case 'cardio': return l10n.cardio;
-      case 'stretching': return l10n.stretching;
-      case 'fullBody': return l10n.fullBody;
-      default: return key;
-    }
-  }
-
-  Widget _buildEquipmentFilter(AppLocalizations l10n) {
-    // 🔥 SMART AMMO CHECK: Only show equipment tags that exist for current body part
-    final availableKeys = _availableEquipmentKeys;
-    
-    // 🔥 If no equipment available (empty list), don't render anything
-    if (availableKeys.isEmpty) return const SizedBox.shrink();
-    
-    return Container(
-      height: 44, // 🔥 Reduced height
-      padding: const EdgeInsets.symmetric(vertical: 6), // 🔥 Tighter padding
-      color: IronTheme.background,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: availableKeys.length,
-        itemBuilder: (context, index) {
-          final key = availableKeys[index];
-          final isSelected = key == _selectedEquipmentKey;
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 6), // 🔥 Tighter spacing
-            child: FilterChip(
-              label: Text(
-                _getEquipmentLabel(l10n, key),
-                style: TextStyle(
-                  fontSize: 10, // 🔥 Smaller font (secondary filter)
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Courier',
-                  letterSpacing: 0.5,
-                  color: isSelected ? Colors.white : Colors.grey[700], // 🔥 Darker when unselected
-                ),
-              ),
-              selected: isSelected,
-              onSelected: (_) {
-                setState(() {
-                  // 🔥 Toggle Logic: Click again to deselect (return to ALL)
-                  _selectedEquipmentKey = isSelected ? null : key;
-                  _applyFilter();
-                });
-              },
-              backgroundColor: Colors.transparent,
-              selectedColor: Colors.transparent,
-              showCheckmark: false,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), // 🔥 Compact padding
-              visualDensity: VisualDensity.compact, // 🔥 Thinner chips
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-                side: BorderSide(
-                  color: isSelected ? Colors.white : Colors.white12, // 🔥 Dimmer border
-                  width: isSelected ? 1.5 : 1.0,
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -598,95 +267,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
       case 'fullBody': return l10n.fullBody.toUpperCase();
       default: return key.toUpperCase();
     }
-  }
-
-  Widget _buildExerciseList(AppLocalizations l10n) {
-    if (_isLoading) return const Center(child: CircularProgressIndicator(color: IronTheme.primary));
-    if (_error != null) return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.error_outline, size: 48, color: Colors.red), const SizedBox(height: 16), Text(l10n.errorOccurred(_error!), style: const TextStyle(color: IronTheme.textHigh)), const SizedBox(height: 16), ElevatedButton(onPressed: _loadAllExercises, style: ElevatedButton.styleFrom(backgroundColor: IronTheme.primary, foregroundColor: IronTheme.background), child: Text(l10n.retry))]));
-    if (_filteredExercises.isEmpty) return Center(child: Text(l10n.noExercises, style: TextStyle(color: IronTheme.textLow, fontSize: 16)));
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: _filteredExercises.length,
-      itemBuilder: (context, index) {
-        final exercise = _filteredExercises[index];
-        final isBookmarked = _bookmarkedIds.contains(exercise.id);
-        
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          decoration: BoxDecoration(
-            color: IronTheme.surface, 
-            borderRadius: BorderRadius.circular(10)
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: [
-                // 컴팩트한 아이콘
-                Container(
-                  width: 32, height: 32,
-                  decoration: BoxDecoration(
-                    color: IronTheme.primary.withValues(alpha: 0.15), 
-                    borderRadius: BorderRadius.circular(6)
-                  ),
-                  child: const Icon(Icons.fitness_center, color: IronTheme.primary, size: 18),
-                ),
-                const SizedBox(width: 12),
-                // 운동 정보
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        exercise.getLocalizedName(context), 
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: IronTheme.textHigh)
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}', 
-                        style: TextStyle(fontSize: 12, color: IronTheme.textMedium)
-                      ),
-                    ],
-                  ),
-                ),
-                // 운동 상세 정보 버튼 (i) - 캘린더와 동일한 스타일
-                GestureDetector(
-                  onTap: () {
-                    showExerciseDetailModal(
-                      context,
-                      exerciseName: exercise.nameEn,
-                      sessionRepo: getIt<SessionRepo>(),
-                      exerciseRepo: getIt<ExerciseLibraryRepo>(),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: IronTheme.textMedium,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // 북마크 버튼
-                GestureDetector(
-                  onTap: () => _toggleBookmark(exercise.id),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Icon(
-                      isBookmarked ? Icons.bookmark : Icons.bookmark_border, 
-                      color: isBookmarked ? IronTheme.primary : IronTheme.textLow, 
-                      size: 20
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   // Routines List Widget
