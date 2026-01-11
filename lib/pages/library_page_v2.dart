@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../core/service_locator.dart';
 import '../services/exercise_seeding_service.dart';
 import '../models/exercise_library.dart';
@@ -43,9 +44,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   
-  // 🔥 루틴 목록 새로고침을 위한 키
-  int _routineListKey = 0;
-
   @override
   void initState() {
     super.initState();
@@ -382,25 +380,16 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   Widget _buildRoutinesList(AppLocalizations l10n) {
     final routineRepo = getIt<RoutineRepo>();
     
-    return FutureBuilder<List<Routine>>(
-      key: ValueKey('routines_$_routineListKey'), // 🔥 키를 사용해서 강제 새로고침
-      future: routineRepo.listAll(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF2196F3)));
-        }
-        
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              l10n.errorOccurred(snapshot.error.toString()),
-              style: const TextStyle(color: Colors.white),
-            ),
-          );
-        }
-        
-        final routines = snapshot.data ?? [];
-        
+    return ValueListenableBuilder<Box<Routine>>(
+      valueListenable: routineRepo.listenable(),
+      builder: (context, box, child) {
+        final routines = box.values.toList()
+          ..sort((a, b) {
+            final aTime = a.lastUsedAt ?? a.createdAt;
+            final bTime = b.lastUsedAt ?? b.createdAt;
+            return bTime.compareTo(aTime);
+          });
+
         return Column(
           children: [
             // "새 루틴 만들기" 버튼
@@ -721,9 +710,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
         await routineRepo.delete(routine.id);
         
         if (mounted) {
-          setState(() {
-            _routineListKey++; // 🔥 키를 증가시켜서 FutureBuilder 강제 새로고침
-          });
           ErrorHandler.showSuccessSnackBar(context, l10n.routineDeleted);
         }
       } catch (e) {
@@ -859,9 +845,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
         }
         
         if (mounted) {
-          setState(() {
-            _routineListKey++; // 🔥 키를 증가시켜서 FutureBuilder 강제 새로고침
-          });
           ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context).routineSaved);
         }
       } catch (e) {
@@ -959,9 +942,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
         );
         await routineRepo.save(updatedRoutine);
         if (mounted) {
-          setState(() {
-            _routineListKey++; // 🔥 키를 증가시켜서 FutureBuilder 강제 새로고침
-          });
           ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context).routineSaved);
         }
       } catch (e) {

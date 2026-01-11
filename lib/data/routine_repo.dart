@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/routine.dart';
 
@@ -23,6 +24,9 @@ abstract class RoutineRepo {
   
   /// 모든 루틴 삭제
   Future<void> clearAll();
+
+  /// 루틴 박스 변경 구독
+  ValueListenable<Box<Routine>> listenable();
 }
 
 class HiveRoutineRepo implements RoutineRepo {
@@ -91,4 +95,7 @@ class HiveRoutineRepo implements RoutineRepo {
 
   @override
   Future<void> clearAll() async => _box.clear();
+
+  @override
+  ValueListenable<Box<Routine>> listenable() => _box.listenable();
 }
