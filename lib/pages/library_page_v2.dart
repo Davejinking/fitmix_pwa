@@ -14,6 +14,7 @@ import '../data/routine_repo.dart';
 import '../data/user_repo.dart';
 import '../core/error_handler.dart';
 import '../core/subscription_limits.dart';
+import '../core/iron_theme.dart';
 import 'shell_page.dart';
 import 'exercise_selection_page_v2.dart';
 
@@ -197,18 +198,18 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
         controller: _searchController,
         decoration: InputDecoration(
           hintText: l10n.searchExercise,
-          hintStyle: const TextStyle(color: Color(0xFF8E8E93), fontSize: 15),
-          prefixIcon: const Icon(Icons.search, color: Color(0xFF8E8E93), size: 22),
+          hintStyle: const TextStyle(color: IronTheme.textMedium, fontSize: 15),
+          prefixIcon: const Icon(Icons.search, color: IronTheme.textMedium, size: 22),
           suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(icon: const Icon(Icons.clear, color: Color(0xFF8E8E93)), onPressed: () { _searchController.clear(); setState(() { _searchQuery = ''; _applyFilter(); }); })
+              ? IconButton(icon: const Icon(Icons.clear, color: IronTheme.textMedium), onPressed: () { _searchController.clear(); setState(() { _searchQuery = ''; _applyFilter(); }); })
               : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey[800]!, width: 1)),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2)),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: IronTheme.textLow, width: 1)),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: IronTheme.primary, width: 2)),
           filled: true,
-          fillColor: const Color(0xFF2C2C2C),
+          fillColor: IronTheme.surfaceHighlight,
         ),
-        style: const TextStyle(fontSize: 15, color: Colors.white),
+        style: const TextStyle(fontSize: 15, color: IronTheme.textHigh),
         onChanged: (query) { setState(() { _searchQuery = query; _applyFilter(); }); },
       ),
     );
@@ -216,13 +217,13 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
 
   Widget _buildBodyPartTabs(AppLocalizations l10n) {
     return Container(
-      color: const Color(0xFF121212),
+      color: IronTheme.background,
       child: TabBar(
         controller: _tabController,
         isScrollable: true,
-        labelColor: const Color(0xFF2196F3),
-        unselectedLabelColor: const Color(0xFF8E8E93),
-        indicatorColor: const Color(0xFF2196F3),
+        labelColor: IronTheme.primary,
+        unselectedLabelColor: IronTheme.textMedium,
+        indicatorColor: IronTheme.primary,
         indicatorWeight: 3,
         labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         tabAlignment: TabAlignment.start,
@@ -235,7 +236,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     return Container(
       height: 56,
       padding: const EdgeInsets.symmetric(vertical: 10),
-      color: const Color(0xFF121212),
+      color: IronTheme.background,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -247,14 +248,14 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
-              label: Text(_getEquipmentLabel(l10n, key), style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: isSelected ? Colors.white : const Color(0xFF8E8E93))),
+              label: Text(_getEquipmentLabel(l10n, key), style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: isSelected ? IronTheme.textHigh : IronTheme.textMedium)),
               selected: isSelected,
               onSelected: (_) { setState(() { _selectedEquipmentKey = key; _applyFilter(); }); },
               backgroundColor: Colors.transparent,
-              selectedColor: const Color(0xFF2196F3),
-              checkmarkColor: Colors.white,
+              selectedColor: IronTheme.primary,
+              checkmarkColor: IronTheme.background,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: isSelected ? const Color(0xFF2196F3) : const Color(0xFF8E8E93), width: 1.5)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: isSelected ? IronTheme.primary : IronTheme.textMedium, width: 1.5)),
             ),
           );
         },
@@ -263,9 +264,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   }
 
   Widget _buildExerciseList(AppLocalizations l10n) {
-    if (_isLoading) return const Center(child: CircularProgressIndicator(color: Color(0xFF2196F3)));
-    if (_error != null) return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.error_outline, size: 48, color: Colors.red), const SizedBox(height: 16), Text(l10n.errorOccurred(_error!), style: const TextStyle(color: Colors.white)), const SizedBox(height: 16), ElevatedButton(onPressed: _loadAllExercises, style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2196F3)), child: Text(l10n.retry))]));
-    if (_filteredExercises.isEmpty) return Center(child: Text(l10n.noExercises, style: TextStyle(color: Colors.grey[600], fontSize: 16)));
+    if (_isLoading) return const Center(child: CircularProgressIndicator(color: IronTheme.primary));
+    if (_error != null) return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.error_outline, size: 48, color: Colors.red), const SizedBox(height: 16), Text(l10n.errorOccurred(_error!), style: const TextStyle(color: IronTheme.textHigh)), const SizedBox(height: 16), ElevatedButton(onPressed: _loadAllExercises, style: ElevatedButton.styleFrom(backgroundColor: IronTheme.primary, foregroundColor: IronTheme.background), child: Text(l10n.retry))]));
+    if (_filteredExercises.isEmpty) return Center(child: Text(l10n.noExercises, style: TextStyle(color: IronTheme.textLow, fontSize: 16)));
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -277,7 +278,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E), 
+            color: IronTheme.surface, 
             borderRadius: BorderRadius.circular(10)
           ),
           child: Padding(
@@ -288,10 +289,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                 Container(
                   width: 32, height: 32,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2196F3).withValues(alpha: 0.15), 
+                    color: IronTheme.primary.withValues(alpha: 0.15), 
                     borderRadius: BorderRadius.circular(6)
                   ),
-                  child: const Icon(Icons.fitness_center, color: Color(0xFF2196F3), size: 18),
+                  child: const Icon(Icons.fitness_center, color: IronTheme.primary, size: 18),
                 ),
                 const SizedBox(width: 12),
                 // 운동 정보
@@ -301,12 +302,12 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     children: [
                       Text(
                         exercise.getLocalizedName(context), 
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: IronTheme.textHigh)
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}', 
-                        style: TextStyle(fontSize: 12, color: Colors.grey[500])
+                        style: TextStyle(fontSize: 12, color: IronTheme.textMedium)
                       ),
                     ],
                   ),
@@ -326,7 +327,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     child: Icon(
                       Icons.info_outline,
                       size: 16,
-                      color: Colors.grey[500],
+                      color: IronTheme.textMedium,
                     ),
                   ),
                 ),
@@ -338,7 +339,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     padding: const EdgeInsets.all(4),
                     child: Icon(
                       isBookmarked ? Icons.bookmark : Icons.bookmark_border, 
-                      color: isBookmarked ? const Color(0xFF2196F3) : Colors.grey[600], 
+                      color: isBookmarked ? IronTheme.primary : IronTheme.textLow, 
                       size: 20
                     ),
                   ),
@@ -384,8 +385,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2196F3),
-                    foregroundColor: Colors.white,
+                    backgroundColor: IronTheme.primary,
+                    foregroundColor: IronTheme.background,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -402,16 +403,16 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.bookmark_border, size: 64, color: Colors.grey[600]),
+                      Icon(Icons.bookmark_border, size: 64, color: IronTheme.textLow),
                       const SizedBox(height: 16),
                       Text(
                         l10n.noRoutines,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                        style: TextStyle(color: IronTheme.textLow, fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         l10n.createRoutineHint,
-                        style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                        style: TextStyle(color: IronTheme.textMedium, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -429,7 +430,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
+                        color: IronTheme.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
@@ -448,7 +449,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                                         style: const TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                          color: IronTheme.textHigh,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -456,7 +457,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                                         l10n.exerciseCount(routine.exercises.length),
                                         style: TextStyle(
                                           fontSize: 13,
-                                          color: Colors.grey[500],
+                                          color: IronTheme.textMedium,
                                         ),
                                       ),
                                     ],
@@ -464,12 +465,12 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                                 ),
                                 // Edit button
                                 IconButton(
-                                  icon: Icon(Icons.edit_outlined, color: Colors.grey[400]),
+                                  icon: Icon(Icons.edit_outlined, color: IronTheme.textMedium),
                                   onPressed: () => _editRoutine(routine),
                                 ),
                                 // Delete button
                                 IconButton(
-                                  icon: Icon(Icons.delete_outline, color: Colors.grey[600]),
+                                  icon: Icon(Icons.delete_outline, color: IronTheme.textLow),
                                   onPressed: () => _deleteRoutine(routine, l10n),
                                 ),
                               ],
@@ -480,7 +481,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withValues(alpha: 0.3),
+                                  color: IronTheme.background.withValues(alpha: 0.3),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Builder(
@@ -499,7 +500,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                                               Icon(
                                                 Icons.fitness_center,
                                                 size: 14,
-                                                color: Colors.grey[600],
+                                                color: IronTheme.textLow,
                                               ),
                                               const SizedBox(width: 8),
                                               Expanded(
@@ -507,7 +508,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                                                   exercise.name,
                                                   style: TextStyle(
                                                     fontSize: 13,
-                                                    color: Colors.grey[300],
+                                                    color: IronTheme.textMedium,
                                                   ),
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,
@@ -523,7 +524,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                                               '+${routine.exercises.length - 3} more',
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: Colors.grey[600],
+                                                color: IronTheme.textLow,
                                                 fontStyle: FontStyle.italic,
                                               ),
                                             ),
@@ -541,8 +542,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                               child: ElevatedButton(
                                 onPressed: () => _loadRoutine(routine, l10n),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF2196F3),
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: IronTheme.primary,
+                                  foregroundColor: IronTheme.background,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -576,14 +577,14 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
+        backgroundColor: IronTheme.surface,
         title: Text(
           l10n.loadRoutine,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: IronTheme.textHigh),
         ),
         content: Text(
           l10n.loadThisRoutine,
-          style: const TextStyle(color: Colors.white70),
+          style: const TextStyle(color: IronTheme.textMedium),
         ),
         actions: [
           TextButton(
@@ -595,7 +596,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
               l10n.loadRoutine.toUpperCase(),
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2196F3),
+                color: IronTheme.primary,
               ),
             ),
             onPressed: () => Navigator.pop(context, true),
@@ -651,14 +652,14 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
+        backgroundColor: IronTheme.surface,
         title: Text(
           l10n.deleteRoutine,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: IronTheme.textHigh),
         ),
         content: Text(
           '${l10n.deleteRoutine} "${routine.name}"?',
-          style: const TextStyle(color: Colors.white70),
+          style: const TextStyle(color: IronTheme.textMedium),
         ),
         actions: [
           TextButton(
@@ -733,11 +734,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       builder: (context) {
         final l10n = AppLocalizations.of(context);
         return AlertDialog(
-          backgroundColor: Colors.grey[900],
+          backgroundColor: IronTheme.surface,
           title: Text(
             l10n.createRoutine.toUpperCase(),
             style: const TextStyle(
-              color: Colors.white,
+              color: IronTheme.textHigh,
               fontSize: 20,
               fontWeight: FontWeight.bold,
               fontFamily: 'Courier',
@@ -750,19 +751,19 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
             children: [
               Text(
                 l10n.exerciseCount(selected.length),
-                style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                style: TextStyle(color: IronTheme.textMedium, fontSize: 13),
               ),
               const SizedBox(height: 16),
               TextField(
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: IronTheme.textHigh),
                 decoration: InputDecoration(
                   hintText: l10n.enterRoutineName,
-                  hintStyle: const TextStyle(color: Colors.grey),
+                  hintStyle: const TextStyle(color: IronTheme.textLow),
                   enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color: IronTheme.textHigh),
                   ),
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2),
+                    borderSide: BorderSide(color: IronTheme.textHigh, width: 2),
                   ),
                 ),
                 onChanged: (val) => routineName = val,
@@ -780,7 +781,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                 l10n.save.toUpperCase(),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2196F3),
+                  color: IronTheme.primary,
                 ),
               ),
               onPressed: () => Navigator.pop(context, true),
@@ -850,11 +851,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       builder: (context) {
         final l10n = AppLocalizations.of(context);
         return AlertDialog(
-          backgroundColor: Colors.grey[900],
+          backgroundColor: IronTheme.surface,
           title: Text(
             l10n.editRoutine.toUpperCase(),
             style: const TextStyle(
-              color: Colors.white,
+              color: IronTheme.textHigh,
               fontSize: 20,
               fontWeight: FontWeight.bold,
               fontFamily: 'Courier',
@@ -867,20 +868,20 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
             children: [
               Text(
                 l10n.exerciseCount(selected.length),
-                style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                style: TextStyle(color: IronTheme.textMedium, fontSize: 13),
               ),
               const SizedBox(height: 16),
               TextField(
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: IronTheme.textHigh),
                 controller: TextEditingController(text: routineName),
                 decoration: InputDecoration(
                   hintText: l10n.enterRoutineName,
-                  hintStyle: const TextStyle(color: Colors.grey),
+                  hintStyle: const TextStyle(color: IronTheme.textLow),
                   enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color: IronTheme.textHigh),
                   ),
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2),
+                    borderSide: BorderSide(color: IronTheme.textHigh, width: 2),
                   ),
                 ),
                 onChanged: (val) => routineName = val,
@@ -898,7 +899,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                 l10n.save.toUpperCase(),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2196F3),
+                  color: IronTheme.primary,
                 ),
               ),
               onPressed: () => Navigator.pop(context, true),
@@ -934,11 +935,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       builder: (ctx) {
         final l10n = AppLocalizations.of(context);
         return AlertDialog(
-          backgroundColor: Colors.grey[900],
+          backgroundColor: IronTheme.surface,
           title: Text(
             l10n.routineLimitReached.toUpperCase(),
             style: const TextStyle(
-              color: Colors.white,
+              color: IronTheme.textHigh,
               fontSize: 20,
               fontWeight: FontWeight.bold,
               fontFamily: 'Courier',
@@ -948,7 +949,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           content: Text(
             l10n.routineLimitMessage(SubscriptionLimits.freeRoutineLimit),
             style: const TextStyle(
-              color: Colors.white70,
+              color: IronTheme.textMedium,
               fontSize: 14,
               height: 1.5,
             ),
@@ -957,14 +958,14 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
             TextButton(
               child: Text(
                 l10n.cancel.toUpperCase(),
-                style: TextStyle(color: Colors.grey[400]),
+                style: TextStyle(color: IronTheme.textMedium),
               ),
               onPressed: () => Navigator.pop(ctx),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+                backgroundColor: IronTheme.primary,
+                foregroundColor: IronTheme.background,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
               child: Text(
