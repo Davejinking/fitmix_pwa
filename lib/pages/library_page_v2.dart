@@ -182,36 +182,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     
     return Column(
       children: [
-        _buildHeader(l10n),
         if (!isRoutinesTab) _buildSearchBar(l10n),
         _buildBodyPartTabs(l10n),
         if (!isRoutinesTab) _buildEquipmentFilter(l10n),
         Expanded(child: isRoutinesTab ? _buildRoutinesList(l10n) : _buildExerciseList(l10n)),
       ],
-    );
-  }
-
-  Widget _buildHeader(AppLocalizations l10n) {
-    final canPop = Navigator.of(context).canPop();
-    
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-        color: const Color(0xFF121212),
-        child: Row(
-          children: [
-            if (canPop) IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
-              onPressed: () => Navigator.of(context).pop(),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-            ),
-            if (canPop) const SizedBox(width: 8),
-            Text(l10n.library, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)),
-          ],
-        ),
-      ),
     );
   }
 
