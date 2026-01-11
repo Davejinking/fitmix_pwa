@@ -248,14 +248,29 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
-              label: Text(_getEquipmentLabel(l10n, key), style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: isSelected ? IronTheme.textHigh : IronTheme.textMedium)),
+              label: Text(
+                _getEquipmentLabel(l10n, key),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Courier',
+                  letterSpacing: 0.5,
+                  color: isSelected ? Colors.white : Colors.grey,
+                ),
+              ),
               selected: isSelected,
               onSelected: (_) { setState(() { _selectedEquipmentKey = key; _applyFilter(); }); },
               backgroundColor: Colors.transparent,
-              selectedColor: IronTheme.primary,
-              checkmarkColor: IronTheme.background,
+              selectedColor: Colors.transparent, // 🔥 No flashbang!
+              showCheckmark: false, // 🔥 Remove checkmark
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: isSelected ? IronTheme.primary : IronTheme.textMedium, width: 1.5)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4), // Sharp corners
+                side: BorderSide(
+                  color: isSelected ? Colors.white : Colors.white24, // Subtle difference
+                  width: isSelected ? 1.5 : 1.0,
+                ),
+              ),
             ),
           );
         },
