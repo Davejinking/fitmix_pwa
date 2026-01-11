@@ -427,140 +427,158 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                   itemBuilder: (context, index) {
                     final routine = routines[index];
                     
+                    // 🎯 TACTICAL DATA CARD
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: IronTheme.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.black, // Pure black background
+                        border: Border.all(
+                          color: Colors.white24, // Subtle border
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(4.0), // Sharp corners
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // HEADER
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        routine.name,
+                                        routine.name.toUpperCase(),
                                         style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: IronTheme.textHigh,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 16,
+                                          fontFamily: 'Courier',
+                                          letterSpacing: 1.0,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        l10n.exerciseCount(routine.exercises.length),
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: IronTheme.textMedium,
+                                        '${routine.exercises.length} EXERCISES',
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: 'Courier',
+                                          letterSpacing: 1.0,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                // Edit button
-                                IconButton(
-                                  icon: Icon(Icons.edit_outlined, color: IronTheme.textMedium),
-                                  onPressed: () => _editRoutine(routine),
-                                ),
-                                // Delete button
-                                IconButton(
-                                  icon: Icon(Icons.delete_outline, color: IronTheme.textLow),
-                                  onPressed: () => _deleteRoutine(routine, l10n),
+                                // Edit/Delete Icons
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.grey),
+                                      onPressed: () => _editRoutine(routine),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
+                                      onPressed: () => _deleteRoutine(routine, l10n),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            // 🔥 운동 목록 표시
-                            if (routine.exercises.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: IronTheme.background.withValues(alpha: 0.3),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Builder(
-                                  builder: (context) {
-                                    print('🔍 [UI] Displaying routine "${routine.name}" with ${routine.exercises.length} exercises');
-                                    for (var i = 0; i < routine.exercises.length; i++) {
-                                      print('  [$i] ${routine.exercises[i].name}');
-                                    }
-                                    return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                          ),
+                          
+                          // DIVIDER
+                          if (routine.exercises.isNotEmpty)
+                            const Divider(color: Colors.white24, height: 1),
+                          
+                          // EXERCISE LIST PREVIEW
+                          if (routine.exercises.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ...routine.exercises.take(3).map((exercise) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: Row(
                                       children: [
-                                        ...routine.exercises.take(3).map((exercise) => Padding(
-                                          padding: const EdgeInsets.only(bottom: 6),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.fitness_center,
-                                                size: 14,
-                                                color: IronTheme.textLow,
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Expanded(
-                                                child: Text(
-                                                  exercise.name,
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: IronTheme.textMedium,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )),
-                                        if (routine.exercises.length > 3)
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 4),
-                                            child: Text(
-                                              '+${routine.exercises.length - 3} more',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: IronTheme.textLow,
-                                                fontStyle: FontStyle.italic,
-                                              ),
+                                        const Icon(
+                                          Icons.fitness_center,
+                                          size: 12,
+                                          color: Colors.grey,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            exercise.name,
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.white70,
+                                              fontFamily: 'Courier',
                                             ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
+                                        ),
                                       ],
-                                    );
-                                  },
-                                ),
+                                    ),
+                                  )),
+                                  if (routine.exercises.length > 3)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        '+${routine.exercises.length - 3} MORE',
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey,
+                                          fontFamily: 'Courier',
+                                          letterSpacing: 1.0,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
-                            ],
-                            const SizedBox(height: 12),
-                            // Load button
-                            SizedBox(
+                            ),
+                          
+                          // ACTION BUTTON (Outlined)
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
+                              height: 45,
+                              child: OutlinedButton(
                                 onPressed: () => _loadRoutine(routine, l10n),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: IronTheme.primary,
-                                  foregroundColor: IronTheme.background,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  side: const BorderSide(color: Colors.white, width: 1.5),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(4)),
                                   ),
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
                                 ),
                                 child: Text(
                                   l10n.loadRoutine.toUpperCase(),
                                   style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.0,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.5,
+                                    fontFamily: 'Courier',
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
