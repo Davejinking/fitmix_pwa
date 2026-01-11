@@ -368,28 +368,53 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
 
         return Column(
           children: [
-            // "새 루틴 만들기" 버튼
+            // "새 루틴 만들기" 버튼 (Tactical Invert)
             Container(
               padding: const EdgeInsets.all(16),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
+                height: 50,
+                child: OutlinedButton.icon(
                   onPressed: _createNewRoutine,
-                  icon: const Icon(Icons.add, size: 20),
+                  icon: const Icon(Icons.add, size: 18),
                   label: Text(
                     l10n.createRoutine.toUpperCase(),
                     style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                      fontFamily: 'Courier',
                     ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: IronTheme.primary,
-                    foregroundColor: IronTheme.background,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  style: ButtonStyle(
+                    // Border: Always White
+                    side: WidgetStateProperty.all(
+                      const BorderSide(color: Colors.white, width: 1.5),
+                    ),
+                    // Shape: Sharp corners
+                    shape: WidgetStateProperty.all(
+                      const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                    ),
+                    // BACKGROUND: Transparent → White when pressed
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(WidgetState.pressed)) {
+                        return Colors.white;
+                      }
+                      return Colors.transparent;
+                    }),
+                    // TEXT COLOR: White → Black when pressed
+                    foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(WidgetState.pressed)) {
+                        return Colors.black;
+                      }
+                      return Colors.white;
+                    }),
+                    // Remove default overlay
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    padding: WidgetStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
                 ),
@@ -550,7 +575,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                               ),
                             ),
                           
-                          // ACTION BUTTON (Outlined)
+                          // ACTION BUTTON (Tactical Invert on Press)
                           Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: SizedBox(
@@ -558,13 +583,36 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                               height: 45,
                               child: OutlinedButton(
                                 onPressed: () => _loadRoutine(routine, l10n),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  side: const BorderSide(color: Colors.white, width: 1.5),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                                style: ButtonStyle(
+                                  // 1. Border: Always White
+                                  side: WidgetStateProperty.all(
+                                    const BorderSide(color: Colors.white, width: 1.5),
                                   ),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  // 2. Shape: Sharp corners
+                                  shape: WidgetStateProperty.all(
+                                    const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                                    ),
+                                  ),
+                                  // 3. BACKGROUND: Transparent → White when pressed
+                                  backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                                    if (states.contains(WidgetState.pressed)) {
+                                      return Colors.white; // 🔥 Fill white when pressed
+                                    }
+                                    return Colors.transparent; // Transparent normally
+                                  }),
+                                  // 4. TEXT COLOR: White → Black when pressed (THE FIX!)
+                                  foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                                    if (states.contains(WidgetState.pressed)) {
+                                      return Colors.black; // 🔥 Turn BLACK when pressed
+                                    }
+                                    return Colors.white; // White normally
+                                  }),
+                                  // 5. Remove default overlay for crisp effect
+                                  overlayColor: WidgetStateProperty.all(Colors.transparent),
+                                  padding: WidgetStateProperty.all(
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                  ),
                                 ),
                                 child: Text(
                                   l10n.loadRoutine.toUpperCase(),
