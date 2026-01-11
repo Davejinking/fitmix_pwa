@@ -22,13 +22,14 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       exercises: (fields[2] as List).cast<Exercise>(),
       createdAt: fields[3] as DateTime?,
       lastUsedAt: fields[4] as DateTime?,
+      tags: (fields[5] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Routine obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       ..writeByte(3)
       ..write(obj.createdAt)
       ..writeByte(4)
-      ..write(obj.lastUsedAt);
+      ..write(obj.lastUsedAt)
+      ..writeByte(5)
+      ..write(obj.tags);
   }
 
   @override

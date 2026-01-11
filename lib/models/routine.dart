@@ -22,13 +22,18 @@ class Routine extends HiveObject {
   @HiveField(4)
   DateTime? lastUsedAt;
 
+  @HiveField(5)
+  List<String> tags; // 🔥 Dynamic tags: ["CHEST", "PUSH", "#MORNING"]
+
   Routine({
     required this.id,
     required this.name,
     required this.exercises,
     DateTime? createdAt,
     this.lastUsedAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+    List<String>? tags,
+  }) : createdAt = createdAt ?? DateTime.now(),
+       tags = tags ?? [];
 
   /// Routine 객체를 복사하여 새로운 인스턴스를 생성합니다.
   Routine copyWith({
@@ -37,6 +42,7 @@ class Routine extends HiveObject {
     List<Exercise>? exercises,
     DateTime? createdAt,
     DateTime? lastUsedAt,
+    List<String>? tags,
   }) {
     return Routine(
       id: id ?? this.id,
@@ -44,6 +50,7 @@ class Routine extends HiveObject {
       exercises: exercises ?? this.exercises.map((e) => e.copyWith()).toList(),
       createdAt: createdAt ?? this.createdAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+      tags: tags ?? List.from(this.tags),
     );
   }
 
@@ -53,14 +60,15 @@ class Routine extends HiveObject {
     return other is Routine &&
            other.id == id &&
            other.name == name &&
-           listEquals(other.exercises, exercises);
+           listEquals(other.exercises, exercises) &&
+           listEquals(other.tags, tags);
   }
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ exercises.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode ^ exercises.hashCode ^ tags.hashCode;
 
   @override
   String toString() {
-    return 'Routine(id: $id, name: $name, exercises: ${exercises.length}개)';
+    return 'Routine(id: $id, name: $name, exercises: ${exercises.length}개, tags: $tags)';
   }
 }

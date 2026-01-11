@@ -36,9 +36,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
   final List<String> _equipmentFilterKeys = ['all', 'bodyweight', 'machine', 'barbell', 'dumbbell', 'cable', 'band'];
   String _selectedEquipmentKey = 'all';
   
-  // 🔥 루틴 필터 키 추가
-  final List<String> _routineFilterKeys = ['all', 'push', 'pull', 'legs', 'upper', 'lower', 'fullBody'];
+  // 🔥 루틴 필터 키 추가 (동적으로 생성됨)
+  final List<String> _systemRoutineFilterKeys = ['all', 'push', 'pull', 'legs', 'upper', 'lower', 'fullBody'];
   String _selectedRoutineFilterKey = 'all';
+  List<String> _allRoutineFilterKeys = []; // System + User tags
   
   List<ExerciseLibraryItem> _allExercises = [];
   List<ExerciseLibraryItem> _filteredExercises = [];
@@ -337,7 +338,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
     );
   }
 
-  // 🔥 루틴 필터 (Tactical Style)
+  // 🔥 루틴 필터 (Dynamic Tags)
   Widget _buildRoutineFilter(AppLocalizations l10n) {
     return Container(
       height: 56,
@@ -346,10 +347,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _routineFilterKeys.length,
+        itemCount: _allRoutineFilterKeys.length,
         itemBuilder: (context, index) {
-          final key = _routineFilterKeys[index];
+          final key = _allRoutineFilterKeys[index];
           final isSelected = key == _selectedRoutineFilterKey;
+          final isSystemTag = _systemRoutineFilterKeys.contains(key);
           
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -361,7 +363,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Courier',
                   letterSpacing: 0.5,
-                  color: isSelected ? Colors.white : Colors.grey,
+                  color: isSelected ? Colors.white : (isSystemTag ? Colors.grey : Colors.grey[600]),
                 ),
               ),
               selected: isSelected,
@@ -378,7 +380,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
                 side: BorderSide(
-                  color: isSelected ? Colors.white : Colors.white24,
+                  color: isSelected ? Colors.white : (isSystemTag ? Colors.white24 : Colors.white12),
                   width: isSelected ? 1.5 : 1.0,
                 ),
               ),
@@ -506,6 +508,16 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
             return bTime.compareTo(aTime);
           });
 
+        // 🔥 동적 태그 수집: System Tags + User Tags
+        final userTags = routines
+            .expand((r) => r.tags)
+            .toSet()
+            .where((t) => !_systemRoutineFilterKeys.contains(t.toLowerCase()))
+            .toList()
+          ..sort();
+        
+        _allRoutineFilterKeys = [..._systemRoutineFilterKeys, ...userTags];
+
         // 🔥 검색 필터 적용
         if (_routineSearchQuery.isNotEmpty) {
           routines = routines.where((routine) {
@@ -514,12 +526,12 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
           }).toList();
         }
 
-        // 🔥 카테고리 필터 적용 (TODO: 루틴에 카테고리 필드 추가 필요)
-        // if (_selectedRoutineFilterKey != 'all') {
-        //   routines = routines.where((routine) {
-        //     return routine.category?.toLowerCase() == _selectedRoutineFilterKey.toLowerCase();
-        //   }).toList();
-        // }
+        // 🔥 태그 필터 적용
+        if (_selectedRoutineFilterKey != 'all') {
+          routines = routines.where((routine) {
+            return routine.tags.any((tag) => tag.toLowerCase() == _selectedRoutineFilterKey.toLowerCase());
+          }).toList();
+        }
 
         return Column(
           children: [
