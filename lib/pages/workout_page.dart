@@ -277,7 +277,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
       appBar: AppBar(
         title: Text(l10n.todayWorkout),
         centerTitle: true,
-        backgroundColor: const Color(0xFF121212),
+        // backgroundColor removed - uses theme default
         foregroundColor: Colors.white,
         elevation: 0,
       ),

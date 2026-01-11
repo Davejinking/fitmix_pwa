@@ -231,10 +231,10 @@ class _PlanPageState extends State<PlanPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF121212),
+        // backgroundColor removed - uses theme default (pure black)
         appBar: AppBar(
           title: const Text('운동 계획'),
-          backgroundColor: const Color(0xFF121212),
+          // backgroundColor removed - uses theme default
           foregroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(

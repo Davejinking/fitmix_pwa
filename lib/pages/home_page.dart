@@ -95,6 +95,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   value: '/demo/workout-heatmap',
                   child: Text('Workout Heatmap'),
                 ),
+                const PopupMenuItem(
+                  value: '/demo/calendar',
+                  child: Text('Monochrome Calendar'),
+                ),
               ],
             ),
           IconButton(
@@ -366,14 +370,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   width: 12,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: hasWorkout ? const Color(0xFF2196F3) : Colors.grey[900],
+                    color: hasWorkout ? Colors.white : const Color(0xFF0A0A0A), // White for active, very dark for inactive
                     borderRadius: BorderRadius.zero, // Square
                   ),
                 );
               }),
             ),
             const SizedBox(height: 32),
-            Divider(color: Colors.grey[900], thickness: 1, height: 1),
+            Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
             const SizedBox(height: 32),
           ],
         );
@@ -437,14 +441,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 2.0,
-                  backgroundColor: Colors.grey[900],
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
+                  backgroundColor: const Color(0xFF0A0A0A), // Very dark, barely visible
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white), // White - High-End Monochrome
                   borderRadius: BorderRadius.zero, // Sharp edges
                 ),
               ),
             ),
             const SizedBox(height: 32),
-            Divider(color: Colors.grey[900], thickness: 1, height: 1),
+            Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
           ],
         );
       },

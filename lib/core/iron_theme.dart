@@ -2,72 +2,97 @@
 import 'package:flutter/material.dart';
 
 class IronTheme {
-  // --- Color Palette ---
-  static const Color background = Color(0xFF121212); // 찐 블랙
-  static const Color surface = Color(0xFF1E1E1E);    // 카드/팝업 배경
-  static const Color surfaceHighlight = Color(0xFF2C2C2C); // 달력 헤더 등 강조 배경
-  static const Color primary = Color(0xFF4A9EFF);    // Neon Blue
-  static const Color secondary = Color(0xFFFF6B35);  // Neon Orange
+  // --- Tactical Noir Color Palette ---
+  // "High-End Monochrome" - Pure void background with white accents
+  static const Color background = Colors.black;      // #000000 - The Void
+  static const Color surface = Color(0xFF1A1A1A);    // Very dark grey for cards/dialogs
+  static const Color surfaceHighlight = Color(0xFF2C2C2C); // Slightly lighter for emphasis
+  static const Color primary = Colors.white;         // White - High-End Monochrome accent
+  static const Color secondary = Color(0xFFFF6B35);  // Neon Orange (rarely used)
   static const Color danger = Color(0xFFCF6679);
-  static const Color textHigh = Colors.white;        // 기본 텍스트
-  static const Color textMedium = Color(0xFFAAAAAA); // 보조 텍스트
+  static const Color textHigh = Colors.white;        // Primary text
+  static const Color textMedium = Color(0xFFAAAAAA); // Secondary text
+  static const Color textLow = Color(0xFF666666);    // Dimmed text
 
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: 'Pretendard',
-      scaffoldBackgroundColor: background,
-      primaryColor: primary,
-
-      // [핵심] Material 3 컬러 스키마 강제 지정 (이게 있어야 팝업이 안 하얘짐)
+      
+      // 1. THE VOID - Pure Black Backgrounds
+      scaffoldBackgroundColor: background,  // #000000
+      canvasColor: background,              // #000000
+      primaryColor: background,             // #000000
+      
+      // 2. Material 3 Color Scheme - Tactical Noir
       colorScheme: const ColorScheme.dark(
-        primary: primary,
+        primary: primary,                   // Electric Blue
         onPrimary: textHigh,
         secondary: secondary,
         onSecondary: textHigh,
-        surface: surface,        // 다이얼로그 기본 배경
-        onSurface: textHigh,     // 다이얼로그 텍스트
-        surfaceContainerHigh: surfaceHighlight, // 달력 선택창 같은 팝업 배경
+        surface: surface,                   // Dark grey for dialogs
+        onSurface: textHigh,
+        surfaceContainerHigh: surfaceHighlight,
         error: danger,
         onError: textHigh,
+        // Force black backgrounds
+        surfaceContainerHighest: background,
+        surfaceContainerLowest: background,
       ),
 
-      // 앱바 테마
+      // 3. Seamless AppBar
       appBarTheme: const AppBarTheme(
-        backgroundColor: background,
-        elevation: 0,
+        backgroundColor: background,        // Pure black
+        elevation: 0,                       // No shadow
         centerTitle: false,
         titleTextStyle: TextStyle(
           fontSize: 22, 
           fontWeight: FontWeight.bold, 
-          color: textHigh
+          color: textHigh,
         ),
         iconTheme: IconThemeData(color: textHigh),
       ),
 
-      // 카드 테마
-      cardTheme: CardThemeData(
-        color: surface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16)
+      // 4. Bottom Navigation - Tactical Style
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: background,        // Pure black
+        selectedItemColor: Colors.white,    // White - High-End Monochrome
+        unselectedItemColor: textLow,       // Dimmed grey
+        elevation: 0,                       // No shadow
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
         ),
       ),
 
-      // [핵심] 다이얼로그 테마 - 이게 캘린더 배경을 결정함
+      // 5. Cards - Very Dark Grey (visible against black)
+      cardTheme: CardThemeData(
+        color: surface,                     // #1A1A1A
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+
+      // 6. Dialogs - Dark Grey (needs to stand out)
       dialogTheme: const DialogThemeData(
-        backgroundColor: surface,
+        backgroundColor: surface,           // #1A1A1A
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
       ),
 
-      // [중요] 달력 테마 완벽 적용
+      // 7. Date Picker Theme
       datePickerTheme: DatePickerThemeData(
         backgroundColor: surface,
-        surfaceTintColor: Colors.transparent, // M3 특유의 틴트 효과 제거
-        headerBackgroundColor: surfaceHighlight, // 연도/날짜 헤더 배경
-        headerForegroundColor: textHigh,         // 헤더 글자색
+        surfaceTintColor: Colors.transparent,
+        headerBackgroundColor: surfaceHighlight,
+        headerForegroundColor: textHigh,
         dayForegroundColor: WidgetStateProperty.all(textHigh),
         yearForegroundColor: WidgetStateProperty.all(textHigh),
         todayBackgroundColor: WidgetStateProperty.all(primary),
@@ -76,15 +101,27 @@ class IronTheme {
         dayOverlayColor: WidgetStateProperty.all(primary.withValues(alpha: 0.1)),
       ),
 
-      // 다이얼로그 하단 '확인/취소' 버튼 테마
+      // 8. Input Fields - Visible on black
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surface,                 // Dark grey
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4), // Sharp corners
+          borderSide: BorderSide.none,
+        ),
+        hintStyle: TextStyle(color: textLow),
+        labelStyle: const TextStyle(color: textMedium),
+      ),
+
+      // 9. Text Buttons (Dialog actions)
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primary, // 버튼 글자색 (Blue)
+          foregroundColor: primary,         // Electric Blue
           textStyle: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
 
-      // 바텀 시트 테마
+      // 10. Bottom Sheets
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: surface,
         modalBackgroundColor: surface,
@@ -92,6 +129,16 @@ class IronTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
+      ),
+
+      // 11. Text Theme - White on Black
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: textHigh),
+        bodyMedium: TextStyle(color: textHigh),
+        bodySmall: TextStyle(color: textMedium),
+        titleLarge: TextStyle(color: textHigh, fontWeight: FontWeight.bold),
+        titleMedium: TextStyle(color: textHigh, fontWeight: FontWeight.w600),
+        titleSmall: TextStyle(color: textMedium),
       ),
     );
   }

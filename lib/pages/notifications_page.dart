@@ -6,9 +6,9 @@ class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      // backgroundColor removed - uses theme default (pure black)
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
+        // backgroundColor removed - uses theme default
         foregroundColor: Colors.white,
         elevation: 0,
         title: const Text('알림'),

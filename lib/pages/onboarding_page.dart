@@ -77,7 +77,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      // backgroundColor removed - uses theme default (pure black)
       body: SafeArea(
         child: Column(
           children: [

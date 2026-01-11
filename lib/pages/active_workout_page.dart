@@ -386,7 +386,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       child: Stack(
         children: [
           Scaffold(
-            backgroundColor: const Color(0xFF121212),
+            // backgroundColor removed - uses theme default (pure black)
             body: SafeArea(
               child: Column(
                 children: [

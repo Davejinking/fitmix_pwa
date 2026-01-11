@@ -29,9 +29,9 @@ class _PowerShopPageState extends State<PowerShopPage> {
     final l10n = AppLocalizations.of(context);
     
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      // backgroundColor removed - uses theme default (pure black)
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
+        // backgroundColor removed - uses theme default
         title: Text(l10n.powerShop, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         actions: [
@@ -295,9 +295,9 @@ class WorkoutReportPage extends StatelessWidget {
     final league = data.league;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      // backgroundColor removed - uses theme default (pure black)
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
+        // backgroundColor removed - uses theme default
         title: Text(l10n.weeklyReportTitle),
         elevation: 0,
       ),

@@ -35,9 +35,9 @@ class _AchievementsPageState extends State<AchievementsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      // backgroundColor removed - uses theme default (pure black)
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
+        // backgroundColor removed - uses theme default
         title: Text(l10n.achievement, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
       ),

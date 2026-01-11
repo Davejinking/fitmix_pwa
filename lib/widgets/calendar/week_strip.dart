@@ -148,61 +148,22 @@ class _WeekStripState extends State<WeekStrip> {
                 // Styling - Iron Calendar Design
                 calendarStyle: CalendarStyle(
                   // Cell decoration with grid lines
-                  cellMargin: const EdgeInsets.all(0), // Remove spacing for grid effect
-                  cellPadding: const EdgeInsets.all(4),
+                  cellMargin: const EdgeInsets.all(0),
+                  cellPadding: EdgeInsets.zero, // 핵심: 기본 패딩 제거
                   
-                  // Today style - NO BOX, just text color change (Stealth grid)
-                  todayDecoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFF0A0A0A), // Very dark grey (almost black)
-                      width: 0.5,
-                    ),
-                    borderRadius: BorderRadius.zero,
-                  ),
-                  todayTextStyle: const TextStyle(
-                    color: Color(0xFF00BCD4), // Cyan accent for "today"
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                    fontFamily: 'Courier',
-                  ),
+                  // Disable default decorations (we use builders instead)
+                  todayDecoration: const BoxDecoration(),
+                  selectedDecoration: const BoxDecoration(),
+                  defaultDecoration: const BoxDecoration(),
+                  weekendDecoration: const BoxDecoration(),
+                  outsideDecoration: const BoxDecoration(),
                   
-                  // Selected day style - Blue stroke only (no fill) - THINNER
-                  selectedDecoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFF2962FF), // Electric Blue
-                      width: 1.5, // Reduced from 3 to 1.5
-                    ),
-                    borderRadius: BorderRadius.zero, // Square corners
-                  ),
-                  selectedTextStyle: const TextStyle(
-                    color: const Color(0xFF2962FF), // Blue text
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                    fontFamily: 'Courier',
-                  ),
-                  
-                  // Default day style - Grid cell (Stealth mode)
-                  defaultDecoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFF0A0A0A), // Very dark - barely visible
-                      width: 0.5,
-                    ),
-                    borderRadius: BorderRadius.zero,
-                  ),
+                  // Text styles (fallback only, builders override these)
                   defaultTextStyle: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                     fontFamily: 'Courier',
-                  ),
-                  
-                  // Weekend style - Same grid (Stealth mode)
-                  weekendDecoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFF0A0A0A),
-                      width: 0.5,
-                    ),
-                    borderRadius: BorderRadius.zero,
                   ),
                   weekendTextStyle: const TextStyle(
                     color: Colors.white,
@@ -210,25 +171,28 @@ class _WeekStripState extends State<WeekStrip> {
                     fontSize: 16,
                     fontFamily: 'Courier',
                   ),
-                  
-                  // Outside month style - Dimmed grid (Stealth mode)
-                  outsideDecoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFF0A0A0A),
-                      width: 0.5,
-                    ),
-                    borderRadius: BorderRadius.zero,
-                  ),
                   outsideTextStyle: TextStyle(
                     color: Colors.grey[800],
                     fontWeight: FontWeight.w400,
                     fontSize: 16,
                     fontFamily: 'Courier',
                   ),
+                  todayTextStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                    fontFamily: 'Courier',
+                  ),
+                  selectedTextStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                    fontFamily: 'Courier',
+                  ),
                   
-                  // Markers - Square dots
+                  // Markers
                   markerDecoration: const BoxDecoration(
-                    color: Color(0xFF2962FF),
+                    color: Colors.white, // White - High-End Monochrome
                     shape: BoxShape.rectangle, // Square marker
                   ),
                   markerSize: 3,
@@ -264,30 +228,105 @@ class _WeekStripState extends State<WeekStrip> {
                 
                 // Custom builders for markers
                 calendarBuilders: CalendarBuilders(
+                  // 1. [평일] 투명 박스 적용 -> 높이 강제 동기화
+                  defaultBuilder: (context, date, events) {
+                    return Container(
+                      alignment: Alignment.topCenter, // 천장에 매달기
+                      padding: const EdgeInsets.only(top: 8.0), // 천장에서 8px 띄움
+                      child: Container(
+                        width: 28,
+                        height: 28, // 박스 크기 고정
+                        alignment: Alignment.center, // 박스 안에서 글자 중앙
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent, // 투명 (안 보임)
+                          shape: BoxShape.rectangle,
+                        ),
+                        child: Text(
+                          '${date.day}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: 'Courier',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  
+                  // 2. [오늘] 하얀 박스
+                  todayBuilder: (context, date, events) {
+                    return Container(
+                      alignment: Alignment.topCenter,
+                      padding: const EdgeInsets.only(top: 8.0), // 동일한 패딩
+                      child: Container(
+                        width: 28,
+                        height: 28, // 동일한 크기
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white, // 하얀 배경
+                          borderRadius: BorderRadius.circular(4.0),
+                          shape: BoxShape.rectangle,
+                        ),
+                        child: Text(
+                          '${date.day}',
+                          style: const TextStyle(
+                            color: Colors.black, // 반전 글씨
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  
+                  // 3. [선택됨] 하얀 테두리
+                  selectedBuilder: (context, date, events) {
+                    return Container(
+                      alignment: Alignment.topCenter, // 핵심: 상단 정렬 강제
+                      padding: const EdgeInsets.only(top: 8.0), // 동일한 패딩
+                      child: Container(
+                        width: 28,
+                        height: 28, // 동일한 크기
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          border: Border.all(color: Colors.white, width: 2.0), // 테두리만
+                          borderRadius: BorderRadius.circular(4.0),
+                          shape: BoxShape.rectangle,
+                        ),
+                        child: Text(
+                          '${date.day}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  
+                  // 4. [마커] 둥근 사각형 점
                   markerBuilder: (context, day, events) {
-                    // Hide marker on selected day to avoid overlap with blue background
-                    if (isSameDay(day, widget.selectedDay)) {
-                      return const SizedBox.shrink();
-                    }
-                    
-                    if (events.isEmpty) return const SizedBox.shrink();
+                    if (events.isEmpty) return const SizedBox();
                     
                     final dayYmd = '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
                     final hasWorkout = widget.workoutDates.contains(dayYmd);
                     final isRest = widget.restDates.contains(dayYmd);
                     
                     return Positioned(
-                      bottom: 4,
+                      bottom: 6, // 바닥 고정
                       child: Container(
-                        width: 4,
-                        height: 4,
+                        width: 6,
+                        height: 6,
                         decoration: BoxDecoration(
-                          color: hasWorkout
-                              ? const Color(0xFF2962FF) // Blue for workout
-                              : isRest
-                                  ? const Color(0xFFFF6B35) // Orange for rest
-                                  : Colors.transparent,
-                          shape: BoxShape.circle,
+                          color: hasWorkout ? Colors.white : Colors.transparent,
+                          border: isRest ? Border.all(color: Colors.white, width: 1.0) : null,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(2.0),
                         ),
                       ),
                     );

@@ -148,7 +148,7 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> with 
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      // backgroundColor removed - uses theme default (pure black)
       body: Column(children: [
         _buildHeader(l10n),
         _buildSearchBar(l10n),

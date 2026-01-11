@@ -225,7 +225,7 @@ class _CalendarPageState extends State<CalendarPage> {
           IconButton(
             icon: Icon(
               Icons.calendar_today,
-              color: isToday ? const Color(0xFF007AFF) : Colors.white,
+              color: isToday ? Colors.white : Colors.grey[600],
             ),
             onPressed: _goToToday,
             tooltip: 'Today',
@@ -347,7 +347,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   child: Icon(
                     _allCardsExpanded ? Icons.unfold_less : Icons.unfold_more,
                     size: 22,
-                    color: const Color(0xFF2196F3),
+                    color: Colors.white, // High-End Monochrome
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -356,7 +356,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   child: const Icon(
                     Icons.swap_vert,
                     size: 22,
-                    color: Color(0xFF2196F3),
+                    color: Colors.white, // High-End Monochrome
                   ),
                 ),
               ],
@@ -468,8 +468,8 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               SizedBox(
                 width: double.infinity,
-                height: 56, // Reduced from 60
-                child: ElevatedButton.icon(
+                height: 56,
+                child: OutlinedButton.icon(
                   onPressed: _addExercise,
                   icon: const Icon(Icons.add, size: 22),
                   label: Text(
@@ -481,11 +481,10 @@ class _CalendarPageState extends State<CalendarPage> {
                       fontFamily: 'Courier', // Monospace tactical
                     ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2196F3),
+                  style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
+                    side: const BorderSide(color: Colors.white, width: 1.5), // White ghost style
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: BeveledRectangleBorder( // Tactical cut
                       borderRadius: BorderRadius.circular(5),
                     ),
@@ -545,12 +544,11 @@ class _CalendarPageState extends State<CalendarPage> {
                 fontFamily: 'Courier', // Monospace tactical
               ),
             ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2196F3),
+            style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 56), // Reduced
-              padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
-              elevation: 0,
+              side: const BorderSide(color: Colors.white, width: 1.5), // White ghost style
+              minimumSize: const Size(double.infinity, 56),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               shape: BeveledRectangleBorder( // Tactical cut
                 borderRadius: BorderRadius.circular(5),
               ),
@@ -659,11 +657,10 @@ class _CalendarPageState extends State<CalendarPage> {
                       fontFamily: 'Courier', // Monospace tactical
                     ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2196F3),
+                  style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
-                    elevation: 0,
+                    side: const BorderSide(color: Colors.white, width: 1.5), // White ghost style
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: BeveledRectangleBorder( // Tactical cut
                       borderRadius: BorderRadius.circular(5),
                     ),
@@ -793,7 +790,7 @@ class _CalendarPageState extends State<CalendarPage> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: isHighlight ? const Color(0xFF2962FF) : Colors.grey[300],
+            color: isHighlight ? Colors.white : Colors.grey[300], // White monochrome for highlight
             fontFamily: 'Courier',
           ),
         ),
@@ -1266,7 +1263,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                             children: [
                               TextSpan(
                                 text: '${widget.exerciseIndex + 1} ',
-                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF2196F3)),
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white), // White monochrome
                               ),
                               TextSpan(
                                 text: '${_getLocalizedBodyPart(widget.exercise.bodyPart, locale)} | ',
@@ -1281,18 +1278,18 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         ),
                       ),
                       if (isCompleted)
-                        const Icon(Icons.check_circle, color: Color(0xFF2196F3), size: 28)
+                        const Icon(Icons.check_circle, color: Colors.white, size: 28) // White monochrome
                       else if (!_isExpanded)
                         Container(
                           margin: const EdgeInsets.only(right: 8),
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2196F3).withValues(alpha: 0.2),
+                            color: Colors.white.withValues(alpha: 0.1), // Subtle white tint
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             '$completedSets / $totalSets SET',
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF2196F3), fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold), // White monochrome
                           ),
                         ),
                       const SizedBox(width: 8),
@@ -1403,7 +1400,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       },
                       icon: const Icon(Icons.add, size: 16),
                       label: Text(l10n.addSet, style: const TextStyle(fontSize: 13)),
-                      style: TextButton.styleFrom(foregroundColor: const Color(0xFF2196F3)),
+                      style: TextButton.styleFrom(foregroundColor: Colors.white), // White monochrome
                     ),
                   ],
                 ),
@@ -1610,7 +1607,7 @@ class _ReorderExercisesModalState extends State<_ReorderExercisesModal> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF2196F3),
+                        color: Colors.white, // White monochrome
                       ),
                     ),
                   ),

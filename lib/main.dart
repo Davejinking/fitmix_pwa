@@ -15,6 +15,7 @@ import 'pages/splash_page.dart';
 import 'pages/library_page_v2.dart';
 import 'widgets/exercise_log_card_demo.dart';
 import 'widgets/workout_heatmap_demo.dart';
+import 'pages/demo_calendar_screen.dart';
 import 'models/session.dart';
 import 'models/exercise_library.dart';
 import 'services/exercise_seeding_service.dart';
@@ -147,6 +148,7 @@ class _IronLogAppState extends State<IronLogApp> {
         '/library': (context) => const LibraryPageV2(),
         '/demo/exercise-log-card': (context) => const ExerciseLogCardDemo(),
         '/demo/workout-heatmap': (context) => const WorkoutHeatmapDemo(),
+        '/demo/calendar': (context) => const DemoCalendarScreen(),
       },
       home: kDebugMode
           // 디버그 모드: 로그인 여부와 상관없이 바로 SplashPage 진입
