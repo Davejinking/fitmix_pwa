@@ -1165,7 +1165,13 @@ class _CalendarPageState extends State<CalendarPage> {
           exercises: _currentSession!.exercises.map((e) => e.copyWith()).toList(),
         );
         await routineRepo.save(routine);
+        final sessionRepo = getIt<SessionRepo>();
+        final updatedSession = _currentSession!.copyWith(routineName: routineName);
+        await sessionRepo.put(updatedSession);
         if (mounted) {
+          setState(() {
+            _currentSession = updatedSession;
+          });
           ErrorHandler.showSuccessSnackBar(context, context.l10n.routineSaved);
         }
       } catch (e) {
