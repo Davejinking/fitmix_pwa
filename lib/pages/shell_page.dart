@@ -7,6 +7,7 @@ import '../data/user_repo.dart';
 import '../data/exercise_library_repo.dart';
 import '../core/l10n_extensions.dart';
 import '../core/iron_theme.dart';
+import '../widgets/common/iron_app_bar.dart';
 import '../widgets/common/fm_bottom_nav.dart';
 import 'analysis_page.dart';
 import 'calendar_page.dart';
@@ -55,6 +56,7 @@ class ShellPageState extends State<ShellPage> {
       const CalendarPage(),
       const Scaffold(
         backgroundColor: IronTheme.background,
+        appBar: IronAppBar(),
         body: LibraryPageV2(),
       ),
       const AnalysisPage(),
