@@ -211,21 +211,52 @@ class _LibraryPageV2State extends State<LibraryPageV2> with SingleTickerProvider
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: TextField(
         controller: _searchController,
+        cursorColor: Colors.white,
         decoration: InputDecoration(
-          hintText: l10n.searchExercise,
-          hintStyle: const TextStyle(color: IronTheme.textMedium, fontSize: 15),
-          prefixIcon: const Icon(Icons.search, color: IronTheme.textMedium, size: 22),
+          hintText: l10n.searchExercise.toUpperCase(),
+          hintStyle: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+            fontFamily: 'Courier',
+            letterSpacing: 1.0,
+          ),
+          prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 18),
           suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(icon: const Icon(Icons.clear, color: IronTheme.textMedium), onPressed: () { _searchController.clear(); setState(() { _searchQuery = ''; _applyFilter(); }); })
+              ? IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {
+                      _searchQuery = '';
+                      _applyFilter();
+                    });
+                  },
+                )
               : null,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: IronTheme.textLow, width: 1)),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: IronTheme.primary, width: 2)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4.0), // 🔥 Sharp corners
+            borderSide: const BorderSide(color: Colors.white24, width: 1.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4.0),
+            borderSide: const BorderSide(color: Colors.white, width: 1.5), // 🔥 Highlight when active
+          ),
           filled: true,
-          fillColor: IronTheme.surfaceHighlight,
+          fillColor: Colors.black, // 🔥 Tactical black
+          isDense: true,
         ),
-        style: const TextStyle(fontSize: 15, color: IronTheme.textHigh),
-        onChanged: (query) { setState(() { _searchQuery = query; _applyFilter(); }); },
+        style: const TextStyle(
+          fontSize: 13,
+          color: Colors.white,
+          fontFamily: 'Courier',
+        ),
+        onChanged: (query) {
+          setState(() {
+            _searchQuery = query;
+            _applyFilter();
+          });
+        },
       ),
     );
   }
