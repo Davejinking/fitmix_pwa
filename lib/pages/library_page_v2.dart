@@ -223,7 +223,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    'EXERCISES', // 영어 고정 - Design Element
+                    l10n.exercise.toUpperCase(),
                     style: TextStyle(
                       color: !_isRoutineMode ? Colors.black : Colors.grey,
                       fontWeight: FontWeight.w900,

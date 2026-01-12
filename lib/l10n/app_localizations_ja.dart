@@ -564,7 +564,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get retry => '再試行';
 
   @override
-  String get addCustomExercise => 'カスタム運動追加';
+  String get addCustomExercise => '新しい運動を追加';
 
   @override
   String get customExerciseName => '運動名';
@@ -799,7 +799,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get exercise => '運動';
+  String get exercise => 'エクササイズ';
 
   @override
   String get totalSets => '総セット';

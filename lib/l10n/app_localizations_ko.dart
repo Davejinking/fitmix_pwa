@@ -799,7 +799,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get exercise => '운동';
+  String get exercise => '엑서사이즈';
 
   @override
   String get totalSets => '총 세트';
