@@ -1946,7 +1946,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48, // Standard touch target (was 40)
+      height: 48, // Standard touch target
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center, // Perfect vertical centering
@@ -1969,34 +1969,38 @@ class _SetRowGridState extends State<_SetRowGrid> {
           // Spacer - Push to center
           const Spacer(),
           
-          // Weight Input Box (Fixed width: 60px)
+          // Weight Input Box (Expanded: 110px for high values like 150.0)
           SizedBox(
-            width: 60,
+            width: 110, // Expanded from 60 to prevent clipping
             child: _buildCenterInput(
               controller: _weightController,
-              textAlign: TextAlign.right,
+              textAlign: TextAlign.right, // Magnetize to center 'x'
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
           ),
           
-          // Fixed center text: "kg x " (14pt grey)
-          Text(
-            'kg  x  ',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
-              fontFamily: 'Courier',
-              height: 1.2,
+          // Fixed center text: "kg x " (30px width)
+          SizedBox(
+            width: 30,
+            child: Text(
+              'kg x',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[600],
+                fontFamily: 'Courier',
+                height: 1.2,
+              ),
             ),
           ),
           
-          // Reps Input Box (Fixed width: 60px)
+          // Reps Input Box (Expanded: 80px for double-digit reps)
           SizedBox(
-            width: 60,
+            width: 80, // Expanded from 60
             child: _buildCenterInput(
               controller: _repsController,
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.left, // Magnetize to center 'x'
               keyboardType: TextInputType.number,
             ),
           ),
