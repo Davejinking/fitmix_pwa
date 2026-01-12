@@ -1556,13 +1556,18 @@ class _ExerciseCardState extends State<_ExerciseCard> {
     final bool isCompleted = completedSets > 0 && completedSets == totalSets;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10, left: 12, right: 12),
-      padding: const EdgeInsets.all(10),
+      // NO box decoration - flat log style
       decoration: BoxDecoration(
-        color: const Color(0xFF121212), // Very Dark Grey (Noir)
-        borderRadius: BorderRadius.circular(8), // Sharper corners (Iron feel)
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1), // Subtle white outline
+        color: Colors.transparent, // No background
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.white.withValues(alpha: 0.12), // Subtle bottom line only
+            width: 1.0,
+          ),
+        ),
       ),
+      // Minimal padding - full bleed feel
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
