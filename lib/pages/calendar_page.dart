@@ -1612,12 +1612,12 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       ),
                       const SizedBox(width: 8),
                       
-                      // 3️⃣ Exercise Name (Dynamic Expansion) 🎯 MAGIC HAPPENS HERE
+                      // 3️⃣ Exercise Name (Dynamic Expansion) - MORE WIDTH NOW
                       Expanded(
                         child: Text(
                           _getLocalizedExerciseName(widget.exercise.name, locale).toUpperCase(), // UPPERCASE for Noir
-                          maxLines: _isExpanded ? null : 1, // 🔥 Dynamic!
-                          overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis, // 🔥 Dynamic!
+                          maxLines: _isExpanded ? null : 1,
+                          overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w900, // Bolder
@@ -1627,47 +1627,11 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           ),
                         ),
                       ),
-                      // 4️⃣ Info Icon (i) - Always visible
-                      GestureDetector(
-                        onTap: () {
-                          showExerciseDetailModal(
-                            context,
-                            exerciseName: widget.exercise.name,
-                            sessionRepo: widget.sessionRepo,
-                            exerciseRepo: widget.exerciseRepo,
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ),
-                      // 5️⃣ Memo Icon - Always visible
-                      GestureDetector(
-                        onTap: () {
-                          _showMemoBottomSheet(context);
-                          HapticFeedback.lightImpact();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.note_alt_outlined,
-                            size: 18,
-                            color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
-                                ? const Color(0xFF3B82F6)
-                                : Colors.grey[500],
-                          ),
-                        ),
-                      ),
                       const SizedBox(width: 8),
+                      // 4️⃣ Set Progress Badge - RIGHTMOST ELEMENT
                       if (isCompleted)
                         const Icon(Icons.check_circle, color: Colors.white, size: 28) // White monochrome
                       else
-                        // 세트 진행률 (항상 표시) - RIGHTMOST ELEMENT
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
@@ -1691,12 +1655,51 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     const SizedBox(height: 6),
                     Row(
                       children: [
+                        // Left: Total Volume
                         Text(
                           l10n.totalVolumeShort(totalVolume.toStringAsFixed(0)),
                           style: TextStyle(
                             fontSize: 11, 
                             color: Colors.grey[600],
                             fontFamily: 'Courier', // Monospace tactical
+                          ),
+                        ),
+                        const Spacer(),
+                        // Right: Action Icons (Subtle Grey)
+                        GestureDetector(
+                          onTap: () {
+                            showExerciseDetailModal(
+                              context,
+                              exerciseName: widget.exercise.name,
+                              sessionRepo: widget.sessionRepo,
+                              exerciseRepo: widget.exerciseRepo,
+                            );
+                            HapticFeedback.lightImpact();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.info_outline,
+                              size: 18,
+                              color: Colors.grey[600], // Subtle grey
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: () {
+                            _showMemoBottomSheet(context);
+                            HapticFeedback.lightImpact();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.note_alt_outlined,
+                              size: 18,
+                              color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                                  ? Colors.grey[400] // Slightly brighter if has memo
+                                  : Colors.grey[600], // Subtle grey
+                            ),
                           ),
                         ),
                       ],
