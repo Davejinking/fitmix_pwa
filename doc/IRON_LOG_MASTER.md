@@ -1,6 +1,6 @@
 # Iron Log - Master Documentation
 
-> **최종 업데이트**: 2026년 1월 12일  
+> **최종 업데이트**: 2026년 1월 12일 (23:05)  
 > **버전**: 1.0.0  
 > **상태**: 🚀 MVP 개발 중
 
@@ -13,6 +13,7 @@
 3. [데이터베이스 스키마](#3-데이터베이스-스키마)
 4. [현재 기능 & 상태](#4-현재-기능--상태)
 5. [프로젝트 파일 구조](#5-프로젝트-파일-구조)
+6. [최근 업데이트](#6-최근-업데이트)
 
 ---
 
@@ -33,9 +34,13 @@
 
 ### 🌍 다국어 전략: "Hybrid Noir"
 - **Design Elements (영어 고정)**: 타이틀, 라벨, 상태 메시지
-  - 예: `WEEKLY STATUS`, `MONTHLY GOAL`, `EXERCISES`
-- **Usability Elements (다국어)**: 버튼, 입력 힌트, 에러 메시지
+  - 예: `WEEKLY STATUS`, `MONTHLY GOAL` (하드코딩)
+  - 이유: 브랜드 아이덴티티, Noir 미학 유지
+- **Usability Elements (다국어)**: 버튼, 입력 힌트, 에러 메시지, **탭 버튼**
   - 예: `운동 시작` / `Start Workout` / `ワークアウト開始`
+  - 예: `루틴` / `Routines` / `ルーティン`
+  - 예: `엑서사이즈` / `Exercises` / `エクササイズ`
+  - 이유: 사용자 경험, 접근성
 
 ### 💰 수익화 모델
 - **Free**: 기본 운동 기록, 휴식 타이머, 템포 모드
@@ -692,12 +697,175 @@ flutter build apk --release
 
 ---
 
+## 6. 최근 업데이트
+
+### 📅 2026-01-12 (일요일)
+
+#### 6.1 문서 통합 및 정리
+- **작업 내용**:
+  - 43개의 중복/구버전 문서를 `doc/archive/`로 이동
+  - `IRON_LOG_MASTER.md` 생성 (500줄, 5개 섹션)
+  - `README.md` 업데이트 (프로젝트 개요 및 빠른 시작 가이드)
+  - `DOCUMENTATION_CLEANUP_SUMMARY.md` 작성 (정리 과정 문서화)
+- **결과**: 
+  - `doc/` 폴더에 6개의 핵심 문서만 유지
+  - 프로젝트 정보가 단일 마스터 문서로 통합
+
+#### 6.2 Hybrid Noir 다국어 전략 구현
+- **전략 정의**:
+  - **Design Elements** (영어 고정): 타이틀, 라벨, 상태 메시지
+    - 예: `WEEKLY STATUS`, `MONTHLY GOAL`
+    - 이유: 브랜드 아이덴티티, Noir 미학 유지
+  - **Usability Elements** (다국어): 버튼, 힌트, 에러 메시지, 탭 버튼
+    - 예: `운동 시작` / `Start Workout` / `ワークアウト開始`
+    - 이유: 사용자 경험, 접근성
+
+- **구현 파일**:
+  - `lib/pages/home_page.dart`: Design Element 타이틀 하드코딩
+  - `lib/pages/library_page_v2.dart`: 초기에는 "EXERCISES" 하드코딩 (후에 수정)
+  - ARB 파일 정리: Design Element 키 제거
+
+#### 6.3 일본어 로케일 테스트 및 수정
+- **테스트 환경**: iPhone 시뮬레이터 일본어 (ja_JP) 설정
+- **로케일 감지 확인**: 
+  ```
+  flutter: 🌐 Detected Device Locale: ja
+  flutter: ✅ Matched locale: ja
+  ```
+
+#### 6.4 번역 일관성 개선
+**문제**: "새로운 운동 추가" vs "카스텀 운동 추가" 불일치
+
+**수정**:
+- `lib/l10n/app_ja.arb`:
+  ```json
+  "addCustomExercise": "新しい運動を追加"  // 변경 전: "カスタム運動追加"
+  ```
+- `lib/l10n/app_ko.arb`:
+  ```json
+  "addCustomExercise": "새로운 운동 추가"  // 이미 올바름
+  ```
+
+#### 6.5 탭 버튼 다국어 처리
+**문제**: "EXERCISES" 탭이 영어로 하드코딩되어 있음 (Design Element로 잘못 분류)
+
+**수정**:
+1. **탭 버튼을 Usability Element로 재분류**
+   - 이유: 탭은 네비게이션 요소로 사용자 경험에 직접 영향
+   
+2. **코드 수정** (`lib/pages/library_page_v2.dart`):
+   ```dart
+   // 변경 전
+   child: const Text('EXERCISES'),
+   
+   // 변경 후
+   child: Text(l10n.exercise.toUpperCase()),
+   ```
+
+3. **번역 추가/수정**:
+   - `app_ja.arb`:
+     ```json
+     "exercise": "エクササイズ"  // 변경 전: "運動"
+     ```
+   - `app_ko.arb`:
+     ```json
+     "exercise": "엑서사이즈"  // 변경 전: "운동"
+     ```
+   - 이유: "루틴" (ルーティン/루틴)과 일관성 유지 (외래어는 카타카나/한글 표기)
+
+4. **결과**:
+   - 일본어: [ルーティン] [エクササイズ]
+   - 한국어: [루틴] [엑서사이즈]
+   - 영어: [ROUTINES] [EXERCISES]
+
+#### 6.6 온보딩 페이지 다국어 처리
+**문제**: 온보딩 페이지가 한국어로 하드코딩되어 있음
+
+**수정**:
+1. **ARB 파일에 키 추가** (모든 언어):
+   ```json
+   "skip": "Skip",
+   "onboardingTitle1": "Welcome to Iron Log",
+   "onboardingSubtitle1": "Track your workouts with precision",
+   "onboardingTitle2": "Build Routines",
+   "onboardingSubtitle2": "Create and save your workout routines",
+   "onboardingTitle3": "Track Progress",
+   "onboardingSubtitle3": "Monitor your strength gains over time",
+   "onboardingTitle4": "Achieve Goals",
+   "onboardingSubtitle4": "Set and reach your fitness milestones",
+   "next": "Next"
+   ```
+
+2. **코드 리팩토링** (`lib/pages/onboarding_page.dart`):
+   ```dart
+   // 변경 전
+   const Text('건너뛰기'),
+   
+   // 변경 후
+   Text(l10n.skip),
+   ```
+   - 모든 하드코딩된 한국어 텍스트를 `AppLocalizations` 사용으로 변경
+
+#### 6.7 운동 선택 버튼 다국어 처리
+**문제**: 운동 선택 버튼이 한국어로 하드코딩되어 일본어 모드에서도 한국어 표시
+
+**수정**:
+1. **ARB 파일에 키 추가**:
+   ```json
+   "addExercises": "Add {count} exercises"
+   ```
+   - 일본어: "{count}個追加 (ADD {count})"
+   - 한국어: "{count}개 추가하기 (ADD {count})"
+
+2. **코드 수정** (`lib/widgets/tactical_exercise_list.dart`):
+   ```dart
+   // 변경 전
+   child: Text('${_selectedExercises.length}개 추가하기 (ADD ${_selectedExercises.length})'),
+   
+   // 변경 후
+   child: Text(l10n.addExercises(_selectedExercises.length)),
+   ```
+
+#### 6.8 커밋 및 푸시
+- 모든 변경사항 커밋
+- 원격 저장소에 푸시 완료
+
+### 📊 오늘의 성과
+
+- ✅ 문서 통합 완료 (43개 파일 아카이브)
+- ✅ Hybrid Noir 전략 구현 및 문서화
+- ✅ 일본어 로케일 테스트 환경 구축
+- ✅ 4개 주요 UI 컴포넌트 다국어 처리:
+  1. 탭 버튼 (라이브러리 페이지)
+  2. 온보딩 페이지 (전체)
+  3. 운동 선택 버튼
+  4. 번역 일관성 개선
+- ✅ 모든 변경사항 커밋 및 푸시
+
+### 🎯 남은 작업
+
+1. **다국어 완성도 향상**
+   - 나머지 하드코딩된 텍스트 찾아서 수정
+   - 모든 페이지 일본어 테스트
+
+2. **Iron Pro 구독 시스템**
+   - 결제 연동
+   - Pro 기능 잠금/해제
+
+3. **앱 스토어 출시 준비**
+   - 아이콘 디자인
+   - 스크린샷 제작
+   - 앱 설명 작성 (EN, JA)
+
+---
+
 ## 📚 추가 문서
 
-- **다국어 전략**: `doc/260112_Hybrid_Noir_Localization.md`
-- **템포 엔진**: `doc/tempo_engine_implementation_summary.md`
+- **다국어 전략**: `doc/archive/260112_Hybrid_Noir_Localization.md`
+- **템포 엔진**: `doc/archive/tempo_engine_implementation_summary.md`
 - **로드맵**: `doc/ROADMAP.md`
 - **AI 에이전트 규칙**: `doc/AGENTS.md`
+- **문서 정리 요약**: `doc/DOCUMENTATION_CLEANUP_SUMMARY.md`
 
 ---
 
