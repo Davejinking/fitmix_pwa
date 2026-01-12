@@ -126,6 +126,7 @@ class _WeekStripState extends State<WeekStrip> {
           Column(
             children: [
               TableCalendar(
+                locale: locale.toString(), // 로케일 추가
                 firstDay: DateTime.utc(2020, 1, 1),
                 lastDay: DateTime.utc(2030, 12, 31),
                 focusedDay: _focusedDay,

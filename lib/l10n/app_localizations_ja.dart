@@ -91,6 +91,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get weekdaySun => '日';
 
   @override
+  String get weekdayMonShort => '月';
+
+  @override
+  String get weekdayTueShort => '火';
+
+  @override
+  String get weekdayWedShort => '水';
+
+  @override
+  String get weekdayThuShort => '木';
+
+  @override
+  String get weekdayFriShort => '金';
+
+  @override
+  String get weekdaySatShort => '土';
+
+  @override
+  String get weekdaySunShort => '日';
+
+  @override
   String get home => 'ホーム';
 
   @override
@@ -471,6 +492,48 @@ class AppLocalizationsJa extends AppLocalizations {
   String get all => '全て';
 
   @override
+  String get push => 'プッシュ';
+
+  @override
+  String get pull => 'プル';
+
+  @override
+  String get upper => '上半身';
+
+  @override
+  String get lower => '下半身';
+
+  @override
+  String get exercises => 'エクササイズ';
+
+  @override
+  String get weeklyStatus => '週間ステータス';
+
+  @override
+  String get monthlyGoal => '月間目標';
+
+  @override
+  String get initiateWorkout => 'ワークアウト開始';
+
+  @override
+  String get startSession => 'セッション開始';
+
+  @override
+  String get editSession => 'セッション編集';
+
+  @override
+  String get workouts => 'ワークアウト';
+
+  @override
+  String get totalVol => '総ボリューム';
+
+  @override
+  String get avgVol => '平均ボリューム';
+
+  @override
+  String get consistency => '一貫性';
+
+  @override
   String get bodyweight => '自重';
 
   @override
@@ -490,6 +553,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get searchExercise => '運動を検索';
+
+  @override
+  String get searchRoutine => 'ルーティン検索';
 
   @override
   String get noExercises => '運動がありません。';
@@ -869,120 +935,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get achievementWeekendDesc => '週末に運動';
 
   @override
-  String exerciseSelected(String name) {
-    return '$name 運動が選択されました。';
-  }
-
-  @override
-  String get upgradeTitle => 'プレミアムにアップグレード';
-
-  @override
-  String get unlockAllFeatures => 'すべての機能をアンロック';
-
-  @override
-  String get advancedAnalytics => '高度な分析';
-
-  @override
-  String get advancedAnalyticsDesc => '週間、月間、年間のワークアウトデータの深い分析。';
-
-  @override
-  String get removeAds => '広告を削除';
-
-  @override
-  String get removeAdsDesc => '邪魔されずにワークアウトに集中してください。';
-
-  @override
-  String get cloudBackup => 'クラウドバックアップ';
-
-  @override
-  String get cloudBackupDesc => '複数のデバイス間でデータを安全に同期します。';
-
-  @override
-  String get startMonthly => '月額¥990で開始';
-
-  @override
-  String get cancelAnytime => 'いつでもサブスクリプションをキャンセルできます。';
-
-  @override
-  String get powerShop => 'パワーショップ';
-
-  @override
-  String get items => 'アイテム';
-
-  @override
-  String get streakFreeze => 'ストリークフリーズ';
-
-  @override
-  String get streakFreezeDesc => '1日休んでもストリークを維持';
-
-  @override
-  String get weeklyReport => '週間ワークアウトレポート';
-
-  @override
-  String get weeklyReportDesc => '今週のワークアウト分析レポート';
-
-  @override
-  String get customization => 'カスタマイゼーション';
-
-  @override
-  String get darkPurpleTheme => 'ダークパープルテーマ';
-
-  @override
-  String get purplePointTheme => 'パープルポイントテーマ';
-
-  @override
-  String get fireTheme => 'ファイアテーマ';
-
-  @override
-  String get orangeTheme => 'バーニングオレンジテーマ';
-
-  @override
-  String get specialBadges => '特別バッジ';
-
-  @override
-  String get lightningBadge => 'ライトニングバッジ';
-
-  @override
-  String get specialBadgeDesc => 'プロフィールに表示される特別バッジ';
-
-  @override
-  String get comingSoon => '準備中';
-
-  @override
-  String get streakFreezeSuccess => 'ストリークフリーズを購入しました！❄️';
-
-  @override
-  String get insufficientPower => 'パワーが不足しています💪';
-
-  @override
-  String get weeklyReportTitle => '📊 週間レポート';
-
-  @override
-  String get thisWeekPerformance => '今週のパフォーマンス';
-
-  @override
-  String get allRecords => 'すべての記録';
-
-  @override
-  String get nextGoal => '次の目標';
-
-  @override
-  String levelAchievement(int level) {
-    return 'レベル$level達成';
-  }
-
-  @override
-  String leaguePromotion(String league) {
-    return '$leagueリーグ';
-  }
-
-  @override
-  String get encouragingMessage => 'よくやっています！';
-
-  @override
-  String get encouragingDesc => '継続的なワークアウトで目標を達成できます';
-
-  @override
   String get set => 'セット';
 
   @override
@@ -1008,6 +960,120 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get birthDateFormat => 'yyyy年MM月dd日';
+
+  @override
+  String exerciseSelected(String name) {
+    return '$name 運動が選択されました。';
+  }
+
+  @override
+  String get nextGoal => '次の目標';
+
+  @override
+  String get insufficientPower => 'パワーが不足しています💪';
+
+  @override
+  String get lightningBadge => 'ライトニングバッジ';
+
+  @override
+  String get specialBadgeDesc => 'プロフィールに表示される特別バッジ';
+
+  @override
+  String get streakFreeze => 'ストリークフリーズ';
+
+  @override
+  String get streakFreezeSuccess => 'ストリークフリーズを購入しました！❄️';
+
+  @override
+  String get weeklyReportTitle => '📊 週間レポート';
+
+  @override
+  String get allRecords => 'すべての記録';
+
+  @override
+  String get items => 'アイテム';
+
+  @override
+  String get purplePointTheme => 'パープルポイントテーマ';
+
+  @override
+  String get startMonthly => '月額¥990で開始';
+
+  @override
+  String get advancedAnalytics => '高度な分析';
+
+  @override
+  String get thisWeekPerformance => '今週のパフォーマンス';
+
+  @override
+  String get cloudBackup => 'クラウドバックアップ';
+
+  @override
+  String get upgradeTitle => 'プレミアムにアップグレード';
+
+  @override
+  String get unlockAllFeatures => 'すべての機能をアンロック';
+
+  @override
+  String get removeAds => '広告を削除';
+
+  @override
+  String get powerShop => 'パワーショップ';
+
+  @override
+  String get weeklyReportDesc => '今週のワークアウト分析レポート';
+
+  @override
+  String get removeAdsDesc => '邪魔されずにワークアウトに集中してください。';
+
+  @override
+  String get weeklyReport => '週間ワークアウトレポート';
+
+  @override
+  String get customization => 'カスタマイゼーション';
+
+  @override
+  String get cloudBackupDesc => '複数のデバイス間でデータを安全に同期します。';
+
+  @override
+  String get encouragingMessage => 'よくやっています！';
+
+  @override
+  String get cancelAnytime => 'いつでもサブスクリプションをキャンセルできます。';
+
+  @override
+  String leaguePromotion(String league) {
+    return '$leagueリーグ';
+  }
+
+  @override
+  String get encouragingDesc => '継続的なワークアウトで目標を達成できます';
+
+  @override
+  String get advancedAnalyticsDesc => '週間、月間、年間のワークアウトデータの深い分析。';
+
+  @override
+  String get streakFreezeDesc => '1日休んでもストリークを維持';
+
+  @override
+  String get darkPurpleTheme => 'ダークパープルテーマ';
+
+  @override
+  String get fireTheme => 'ファイアテーマ';
+
+  @override
+  String get comingSoon => '準備中';
+
+  @override
+  String levelAchievement(int level) {
+    return 'レベル$level達成';
+  }
+
+  @override
+  String get specialBadges => '特別バッジ';
+
+  @override
+  String get orangeTheme => 'バーニングオレンジテーマ';
 
   @override
   String get workoutPlanEmpty => 'ワークアウト計画がありません';

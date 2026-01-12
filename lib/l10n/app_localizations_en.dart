@@ -91,6 +91,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weekdaySun => 'Sun';
 
   @override
+  String get weekdayMonShort => 'M';
+
+  @override
+  String get weekdayTueShort => 'T';
+
+  @override
+  String get weekdayWedShort => 'W';
+
+  @override
+  String get weekdayThuShort => 'T';
+
+  @override
+  String get weekdayFriShort => 'F';
+
+  @override
+  String get weekdaySatShort => 'S';
+
+  @override
+  String get weekdaySunShort => 'S';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -474,6 +495,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get all => 'All';
 
   @override
+  String get push => 'Push';
+
+  @override
+  String get pull => 'Pull';
+
+  @override
+  String get upper => 'Upper';
+
+  @override
+  String get lower => 'Lower';
+
+  @override
+  String get exercises => 'Exercises';
+
+  @override
+  String get weeklyStatus => 'Weekly Status';
+
+  @override
+  String get monthlyGoal => 'Monthly Goal';
+
+  @override
+  String get initiateWorkout => 'Start Workout';
+
+  @override
+  String get startSession => 'Start Session';
+
+  @override
+  String get editSession => 'Edit Session';
+
+  @override
+  String get workouts => 'Workouts';
+
+  @override
+  String get totalVol => 'Total Vol';
+
+  @override
+  String get avgVol => 'Avg Vol';
+
+  @override
+  String get consistency => 'Consistency';
+
+  @override
   String get bodyweight => 'Bodyweight';
 
   @override
@@ -493,6 +556,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchExercise => 'Search for exercises';
+
+  @override
+  String get searchRoutine => 'Search Routine';
 
   @override
   String get noExercises => 'No exercises found.';
@@ -876,122 +942,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get achievementWeekendDesc => 'Workout on weekend';
 
   @override
-  String exerciseSelected(String name) {
-    return '$name exercise has been selected.';
-  }
-
-  @override
-  String get upgradeTitle => 'Upgrade to Premium';
-
-  @override
-  String get unlockAllFeatures => 'Unlock all features';
-
-  @override
-  String get advancedAnalytics => 'Advanced Analytics';
-
-  @override
-  String get advancedAnalyticsDesc =>
-      'Deep analysis of weekly, monthly, and yearly workout data.';
-
-  @override
-  String get removeAds => 'Remove Ads';
-
-  @override
-  String get removeAdsDesc => 'Focus on your workout without distractions.';
-
-  @override
-  String get cloudBackup => 'Cloud Backup';
-
-  @override
-  String get cloudBackupDesc => 'Safely sync data across multiple devices.';
-
-  @override
-  String get startMonthly => 'Start with ₩9,900/month';
-
-  @override
-  String get cancelAnytime => 'You can cancel your subscription anytime.';
-
-  @override
-  String get powerShop => 'Power Shop';
-
-  @override
-  String get items => 'Items';
-
-  @override
-  String get streakFreeze => 'Streak Freeze';
-
-  @override
-  String get streakFreezeDesc => 'Keep your streak even if you take a day off';
-
-  @override
-  String get weeklyReport => 'Weekly Workout Report';
-
-  @override
-  String get weeklyReportDesc => 'This week workout analysis report';
-
-  @override
-  String get customization => 'Customization';
-
-  @override
-  String get darkPurpleTheme => 'Dark Purple Theme';
-
-  @override
-  String get purplePointTheme => 'Purple Point Theme';
-
-  @override
-  String get fireTheme => 'Fire Theme';
-
-  @override
-  String get orangeTheme => 'Burning Orange Theme';
-
-  @override
-  String get specialBadges => 'Special Badges';
-
-  @override
-  String get lightningBadge => 'Lightning Badge';
-
-  @override
-  String get specialBadgeDesc => 'Special badge displayed on profile';
-
-  @override
-  String get comingSoon => 'Coming Soon';
-
-  @override
-  String get streakFreezeSuccess => 'Streak Freeze purchased! ❄️';
-
-  @override
-  String get insufficientPower => 'Insufficient Power 💪';
-
-  @override
-  String get weeklyReportTitle => '📊 Weekly Report';
-
-  @override
-  String get thisWeekPerformance => 'This Week Performance';
-
-  @override
-  String get allRecords => 'All Records';
-
-  @override
-  String get nextGoal => 'Next Goal';
-
-  @override
-  String levelAchievement(int level) {
-    return 'Level $level Achievement';
-  }
-
-  @override
-  String leaguePromotion(String league) {
-    return '$league League';
-  }
-
-  @override
-  String get encouragingMessage => 'You\'re doing great!';
-
-  @override
-  String get encouragingDesc =>
-      'You can achieve your goals with consistent workouts';
-
-  @override
   String get set => 'Set';
 
   @override
@@ -1017,6 +967,122 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get birthDateFormat => 'yyyy/MM/dd';
+
+  @override
+  String exerciseSelected(String name) {
+    return '$name exercise has been selected.';
+  }
+
+  @override
+  String get nextGoal => 'Next Goal';
+
+  @override
+  String get insufficientPower => 'Insufficient Power 💪';
+
+  @override
+  String get lightningBadge => 'Lightning Badge';
+
+  @override
+  String get specialBadgeDesc => 'Special badge displayed on profile';
+
+  @override
+  String get streakFreeze => 'Streak Freeze';
+
+  @override
+  String get streakFreezeSuccess => 'Streak Freeze purchased! ❄️';
+
+  @override
+  String get weeklyReportTitle => '📊 Weekly Report';
+
+  @override
+  String get allRecords => 'All Records';
+
+  @override
+  String get items => 'Items';
+
+  @override
+  String get purplePointTheme => 'Purple Point Theme';
+
+  @override
+  String get startMonthly => 'Start with ₩9,900/month';
+
+  @override
+  String get advancedAnalytics => 'Advanced Analytics';
+
+  @override
+  String get thisWeekPerformance => 'This Week Performance';
+
+  @override
+  String get cloudBackup => 'Cloud Backup';
+
+  @override
+  String get upgradeTitle => 'Upgrade to Premium';
+
+  @override
+  String get unlockAllFeatures => 'Unlock all features';
+
+  @override
+  String get removeAds => 'Remove Ads';
+
+  @override
+  String get powerShop => 'Power Shop';
+
+  @override
+  String get weeklyReportDesc => 'This week workout analysis report';
+
+  @override
+  String get removeAdsDesc => 'Focus on your workout without distractions.';
+
+  @override
+  String get weeklyReport => 'Weekly Workout Report';
+
+  @override
+  String get customization => 'Customization';
+
+  @override
+  String get cloudBackupDesc => 'Safely sync data across multiple devices.';
+
+  @override
+  String get encouragingMessage => 'You\'re doing great!';
+
+  @override
+  String get cancelAnytime => 'You can cancel your subscription anytime.';
+
+  @override
+  String leaguePromotion(String league) {
+    return '$league League';
+  }
+
+  @override
+  String get encouragingDesc =>
+      'You can achieve your goals with consistent workouts';
+
+  @override
+  String get advancedAnalyticsDesc =>
+      'Deep analysis of weekly, monthly, and yearly workout data.';
+
+  @override
+  String get streakFreezeDesc => 'Keep your streak even if you take a day off';
+
+  @override
+  String get darkPurpleTheme => 'Dark Purple Theme';
+
+  @override
+  String get fireTheme => 'Fire Theme';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String levelAchievement(int level) {
+    return 'Level $level Achievement';
+  }
+
+  @override
+  String get specialBadges => 'Special Badges';
+
+  @override
+  String get orangeTheme => 'Burning Orange Theme';
 
   @override
   String get workoutPlanEmpty => 'No workout plan';

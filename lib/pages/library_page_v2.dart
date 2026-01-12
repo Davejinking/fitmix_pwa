@@ -4,13 +4,12 @@ import '../core/service_locator.dart';
 import '../models/routine.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
-import '../models/exercise_set.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/tactical_exercise_list.dart';
 import '../data/session_repo.dart';
 import '../data/routine_repo.dart';
 import '../data/user_repo.dart';
-import '../data/exercise_library_repo.dart';
+import '../services/exercise_seeding_service.dart';
 import '../core/error_handler.dart';
 import '../core/subscription_limits.dart';
 import '../core/iron_theme.dart';
@@ -36,7 +35,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   String _routineSearchQuery = '';
   final TextEditingController _routineSearchController = TextEditingController();
   
-  int _routineListKey = 0;
+  // Exercise Tab State
+  int _exerciseListKey = 0;
   
   @override
   void initState() {
@@ -63,16 +63,24 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
       final bodyPart = result['bodyPart']!;
       
       try {
-        final exerciseRepo = getIt<ExerciseLibraryRepo>();
-        
-        // Save to Hive
-        await exerciseRepo.addExercise(bodyPart, name);
+        // 🔥 ExerciseSeedingService를 사용하여 커스텀 운동 추가
+        final seedingService = ExerciseSeedingService();
+        await seedingService.initializeAndSeed();
+        await seedingService.addCustomExercise(
+          name: name,
+          bodyPart: bodyPart,
+        );
         
         if (mounted) {
           ErrorHandler.showSuccessSnackBar(
             context,
             'Exercise added successfully', // TODO: Add i18n
           );
+          
+          // 🔥 리스트 새로고침을 위해 key 변경
+          setState(() {
+            _exerciseListKey++;
+          });
         }
       } catch (e) {
         if (mounted) {
@@ -88,6 +96,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   // 🔥 Build Exercises Tab (Matching Routine Tab Style)
   Widget _buildExercisesTab(AppLocalizations l10n) {
     return TacticalExerciseList(
+      key: ValueKey(_exerciseListKey), // 🔥 Key for forcing rebuild
       isSelectionMode: false,
       showBookmarks: true,
       // 🔥 Header Widget: Create Button (PIXEL PERFECT - Matching Routine Tab)
@@ -130,9 +139,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
               ),
             ),
             // 🔥 ONLY TEXT - NO ICON
-            child: const Text(
-              '+ 新しい運動を作成',
-              style: TextStyle(
+            child: Text(
+              '+ ${l10n.addCustomExercise}',
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.5,
@@ -214,7 +223,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    'EXERCISES', // TODO: Add i18n
+                    'EXERCISES', // 영어 고정 - Design Element
                     style: TextStyle(
                       color: !_isRoutineMode ? Colors.black : Colors.grey,
                       fontWeight: FontWeight.w900,
@@ -239,7 +248,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         controller: _routineSearchController,
         cursorColor: Colors.white,
         decoration: InputDecoration(
-          hintText: "ルーティン検索", // TODO: Add i18n
+          hintText: l10n.searchRoutine,
           hintStyle: const TextStyle(
             color: Colors.grey,
             fontSize: 14.0, // 🔥 IRON STANDARD
@@ -262,7 +271,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                     _routineSearchController.clear();
                     setState(() {
                       _routineSearchQuery = '';
-                      _routineListKey++;
                     });
                   },
                 )
@@ -288,7 +296,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         onChanged: (query) {
           setState(() {
             _routineSearchQuery = query;
-            _routineListKey++;
           });
         },
       ),
@@ -327,7 +334,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
               onSelected: (_) {
                 setState(() {
                   _selectedRoutineFilterKey = key;
-                  _routineListKey++;
                 });
               },
               backgroundColor: Colors.transparent,
@@ -352,11 +358,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   String _getRoutineFilterLabel(AppLocalizations l10n, String key) {
     switch (key) {
       case 'all': return l10n.all;
-      case 'push': return 'PUSH';
-      case 'pull': return 'PULL';
+      case 'push': return l10n.push.toUpperCase();
+      case 'pull': return l10n.pull.toUpperCase();
       case 'legs': return l10n.legs.toUpperCase();
-      case 'upper': return 'UPPER';
-      case 'lower': return 'LOWER';
+      case 'upper': return l10n.upper.toUpperCase();
+      case 'lower': return l10n.lower.toUpperCase();
       case 'fullBody': return l10n.fullBody.toUpperCase();
       default: return key.toUpperCase();
     }
@@ -1439,15 +1445,17 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _nameController,
+              maxLength: 40, // 🎯 40-character limit (optimal for English workout names)
               style: const TextStyle(
                 color: Colors.white,
                 fontFamily: 'Courier',
               ),
               decoration: InputDecoration(
-                hintText: 'e.g., Hack Squat',
+                hintText: 'e.g., Triceps Pushdown (Rope Attachment)',
                 hintStyle: const TextStyle(
                   color: Colors.grey,
                   fontFamily: 'Courier',
+                  fontSize: 12,
                 ),
                 filled: true,
                 fillColor: Colors.grey[800],
@@ -1462,6 +1470,11 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 12,
+                ),
+                counterStyle: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 11,
+                  fontFamily: 'Courier',
                 ),
               ),
               autofocus: true,

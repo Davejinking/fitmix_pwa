@@ -91,6 +91,27 @@ class AppLocalizationsKo extends AppLocalizations {
   String get weekdaySun => '일';
 
   @override
+  String get weekdayMonShort => '월';
+
+  @override
+  String get weekdayTueShort => '화';
+
+  @override
+  String get weekdayWedShort => '수';
+
+  @override
+  String get weekdayThuShort => '목';
+
+  @override
+  String get weekdayFriShort => '금';
+
+  @override
+  String get weekdaySatShort => '토';
+
+  @override
+  String get weekdaySunShort => '일';
+
+  @override
   String get home => '홈';
 
   @override
@@ -471,6 +492,48 @@ class AppLocalizationsKo extends AppLocalizations {
   String get all => '전체';
 
   @override
+  String get push => '밀기';
+
+  @override
+  String get pull => '당기기';
+
+  @override
+  String get upper => '상체';
+
+  @override
+  String get lower => '하체';
+
+  @override
+  String get exercises => '운동';
+
+  @override
+  String get weeklyStatus => '주간 현황';
+
+  @override
+  String get monthlyGoal => '월간 목표';
+
+  @override
+  String get initiateWorkout => '운동 시작';
+
+  @override
+  String get startSession => '세션 시작';
+
+  @override
+  String get editSession => '세션 편집';
+
+  @override
+  String get workouts => '운동';
+
+  @override
+  String get totalVol => '총 볼륨';
+
+  @override
+  String get avgVol => '평균 볼륨';
+
+  @override
+  String get consistency => '일관성';
+
+  @override
   String get bodyweight => '맨몸';
 
   @override
@@ -492,13 +555,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchExercise => '찾으시는 운동을 검색해보세요.';
 
   @override
+  String get searchRoutine => '루틴 검색';
+
+  @override
   String get noExercises => '운동이 없습니다.';
 
   @override
   String get retry => '다시 시도';
 
   @override
-  String get addCustomExercise => '커스텀 운동 추가';
+  String get addCustomExercise => '새로운 운동 추가';
 
   @override
   String get customExerciseName => '운동 이름';
@@ -869,120 +935,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get achievementWeekendDesc => '주말에 운동하기';
 
   @override
-  String exerciseSelected(String name) {
-    return '$name 운동이 선택되었습니다.';
-  }
-
-  @override
-  String get upgradeTitle => '프리미엄으로 업그레이드';
-
-  @override
-  String get unlockAllFeatures => '모든 기능을 잠금 해제하세요';
-
-  @override
-  String get advancedAnalytics => '고급 분석';
-
-  @override
-  String get advancedAnalyticsDesc => '주간, 월간, 연간 운동 데이터를 심층 분석하세요.';
-
-  @override
-  String get removeAds => '광고 제거';
-
-  @override
-  String get removeAdsDesc => '방해 없이 운동에만 집중하세요.';
-
-  @override
-  String get cloudBackup => '클라우드 백업';
-
-  @override
-  String get cloudBackupDesc => '여러 기기에서 데이터를 안전하게 동기화하세요.';
-
-  @override
-  String get startMonthly => '월 9,900원으로 시작하기';
-
-  @override
-  String get cancelAnytime => '언제든지 구독을 취소할 수 있습니다.';
-
-  @override
-  String get powerShop => '파워 상점';
-
-  @override
-  String get items => '아이템';
-
-  @override
-  String get streakFreeze => '스트릭 프리즈';
-
-  @override
-  String get streakFreezeDesc => '하루 쉬어도 스트릭 유지';
-
-  @override
-  String get weeklyReport => '주간 운동 리포트';
-
-  @override
-  String get weeklyReportDesc => '이번 주 운동 분석 리포트';
-
-  @override
-  String get customization => '커스터마이징';
-
-  @override
-  String get darkPurpleTheme => '다크 퍼플 테마';
-
-  @override
-  String get purplePointTheme => '보라색 포인트 테마';
-
-  @override
-  String get fireTheme => '파이어 테마';
-
-  @override
-  String get orangeTheme => '불타는 오렌지 테마';
-
-  @override
-  String get specialBadges => '특별 뱃지';
-
-  @override
-  String get lightningBadge => '번개 뱃지';
-
-  @override
-  String get specialBadgeDesc => '프로필에 표시되는 특별 뱃지';
-
-  @override
-  String get comingSoon => '준비 중';
-
-  @override
-  String get streakFreezeSuccess => '스트릭 프리즈 구매 완료! ❄️';
-
-  @override
-  String get insufficientPower => '파워가 부족해요 💪';
-
-  @override
-  String get weeklyReportTitle => '📊 주간 리포트';
-
-  @override
-  String get thisWeekPerformance => '이번 주 성과';
-
-  @override
-  String get allRecords => '전체 기록';
-
-  @override
-  String get nextGoal => '다음 목표';
-
-  @override
-  String levelAchievement(int level) {
-    return 'Level $level 달성';
-  }
-
-  @override
-  String leaguePromotion(String league) {
-    return '$league 리그';
-  }
-
-  @override
-  String get encouragingMessage => '잘하고 있어요!';
-
-  @override
-  String get encouragingDesc => '꾸준히 운동하면 목표를 달성할 수 있어요';
-
-  @override
   String get set => '세트';
 
   @override
@@ -1008,6 +960,120 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get birthDateFormat => 'yyyy년 MM월 dd일';
+
+  @override
+  String exerciseSelected(String name) {
+    return '$name 운동이 선택되었습니다.';
+  }
+
+  @override
+  String get nextGoal => '다음 목표';
+
+  @override
+  String get insufficientPower => '파워가 부족해요 💪';
+
+  @override
+  String get lightningBadge => '번개 뱃지';
+
+  @override
+  String get specialBadgeDesc => '프로필에 표시되는 특별 뱃지';
+
+  @override
+  String get streakFreeze => '스트릭 프리즈';
+
+  @override
+  String get streakFreezeSuccess => '스트릭 프리즈 구매 완료! ❄️';
+
+  @override
+  String get weeklyReportTitle => '📊 주간 리포트';
+
+  @override
+  String get allRecords => '전체 기록';
+
+  @override
+  String get items => '아이템';
+
+  @override
+  String get purplePointTheme => '보라색 포인트 테마';
+
+  @override
+  String get startMonthly => '월 9,900원으로 시작하기';
+
+  @override
+  String get advancedAnalytics => '고급 분석';
+
+  @override
+  String get thisWeekPerformance => '이번 주 성과';
+
+  @override
+  String get cloudBackup => '클라우드 백업';
+
+  @override
+  String get upgradeTitle => '프리미엄으로 업그레이드';
+
+  @override
+  String get unlockAllFeatures => '모든 기능을 잠금 해제하세요';
+
+  @override
+  String get removeAds => '광고 제거';
+
+  @override
+  String get powerShop => '파워 상점';
+
+  @override
+  String get weeklyReportDesc => '이번 주 운동 분석 리포트';
+
+  @override
+  String get removeAdsDesc => '방해 없이 운동에만 집중하세요.';
+
+  @override
+  String get weeklyReport => '주간 운동 리포트';
+
+  @override
+  String get customization => '커스터마이징';
+
+  @override
+  String get cloudBackupDesc => '여러 기기에서 데이터를 안전하게 동기화하세요.';
+
+  @override
+  String get encouragingMessage => '잘하고 있어요!';
+
+  @override
+  String get cancelAnytime => '언제든지 구독을 취소할 수 있습니다.';
+
+  @override
+  String leaguePromotion(String league) {
+    return '$league 리그';
+  }
+
+  @override
+  String get encouragingDesc => '꾸준히 운동하면 목표를 달성할 수 있어요';
+
+  @override
+  String get advancedAnalyticsDesc => '주간, 월간, 연간 운동 데이터를 심층 분석하세요.';
+
+  @override
+  String get streakFreezeDesc => '하루 쉬어도 스트릭 유지';
+
+  @override
+  String get darkPurpleTheme => '다크 퍼플 테마';
+
+  @override
+  String get fireTheme => '파이어 테마';
+
+  @override
+  String get comingSoon => '준비 중';
+
+  @override
+  String levelAchievement(int level) {
+    return 'Level $level 달성';
+  }
+
+  @override
+  String get specialBadges => '특별 뱃지';
+
+  @override
+  String get orangeTheme => '불타는 오렌지 테마';
 
   @override
   String get workoutPlanEmpty => '운동 계획이 없습니다';

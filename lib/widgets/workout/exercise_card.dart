@@ -44,7 +44,6 @@ class ExerciseCard extends StatefulWidget {
 }
 
 class _ExerciseCardState extends State<ExerciseCard> {
-  final TextEditingController _memoController = TextEditingController();
   bool _isExpanded = true;
   TempoController? _tempoController;
   TempoMode _currentMode = TempoMode.beep;
@@ -71,7 +70,6 @@ class _ExerciseCardState extends State<ExerciseCard> {
 
   @override
   void dispose() {
-    _memoController.dispose();
     _tempoController?.dispose();
     super.dispose();
   }
@@ -173,8 +171,47 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
-                  _buildMemoField(l10n),
-                  const SizedBox(height: 12),
+                  // Memo Display Section (if exists)
+                  if (widget.exercise.memo != null && widget.exercise.memo!.trim().isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        _showMemoBottomSheet(context);
+                        HapticFeedback.lightImpact();
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.format_quote_rounded,
+                              size: 14,
+                              color: Color(0xFF3B82F6),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                widget.exercise.memo!,
+                                style: TextStyle(
+                                  color: Colors.grey[300],
+                                  fontSize: 13,
+                                  height: 1.4,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   _buildColumnHeaders(l10n),
                   const SizedBox(height: 8),
                   ...List.generate(
@@ -221,7 +258,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
         // 메인 타이틀 행
         Row(
           children: [
-            // 운동 번호
+            // 1. 운동 번호
             Container(
               width: 28,
               height: 28,
@@ -240,61 +277,75 @@ class _ExerciseCardState extends State<ExerciseCard> {
               ),
             ),
             const SizedBox(width: 12),
-            // 운동 이름 및 부위 태그
+            // 2. 부위 태그 + 운동 이름 (Column으로 세로 배치)
             Expanded(
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 부위 태그 (Chip 스타일)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey[400]?.withValues(alpha: textOpacity),
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        // 운동 이름 (더 강조)
-                        Text(
-                          _getLocalizedExerciseName(widget.exercise.name, locale),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white.withValues(alpha: textOpacity),
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                      ],
+                  // 부위 태그 (Chip 스타일)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[400]?.withValues(alpha: textOpacity),
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.2,
+                      ),
                     ),
                   ),
-                  // 운동 정보 아이콘
-                  GestureDetector(
-                    onTap: () => _showExerciseDetail(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.info_outline,
-                        size: 18,
-                        color: Colors.grey[500],
-                      ),
+                  const SizedBox(height: 6),
+                  // 운동 이름
+                  Text(
+                    _getLocalizedExerciseName(widget.exercise.name, locale),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white.withValues(alpha: textOpacity),
+                      letterSpacing: -0.3,
                     ),
                   ),
                 ],
               ),
             ),
-            // 세트 진행률 표시 (항상 표시)
+            // 3. 운동 정보 아이콘
+            IconButton(
+              onPressed: () => _showExerciseDetail(context),
+              icon: Icon(
+                Icons.info_outline,
+                size: 18,
+                color: Colors.grey[500],
+              ),
+              constraints: const BoxConstraints(),
+              padding: const EdgeInsets.all(4),
+              visualDensity: VisualDensity.compact,
+            ),
+            // 4. 메모 아이콘 (반드시 보여야 함)
+            IconButton(
+              onPressed: () {
+                _showMemoBottomSheet(context);
+                HapticFeedback.lightImpact();
+              },
+              icon: Icon(
+                Icons.note_alt_outlined,
+                size: 18,
+                color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                    ? const Color(0xFF3B82F6)
+                    : Colors.grey[500],
+              ),
+              constraints: const BoxConstraints(),
+              padding: const EdgeInsets.all(4),
+              visualDensity: VisualDensity.compact,
+            ),
+            // 5. 세트 진행률 표시
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
@@ -313,14 +364,14 @@ class _ExerciseCardState extends State<ExerciseCard> {
               ),
             ),
             const SizedBox(width: 8),
-            // 드래그 핸들 아이콘 (항상 표시)
+            // 6. 드래그 핸들 아이콘
             Icon(
               Icons.drag_handle,
               color: Colors.grey[600],
               size: 20,
             ),
             const SizedBox(width: 4),
-            // 확장/축소 아이콘
+            // 7. 확장/축소 아이콘
             Icon(
               isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
               color: Colors.grey[500],
@@ -419,27 +470,6 @@ class _ExerciseCardState extends State<ExerciseCard> {
     );
   }
 
-
-  Widget _buildMemoField(AppLocalizations l10n) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF323844),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: TextField(
-        controller: _memoController,
-        enabled: widget.isEditingEnabled,
-        style: const TextStyle(color: Colors.white, fontSize: 13),
-        decoration: InputDecoration(
-          hintText: l10n.memo,
-          hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        ),
-        maxLines: 1,
-      ),
-    );
-  }
 
   Widget _buildColumnHeaders(AppLocalizations l10n) {
     return Padding(
@@ -605,6 +635,143 @@ class _ExerciseCardState extends State<ExerciseCard> {
         upSeconds: widget.exercise.concentricSeconds,
       );
     }
+  }
+
+  void _showMemoBottomSheet(BuildContext context) {
+    final TextEditingController memoController = TextEditingController(
+      text: widget.exercise.memo ?? '',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Important for full view with keyboard
+      backgroundColor: const Color(0xFF1A1A1A), // Dark Theme background
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom, // Avoid keyboard overlay
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header
+            const Text(
+              'Session Note',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.exercise.name,
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Memo Input
+            TextField(
+              controller: memoController,
+              maxLength: 200,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'How was this workout?',
+                hintStyle: TextStyle(color: Colors.grey[600]),
+                filled: true,
+                fillColor: Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                counterStyle: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                ),
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 16),
+            
+            // Action Buttons
+            Row(
+              children: [
+                // Clear Button (only show if memo exists)
+                if (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          widget.exercise.memo = null;
+                        });
+                        widget.onUpdate();
+                        Navigator.pop(context);
+                        HapticFeedback.lightImpact();
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey[700]!, width: 1),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                  const SizedBox(width: 12),
+                
+                // Save Button
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final memo = memoController.text.trim();
+                      setState(() {
+                        widget.exercise.memo = memo.isEmpty ? null : memo;
+                      });
+                      widget.onUpdate();
+                      Navigator.pop(context);
+                      HapticFeedback.mediumImpact();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6), // Brand Color (Electric Blue)
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Save Note',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32), // Bottom padding
+          ],
+        ),
+      ),
+    );
   }
 }
 

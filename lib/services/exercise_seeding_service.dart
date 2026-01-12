@@ -109,6 +109,30 @@ class ExerciseSeedingService {
     return _box.values.toList();
   }
 
+  /// 커스텀 운동 추가
+  Future<void> addCustomExercise({
+    required String name,
+    required String bodyPart,
+    String equipmentType = 'Bodyweight',
+  }) async {
+    // 커스텀 운동 ID 생성 (custom_ 접두사 사용)
+    final id = 'custom_${DateTime.now().millisecondsSinceEpoch}';
+    
+    final customExercise = ExerciseLibraryItem(
+      id: id,
+      nameKr: name,
+      nameEn: name,
+      nameJp: name,
+      targetPart: bodyPart,
+      equipmentType: equipmentType,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    
+    await _box.put(id, customExercise);
+    print('✅ 커스텀 운동 추가: $name ($id)');
+  }
+
   /// 부위별 운동 조회
   Future<List<ExerciseLibraryItem>> getExercisesByBodyPart(String bodyPart) async {
     return _box.values

@@ -30,6 +30,9 @@ class Exercise extends HiveObject {
   @HiveField(7)
   String targetReps; // 🔥 Target reps for routine planning (e.g., "8-12" or "5")
 
+  @HiveField(8)
+  String? memo; // 🔥 Session memo (e.g., "Shoulder hurts today", "Increased weight")
+
   Exercise({
     required this.name,
     required this.bodyPart,
@@ -39,6 +42,7 @@ class Exercise extends HiveObject {
     this.isTempoEnabled = false,
     this.targetSets = 3, // Default: 3 sets
     this.targetReps = '10', // Default: 10 reps
+    this.memo, // 🔥 Nullable memo field
   }) : sets = sets ?? [ExerciseSet()];
 
   /// Exercise 객체를 복사하여 새로운 인스턴스를 생성합니다.
@@ -51,6 +55,7 @@ class Exercise extends HiveObject {
     bool? isTempoEnabled,
     int? targetSets,
     String? targetReps,
+    String? memo,
   }) {
     return Exercise(
       name: name ?? this.name,
@@ -61,6 +66,7 @@ class Exercise extends HiveObject {
       isTempoEnabled: isTempoEnabled ?? this.isTempoEnabled,
       targetSets: targetSets ?? this.targetSets,
       targetReps: targetReps ?? this.targetReps,
+      memo: memo ?? this.memo,
     );
   }
 

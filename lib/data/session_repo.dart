@@ -9,10 +9,12 @@ import 'package:intl/intl.dart';
 class ExerciseHistoryRecord {
   final String date; // yyyy-MM-dd
   final List<ExerciseSet> sets;
+  final String? memo; // 메모 추가
   
   ExerciseHistoryRecord({
     required this.date,
     required this.sets,
+    this.memo,
   });
   
   /// 최고 무게 반환
@@ -246,8 +248,9 @@ class HiveSessionRepo implements SessionRepo {
             records.add(ExerciseHistoryRecord(
               date: session.ymd,
               sets: completedSets,
+              memo: exercise.memo, // 메모 추가
             ));
-            print('  - 기록 추가됨: ${session.ymd}');
+            print('  - 기록 추가됨: ${session.ymd}, 메모: ${exercise.memo ?? "없음"}');
           }
         }
       }
@@ -311,6 +314,7 @@ class HiveSessionRepo implements SessionRepo {
             Exercise(
               name: 'Bench Press', // 영어 원본명
               bodyPart: '가슴',
+              memo: '컨디션 좋음 #PR 시도 가능할듯',
               sets: [
                 ExerciseSet(weight: 60, reps: 10, isCompleted: true),
                 ExerciseSet(weight: 65, reps: 8, isCompleted: true),
@@ -320,6 +324,7 @@ class HiveSessionRepo implements SessionRepo {
             Exercise(
               name: 'Squat', // 영어 원본명
               bodyPart: '하체',
+              memo: '무릎 상태 양호',
               sets: [
                 ExerciseSet(weight: 80, reps: 12, isCompleted: true),
                 ExerciseSet(weight: 85, reps: 10, isCompleted: true),
@@ -337,6 +342,7 @@ class HiveSessionRepo implements SessionRepo {
             Exercise(
               name: 'Deadlift', // 영어 원본명
               bodyPart: '등',
+              memo: '허리 조심 #주의',
               sets: [
                 ExerciseSet(weight: 100, reps: 8, isCompleted: true),
                 ExerciseSet(weight: 110, reps: 6, isCompleted: true),
@@ -363,6 +369,7 @@ class HiveSessionRepo implements SessionRepo {
             Exercise(
               name: 'Bench Press', // 영어 원본명
               bodyPart: '가슴',
+              memo: '왼쪽 어깨 약간 불편 #통증',
               sets: [
                 ExerciseSet(weight: 65, reps: 10, isCompleted: true),
                 ExerciseSet(weight: 70, reps: 8, isCompleted: true),
@@ -373,6 +380,7 @@ class HiveSessionRepo implements SessionRepo {
             Exercise(
               name: 'Incline Dumbbell Press', // 영어 원본명
               bodyPart: '가슴',
+              memo: '자극 좋음 #성공',
               sets: [
                 ExerciseSet(weight: 25, reps: 12, isCompleted: true),
                 ExerciseSet(weight: 30, reps: 10, isCompleted: true),
@@ -390,6 +398,7 @@ class HiveSessionRepo implements SessionRepo {
             Exercise(
               name: 'Squat', // 영어 원본명
               bodyPart: '하체',
+              memo: '폼 개선됨 증량 준비 #진전',
               sets: [
                 ExerciseSet(weight: 85, reps: 12, isCompleted: true),
                 ExerciseSet(weight: 90, reps: 10, isCompleted: true),
@@ -417,6 +426,7 @@ class HiveSessionRepo implements SessionRepo {
             Exercise(
               name: 'Bench Press', // 영어 원본명
               bodyPart: '가슴',
+              memo: '첫 시도 긴장됨',
               sets: [
                 ExerciseSet(weight: 55, reps: 10, isCompleted: true),
                 ExerciseSet(weight: 60, reps: 8, isCompleted: true),

@@ -282,78 +282,109 @@ class _ExerciseDetailModalState extends State<ExerciseDetailModal> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: IronTheme.background,
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFF1E1E1E), // Obsidian dark background
+        borderRadius: BorderRadius.circular(8),
+        border: const Border(
+          left: BorderSide(
+            color: Color(0xFF3B82F6), // Blue accent strip (Obsidian style)
+            width: 4,
+          ),
+        ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            record.formattedDate,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: IronTheme.primary,
-            ),
-          ),
-          const SizedBox(width: 16),
-          
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${record.sets.length}세트',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: IronTheme.textHigh,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Wrap(
-                  spacing: 8,
-                  children: record.sets.map((set) => Text(
-                    '${set.weight}kg × ${set.reps}회',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: IronTheme.textMedium,
-                    ),
-                  )).toList(),
-                ),
-              ],
-            ),
-          ),
-          
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          // Header: Date & Summary Stats
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${record.totalVolume.toStringAsFixed(0)}kg',
+                record.formattedDate,
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: IronTheme.textHigh,
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
-                '총 볼륨',
+                '${record.sets.length}세트 · ${record.totalVolume.toStringAsFixed(0)}kg',
                 style: TextStyle(
                   fontSize: 12,
-                  color: IronTheme.textMedium,
+                  color: Colors.grey[500],
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
           
-          const SizedBox(width: 12),
-          Icon(
-            Icons.chevron_right,
-            color: IronTheme.textMedium,
-            size: 20,
+          // Body: The Memo (Hero Section)
+          if (record.memo != null && record.memo!.trim().isNotEmpty) ...[
+            const SizedBox(height: 12),
+            RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  fontFamily: 'Pretendard',
+                ),
+                children: _parseMemoWithHashtags(record.memo!),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ] else ...[
+            const SizedBox(height: 8),
+          ],
+          
+          // Footer: Set Details (Subtle)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              record.sets.map((set) => '${set.weight}kg × ${set.reps}회').join(', '),
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 11,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  /// Parse memo text and highlight hashtags
+  List<TextSpan> _parseMemoWithHashtags(String text) {
+    final words = text.split(' ');
+    final spans = <TextSpan>[];
+    
+    for (var word in words) {
+      if (word.startsWith('#')) {
+        // Highlight hashtags in cyan/gold
+        spans.add(TextSpan(
+          text: '$word ',
+          style: const TextStyle(
+            color: Color(0xFF64FFDA), // Cyan accent (Obsidian style)
+            fontWeight: FontWeight.bold,
+          ),
+        ));
+      } else {
+        // Normal text
+        spans.add(TextSpan(
+          text: '$word ',
+          style: TextStyle(
+            color: Colors.grey[300],
+          ),
+        ));
+      }
+    }
+    
+    return spans;
   }
 
   Widget _buildInstructionsAccordion() {

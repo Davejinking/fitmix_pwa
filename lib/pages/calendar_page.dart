@@ -461,7 +461,7 @@ class _CalendarPageState extends State<CalendarPage> {
     if (!hasPlan && !isRest) {
       // Empty State
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // 패딩 줄임
         decoration: BoxDecoration(
           color: Colors.black, // Pure black - seamless
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, -4))],
@@ -472,14 +472,14 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: 52, // 56 → 52로 줄임
                 child: OutlinedButton.icon(
                   onPressed: _addExercise,
-                  icon: const Icon(Icons.add, size: 22),
+                  icon: const Icon(Icons.add, size: 20), // 22 → 20
                   label: Text(
                     l10n.planWorkout.toUpperCase(),
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15, // 16 → 15
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.2,
                       fontFamily: 'Courier', // Monospace tactical
@@ -488,24 +488,24 @@ class _CalendarPageState extends State<CalendarPage> {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
                     side: const BorderSide(color: Colors.white, width: 1.5), // White ghost style
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 14), // 16 → 14
                     shape: BeveledRectangleBorder( // Tactical cut
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10), // 12 → 10
               SizedBox(
                 width: double.infinity,
-                height: 56, // Reduced from 60
+                height: 52, // 56 → 52로 줄임
                 child: OutlinedButton.icon(
                   onPressed: _saveRestDay,
-                  icon: const Icon(Icons.event_busy, size: 22),
+                  icon: const Icon(Icons.event_busy, size: 20), // 22 → 20
                   label: Text(
                     l10n.markRest.toUpperCase(),
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15, // 16 → 15
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.2,
                       fontFamily: 'Courier', // Monospace tactical
@@ -513,7 +513,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16), // Reduced
+                    padding: const EdgeInsets.symmetric(vertical: 14), // 16 → 14
                     side: BorderSide(color: Colors.grey[700]!, width: 1.5),
                     shape: BeveledRectangleBorder( // Tactical cut
                       borderRadius: BorderRadius.circular(5),
@@ -1418,6 +1418,135 @@ class _ExerciseCardState extends State<_ExerciseCard> {
     }
   }
 
+  void _showMemoBottomSheet(BuildContext context) {
+    final TextEditingController memoController = TextEditingController(
+      text: widget.exercise.memo ?? '',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A1A1A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Session Note',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.exercise.name,
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: memoController,
+              maxLength: 200,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'How was this workout?',
+                hintStyle: TextStyle(color: Colors.grey[600]),
+                filled: true,
+                fillColor: Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                counterStyle: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                ),
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                if (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          widget.exercise.memo = null;
+                        });
+                        widget.onUpdate();
+                        Navigator.pop(context);
+                        HapticFeedback.lightImpact();
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey[700]!, width: 1),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                  const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final memo = memoController.text.trim();
+                      setState(() {
+                        widget.exercise.memo = memo.isEmpty ? null : memo;
+                      });
+                      widget.onUpdate();
+                      Navigator.pop(context);
+                      HapticFeedback.mediumImpact();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Save Note',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1494,7 +1623,43 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      // 4️⃣ Info Icon (i) - Always visible
+                      GestureDetector(
+                        onTap: () {
+                          showExerciseDetailModal(
+                            context,
+                            exerciseName: widget.exercise.name,
+                            sessionRepo: widget.sessionRepo,
+                            exerciseRepo: widget.exerciseRepo,
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ),
+                      // 5️⃣ Memo Icon - Always visible
+                      GestureDetector(
+                        onTap: () {
+                          _showMemoBottomSheet(context);
+                          HapticFeedback.lightImpact();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.note_alt_outlined,
+                            size: 18,
+                            color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                                ? const Color(0xFF3B82F6)
+                                : Colors.grey[500],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       if (isCompleted)
                         const Icon(Icons.check_circle, color: Color(0xFF2196F3), size: 28)
                       else
@@ -1524,26 +1689,6 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           l10n.totalVolumeShort(totalVolume.toStringAsFixed(0)),
                           style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                         ),
-                        const Spacer(),
-                        // 운동 정보 아이콘 (i)
-                        GestureDetector(
-                          onTap: () {
-                            showExerciseDetailModal(
-                              context,
-                              exerciseName: widget.exercise.name,
-                              sessionRepo: widget.sessionRepo,
-                              exerciseRepo: widget.exerciseRepo,
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            child: Icon(
-                              Icons.info_outline,
-                              size: 16,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ],
@@ -1556,6 +1701,47 @@ class _ExerciseCardState extends State<_ExerciseCard> {
             secondChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Memo Display Section (if exists)
+                if (widget.exercise.memo != null && widget.exercise.memo!.trim().isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      _showMemoBottomSheet(context);
+                      HapticFeedback.lightImpact();
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(top: 8, bottom: 8, left: 4, right: 4),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.format_quote_rounded,
+                            size: 14,
+                            color: const Color(0xFF3B82F6),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              widget.exercise.memo!,
+                              style: TextStyle(
+                                color: Colors.grey[300],
+                                fontSize: 13,
+                                height: 1.4,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),

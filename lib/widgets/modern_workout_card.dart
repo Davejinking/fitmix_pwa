@@ -31,6 +31,139 @@ class ModernWorkoutCard extends StatefulWidget {
 class _ModernWorkoutCardState extends State<ModernWorkoutCard> {
   bool _isExpanded = true;
 
+  void _showMemoBottomSheet(BuildContext context) {
+    final TextEditingController memoController = TextEditingController(
+      text: widget.exercise.memo ?? '',
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Important for full view with keyboard
+      backgroundColor: const Color(0xFF1A1A1A), // Dark Theme background
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom, // Avoid keyboard overlay
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header
+            const Text(
+              'Session Note',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.exercise.name,
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Memo Input
+            TextField(
+              controller: memoController,
+              maxLength: 200,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'How was this workout?',
+                hintStyle: TextStyle(color: Colors.grey[600]),
+                filled: true,
+                fillColor: Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                counterStyle: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                ),
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 16),
+            
+            // Action Buttons
+            Row(
+              children: [
+                // Clear Button (only show if memo exists)
+                if (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        widget.exercise.memo = null;
+                        widget.onUpdate();
+                        Navigator.pop(context);
+                        HapticFeedback.lightImpact();
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey[700]!, width: 1),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                  const SizedBox(width: 12),
+                
+                // Save Button
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final memo = memoController.text.trim();
+                      widget.exercise.memo = memo.isEmpty ? null : memo;
+                      widget.onUpdate();
+                      Navigator.pop(context);
+                      HapticFeedback.mediumImpact();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6), // Brand Color (Electric Blue)
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Save Note',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32), // Bottom padding
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final completedSets = widget.exercise.sets.where((set) => set.isCompleted).length;
@@ -95,8 +228,9 @@ class _ModernWorkoutCardState extends State<ModernWorkoutCard> {
                 Expanded(
                   child: Text(
                     widget.exercise.name,
-                    maxLines: _isExpanded ? null : 1, // 🔥 Dynamic!
-                    overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis, // 🔥 Dynamic!
+                    maxLines: _isExpanded ? 2 : 1, // 🔥 Collapsed: 1 line, Expanded: 2 lines MAX
+                    overflow: TextOverflow.ellipsis, // 🔥 Always ellipsis if exceeds
+                    softWrap: true, // 🔥 Allow wrapping within maxLines
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -124,6 +258,25 @@ class _ModernWorkoutCardState extends State<ModernWorkoutCard> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                ),
+                
+                // 5️⃣ Memo Icon Button
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(
+                    Icons.note_alt_outlined,
+                    size: 22,
+                    color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                        ? const Color(0xFF3B82F6) // Active Color (Electric Blue)
+                        : Colors.grey[700], // Inactive Color
+                  ),
+                  onPressed: () {
+                    _showMemoBottomSheet(context);
+                    HapticFeedback.lightImpact();
+                  },
+                  padding: const EdgeInsets.all(4),
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  splashRadius: 20,
                 ),
               ],
             ),

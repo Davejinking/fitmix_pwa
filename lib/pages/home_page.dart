@@ -184,12 +184,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           return Column(
             children: [
               const SizedBox(height: 60),
-              Text(
+              // Status (영어 고정 - Design Element)
+              const Text(
                 'STATUS: RESTING',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: Colors.grey[700],
+                  color: Color(0xFF616161), // Colors.grey[700]
                   fontFamily: 'Courier',
                   letterSpacing: 2.0,
                 ),
@@ -203,13 +204,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           return Column(
             children: [
               const SizedBox(height: 60),
-              // Status text - minimalist
-              Text(
+              // Status text - minimalist (영어 고정 - Design Element)
+              const Text(
                 'NO ACTIVE SESSION',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: Colors.grey[700],
+                  color: Color(0xFF616161), // Colors.grey[700]
                   fontFamily: 'Courier',
                   letterSpacing: 2.0,
                 ),
@@ -219,21 +220,23 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
               SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: OutlinedButton(
+                child: ElevatedButton(
                   onPressed: () {
                     final shellState = context.findAncestorStateOfType<ShellPageState>();
                     shellState?.navigateToCalendar();
                   },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white, width: 1.5),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[200], // Solid Grey[200]
+                    foregroundColor: Colors.black, // Black text
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
                     shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: Text(
-                    'INITIATE WORKOUT',
+                    context.l10n.initiateWorkout,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w900,
@@ -265,13 +268,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 60),
-            // Status
+            // Status (영어 고정 - Design Element)
             Text(
               isCompleted ? 'SESSION COMPLETE' : 'SESSION READY',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
-                color: isCompleted ? Colors.white : Colors.grey[700],
+                color: isCompleted ? Colors.white : const Color(0xFF616161), // Colors.grey[700]
                 fontFamily: 'Courier',
                 letterSpacing: 2.0,
               ),
@@ -307,13 +310,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Small Label
-                Text(
+                // Small Label (영어 고정 - Design Element)
+                const Text(
                   'EXERCISES',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Colors.grey[700],
+                    color: Color(0xFF616161), // Colors.grey[700]
                     fontFamily: 'Courier',
                     letterSpacing: 1.5,
                   ),
@@ -339,7 +342,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: Text(
-                  isCompleted ? 'EDIT SESSION' : 'START SESSION',
+                  isCompleted ? context.l10n.editSession : context.l10n.startSession,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
@@ -371,13 +374,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title - Monospace
-            Text(
+            // Title - Monospace (영어 고정 - Design Element)
+            const Text(
               'WEEKLY STATUS',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
-                color: Colors.grey[700],
+                color: Color(0xFF616161), // Colors.grey[700]
                 fontFamily: 'Courier',
                 letterSpacing: 2.0,
               ),
@@ -396,8 +399,16 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 final dateYmd = sessionRepo.ymd(date);
                 final hasWorkout = workoutDates.contains(dateYmd);
                 
-                // Day label (M, T, W, T, F, S, S)
-                final dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                // Day label - Localized
+                final dayLabels = [
+                  context.l10n.weekdayMonShort,
+                  context.l10n.weekdayTueShort,
+                  context.l10n.weekdayWedShort,
+                  context.l10n.weekdayThuShort,
+                  context.l10n.weekdayFriShort,
+                  context.l10n.weekdaySatShort,
+                  context.l10n.weekdaySunShort,
+                ];
                 final dayLabel = dayLabels[date.weekday - 1];
                 
                 return Column(
@@ -461,13 +472,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title - Monospace
-            Text(
+            // Title - Monospace (영어 고정 - Design Element)
+            const Text(
               'MONTHLY GOAL',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
-                color: Colors.grey[700],
+                color: Color(0xFF616161), // Colors.grey[700]
                 fontFamily: 'Courier',
                 letterSpacing: 2.0,
               ),

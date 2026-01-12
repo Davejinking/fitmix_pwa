@@ -102,6 +102,9 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
+    
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xFF1E1E1E), // 다크 테마 배경색으로 변경
@@ -183,7 +186,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TableCalendar(
-                      locale: 'ko_KR',
+                      locale: locale.toString(),
                       focusedDay: monthDate,
                       firstDay: DateTime.utc(2010, 1, 1),
                       lastDay: DateTime.utc(2035, 12, 31),
