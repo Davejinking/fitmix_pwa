@@ -1551,7 +1551,6 @@ class _ExerciseCardState extends State<_ExerciseCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).languageCode;
-    final totalVolume = widget.exercise.sets.fold<double>(0, (sum, set) => sum + (set.weight * set.reps));
     final completedSets = widget.exercise.sets.where((set) => set.isCompleted).length;
     final totalSets = widget.exercise.sets.length;
     final bool isCompleted = completedSets > 0 && completedSets == totalSets;
@@ -1653,57 +1652,6 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                   ),
                   if (_isExpanded) ...[
                     const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        // Left: Total Volume
-                        Text(
-                          l10n.totalVolumeShort(totalVolume.toStringAsFixed(0)),
-                          style: TextStyle(
-                            fontSize: 11, 
-                            color: Colors.grey[600],
-                            fontFamily: 'Courier', // Monospace tactical
-                          ),
-                        ),
-                        const Spacer(),
-                        // Right: Action Icons (Subtle Grey)
-                        GestureDetector(
-                          onTap: () {
-                            showExerciseDetailModal(
-                              context,
-                              exerciseName: widget.exercise.name,
-                              sessionRepo: widget.sessionRepo,
-                              exerciseRepo: widget.exerciseRepo,
-                            );
-                            HapticFeedback.lightImpact();
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            child: Icon(
-                              Icons.info_outline,
-                              size: 18,
-                              color: Colors.grey[600], // Subtle grey
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: () {
-                            _showMemoBottomSheet(context);
-                            HapticFeedback.lightImpact();
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            child: Icon(
-                              Icons.note_alt_outlined,
-                              size: 18,
-                              color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
-                                  ? Colors.grey[400] // Slightly brighter if has memo
-                                  : Colors.grey[600], // Subtle grey
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ],
               ),
@@ -1714,7 +1662,78 @@ class _ExerciseCardState extends State<_ExerciseCard> {
             secondChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Memo Display Section (if exists)
+                // Utility Row - Control Panel (TOP of expanded section)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      // Left: Target Muscle Chip
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          _getLocalizedBodyPart(widget.exercise.bodyPart, locale).toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[500],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      // Right: Icon buttons
+                      IconButton(
+                        icon: Icon(
+                          Icons.info_outline,
+                          size: 20,
+                          color: Colors.grey[600],
+                        ),
+                        onPressed: () {
+                          showExerciseDetailModal(
+                            context,
+                            exerciseName: widget.exercise.name,
+                            sessionRepo: widget.sessionRepo,
+                            exerciseRepo: widget.exerciseRepo,
+                          );
+                          HapticFeedback.lightImpact();
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.edit_note,
+                          size: 20,
+                          color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                              ? Colors.grey[400]
+                              : Colors.grey[600],
+                        ),
+                        onPressed: () {
+                          _showMemoBottomSheet(context);
+                          HapticFeedback.lightImpact();
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                      ),
+                    ],
+                  ),
+                ),
+                // Subtle divider
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    height: 1,
+                    color: Colors.grey[900],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                
+                // Memo Display Section (if exists) - moved below utility row
                 if (widget.exercise.memo != null && widget.exercise.memo!.trim().isNotEmpty)
                   GestureDetector(
                     onTap: () {
@@ -1723,8 +1742,8 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     },
                     child: Container(
                       width: double.infinity,
-                      margin: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 4), // 더 작게
-                      padding: const EdgeInsets.all(6), // 더 작게 (was 8)
+                      margin: const EdgeInsets.only(top: 0, bottom: 4, left: 16, right: 16),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(6),
@@ -1735,19 +1754,19 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         children: [
                           Icon(
                             Icons.format_quote_rounded,
-                            size: 10, // 더 작게 (was 12)
+                            size: 12,
                             color: const Color(0xFF3B82F6),
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               widget.exercise.memo!,
                               style: TextStyle(
                                 color: Colors.grey[300],
-                                fontSize: 11, // 더 작게 (was 12)
-                                height: 1.2,
+                                fontSize: 12,
+                                height: 1.3,
                               ),
-                              maxLines: 1, // 1줄로 제한 (was 2)
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
