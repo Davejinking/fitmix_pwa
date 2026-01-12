@@ -1968,15 +1968,15 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 2), // 극도로 최소화 (was 4)
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4), // 패딩 제거
+      margin: EdgeInsets.zero, // 완전 제거!
+      padding: EdgeInsets.zero, // 완전 제거!
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Center(
               child: Container(
-                width: 20, height: 20, // 더 작게 (was 24)
+                width: 20, height: 20,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   border: Border.all(color: Colors.grey[700]!, width: 1),
@@ -1986,7 +1986,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
                 child: Text(
                   '${widget.setIndex + 1}', 
                   style: const TextStyle(
-                    fontSize: 11, // 더 작게 (was 12)
+                    fontSize: 11,
                     fontWeight: FontWeight.w900, 
                     color: Colors.white,
                     fontFamily: 'Courier',
@@ -2015,14 +2015,14 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   Widget _buildInput(TextEditingController controller, String label, TextInputType keyboardType) {
     return Container(
-      height: 28, // 더 작게 (was 32)
-      margin: const EdgeInsets.symmetric(horizontal: 2), // 마진 축소 (was 4)
+      height: 26, // 더 작게 (was 28)
+      margin: EdgeInsets.zero, // 마진 완전 제거!
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         textAlign: TextAlign.center,
         style: const TextStyle(
-          fontSize: 15, // 더 작게 (was 16)
+          fontSize: 15,
           fontWeight: FontWeight.w900,
           color: Colors.white,
           height: 1.0,
@@ -2034,12 +2034,12 @@ class _SetRowGridState extends State<_SetRowGrid> {
             borderSide: BorderSide(color: Colors.white, width: 1),
           ),
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey[800]!, width: 0.5), // 더 얇게
+            borderSide: BorderSide(color: Colors.grey[800]!, width: 0.5),
           ),
           focusedBorder: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white, width: 1),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 4), // 더 작게 (was 6)
+          contentPadding: const EdgeInsets.symmetric(vertical: 2), // 더 작게 (was 4)
           hintText: '0',
           hintStyle: TextStyle(
             color: Colors.grey[800],
