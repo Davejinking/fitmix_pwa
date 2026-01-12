@@ -1723,11 +1723,11 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     },
                     child: Container(
                       width: double.infinity,
-                      margin: const EdgeInsets.only(top: 6, bottom: 6, left: 4, right: 4), // Reduced margins
-                      padding: const EdgeInsets.all(8), // Reduced padding
+                      margin: const EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 4), // 더 작게
+                      padding: const EdgeInsets.all(6), // 더 작게 (was 8)
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                       ),
                       child: Row(
@@ -1735,19 +1735,19 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         children: [
                           Icon(
                             Icons.format_quote_rounded,
-                            size: 12, // Smaller icon
+                            size: 10, // 더 작게 (was 12)
                             color: const Color(0xFF3B82F6),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               widget.exercise.memo!,
                               style: TextStyle(
                                 color: Colors.grey[300],
-                                fontSize: 12, // Smaller text
-                                height: 1.3,
+                                fontSize: 11, // 더 작게 (was 12)
+                                height: 1.2,
                               ),
-                              maxLines: 2,
+                              maxLines: 1, // 1줄로 제한 (was 2)
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -1755,7 +1755,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 4), // Reduced spacing (was 8)
+                const SizedBox(height: 2), // 극도로 최소화 (was 4)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Row(
@@ -1766,11 +1766,11 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           l10n.setLabel.toUpperCase(), 
                           textAlign: TextAlign.center, 
                           style: TextStyle(
-                            fontSize: 9, // Smaller header (was 10)
+                            fontSize: 8, // 더 작게 (was 9)
                             color: Colors.grey[600],
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            fontFamily: 'Courier', // Monospace tactical
+                            letterSpacing: 0.3,
+                            fontFamily: 'Courier',
                           ),
                         ),
                       ),
@@ -1780,10 +1780,10 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           'KG', 
                           textAlign: TextAlign.center, 
                           style: TextStyle(
-                            fontSize: 9, // Smaller header
+                            fontSize: 8,
                             color: Colors.grey[600],
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
+                            letterSpacing: 0.3,
                             fontFamily: 'Courier',
                           ),
                         ),
@@ -1794,10 +1794,10 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           l10n.repsUnit.toUpperCase(), 
                           textAlign: TextAlign.center, 
                           style: TextStyle(
-                            fontSize: 9, // Smaller header
+                            fontSize: 8,
                             color: Colors.grey[600],
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
+                            letterSpacing: 0.3,
                             fontFamily: 'Courier',
                           ),
                         ),
@@ -1805,13 +1805,13 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       Expanded(
                         flex: 2, 
                         child: Text(
-                          '', // Remove "DONE" text to save space
+                          '',
                           textAlign: TextAlign.center, 
                           style: TextStyle(
-                            fontSize: 9, 
+                            fontSize: 8,
                             color: Colors.grey[600],
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
+                            letterSpacing: 0.3,
                             fontFamily: 'Courier',
                           ),
                         ),
@@ -1819,7 +1819,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 2), // Minimal spacing (was 6)
+                const SizedBox(height: 1), // 극도로 최소화 (was 2)
                 ...List.generate(
                   widget.exercise.sets.length,
                   (index) => _SetRowGrid(
@@ -1837,7 +1837,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     onUpdate: widget.onUpdate,
                   ),
                 ),
-                const SizedBox(height: 6), // Reduced spacing (was 12)
+                const SizedBox(height: 4), // 더 작게 (was 6)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -1848,26 +1848,28 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           widget.onUpdate();
                         }
                       },
-                      icon: const Icon(Icons.remove, size: 16),
+                      icon: const Icon(Icons.remove, size: 14), // 더 작게 (was 16)
                       label: Text(
                         l10n.deleteSet.toUpperCase(), 
                         style: const TextStyle(
-                          fontSize: 11, // Smaller (was 12)
+                          fontSize: 10, // 더 작게 (was 11)
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
+                          letterSpacing: 0.3,
                           fontFamily: 'Courier',
                         ),
                       ),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.grey[600],
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Compact padding
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), // 더 작게
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                     Container(
                       width: 1, 
-                      height: 16, // Shorter divider (was 20)
+                      height: 12, // 더 짧게 (was 16)
                       color: Colors.grey[800], 
-                      margin: const EdgeInsets.symmetric(horizontal: 8), // Reduced margin (was 12)
+                      margin: const EdgeInsets.symmetric(horizontal: 6), // 더 작게 (was 8)
                     ),
                     TextButton.icon(
                       onPressed: () {
@@ -1881,19 +1883,21 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         });
                         widget.onUpdate();
                       },
-                      icon: const Icon(Icons.add, size: 16),
+                      icon: const Icon(Icons.add, size: 14), // 더 작게 (was 16)
                       label: Text(
                         l10n.addSet.toUpperCase(), 
                         style: const TextStyle(
-                          fontSize: 11, // Smaller (was 12)
+                          fontSize: 10, // 더 작게 (was 11)
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
+                          letterSpacing: 0.3,
                           fontFamily: 'Courier',
                         ),
                       ),
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.white, // White monochrome
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Compact padding
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), // 더 작게
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                   ],
@@ -1964,28 +1968,28 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 4), // Minimal spacing (was 8)
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4), // Reduced padding
+      margin: const EdgeInsets.only(bottom: 2), // 극도로 최소화 (was 4)
+      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4), // 패딩 제거
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Center(
               child: Container(
-                width: 24, height: 24,
+                width: 20, height: 20, // 더 작게 (was 24)
                 decoration: BoxDecoration(
                   color: Colors.transparent,
-                  border: Border.all(color: Colors.grey[700]!, width: 1.5),
-                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.grey[700]!, width: 1),
+                  borderRadius: BorderRadius.circular(3),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '${widget.setIndex + 1}', 
                   style: const TextStyle(
-                    fontSize: 12, 
+                    fontSize: 11, // 더 작게 (was 12)
                     fontWeight: FontWeight.w900, 
                     color: Colors.white,
-                    fontFamily: 'Courier', // Monospace tactical
+                    fontFamily: 'Courier',
                   ),
                 ),
               ),
@@ -2011,38 +2015,37 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   Widget _buildInput(TextEditingController controller, String label, TextInputType keyboardType) {
     return Container(
-      height: 32, // Compact height (was 40)
-      margin: const EdgeInsets.symmetric(horizontal: 4),
+      height: 28, // 더 작게 (was 32)
+      margin: const EdgeInsets.symmetric(horizontal: 2), // 마진 축소 (was 4)
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         textAlign: TextAlign.center,
         style: const TextStyle(
-          fontSize: 16, // Slightly smaller (was 18)
+          fontSize: 15, // 더 작게 (was 16)
           fontWeight: FontWeight.w900,
-          color: Colors.white, // Pure white
-          height: 1.0, // Tight line height
-          fontFamily: 'Courier', // Monospace tactical
+          color: Colors.white,
+          height: 1.0,
+          fontFamily: 'Courier',
         ),
         decoration: InputDecoration(
-          isDense: true, // Compact mode
+          isDense: true,
           border: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white, width: 1),
           ),
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey[800]!, width: 1), // Subtle underline
+            borderSide: BorderSide(color: Colors.grey[800]!, width: 0.5), // 더 얇게
           ),
           focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white, width: 1.5),
+            borderSide: BorderSide(color: Colors.white, width: 1),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 6), // Minimal padding
+          contentPadding: const EdgeInsets.symmetric(vertical: 4), // 더 작게 (was 6)
           hintText: '0',
           hintStyle: TextStyle(
             color: Colors.grey[800],
             fontWeight: FontWeight.w900,
             fontFamily: 'Courier',
           ),
-          // Remove label - rely on header only
         ),
       ),
     );
