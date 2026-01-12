@@ -1927,9 +1927,10 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40, // Compact height
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      height: 48, // Standard touch target (was 40)
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center, // Perfect vertical centering
         children: [
           // Index: #1 (Left side)
           SizedBox(
@@ -1941,6 +1942,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
                 fontWeight: FontWeight.w600,
                 color: Colors.grey[600],
                 fontFamily: 'Courier',
+                height: 1.2,
               ),
             ),
           ),
@@ -1948,7 +1950,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
           // Spacer - Push to center
           const Spacer(),
           
-          // Weight Input (Right-aligned, closer to 'x')
+          // Weight Input Box (Fixed width: 60px)
           SizedBox(
             width: 60,
             child: _buildCenterInput(
@@ -1958,7 +1960,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
             ),
           ),
           
-          // Fixed center text: "kg x "
+          // Fixed center text: "kg x " (14pt grey)
           Text(
             'kg  x  ',
             style: TextStyle(
@@ -1966,12 +1968,13 @@ class _SetRowGridState extends State<_SetRowGrid> {
               fontWeight: FontWeight.w600,
               color: Colors.grey[600],
               fontFamily: 'Courier',
+              height: 1.2,
             ),
           ),
           
-          // Reps Input (Left-aligned, closer to 'x')
+          // Reps Input Box (Fixed width: 60px)
           SizedBox(
-            width: 50,
+            width: 60,
             child: _buildCenterInput(
               controller: _repsController,
               textAlign: TextAlign.left,
@@ -2020,13 +2023,13 @@ class _SetRowGridState extends State<_SetRowGrid> {
             keyboardType: keyboardType,
             textAlign: textAlign,
             style: TextStyle(
-              fontSize: 20, // Bold, large
+              fontSize: 18, // Reduced from 20 to prevent overflow
               fontWeight: FontWeight.w900,
               color: hasFocus 
                 ? const Color(0xFF2196F3) // Electric Blue when focused
                 : (isEmpty ? Colors.grey[800] : Colors.white), // Grey or white
               fontFamily: 'Courier',
-              height: 1.2,
+              height: 1.5, // Prevent vertical clipping
             ),
             decoration: InputDecoration(
               isDense: true,
@@ -2034,7 +2037,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
               filled: false, // No background!
-              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
               hintText: '0', // Simple '0' placeholder
               hintStyle: TextStyle(
                 color: Colors.grey[800],
