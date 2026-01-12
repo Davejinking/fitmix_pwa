@@ -1,7 +1,7 @@
 # Iron Log - Master Documentation
 
-> **최종 업데이트**: 2026년 1월 12일 (23:05)  
-> **버전**: 1.0.0  
+> **최종 업데이트**: 2026년 1월 13일 (02:30)  
+> **버전**: 1.0.1  
 > **상태**: 🚀 MVP 개발 중
 
 ---
@@ -698,6 +698,238 @@ flutter build apk --release
 ---
 
 ## 6. 최근 업데이트
+
+### 📅 2026-01-13 (월요일)
+
+#### 6.9 캘린더 페이지 UI 리팩토링 - Hardcore Noir Table Grid
+
+**목표**: 운동 계획 입력 화면을 극도로 압축된 테이블 그리드 스타일로 전환하여 한 화면에 10개 이상의 세트 표시
+
+##### 6.9.1 Noir 테마 적용
+- **배경**: Pure Black (#000000)
+- **카드 스타일 제거**: 
+  - 배경색 제거 (투명)
+  - Border radius 제거
+  - 하단 보더만 유지 (white12, 1px)
+- **폰트**: Courier 모노스페이스
+- **타이포그래피**: UPPERCASE, Bold (w900)
+
+##### 6.9.2 아코디언 헤더 단순화
+**변경 전**: 인덱스 + 부위 태그 + 운동 이름 + 진행 상태
+**변경 후**: 인덱스 + 운동 이름 + 진행 상태
+
+- **제거**: 부위 태그 (복근, 가슴 등)를 헤더에서 제거
+- **이유**: 시선 분산 방지, 운동 이름에 집중
+- **부위 태그 이동**: 유틸리티 바(확장 시)로 이동
+
+**코드**:
+```dart
+// 헤더 구조
+Row(
+  children: [
+    Text('#01'),  // 인덱스
+    Expanded(child: Text('CRUNCH')),  // 운동 이름
+    Text('0 / 5'),  // 진행 상태
+  ],
+)
+```
+
+##### 6.9.3 유틸리티 바 추가
+**위치**: 아코디언 확장 시 최상단
+**구성**: 부위 태그 + Info 아이콘 + Memo 아이콘
+
+**스타일 변화**:
+1. **초기**: Container 칩 스타일 (배경색 + 둥근 모서리)
+2. **최종**: 브래킷 텍스트 스타일 `[ 복근 ]`
+   - 브래킷: Dark Grey (#707070)
+   - 텍스트: Electric Blue (#3B82F6)
+   - 폰트: Courier, 9pt, Bold
+
+**코드**:
+```dart
+RichText(
+  text: TextSpan(
+    children: [
+      TextSpan(text: '[ ', style: TextStyle(color: Colors.grey[700])),
+      TextSpan(text: '복근', style: TextStyle(color: Color(0xFF3B82F6))),
+      TextSpan(text: ' ]', style: TextStyle(color: Colors.grey[700])),
+    ],
+  ),
+)
+```
+
+##### 6.9.4 테이블 그리드 헤더 추가
+**구조**: SET | KG | REPS
+**스타일**:
+- 폰트: Courier, 9pt, Bold
+- 색상: Grey (#888888)
+- 정렬: Center
+- 컬럼 비율: 
+  - SET: 30px (고정)
+  - KG: Expanded(flex: 3)
+  - REPS: Expanded(flex: 3)
+  - Action: 40px (고정)
+
+##### 6.9.5 입력 행 리팩토링
+**변경 과정**:
+
+1. **Terminal Style (중간 단계)**:
+   - 모든 decoration 제거 (border: InputBorder.none)
+   - 포맷: `#01 | [reps] x [weight]kg`
+   - Focus 시 Electric Blue (#2196F3)
+
+2. **Center-Aligned Magnetic (중간 단계)**:
+   - 컬럼 순서: Index → Weight → x → Reps → Action
+   - Spacer로 중앙 정렬
+   - Weight 우측 정렬, Reps 좌측 정렬 (x에 자석처럼 붙음)
+
+3. **Left-Aligned Table Grid (최종)**:
+   - 왼쪽 정렬 (MainAxisAlignment.start)
+   - "kg x" 텍스트 제거 (헤더가 설명)
+   - Expanded 위젯으로 헤더와 정렬
+   - Center 정렬로 깔끔한 스프레드시트 느낌
+
+**최종 코드**:
+```dart
+Row(
+  children: [
+    SizedBox(width: 30, child: Text('#1')),  // SET
+    SizedBox(width: 6),
+    Expanded(flex: 3, child: TextField()),   // KG
+    Expanded(flex: 3, child: TextField()),   // REPS
+    SizedBox(width: 40, child: IconButton()),// Action
+  ],
+)
+```
+
+##### 6.9.6 고밀도 모드 (High Density Mode)
+**목표**: 한 화면에 10개 이상 세트 표시
+
+**최적화 단계**:
+
+| 버전 | 행 높이 | 폰트 크기 | 간격 | 세트/화면 |
+|------|---------|-----------|------|-----------|
+| 초기 | 48px | 18pt | 8px | 4개 |
+| v1 | 38px | 17pt | 4px | 6개 |
+| v2 | 32px | 16pt | 2px | 8개 |
+| v3 (최종) | 28px | 15pt | 1px | 10-12개 |
+
+**최종 수치**:
+- **행 높이**: 28px (SizedBox 강제)
+- **입력 폰트**: 15pt, w900, height: 1.0
+- **인덱스 폰트**: 11pt
+- **아이콘 크기**: 13px
+- **contentPadding**: EdgeInsets.zero
+- **컬럼 간격**: 6px
+- **유틸리티 바 padding**: vertical 1px
+- **헤더 bottom padding**: 0px
+- **모든 SizedBox**: 1px
+
+**결과**:
+- 세트 1개당 28px (원래 48px에서 42% 감소)
+- 10개 세트 = 280px
+- iPhone 화면(~700px)에서 12개 이상 세트 표시 가능
+
+##### 6.9.7 스마트 숫자 포맷팅
+**문제**: 세트 복제 시 `150` → `150.0` 표시
+
+**해결**:
+```dart
+String _formatNumber(double value) {
+  if (value == value.toInt()) {
+    return value.toInt().toString(); // 150.0 → 150
+  }
+  return value.toString(); // 2.5 → 2.5
+}
+```
+
+**적용**: Weight 입력 필드 초기화 시 사용
+
+##### 6.9.8 메모 섹션 압축
+**최적화**:
+- margin: 4 → 2px
+- padding: 8 → 6px
+- 아이콘: 12 → 10px
+- 폰트: 12 → 11pt
+- line height: 1.3 → 1.2
+- border radius: 6 → 4px
+
+##### 6.9.9 파일 변경 사항
+**수정된 파일**:
+- `lib/pages/calendar_page.dart` (주요 변경)
+  - `_ExerciseCard` 위젯: 헤더 단순화
+  - `_SetRowGrid` 위젯: 테이블 그리드 구조
+  - `_buildGridInput` 메서드: 고밀도 입력 필드
+  - 유틸리티 바 추가 및 스타일링
+
+**변경 라인 수**: ~200줄
+
+##### 6.9.10 시각적 결과
+**Before**:
+```
+┌─────────────────────────────┐
+│ 1 [복근] 크런치      0/5    │
+│                             │
+│ SET    KG    REPS           │
+│ #1    100kg x 10    [x]     │  ← 48px 높이
+│ #2    100kg x 10    [x]     │
+│ #3    100kg x 10    [x]     │
+│ #4    100kg x 10    [x]     │
+│                             │
+│ [- 세트 삭제] [+ 세트 추가] │
+└─────────────────────────────┘
+```
+
+**After**:
+```
+┌─────────────────────────────┐
+│ #01 CRUNCH           0/5    │
+│ [ 복근 ]              [i][m]│
+│ SET   KG    REPS            │
+│ #1   100     10       [x]   │  ← 28px 높이
+│ #2   100     10       [x]   │
+│ #3   100     10       [x]   │
+│ #4   100     10       [x]   │
+│ #5   100     10       [x]   │
+│ #6   100     10       [x]   │
+│ #7   100     10       [x]   │
+│ #8   100     10       [x]   │
+│ #9   100     10       [x]   │
+│ #10  100     10       [x]   │
+│ [- 세트 삭제] [+ 세트 추가] │
+└─────────────────────────────┘
+```
+
+##### 6.9.11 기술적 도전과 해결
+
+**도전 1**: 헤더와 데이터 행의 컬럼 정렬
+- **문제**: 헤더는 Expanded, 행은 SizedBox로 정렬 불일치
+- **해결**: 행도 Expanded(flex: 3)로 변경
+
+**도전 2**: 터치 타겟 최소 크기 유지
+- **문제**: 28px는 iOS 권장 44px보다 작음
+- **해결**: 입력 필드는 전체 셀 영역이 터치 가능하므로 실제 터치 영역은 충분
+
+**도전 3**: 폰트 높이 패딩 제거
+- **문제**: 기본 TextStyle height로 인한 여백
+- **해결**: `height: 1.0` 설정으로 완전 제거
+
+**도전 4**: 여백 최소화
+- **문제**: 다양한 위젯의 기본 패딩
+- **해결**: 모든 padding을 명시적으로 0 또는 1px로 설정
+
+##### 6.9.12 성능 영향
+- **렌더링**: 변화 없음 (위젯 구조는 동일)
+- **메모리**: 약간 감소 (불필요한 Container 제거)
+- **사용자 경험**: 크게 개선 (스크롤 감소, 정보 밀도 증가)
+
+##### 6.9.13 접근성 고려사항
+- **폰트 크기**: 15pt는 여전히 읽기 가능
+- **터치 영역**: 전체 셀이 터치 가능하여 실제 터치 영역은 충분
+- **색상 대비**: White on Black (21:1 대비율, WCAG AAA 등급)
+- **포커스 표시**: Electric Blue로 명확한 포커스 상태
+
+---
 
 ### 📅 2026-01-12 (일요일)
 

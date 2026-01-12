@@ -1566,8 +1566,8 @@ class _ExerciseCardState extends State<_ExerciseCard> {
           ),
         ),
       ),
-      // Minimal padding - full bleed feel
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      // Full width - no horizontal padding
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1585,56 +1585,38 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // 1️⃣ Index (Simple Grey Text - NO BOX)
+                      // 1️⃣ Index (Simple Grey Text)
                       Text(
-                        '${widget.exerciseIndex + 1}',
+                        '#${(widget.exerciseIndex + 1).toString().padLeft(2, '0')}',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey[500],
+                          color: Colors.grey[600],
+                          fontFamily: 'Courier',
                         ),
                       ),
                       const SizedBox(width: 12),
                       
-                      // 2️⃣ Muscle Tag (Small Chip)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          border: Border.all(color: Colors.grey[700]!, width: 1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                      // 2️⃣ Exercise Name (Expanded - Text First!)
+                      Expanded(
                         child: Text(
-                          _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[500],
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Courier', // Monospace tactical
+                          _getLocalizedExerciseName(widget.exercise.name, locale).toUpperCase(),
+                          maxLines: _isExpanded ? null : 1,
+                          overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       
-                      // 3️⃣ Exercise Name (Dynamic Expansion) - MORE WIDTH NOW
-                      Expanded(
-                        child: Text(
-                          _getLocalizedExerciseName(widget.exercise.name, locale).toUpperCase(), // UPPERCASE for Noir
-                          maxLines: _isExpanded ? null : 1,
-                          overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900, // Bolder
-                            color: Colors.white, // Pure white
-                            letterSpacing: 0.5, // Wider spacing for tactical feel
-                            fontFamily: 'Courier', // Monospace tactical
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // 4️⃣ Set Progress Badge - RIGHTMOST ELEMENT
+                      // 3️⃣ Set Progress Badge (Right aligned)
                       if (isCompleted)
-                        const Icon(Icons.check_circle, color: Colors.white, size: 28) // White monochrome
+                        const Icon(Icons.check_circle, color: Colors.white, size: 24)
                       else
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -1647,7 +1629,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                             '$completedSets / $totalSets',
                             style: const TextStyle(
                               fontSize: 12,
-                              color: Colors.white, // White monochrome
+                              color: Colors.white,
                               fontWeight: FontWeight.w700,
                               fontFamily: 'Courier', // Monospace tactical
                             ),
@@ -1667,38 +1649,52 @@ class _ExerciseCardState extends State<_ExerciseCard> {
             secondChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Utility Row - Control Panel (TOP of expanded section)
+                // Utility Bar (TOP of expanded section)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 16), // 2 → 1
                   child: Row(
                     children: [
-                      // Left: Target Muscle Chip
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          _getLocalizedBodyPart(widget.exercise.bodyPart, locale).toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[500],
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            fontFamily: 'Courier',
-                          ),
+                      // Left: Target Label (Tech Style - Bracket Format)
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '[ ',
+                              style: TextStyle(
+                                fontSize: 9, // 10 → 9
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                fontFamily: 'Courier',
+                              ),
+                            ),
+                            TextSpan(
+                              text: _getLocalizedBodyPart(widget.exercise.bodyPart, locale).toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9, // 10 → 9
+                                color: Color(0xFF3B82F6),
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.0,
+                                fontFamily: 'Courier',
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' ]',
+                              style: TextStyle(
+                                fontSize: 9, // 10 → 9
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                fontFamily: 'Courier',
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const Spacer(),
-                      // Right: Icon buttons
-                      IconButton(
-                        icon: Icon(
-                          Icons.info_outline,
-                          size: 20,
-                          color: Colors.grey[600],
-                        ),
-                        onPressed: () {
+                      // Right: Info Icon (clickable)
+                      GestureDetector(
+                        onTap: () {
                           showExerciseDetailModal(
                             context,
                             exerciseName: widget.exercise.name,
@@ -1707,38 +1703,32 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           );
                           HapticFeedback.lightImpact();
                         },
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        child: Icon(
+                          Icons.info_outline,
+                          size: 16, // 18 → 16
+                          color: Colors.grey[600],
+                        ),
                       ),
-                      IconButton(
-                        icon: Icon(
+                      const SizedBox(width: 12), // 16 → 12
+                      // Right: Memo Icon (clickable)
+                      GestureDetector(
+                        onTap: () {
+                          _showMemoBottomSheet(context);
+                          HapticFeedback.lightImpact();
+                        },
+                        child: Icon(
                           Icons.edit_note,
-                          size: 20,
+                          size: 16, // 18 → 16
                           color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
                               ? Colors.grey[400]
                               : Colors.grey[600],
                         ),
-                        onPressed: () {
-                          _showMemoBottomSheet(context);
-                          HapticFeedback.lightImpact();
-                        },
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                       ),
                     ],
                   ),
                 ),
-                // Subtle divider
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    height: 1,
-                    color: Colors.grey[900],
-                  ),
-                ),
-                const SizedBox(height: 8),
                 
-                // Memo Display Section (if exists) - moved below utility row
+                // Memo Display Section (if exists)
                 if (widget.exercise.memo != null && widget.exercise.memo!.trim().isNotEmpty)
                   GestureDetector(
                     onTap: () {
@@ -1747,11 +1737,11 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     },
                     child: Container(
                       width: double.infinity,
-                      margin: const EdgeInsets.only(top: 0, bottom: 4, left: 16, right: 16),
-                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.only(top: 2, bottom: 2, left: 16, right: 16), // 4 → 2
+                      padding: const EdgeInsets.all(6), // 8 → 6
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(4), // 6 → 4
                         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                       ),
                       child: Row(
@@ -1759,17 +1749,17 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         children: [
                           Icon(
                             Icons.format_quote_rounded,
-                            size: 12,
+                            size: 10, // 12 → 10
                             color: const Color(0xFF3B82F6),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 4), // 6 → 4
                           Expanded(
                             child: Text(
                               widget.exercise.memo!,
                               style: TextStyle(
                                 color: Colors.grey[300],
-                                fontSize: 12,
-                                height: 1.3,
+                                fontSize: 11, // 12 → 11
+                                height: 1.2, // 1.3 → 1.2
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -1779,30 +1769,67 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 4),
-                // Center-aligned header
+                
+                const SizedBox(height: 1), // Reduced from 2
+                
+                // Table Grid Header (Column Headers)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 0), // Remove bottom padding
                   child: Row(
                     children: [
-                      const SizedBox(width: 32), // Space for index
-                      const Spacer(),
-                      Text(
-                        'WEIGHT  x  REPS',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[700],
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.0,
-                          fontFamily: 'Courier',
+                      // SET column
+                      const SizedBox(
+                        width: 30,
+                        child: Text(
+                          'SET',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9, // 10 → 9
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
                         ),
                       ),
-                      const Spacer(),
-                      const SizedBox(width: 32), // Space for delete button
+                      const SizedBox(width: 6), // 8 → 6
+                      // KG column
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'KG',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9, // 10 → 9
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      // REPS column
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          'REPS',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9, // 10 → 9
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      // Action column
+                      const SizedBox(width: 40), // 48 → 40
                     ],
                   ),
                 ),
-                const SizedBox(height: 2),
+                
+                // Set list (NO spacing between rows for maximum density)
                 ...List.generate(
                   widget.exercise.sets.length,
                   (index) => _SetRowGrid(
@@ -1820,7 +1847,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     onUpdate: widget.onUpdate,
                   ),
                 ),
-                const SizedBox(height: 4), // 더 작게 (was 6)
+                const SizedBox(height: 1), // Minimal spacing before buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -1925,10 +1952,18 @@ class _SetRowGridState extends State<_SetRowGrid> {
   void initState() {
     super.initState();
     final set = widget.exercise.sets[widget.setIndex];
-    _weightController = TextEditingController(text: set.weight > 0 ? set.weight.toString() : '');
+    _weightController = TextEditingController(text: set.weight > 0 ? _formatNumber(set.weight) : '');
     _repsController = TextEditingController(text: set.reps > 0 ? set.reps.toString() : '');
     _weightController.addListener(_onWeightChanged);
     _repsController.addListener(_onRepsChanged);
+  }
+
+  /// Smart number formatting: Remove unnecessary decimals
+  String _formatNumber(double value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString(); // 150.0 → 150
+    }
+    return value.toString(); // 2.5 → 2.5
   }
 
   void _onWeightChanged() {
@@ -1950,89 +1985,78 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 48, // Standard touch target
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // Perfect vertical centering
-        children: [
-          // Index: #1 (Left side)
-          SizedBox(
-            width: 32,
-            child: Text(
-              '#${widget.setIndex + 1}',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
-                fontFamily: 'Courier',
-                height: 1.2,
+    return SizedBox(
+      height: 28.0, // EXTREME COMPACT - 32 → 28
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // SET column (30px fixed - matches header)
+            SizedBox(
+              width: 30,
+              child: Center(
+                child: Text(
+                  '#${widget.setIndex + 1}',
+                  style: TextStyle(
+                    fontSize: 11, // 12 → 11
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[600],
+                    fontFamily: 'Courier',
+                    height: 1.0,
+                  ),
+                ),
               ),
             ),
-          ),
-          
-          // Spacer - Push to center
-          const Spacer(),
-          
-          // Weight Input Box (Expanded: 110px for high values like 150.0)
-          SizedBox(
-            width: 110, // Expanded from 60 to prevent clipping
-            child: _buildCenterInput(
-              controller: _weightController,
-              textAlign: TextAlign.right, // Magnetize to center 'x'
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-          ),
-          
-          // Fixed center text: "kg x " (30px width)
-          SizedBox(
-            width: 30,
-            child: Text(
-              'kg x',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
-                fontFamily: 'Courier',
-                height: 1.2,
+            
+            const SizedBox(width: 6), // 8 → 6
+            
+            // KG column (Expanded flex: 3 - matches header)
+            Expanded(
+              flex: 3,
+              child: Center(
+                child: _buildGridInput(
+                  controller: _weightController,
+                  textAlign: TextAlign.center,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                ),
               ),
             ),
-          ),
-          
-          // Reps Input Box (Expanded: 80px for double-digit reps)
-          SizedBox(
-            width: 80, // Expanded from 60
-            child: _buildCenterInput(
-              controller: _repsController,
-              textAlign: TextAlign.left, // Magnetize to center 'x'
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          
-          // Spacer - Push to center
-          const Spacer(),
-          
-          // Delete button (Right side)
-          SizedBox(
-            width: 32,
-            child: IconButton(
-              icon: Icon(
-                Icons.close,
-                size: 18,
-                color: Colors.grey[700],
+            
+            // REPS column (Expanded flex: 3 - matches header)
+            Expanded(
+              flex: 3,
+              child: Center(
+                child: _buildGridInput(
+                  controller: _repsController,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                ),
               ),
-              onPressed: widget.onDelete,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             ),
-          ),
-        ],
+            
+            // Action column (40px fixed - reduced from 48)
+            SizedBox(
+              width: 40, // 48 → 40
+              child: IconButton(
+                icon: Icon(
+                  Icons.close,
+                  size: 13, // 14 → 13
+                  color: Colors.grey[700],
+                ),
+                onPressed: widget.onDelete,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 28),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildCenterInput({
+  Widget _buildGridInput({
     required TextEditingController controller,
     required TextAlign textAlign,
     required TextInputType keyboardType,
@@ -2051,26 +2075,27 @@ class _SetRowGridState extends State<_SetRowGrid> {
             keyboardType: keyboardType,
             textAlign: textAlign,
             style: TextStyle(
-              fontSize: 18, // Reduced from 20 to prevent overflow
+              fontSize: 15, // 16 → 15 for extreme compact
               fontWeight: FontWeight.w900,
               color: hasFocus 
                 ? const Color(0xFF2196F3) // Electric Blue when focused
-                : (isEmpty ? Colors.grey[800] : Colors.white), // Grey or white
+                : (isEmpty ? Colors.grey[800] : Colors.white),
               fontFamily: 'Courier',
-              height: 1.5, // Prevent vertical clipping
+              height: 1.0, // TIGHT!
             ),
             decoration: InputDecoration(
               isDense: true,
-              border: InputBorder.none, // No borders!
+              border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
-              filled: false, // No background!
-              contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-              hintText: '0', // Simple '0' placeholder
+              filled: false,
+              contentPadding: EdgeInsets.zero, // ZERO PADDING
+              hintText: '0',
               hintStyle: TextStyle(
                 color: Colors.grey[800],
                 fontWeight: FontWeight.w900,
                 fontFamily: 'Courier',
+                height: 1.0,
               ),
             ),
           );
