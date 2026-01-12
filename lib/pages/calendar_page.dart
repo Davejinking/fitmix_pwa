@@ -1755,83 +1755,30 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 2),
-                // Terminal-style header
+                const SizedBox(height: 4),
+                // Center-aligned header
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        width: 40,
-                        child: Text(
-                          'SET',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            fontFamily: 'Courier',
-                          ),
+                      const SizedBox(width: 32), // Space for index
+                      const Spacer(),
+                      Text(
+                        'WEIGHT  x  REPS',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.0,
+                          fontFamily: 'Courier',
                         ),
                       ),
-                      SizedBox(
-                        width: 50,
-                        child: Text(
-                          'REPS',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            fontFamily: 'Courier',
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 16,
-                        child: Text(
-                          '',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 70,
-                        child: Text(
-                          'WEIGHT',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            fontFamily: 'Courier',
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 70,
-                        child: Text(
-                          'TOTAL',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            fontFamily: 'Courier',
-                          ),
-                        ),
-                      ),
+                      const Spacer(),
                       const SizedBox(width: 32), // Space for delete button
                     ],
                   ),
                 ),
-                const SizedBox(height: 1),
+                const SizedBox(height: 2),
                 ...List.generate(
                   widget.exercise.sets.length,
                   (index) => _SetRowGrid(
@@ -1979,84 +1926,63 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final set = widget.exercise.sets[widget.setIndex];
-    final hasWeight = set.weight > 0;
-    final hasReps = set.reps > 0;
-    
     return Container(
-      height: 36, // Compact terminal line height
+      height: 40, // Compact height
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Index: #01
+          // Index: #1 (Left side)
           SizedBox(
-            width: 40,
+            width: 32,
             child: Text(
-              '#${(widget.setIndex + 1).toString().padLeft(2, '0')}',
+              '#${widget.setIndex + 1}',
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: Colors.grey[600],
                 fontFamily: 'Courier',
-                letterSpacing: 0.5,
               ),
             ),
           ),
           
-          // Reps Input
-          SizedBox(
-            width: 50,
-            child: _buildTerminalInput(
-              controller: _repsController,
-              placeholder: '--',
-              suffix: '',
-              keyboardType: TextInputType.number,
-            ),
-          ),
+          // Spacer - Push to center
+          const Spacer(),
           
-          // "x" separator
-          Text(
-            'x',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey[700],
-              fontFamily: 'Courier',
-            ),
-          ),
-          
-          // Weight Input
+          // Weight Input (Right-aligned, closer to 'x')
           SizedBox(
-            width: 70,
-            child: _buildTerminalInput(
+            width: 60,
+            child: _buildCenterInput(
               controller: _weightController,
-              placeholder: '---',
-              suffix: 'kg',
+              textAlign: TextAlign.right,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
           ),
           
-          // Total Volume (calculated)
-          SizedBox(
-            width: 70,
-            child: Text(
-              hasWeight && hasReps 
-                ? '${(set.weight * set.reps).toStringAsFixed(0)}kg'
-                : '---',
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: hasWeight && hasReps ? Colors.grey[400] : Colors.grey[800],
-                fontFamily: 'Courier',
-                letterSpacing: 0.5,
-              ),
+          // Fixed center text: "kg x "
+          Text(
+            'kg  x  ',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+              fontFamily: 'Courier',
             ),
           ),
           
-          // Delete button (minimal)
+          // Reps Input (Left-aligned, closer to 'x')
+          SizedBox(
+            width: 50,
+            child: _buildCenterInput(
+              controller: _repsController,
+              textAlign: TextAlign.left,
+              keyboardType: TextInputType.number,
+            ),
+          ),
+          
+          // Spacer - Push to center
+          const Spacer(),
+          
+          // Delete button (Right side)
           SizedBox(
             width: 32,
             child: IconButton(
@@ -2075,10 +2001,9 @@ class _SetRowGridState extends State<_SetRowGrid> {
     );
   }
 
-  Widget _buildTerminalInput({
+  Widget _buildCenterInput({
     required TextEditingController controller,
-    required String placeholder,
-    required String suffix,
+    required TextAlign textAlign,
     required TextInputType keyboardType,
   }) {
     return Focus(
@@ -2093,15 +2018,15 @@ class _SetRowGridState extends State<_SetRowGrid> {
           return TextField(
             controller: controller,
             keyboardType: keyboardType,
-            textAlign: TextAlign.center,
+            textAlign: textAlign,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 20, // Bold, large
               fontWeight: FontWeight.w900,
               color: hasFocus 
                 ? const Color(0xFF2196F3) // Electric Blue when focused
-                : (isEmpty ? Colors.grey[800] : Colors.white), // Dark grey or white
+                : (isEmpty ? Colors.grey[800] : Colors.white), // Grey or white
               fontFamily: 'Courier',
-              letterSpacing: 0.5,
+              height: 1.2,
             ),
             decoration: InputDecoration(
               isDense: true,
@@ -2110,17 +2035,10 @@ class _SetRowGridState extends State<_SetRowGrid> {
               focusedBorder: InputBorder.none,
               filled: false, // No background!
               contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-              hintText: placeholder,
+              hintText: '0', // Simple '0' placeholder
               hintStyle: TextStyle(
                 color: Colors.grey[800],
                 fontWeight: FontWeight.w900,
-                fontFamily: 'Courier',
-              ),
-              suffixText: suffix.isNotEmpty && !isEmpty ? suffix : null,
-              suffixStyle: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: hasFocus ? const Color(0xFF2196F3) : Colors.grey[600],
                 fontFamily: 'Courier',
               ),
             ),
