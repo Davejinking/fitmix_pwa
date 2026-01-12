@@ -1755,71 +1755,83 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 2), // 극도로 최소화 (was 4)
+                const SizedBox(height: 2),
+                // Terminal-style header
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        flex: 2, 
+                      SizedBox(
+                        width: 40,
                         child: Text(
-                          l10n.setLabel.toUpperCase(), 
-                          textAlign: TextAlign.center, 
+                          'SET',
                           style: TextStyle(
-                            fontSize: 8, // 더 작게 (was 9)
-                            color: Colors.grey[600],
+                            fontSize: 10,
+                            color: Colors.grey[700],
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0.3,
+                            letterSpacing: 0.5,
                             fontFamily: 'Courier',
                           ),
                         ),
                       ),
-                      Expanded(
-                        flex: 3, 
+                      SizedBox(
+                        width: 50,
                         child: Text(
-                          'KG', 
-                          textAlign: TextAlign.center, 
+                          'REPS',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 8,
-                            color: Colors.grey[600],
+                            fontSize: 10,
+                            color: Colors.grey[700],
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0.3,
+                            letterSpacing: 0.5,
                             fontFamily: 'Courier',
                           ),
                         ),
                       ),
-                      Expanded(
-                        flex: 3, 
-                        child: Text(
-                          l10n.repsUnit.toUpperCase(), 
-                          textAlign: TextAlign.center, 
-                          style: TextStyle(
-                            fontSize: 8,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.3,
-                            fontFamily: 'Courier',
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2, 
+                      SizedBox(
+                        width: 16,
                         child: Text(
                           '',
-                          textAlign: TextAlign.center, 
                           style: TextStyle(
-                            fontSize: 8,
-                            color: Colors.grey[600],
+                            fontSize: 10,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 70,
+                        child: Text(
+                          'WEIGHT',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[700],
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0.3,
+                            letterSpacing: 0.5,
                             fontFamily: 'Courier',
                           ),
                         ),
                       ),
+                      SizedBox(
+                        width: 70,
+                        child: Text(
+                          'TOTAL',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 32), // Space for delete button
                     ],
                   ),
                 ),
-                const SizedBox(height: 1), // 극도로 최소화 (was 2)
+                const SizedBox(height: 1),
                 ...List.generate(
                   widget.exercise.sets.length,
                   (index) => _SetRowGrid(
@@ -1967,43 +1979,95 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   @override
   Widget build(BuildContext context) {
+    final set = widget.exercise.sets[widget.setIndex];
+    final hasWeight = set.weight > 0;
+    final hasReps = set.reps > 0;
+    
     return Container(
-      height: 42, // 고정 높이 (Breathable Compact)
-      margin: const EdgeInsets.only(bottom: 4), // 적당한 간격
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      height: 36, // Compact terminal line height
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Set Number - Simple Bold Number
+          // Index: #01
           SizedBox(
-            width: 32,
-            child: Center(
-              child: Text(
-                '${widget.setIndex + 1}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey[500],
-                  fontFamily: 'Courier',
-                ),
+            width: 40,
+            child: Text(
+              '#${(widget.setIndex + 1).toString().padLeft(2, '0')}',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey[600],
+                fontFamily: 'Courier',
+                letterSpacing: 0.5,
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          Expanded(flex: 3, child: _buildInput(_weightController, 'kg', const TextInputType.numberWithOptions(decimal: true))),
-          const SizedBox(width: 8),
-          Expanded(flex: 3, child: _buildInput(_repsController, AppLocalizations.of(context).repsUnit, TextInputType.number)),
-          const SizedBox(width: 8),
-          // Delete Button
+          
+          // Reps Input
           SizedBox(
-            width: 40,
-            child: Center(
-              child: IconButton(
-                icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 22),
-                onPressed: widget.onDelete,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            width: 50,
+            child: _buildTerminalInput(
+              controller: _repsController,
+              placeholder: '--',
+              suffix: '',
+              keyboardType: TextInputType.number,
+            ),
+          ),
+          
+          // "x" separator
+          Text(
+            'x',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey[700],
+              fontFamily: 'Courier',
+            ),
+          ),
+          
+          // Weight Input
+          SizedBox(
+            width: 70,
+            child: _buildTerminalInput(
+              controller: _weightController,
+              placeholder: '---',
+              suffix: 'kg',
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+          ),
+          
+          // Total Volume (calculated)
+          SizedBox(
+            width: 70,
+            child: Text(
+              hasWeight && hasReps 
+                ? '${(set.weight * set.reps).toStringAsFixed(0)}kg'
+                : '---',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: hasWeight && hasReps ? Colors.grey[400] : Colors.grey[800],
+                fontFamily: 'Courier',
+                letterSpacing: 0.5,
               ),
+            ),
+          ),
+          
+          // Delete button (minimal)
+          SizedBox(
+            width: 32,
+            child: IconButton(
+              icon: Icon(
+                Icons.close,
+                size: 18,
+                color: Colors.grey[700],
+              ),
+              onPressed: widget.onDelete,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             ),
           ),
         ],
@@ -2011,36 +2075,57 @@ class _SetRowGridState extends State<_SetRowGrid> {
     );
   }
 
-  Widget _buildInput(TextEditingController controller, String label, TextInputType keyboardType) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontSize: 18, // 크고 읽기 쉽게
-        fontWeight: FontWeight.w900,
-        color: Colors.white,
-        height: 1.2,
-        fontFamily: 'Courier',
-      ),
-      decoration: InputDecoration(
-        isDense: true,
-        border: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
-        ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey[600]!, width: 1), // 명확한 underline
-        ),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 8), // 충분한 패딩
-        hintText: '0',
-        hintStyle: TextStyle(
-          color: Colors.grey[700],
-          fontWeight: FontWeight.w900,
-          fontFamily: 'Courier',
-        ),
+  Widget _buildTerminalInput({
+    required TextEditingController controller,
+    required String placeholder,
+    required String suffix,
+    required TextInputType keyboardType,
+  }) {
+    return Focus(
+      onFocusChange: (hasFocus) {
+        setState(() {}); // Rebuild to show focus color
+      },
+      child: Builder(
+        builder: (context) {
+          final hasFocus = Focus.of(context).hasFocus;
+          final isEmpty = controller.text.isEmpty;
+          
+          return TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: hasFocus 
+                ? const Color(0xFF2196F3) // Electric Blue when focused
+                : (isEmpty ? Colors.grey[800] : Colors.white), // Dark grey or white
+              fontFamily: 'Courier',
+              letterSpacing: 0.5,
+            ),
+            decoration: InputDecoration(
+              isDense: true,
+              border: InputBorder.none, // No borders!
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              filled: false, // No background!
+              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              hintText: placeholder,
+              hintStyle: TextStyle(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Courier',
+              ),
+              suffixText: suffix.isNotEmpty && !isEmpty ? suffix : null,
+              suffixStyle: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: hasFocus ? const Color(0xFF2196F3) : Colors.grey[600],
+                fontFamily: 'Courier',
+              ),
+            ),
+          );
+        },
       ),
     );
   }
