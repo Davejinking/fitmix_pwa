@@ -1283,4 +1283,31 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get upgradeToProShort => 'アップグレード';
+
+  @override
+  String get skip => 'スキップ';
+
+  @override
+  String get onboardingTitle1 => 'ワークアウトを記録';
+
+  @override
+  String get onboardingSubtitle1 => 'セット、重量、回数を簡単に記録\n自動でボリュームを計算します';
+
+  @override
+  String get onboardingTitle2 => 'テンポガイド';
+
+  @override
+  String get onboardingSubtitle2 => '正確なテンポでトレーニング\n音声、ビープ音、振動でガイド';
+
+  @override
+  String get onboardingTitle3 => 'ストリークを積み上げる';
+
+  @override
+  String get onboardingSubtitle3 => '毎日ワークアウトして記録を作ろう\n継続が最高の結果を生みます';
+
+  @override
+  String get onboardingTitle4 => '成長を確認';
+
+  @override
+  String get onboardingSubtitle4 => '週間・月間統計で進歩を確認\n目標に向かって進みましょう';
 }

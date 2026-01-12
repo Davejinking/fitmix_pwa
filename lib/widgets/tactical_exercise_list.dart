@@ -573,7 +573,7 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
             onPressed: _confirmSelection,
             icon: const Icon(Icons.add, size: 22, color: Colors.black),
             label: Text(
-              '${_selectedExercises.length}개 추가하기 (ADD ${_selectedExercises.length})',
+              l10n.addExercises(_selectedExercises.length),
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w900,

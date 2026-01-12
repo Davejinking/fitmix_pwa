@@ -564,5 +564,15 @@
     }
   },
   "upgradeToPro": "PROにアップグレード",
-  "upgradeToProShort": "アップグレード"
+  "upgradeToProShort": "アップグレード",
+  "skip": "スキップ",
+  "onboardingTitle1": "ワークアウトを記録",
+  "onboardingSubtitle1": "セット、重量、回数を簡単に記録\n自動でボリュームを計算します",
+  "onboardingTitle2": "テンポガイド",
+  "onboardingSubtitle2": "正確なテンポでトレーニング\n音声、ビープ音、振動でガイド",
+  "onboardingTitle3": "ストリークを積み上げる",
+  "onboardingSubtitle3": "毎日ワークアウトして記録を作ろう\n継続が最高の結果を生みます",
+  "onboardingTitle4": "成長を確認",
+  "onboardingSubtitle4": "週間・月間統計で進歩を確認\n目標に向かって進みましょう",
+  "next": "次へ"
 }

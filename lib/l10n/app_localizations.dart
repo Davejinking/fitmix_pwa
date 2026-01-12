@@ -2462,6 +2462,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upgrade'**
   String get upgradeToProShort;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @onboardingTitle1.
+  ///
+  /// In en, this message translates to:
+  /// **'Track Your Workouts'**
+  String get onboardingTitle1;
+
+  /// No description provided for @onboardingSubtitle1.
+  ///
+  /// In en, this message translates to:
+  /// **'Easily record sets, weight, and reps\nAutomatic volume calculation'**
+  String get onboardingSubtitle1;
+
+  /// No description provided for @onboardingTitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo Guide'**
+  String get onboardingTitle2;
+
+  /// No description provided for @onboardingSubtitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'Train with precise tempo\nVoice, beep, and haptic guidance'**
+  String get onboardingSubtitle2;
+
+  /// No description provided for @onboardingTitle3.
+  ///
+  /// In en, this message translates to:
+  /// **'Build Your Streak'**
+  String get onboardingTitle3;
+
+  /// No description provided for @onboardingSubtitle3.
+  ///
+  /// In en, this message translates to:
+  /// **'Work out daily and build your record\nConsistency creates the best results'**
+  String get onboardingSubtitle3;
+
+  /// No description provided for @onboardingTitle4.
+  ///
+  /// In en, this message translates to:
+  /// **'Track Your Progress'**
+  String get onboardingTitle4;
+
+  /// No description provided for @onboardingSubtitle4.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your growth with weekly and monthly stats\nMove towards your goals'**
+  String get onboardingSubtitle4;
 }
 
 class _AppLocalizationsDelegate

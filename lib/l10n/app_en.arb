@@ -564,5 +564,15 @@
     }
   },
   "upgradeToPro": "Upgrade to PRO",
-  "upgradeToProShort": "Upgrade"
+  "upgradeToProShort": "Upgrade",
+  "skip": "Skip",
+  "onboardingTitle1": "Track Your Workouts",
+  "onboardingSubtitle1": "Easily record sets, weight, and reps\nAutomatic volume calculation",
+  "onboardingTitle2": "Tempo Guide",
+  "onboardingSubtitle2": "Train with precise tempo\nVoice, beep, and haptic guidance",
+  "onboardingTitle3": "Build Your Streak",
+  "onboardingSubtitle3": "Work out daily and build your record\nConsistency creates the best results",
+  "onboardingTitle4": "Track Your Progress",
+  "onboardingSubtitle4": "Check your growth with weekly and monthly stats\nMove towards your goals",
+  "next": "Next"
 }

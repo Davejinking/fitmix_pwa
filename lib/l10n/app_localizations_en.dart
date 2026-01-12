@@ -1295,4 +1295,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get upgradeToProShort => 'Upgrade';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get onboardingTitle1 => 'Track Your Workouts';
+
+  @override
+  String get onboardingSubtitle1 =>
+      'Easily record sets, weight, and reps\nAutomatic volume calculation';
+
+  @override
+  String get onboardingTitle2 => 'Tempo Guide';
+
+  @override
+  String get onboardingSubtitle2 =>
+      'Train with precise tempo\nVoice, beep, and haptic guidance';
+
+  @override
+  String get onboardingTitle3 => 'Build Your Streak';
+
+  @override
+  String get onboardingSubtitle3 =>
+      'Work out daily and build your record\nConsistency creates the best results';
+
+  @override
+  String get onboardingTitle4 => 'Track Your Progress';
+
+  @override
+  String get onboardingSubtitle4 =>
+      'Check your growth with weekly and monthly stats\nMove towards your goals';
 }

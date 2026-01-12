@@ -1283,4 +1283,31 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get upgradeToProShort => '업그레이드';
+
+  @override
+  String get skip => '건너뛰기';
+
+  @override
+  String get onboardingTitle1 => '운동을 기록하세요';
+
+  @override
+  String get onboardingSubtitle1 => '세트, 무게, 횟수를 간편하게 기록하고\n운동 볼륨을 자동으로 계산해드려요';
+
+  @override
+  String get onboardingTitle2 => '템포 가이드';
+
+  @override
+  String get onboardingSubtitle2 => '정확한 템포로 운동하세요\n음성, 비프음, 진동으로 안내해드려요';
+
+  @override
+  String get onboardingTitle3 => '스트릭을 쌓아가세요';
+
+  @override
+  String get onboardingSubtitle3 => '매일 운동하고 연속 기록을 세워보세요\n꾸준함이 최고의 결과를 만들어요';
+
+  @override
+  String get onboardingTitle4 => '성장을 확인하세요';
+
+  @override
+  String get onboardingSubtitle4 => '주간, 월간 통계로 발전을 확인하고\n목표를 향해 나아가세요';
 }
