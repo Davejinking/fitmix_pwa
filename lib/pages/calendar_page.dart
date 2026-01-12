@@ -1560,8 +1560,9 @@ class _ExerciseCardState extends State<_ExerciseCard> {
       margin: const EdgeInsets.only(bottom: 10, left: 12, right: 12),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFF252932),
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFF121212), // Very Dark Grey (Noir)
+        borderRadius: BorderRadius.circular(8), // Sharper corners (Iron feel)
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1), // Subtle white outline
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1595,15 +1596,17 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.grey[900],
+                          color: Colors.transparent,
+                          border: Border.all(color: Colors.grey[700]!, width: 1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey[400],
+                            color: Colors.grey[500],
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'Courier', // Monospace tactical
                           ),
                         ),
                       ),
@@ -1612,14 +1615,15 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       // 3️⃣ Exercise Name (Dynamic Expansion) 🎯 MAGIC HAPPENS HERE
                       Expanded(
                         child: Text(
-                          _getLocalizedExerciseName(widget.exercise.name, locale),
+                          _getLocalizedExerciseName(widget.exercise.name, locale).toUpperCase(), // UPPERCASE for Noir
                           maxLines: _isExpanded ? null : 1, // 🔥 Dynamic!
                           overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis, // 🔥 Dynamic!
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: -0.3,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900, // Bolder
+                            color: Colors.white, // Pure white
+                            letterSpacing: 0.5, // Wider spacing for tactical feel
+                            fontFamily: 'Courier', // Monospace tactical
                           ),
                         ),
                       ),
@@ -1661,21 +1665,23 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       ),
                       const SizedBox(width: 8),
                       if (isCompleted)
-                        const Icon(Icons.check_circle, color: Color(0xFF2196F3), size: 28)
+                        const Icon(Icons.check_circle, color: Colors.white, size: 28) // White monochrome
                       else
                         // 세트 진행률 (항상 표시) - RIGHTMOST ELEMENT
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3A4452),
-                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.transparent,
+                            border: Border.all(color: Colors.grey[700]!, width: 1),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             '$completedSets / $totalSets',
                             style: const TextStyle(
                               fontSize: 12,
-                              color: Colors.white70,
-                              fontWeight: FontWeight.w600,
+                              color: Colors.white, // White monochrome
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Courier', // Monospace tactical
                             ),
                           ),
                         ),
@@ -1687,7 +1693,11 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       children: [
                         Text(
                           l10n.totalVolumeShort(totalVolume.toStringAsFixed(0)),
-                          style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                          style: TextStyle(
+                            fontSize: 11, 
+                            color: Colors.grey[600],
+                            fontFamily: 'Courier', // Monospace tactical
+                          ),
                         ),
                       ],
                     ),
@@ -1747,10 +1757,62 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Row(
                     children: [
-                      Expanded(flex: 2, child: Text(l10n.setLabel, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey[500]))),
-                      Expanded(flex: 3, child: Text('kg', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey[500]))),
-                      Expanded(flex: 3, child: Text(l10n.repsUnit, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey[500]))),
-                      Expanded(flex: 2, child: Text(l10n.completeLabel, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey[500]))),
+                      Expanded(
+                        flex: 2, 
+                        child: Text(
+                          l10n.setLabel.toUpperCase(), 
+                          textAlign: TextAlign.center, 
+                          style: TextStyle(
+                            fontSize: 10, 
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier', // Monospace tactical
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3, 
+                        child: Text(
+                          'KG', 
+                          textAlign: TextAlign.center, 
+                          style: TextStyle(
+                            fontSize: 10, 
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3, 
+                        child: Text(
+                          l10n.repsUnit.toUpperCase(), 
+                          textAlign: TextAlign.center, 
+                          style: TextStyle(
+                            fontSize: 10, 
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2, 
+                        child: Text(
+                          l10n.completeLabel.toUpperCase(), 
+                          textAlign: TextAlign.center, 
+                          style: TextStyle(
+                            fontSize: 10, 
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1772,7 +1834,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     onUpdate: widget.onUpdate,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -1784,10 +1846,25 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         }
                       },
                       icon: const Icon(Icons.remove, size: 16),
-                      label: Text(l10n.deleteSet, style: const TextStyle(fontSize: 13)),
-                      style: TextButton.styleFrom(foregroundColor: Colors.grey[500]),
+                      label: Text(
+                        l10n.deleteSet.toUpperCase(), 
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey[600],
+                      ),
                     ),
-                    Container(width: 1, height: 20, color: Colors.grey[700], margin: const EdgeInsets.symmetric(horizontal: 8)),
+                    Container(
+                      width: 1, 
+                      height: 20, 
+                      color: Colors.grey[800], 
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
                     TextButton.icon(
                       onPressed: () {
                         setState(() {
@@ -1801,8 +1878,18 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                         widget.onUpdate();
                       },
                       icon: const Icon(Icons.add, size: 16),
-                      label: Text(l10n.addSet, style: const TextStyle(fontSize: 13)),
-                      style: TextButton.styleFrom(foregroundColor: Colors.white), // White monochrome
+                      label: Text(
+                        l10n.addSet.toUpperCase(), 
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white, // White monochrome
+                      ),
                     ),
                   ],
                 ),
@@ -1872,18 +1959,30 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.zero,
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+      margin: const EdgeInsets.only(bottom: 8), // More spacing between sets
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Center(
               child: Container(
-                width: 22, height: 22,
-                decoration: BoxDecoration(color: const Color(0xFF3A4452), borderRadius: BorderRadius.circular(4)),
+                width: 24, height: 24,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(color: Colors.grey[700]!, width: 1.5),
+                  borderRadius: BorderRadius.circular(4),
+                ),
                 alignment: Alignment.center,
-                child: Text('${widget.setIndex + 1}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white)),
+                child: Text(
+                  '${widget.setIndex + 1}', 
+                  style: const TextStyle(
+                    fontSize: 12, 
+                    fontWeight: FontWeight.w900, 
+                    color: Colors.white,
+                    fontFamily: 'Courier', // Monospace tactical
+                  ),
+                ),
               ),
             ),
           ),
@@ -1907,26 +2006,46 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   Widget _buildInput(TextEditingController controller, String label, TextInputType keyboardType) {
     return Container(
-      height: 32,
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.grey.shade800, width: 0.5),
-      ),
-      child: Stack(
-        children: [
-          Positioned(top: 2, left: 6, child: Text(label, style: TextStyle(fontSize: 9, color: Colors.grey.shade500))),
-          Center(
-            child: TextFormField(
-              controller: controller,
-              keyboardType: keyboardType,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white, height: 1.0),
-              decoration: const InputDecoration(isDense: true, border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 4)),
-            ),
+      height: 40, // Slightly taller for better touch target
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 18, // Larger & Bolder numbers
+          fontWeight: FontWeight.w900,
+          color: Colors.white, // Pure white
+          height: 1.2,
+          fontFamily: 'Courier', // Monospace tactical
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white, width: 1.5),
           ),
-        ],
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey[700]!, width: 1.5),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.white, width: 2),
+          ),
+          contentPadding: const EdgeInsets.only(bottom: 4),
+          hintText: '0',
+          hintStyle: TextStyle(
+            color: Colors.grey[800],
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Courier',
+          ),
+          labelText: label,
+          labelStyle: TextStyle(
+            fontSize: 10,
+            color: Colors.grey[600], // Dimmed label
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Courier',
+          ),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+        ),
       ),
     );
   }
