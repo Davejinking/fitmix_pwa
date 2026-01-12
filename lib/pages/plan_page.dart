@@ -11,6 +11,7 @@ import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
 import '../widgets/tempo_settings_modal.dart';
 import '../widgets/tempo_countdown_modal.dart';
+import '../widgets/modern_workout_card.dart';
 import '../services/tempo_controller.dart';
 import 'exercise_selection_page_v2.dart';
 
@@ -550,7 +551,7 @@ class _PlanPageState extends State<PlanPage> {
         return ReorderableDragStartListener(
           key: ValueKey(exercise),
           index: index,
-          child: ExerciseCard(
+          child: ModernWorkoutCard(
             exercise: exercise,
             exerciseIndex: index,
             onDelete: () {
@@ -1296,40 +1297,54 @@ class _ExerciseCardState extends State<ExerciseCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title Row (Always Visible)
+        // Title Row (Always Visible) - 🎯 COMPACT SINGLE LINE
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '${widget.exerciseIndex + 1} ',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2196F3),
-                      ),
-                    ),
-                    TextSpan(
-                      text: '${widget.exercise.bodyPart} | ',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    TextSpan(
-                      text: widget.exercise.name,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+            // 1️⃣ Index (Simple Grey Text - NO BOX)
+            Text(
+              '${widget.exerciseIndex + 1}',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[500],
+              ),
+            ),
+            const SizedBox(width: 12),
+            
+            // 2️⃣ Muscle Tag (Small Chip)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                widget.exercise.bodyPart,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey[400],
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
+            const SizedBox(width: 8),
+            
+            // 3️⃣ Exercise Name (Dynamic Expansion) 🎯 MAGIC HAPPENS HERE
+            Expanded(
+              child: Text(
+                widget.exercise.name,
+                maxLines: _isExpanded ? null : 1, // 🔥 Dynamic!
+                overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis, // 🔥 Dynamic!
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
             // Dynamic Status Widget (Completion or Progress)
             if (isCompleted)
               // ✅ All Completed: Blue Checkmark (Brand Color)
@@ -1385,34 +1400,25 @@ class _ExerciseCardState extends State<ExerciseCard> {
                   ),
                 ),
               ),
-              // 📊 In Progress: Blue Badge (Only when collapsed)
-              if (!_isExpanded)
-                Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2196F3).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '$completedSets / $totalSets SET',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFF2196F3),
-                      fontWeight: FontWeight.bold,
-                    ),
+              // 세트 진행률 (항상 표시) - RIGHTMOST ELEMENT
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: isCompleted 
+                      ? const Color(0xFF2196F3).withValues(alpha: 0.2)
+                      : const Color(0xFF3A4452),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '$completedSets / $totalSets',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isCompleted ? const Color(0xFF2196F3) : Colors.white70,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+              ),
             ],
-            const SizedBox(width: 8),
-            // Chevron Icon (Toggle Indicator)
-            Icon(
-              _isExpanded 
-                  ? Icons.keyboard_arrow_up_rounded 
-                  : Icons.keyboard_arrow_down_rounded,
-              color: Colors.grey[500],
-              size: 22,
-            ),
           ],
         ),
         

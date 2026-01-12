@@ -27,6 +27,9 @@ class TacticalExerciseList extends StatefulWidget {
   
   /// Optional: Show bookmarks functionality
   final bool showBookmarks;
+  
+  /// Optional: Header widget to display between filters and list
+  final Widget? headerWidget;
 
   const TacticalExerciseList({
     super.key,
@@ -34,6 +37,7 @@ class TacticalExerciseList extends StatefulWidget {
     this.onExercisesSelected,
     this.initialBodyPart,
     this.showBookmarks = true,
+    this.headerWidget,
   });
 
   @override
@@ -234,6 +238,8 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
         _buildBodyPartTabs(l10n),
         if (_selectedBodyPart != 'all' && _selectedBodyPart != 'favorites')
           _buildEquipmentFilter(l10n),
+        // 🔥 Header Widget (e.g., Create Button)
+        if (widget.headerWidget != null) widget.headerWidget!,
         Expanded(child: _buildExerciseList(l10n)),
         if (widget.isSelectionMode && _selectedExercises.isNotEmpty)
           _buildSelectionBottomBar(l10n),

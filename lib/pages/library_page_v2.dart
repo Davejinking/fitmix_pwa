@@ -4,11 +4,13 @@ import '../core/service_locator.dart';
 import '../models/routine.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
+import '../models/exercise_set.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/tactical_exercise_list.dart';
 import '../data/session_repo.dart';
 import '../data/routine_repo.dart';
 import '../data/user_repo.dart';
+import '../data/exercise_library_repo.dart';
 import '../core/error_handler.dart';
 import '../core/subscription_limits.dart';
 import '../core/iron_theme.dart';
@@ -39,12 +41,108 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   @override
   void initState() {
     super.initState();
+    // 🔥 Initialize filter keys with system tags
+    _allRoutineFilterKeys = List.from(_systemRoutineFilterKeys);
   }
 
   @override
   void dispose() {
     _routineSearchController.dispose();
     super.dispose();
+  }
+
+  // 🔥 Add Exercise Dialog
+  Future<void> _showAddExerciseDialog() async {
+    final result = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (context) => const _AddExerciseDialog(),
+    );
+
+    if (result != null && mounted) {
+      final name = result['name']!;
+      final bodyPart = result['bodyPart']!;
+      
+      try {
+        final exerciseRepo = getIt<ExerciseLibraryRepo>();
+        
+        // Save to Hive
+        await exerciseRepo.addExercise(bodyPart, name);
+        
+        if (mounted) {
+          ErrorHandler.showSuccessSnackBar(
+            context,
+            'Exercise added successfully', // TODO: Add i18n
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(
+            context,
+            AppLocalizations.of(context).errorOccurred(e.toString()),
+          );
+        }
+      }
+    }
+  }
+
+  // 🔥 Build Exercises Tab (Matching Routine Tab Style)
+  Widget _buildExercisesTab(AppLocalizations l10n) {
+    return TacticalExerciseList(
+      isSelectionMode: false,
+      showBookmarks: true,
+      // 🔥 Header Widget: Create Button (PIXEL PERFECT - Matching Routine Tab)
+      headerWidget: Container(
+        padding: const EdgeInsets.all(16), // 🎯 EXACT MATCH with Routine Tab
+        child: SizedBox(
+          width: double.infinity,
+          height: 50, // 🎯 EXACT MATCH with Routine Tab
+          child: OutlinedButton(
+            onPressed: _showAddExerciseDialog,
+            style: ButtonStyle(
+              // Border: Always White
+              side: WidgetStateProperty.all(
+                const BorderSide(color: Colors.white, width: 1.5),
+              ),
+              // Shape: Sharp corners
+              shape: WidgetStateProperty.all(
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                ),
+              ),
+              // BACKGROUND: Transparent → White when pressed
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                if (states.contains(WidgetState.pressed)) {
+                  return Colors.white;
+                }
+                return Colors.transparent;
+              }),
+              // TEXT COLOR: White → Black when pressed
+              foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                if (states.contains(WidgetState.pressed)) {
+                  return Colors.black;
+                }
+                return Colors.white;
+              }),
+              // Remove default overlay
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              padding: WidgetStateProperty.all(
+                const EdgeInsets.symmetric(vertical: 14),
+              ),
+            ),
+            // 🔥 ONLY TEXT - NO ICON
+            child: const Text(
+              '+ 新しい運動を作成',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.5,
+                fontFamily: 'Courier',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -62,13 +160,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           _buildRoutineFilter(l10n),
           Expanded(child: _buildRoutinesList(l10n)),
         ] else ...[
-          // 🔥 REFACTORED: Use TacticalExerciseList component in View Mode
-          Expanded(
-            child: TacticalExerciseList(
-              isSelectionMode: false,
-              showBookmarks: true,
-            ),
-          ),
+          // 🔥 Exercise Mode
+          Expanded(child: _buildExercisesTab(l10n)),
         ],
       ],
     );
@@ -1273,6 +1366,201 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
           ],
         ],
       ),
+    );
+  }
+}
+
+
+// 🔥 Add Exercise Dialog
+class _AddExerciseDialog extends StatefulWidget {
+  const _AddExerciseDialog();
+
+  @override
+  State<_AddExerciseDialog> createState() => _AddExerciseDialogState();
+}
+
+class _AddExerciseDialogState extends State<_AddExerciseDialog> {
+  final TextEditingController _nameController = TextEditingController();
+  String _selectedBodyPart = 'Chest';
+  
+  final List<String> _bodyParts = [
+    'Chest',
+    'Back',
+    'Legs',
+    'Shoulders',
+    'Arms',
+    'Abs',
+    'Cardio',
+    'Etc',
+  ];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    return AlertDialog(
+      backgroundColor: const Color(0xFF1C1C1E), // 🎯 Dark Surface
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+        side: const BorderSide(color: Colors.white24, width: 1),
+      ),
+      title: const Text(
+        'NEW EXERCISE',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w900,
+          fontFamily: 'Courier',
+          letterSpacing: 1.5,
+        ),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Exercise Name Input
+            const Text(
+              'NAME',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Courier',
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _nameController,
+              style: const TextStyle(
+                color: Colors.white,
+                fontFamily: 'Courier',
+              ),
+              decoration: InputDecoration(
+                hintText: 'e.g., Hack Squat',
+                hintStyle: const TextStyle(
+                  color: Colors.grey,
+                  fontFamily: 'Courier',
+                ),
+                filled: true,
+                fillColor: Colors.grey[800],
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(color: Colors.white24),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(color: Colors.white, width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 24),
+            
+            // Muscle Group Selection
+            const Text(
+              'MUSCLE GROUP',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Courier',
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            // Choice Chips
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _bodyParts.map((bodyPart) {
+                final isSelected = bodyPart == _selectedBodyPart;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedBodyPart = bodyPart),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.white : Colors.transparent,
+                      border: Border.all(
+                        color: isSelected ? Colors.white : Colors.white24,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      bodyPart.toUpperCase(),
+                      style: TextStyle(
+                        color: isSelected ? Colors.black : Colors.grey,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Courier',
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        // Cancel Button
+        TextButton(
+          child: Text(
+            l10n.cancel.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontFamily: 'Courier',
+              letterSpacing: 1.0,
+            ),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        // Save Button
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          child: Text(
+            l10n.save.toUpperCase(),
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Courier',
+              letterSpacing: 1.5,
+            ),
+          ),
+          onPressed: () {
+            final name = _nameController.text.trim();
+            if (name.isNotEmpty) {
+              Navigator.pop(context, {
+                'name': name,
+                'bodyPart': _selectedBodyPart,
+              });
+            }
+          },
+        ),
+      ],
     );
   }
 }

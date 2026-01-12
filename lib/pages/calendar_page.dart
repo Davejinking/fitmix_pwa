@@ -1449,48 +1449,71 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${widget.exerciseIndex + 1} ',
-                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white), // White monochrome
-                              ),
-                              TextSpan(
-                                text: '${_getLocalizedBodyPart(widget.exercise.bodyPart, locale)} | ',
-                                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                              ),
-                              TextSpan(
-                                text: _getLocalizedExerciseName(widget.exercise.name, locale),
-                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
-                              ),
-                            ],
+                      // 1️⃣ Index (Simple Grey Text - NO BOX)
+                      Text(
+                        '${widget.exerciseIndex + 1}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      
+                      // 2️⃣ Muscle Tag (Small Chip)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[400],
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      
+                      // 3️⃣ Exercise Name (Dynamic Expansion) 🎯 MAGIC HAPPENS HERE
+                      Expanded(
+                        child: Text(
+                          _getLocalizedExerciseName(widget.exercise.name, locale),
+                          maxLines: _isExpanded ? null : 1, // 🔥 Dynamic!
+                          overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis, // 🔥 Dynamic!
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       if (isCompleted)
-                        const Icon(Icons.check_circle, color: Colors.white, size: 28) // White monochrome
-                      else if (!_isExpanded)
+                        const Icon(Icons.check_circle, color: Color(0xFF2196F3), size: 28)
+                      else
+                        // 세트 진행률 (항상 표시) - RIGHTMOST ELEMENT
                         Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1), // Subtle white tint
+                            color: const Color(0xFF3A4452),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            '$completedSets / $totalSets SET',
-                            style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold), // White monochrome
+                            '$completedSets / $totalSets',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        _isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                        color: Colors.grey[500],
-                        size: 22,
-                      ),
                     ],
                   ),
                   if (_isExpanded) ...[

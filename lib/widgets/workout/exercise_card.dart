@@ -140,7 +140,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(14),
@@ -240,7 +240,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
               ),
             ),
             const SizedBox(width: 12),
-            // 운동 이름
+            // 운동 이름 및 부위 태그
             Expanded(
               child: Row(
                 children: [
@@ -248,21 +248,32 @@ class _ExerciseCardState extends State<ExerciseCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // 부위 태그 (Chip 스타일)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[400]?.withValues(alpha: textOpacity),
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        // 운동 이름 (더 강조)
                         Text(
                           _getLocalizedExerciseName(widget.exercise.name, locale),
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white.withValues(alpha: textOpacity),
                             letterSpacing: -0.3,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500]?.withValues(alpha: textOpacity),
                           ),
                         ),
                       ],
@@ -283,27 +294,32 @@ class _ExerciseCardState extends State<ExerciseCard> {
                 ],
               ),
             ),
-            // 축소 시 세트 진행률 표시
-            if (!isExpanded) ...[
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: isCompleted 
-                      ? const Color(0xFF2196F3).withValues(alpha: 0.2)
-                      : const Color(0xFF3A4452),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '$completedSets / $totalSets',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isCompleted ? const Color(0xFF2196F3) : Colors.white70,
-                    fontWeight: FontWeight.w600,
-                  ),
+            // 세트 진행률 표시 (항상 표시)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: isCompleted 
+                    ? const Color(0xFF2196F3).withValues(alpha: 0.2)
+                    : const Color(0xFF3A4452),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '$completedSets / $totalSets',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isCompleted ? const Color(0xFF2196F3) : Colors.white70,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(width: 8),
-            ],
+            ),
+            const SizedBox(width: 8),
+            // 드래그 핸들 아이콘 (항상 표시)
+            Icon(
+              Icons.drag_handle,
+              color: Colors.grey[600],
+              size: 20,
+            ),
+            const SizedBox(width: 4),
             // 확장/축소 아이콘
             Icon(
               isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
