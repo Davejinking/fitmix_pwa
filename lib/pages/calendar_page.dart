@@ -1968,43 +1968,41 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.zero, // vertical margin 제거
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4), // horizontal은 유지!
+      height: 42, // 고정 높이 (Breathable Compact)
+      margin: const EdgeInsets.only(bottom: 4), // 적당한 간격
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-            flex: 2,
+          // Set Number - Simple Bold Number
+          SizedBox(
+            width: 32,
             child: Center(
-              child: Container(
-                width: 20, height: 20,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(color: Colors.grey[700]!, width: 1),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  '${widget.setIndex + 1}', 
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w900, 
-                    color: Colors.white,
-                    fontFamily: 'Courier',
-                  ),
+              child: Text(
+                '${widget.setIndex + 1}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey[500],
+                  fontFamily: 'Courier',
                 ),
               ),
             ),
           ),
+          const SizedBox(width: 8),
           Expanded(flex: 3, child: _buildInput(_weightController, 'kg', const TextInputType.numberWithOptions(decimal: true))),
+          const SizedBox(width: 8),
           Expanded(flex: 3, child: _buildInput(_repsController, AppLocalizations.of(context).repsUnit, TextInputType.number)),
-          Expanded(
-            flex: 2,
+          const SizedBox(width: 8),
+          // Delete Button
+          SizedBox(
+            width: 40,
             child: Center(
               child: IconButton(
-                icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 18),
+                icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 22),
                 onPressed: widget.onDelete,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
               ),
             ),
           ),
@@ -2014,38 +2012,34 @@ class _SetRowGridState extends State<_SetRowGrid> {
   }
 
   Widget _buildInput(TextEditingController controller, String label, TextInputType keyboardType) {
-    return Container(
-      height: 26,
-      margin: const EdgeInsets.symmetric(horizontal: 2), // horizontal margin 복구
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w900,
-          color: Colors.white,
-          height: 1.0,
-          fontFamily: 'Courier',
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        fontSize: 18, // 크고 읽기 쉽게
+        fontWeight: FontWeight.w900,
+        color: Colors.white,
+        height: 1.2,
+        fontFamily: 'Courier',
+      ),
+      decoration: InputDecoration(
+        isDense: true,
+        border: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.white, width: 1.5),
         ),
-        decoration: InputDecoration(
-          isDense: true,
-          border: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white, width: 1),
-          ),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey[800]!, width: 0.5),
-          ),
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white, width: 1),
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 2),
-          hintText: '0',
-          hintStyle: TextStyle(
-            color: Colors.grey[800],
-            fontWeight: FontWeight.w900,
-            fontFamily: 'Courier',
-          ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey[600]!, width: 1), // 명확한 underline
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.white, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 8), // 충분한 패딩
+        hintText: '0',
+        hintStyle: TextStyle(
+          color: Colors.grey[700],
+          fontWeight: FontWeight.w900,
+          fontFamily: 'Courier',
         ),
       ),
     );
