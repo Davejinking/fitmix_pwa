@@ -1968,8 +1968,8 @@ class _SetRowGridState extends State<_SetRowGrid> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.zero, // 완전 제거!
-      padding: EdgeInsets.zero, // 완전 제거!
+      margin: EdgeInsets.zero, // vertical margin 제거
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4), // horizontal은 유지!
       child: Row(
         children: [
           Expanded(
@@ -2015,8 +2015,8 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   Widget _buildInput(TextEditingController controller, String label, TextInputType keyboardType) {
     return Container(
-      height: 26, // 더 작게 (was 28)
-      margin: EdgeInsets.zero, // 마진 완전 제거!
+      height: 26,
+      margin: const EdgeInsets.symmetric(horizontal: 2), // horizontal margin 복구
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
@@ -2039,7 +2039,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
           focusedBorder: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.white, width: 1),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 2), // 더 작게 (was 4)
+          contentPadding: const EdgeInsets.symmetric(vertical: 2),
           hintText: '0',
           hintStyle: TextStyle(
             color: Colors.grey[800],
