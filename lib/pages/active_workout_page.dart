@@ -970,40 +970,37 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 운동 추가 버튼 (리스트 맨 아래)
+  /// 운동 추가 버튼 (리스트 맨 아래) - Ghost Style
   Widget _buildAddExerciseButton(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: GestureDetector(
-        onTap: _addExercise,
-        child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color(0xFF3A3A3C),
-              width: 1,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50, // Slightly more compact
+        child: OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Colors.transparent, // Ghost Style
+            side: const BorderSide(color: Colors.white24, width: 1), // Thin Wireframe
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4), // Sharp
             ),
+            foregroundColor: Colors.white, // Splash Color
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.add_circle_outline,
-                color: Colors.grey[400],
-                size: 22,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                l10n.addExercise,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ],
+          onPressed: _addExercise,
+          icon: Icon(
+            Icons.add,
+            size: 18,
+            color: Colors.grey[600],
+          ),
+          label: Text(
+            l10n.addExercise,
+            style: TextStyle(
+              fontFamily: 'Courier', // The Iron Log Font
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey[600], // Subtle text
+              letterSpacing: 1.0,
+            ),
           ),
         ),
       ),
