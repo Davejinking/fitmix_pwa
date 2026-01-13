@@ -418,46 +418,36 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 전체 화면 타이머 오버레이 (애플 스타일)
+  /// 전체 화면 타이머 오버레이 (Industrial/Tactical Style)
   Widget _buildFullScreenTimerOverlay(AppLocalizations l10n) {
     final progress = _restSeconds / _defaultRestDuration;
-    const accentColor = Color(0xFF2196F3); // 앱 메인 컬러 (파란색)
+    const accentColor = Color(0xFF00E5FF); // Electric Cyan
     
     return Positioned.fill(
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF0A0A0A),
-              Color(0xFF1A1A1A),
-            ],
-          ),
-        ),
+        color: const Color(0xFF121212), // Deep dark background
         child: SafeArea(
           child: Stack(
             children: [
-              // 좌측 상단 X 버튼 (타이머 UI 숨김 → 하단 바에서 시간 표시)
+              // 좌측 상단 X 버튼 (Angular style)
               Positioned(
                 top: 8,
                 left: 16,
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    // 타이머는 계속 진행, UI만 숨김
                     setState(() => _isTimerUIVisible = false);
                   },
                   child: Container(
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
+                      color: const Color(0xFF2C2C2E),
+                      borderRadius: BorderRadius.circular(8), // Angular
                     ),
                     child: const Icon(
                       Icons.close,
-                      color: Colors.white60,
+                      color: Colors.white70,
                       size: 20,
                     ),
                   ),
@@ -467,74 +457,112 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
               Column(
                 children: [
                   const Spacer(flex: 2),
-                  // 원형 타이머
+                  // Thin Ring Timer with Massive Typography
                   SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: CustomPaint(
-                      painter: _TimerRingPainter(
-                        progress: progress.clamp(0.0, 1.0),
-                        strokeWidth: 8,
-                        backgroundColor: const Color(0xFF2C2C2E),
-                        progressColor: accentColor,
-                      ),
-                      child: Center(
-                        child: Text(
-                          _formatTime(_restSeconds),
-                          style: const TextStyle(
-                            fontSize: 72,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            fontFeatures: [FontFeature.tabularFigures()],
-                            letterSpacing: 2,
-                            decoration: TextDecoration.none,
-                            decorationColor: Colors.transparent,
+                    width: 320,
+                    height: 320,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Thin progress ring
+                        CustomPaint(
+                          size: const Size(320, 320),
+                          painter: _TimerRingPainter(
+                            progress: progress.clamp(0.0, 1.0),
+                            strokeWidth: 4, // Thin and sharp
+                            backgroundColor: const Color(0xFF2C2C2E),
+                            progressColor: accentColor,
                           ),
                         ),
-                      ),
+                        // Massive monospace timer
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Label
+                            Text(
+                              'REST',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.grey[600],
+                                letterSpacing: 2.0,
+                                fontFamily: 'Courier',
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            // Timer (HUGE)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                _formatTime(_restSeconds),
+                                style: TextStyle(
+                                  fontSize: 72,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                  letterSpacing: 4,
+                                  fontFamily: 'Courier',
+                                  decoration: TextDecoration.none,
+                                  shadows: [
+                                    Shadow(
+                                      color: accentColor.withValues(alpha: 0.5),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 48),
-                  // 시간 조절 버튼들 (원형 4개)
+                  // 시간 조절 버튼들 (Angular Machine Interface)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildCircleTimeButton(-60, '-1분'),
-                      const SizedBox(width: 16),
-                      _buildCircleTimeButton(-10, '-10초'),
-                      const SizedBox(width: 16),
-                      _buildCircleTimeButton(10, '+10초'),
-                      const SizedBox(width: 16),
-                      _buildCircleTimeButton(60, '+1분'),
+                      _buildTacticalTimeButton(-60, '-1M'),
+                      const SizedBox(width: 12),
+                      _buildTacticalTimeButton(-10, '-10'),
+                      const SizedBox(width: 12),
+                      _buildTacticalTimeButton(10, '+10'),
+                      const SizedBox(width: 12),
+                      _buildTacticalTimeButton(60, '+1M'),
                     ],
                   ),
                   const Spacer(flex: 2),
-                  // 하단 메인 버튼 (휴식 스킵)
+                  // 하단 메인 버튼 (Outlined style)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: GestureDetector(
-                      onTap: () {
+                    child: OutlinedButton(
+                      onPressed: () {
                         HapticFeedback.mediumImpact();
                         _restTimer?.cancel();
                         setState(() => _restTimerRunning = false);
                       },
-                      child: Container(
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: accentColor,
-                          borderRadius: BorderRadius.circular(14),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 56),
+                        side: const BorderSide(color: accentColor, width: 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Center(
-                          child: Text(
-                            l10n.skipRest,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
+                        foregroundColor: accentColor,
+                      ),
+                      child: Text(
+                        l10n.skipRest.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.0,
+                          fontFamily: 'Courier',
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ),
@@ -549,10 +577,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 미니 플로팅 타이머 → 하단 고정 바 스타일
+  /// 미니 플로팅 타이머 → 하단 고정 바 스타일 (Industrial)
   Widget _buildMiniFloatingTimer(AppLocalizations l10n) {
     final progress = _restSeconds / _defaultRestDuration;
-    const accentColor = Color(0xFF2196F3); // 앱 메인 컬러 (파란색)
+    const accentColor = Color(0xFF00E5FF); // Electric Cyan
     
     return Positioned(
       left: 0,
@@ -560,16 +588,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       bottom: 0,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
-          border: const Border(top: BorderSide(color: Color(0xFF2C2C2C), width: 1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 12,
-              offset: const Offset(0, -4),
-            ),
-          ],
+        decoration: const BoxDecoration(
+          color: Color(0xFF121212), // Deep dark
+          border: Border(top: BorderSide(color: Color(0xFF2C2C2C), width: 1)),
         ),
         child: SafeArea(
           top: false,
@@ -579,7 +600,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
               // 상단: 프로그레스 + 시간 + X버튼
               Row(
                 children: [
-                  // 미니 원형 프로그레스
+                  // 미니 Thin Ring
                   SizedBox(
                     width: 48,
                     height: 48,
@@ -587,7 +608,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       painter: _TimerRingPainter(
                         progress: progress.clamp(0.0, 1.0),
                         strokeWidth: 3,
-                        backgroundColor: const Color(0xFF3A3A3C),
+                        backgroundColor: const Color(0xFF2C2C2E),
                         progressColor: accentColor,
                       ),
                       child: const Center(
@@ -600,16 +621,19 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // 시간 표시
+                  // 시간 표시 (Monospace)
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.rest,
+                          'REST',
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500],
+                            fontSize: 10,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                            fontFamily: 'Courier',
                             decoration: TextDecoration.none,
                           ),
                         ),
@@ -617,32 +641,32 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                           _formatTime(_restSeconds),
                           style: const TextStyle(
                             fontSize: 32,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w900,
                             color: Colors.white,
                             fontFeatures: [FontFeature.tabularFigures()],
+                            fontFamily: 'Courier',
                             decoration: TextDecoration.none,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // X 버튼 (타이머 UI 숨김)
+                  // X 버튼 (Angular)
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.lightImpact();
-                      // 타이머는 계속 진행, UI만 숨김
                       setState(() => _isTimerUIVisible = false);
                     },
                     child: Container(
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
+                        color: const Color(0xFF2C2C2E),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Icon(
                         Icons.close,
-                        color: Colors.white54,
+                        color: Colors.white70,
                         size: 18,
                       ),
                     ),
@@ -650,43 +674,42 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 ],
               ),
               const SizedBox(height: 12),
-              // 시간 조절 버튼들
+              // 시간 조절 버튼들 (Angular)
               Row(
                 children: [
-                  _buildMiniTimeButton(-60, '-1분'),
+                  _buildMiniTimeButton(-60, '-1M'),
                   const SizedBox(width: 8),
-                  _buildMiniTimeButton(-10, '-10초'),
+                  _buildMiniTimeButton(-10, '-10'),
                   const SizedBox(width: 8),
-                  _buildMiniTimeButton(10, '+10초'),
+                  _buildMiniTimeButton(10, '+10'),
                   const SizedBox(width: 8),
-                  _buildMiniTimeButton(60, '+1분'),
+                  _buildMiniTimeButton(60, '+1M'),
                 ],
               ),
               const SizedBox(height: 12),
-              // 스킵 버튼
-              GestureDetector(
-                onTap: () {
+              // 스킵 버튼 (Outlined)
+              OutlinedButton(
+                onPressed: () {
                   HapticFeedback.mediumImpact();
                   _restTimer?.cancel();
                   setState(() => _restTimerRunning = false);
                 },
-                child: Container(
-                  width: double.infinity,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: accentColor,
-                    borderRadius: BorderRadius.circular(12),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
+                  side: const BorderSide(color: accentColor, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
-                    child: Text(
-                      '휴식 건너뛰기',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
+                  foregroundColor: accentColor,
+                ),
+                child: Text(
+                  l10n.skipRest.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2.0,
+                    fontFamily: 'Courier',
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ),
@@ -697,7 +720,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 미니 타이머용 시간 조절 버튼
+  /// 미니 타이머용 시간 조절 버튼 (Angular Machine Interface)
   Widget _buildMiniTimeButton(int seconds, String label) {
     return Expanded(
       child: GestureDetector(
@@ -711,15 +734,16 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
           height: 40,
           decoration: BoxDecoration(
             color: const Color(0xFF2C2C2E),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8), // Angular
           ),
           child: Center(
             child: Text(
               label,
               style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
                 color: Colors.white,
+                fontFamily: 'Courier',
                 decoration: TextDecoration.none,
               ),
             ),
@@ -729,8 +753,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 전체 화면용 원형 시간 조절 버튼
-  Widget _buildCircleTimeButton(int seconds, String label) {
+  /// 전체 화면용 Tactical 시간 조절 버튼
+  Widget _buildTacticalTimeButton(int seconds, String label) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -738,26 +762,26 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
           _restSeconds = (_restSeconds + seconds).clamp(1, 600);
         });
       },
-      child: ClipOval(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                  decoration: TextDecoration.none,
-                ),
-              ),
+      child: Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2C2C2E),
+          borderRadius: BorderRadius.circular(12), // Angular, not circle
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.1),
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              fontFamily: 'Courier',
+              decoration: TextDecoration.none,
             ),
           ),
         ),
