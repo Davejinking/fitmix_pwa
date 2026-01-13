@@ -1049,21 +1049,21 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   Widget _buildBottomBar(AppLocalizations l10n) {
-    const accentColor = Color(0xFF2196F3); // Iron Blue
-    const dangerColor = Color(0xFFFF453A); // Crimson Red (Apple style)
+    const accentColor = Color(0xFF00E5FF); // Electric Cyan
+    const dangerColor = Color(0xFFFF453A); // Crimson Red
     
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 40), // Safe area bottom padding included
       decoration: const BoxDecoration(
         color: Colors.black, // Merge with background
-        border: Border(top: BorderSide(color: Colors.white12, width: 0.5)), // Subtle separator
+        border: Border(top: BorderSide(color: Colors.white10, width: 1)), // Subtle separator
       ),
       child: Row(
         children: [
-          // 1. Rest Timer (Main Action) - Takes 75% width
+          // 1. Rest Timer (The Main Tool) - Dominant space
           Expanded(
             flex: 3,
-            child: GestureDetector(
+            child: InkWell(
               onTap: () {
                 // 타이머가 실행 중이면 UI 다시 표시, 아니면 설정 모달
                 if (_restTimerRunning) {
@@ -1077,11 +1077,11 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 height: 56,
                 decoration: BoxDecoration(
                   color: _restTimerRunning 
-                      ? accentColor.withValues(alpha: 0.15)
-                      : const Color(0xFF2C2C2E), // Surface color
-                  borderRadius: BorderRadius.circular(8),
+                      ? const Color(0xFF1A2A2A) // Dark cyan tint when active
+                      : const Color(0xFF1C1C1E), // Solid Gunmetal Grey
+                  borderRadius: BorderRadius.circular(12),
                   border: _restTimerRunning 
-                      ? Border.all(color: accentColor, width: 2)
+                      ? Border.all(color: accentColor.withValues(alpha: 0.5), width: 1)
                       : null,
                 ),
                 child: Row(
@@ -1089,19 +1089,20 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                   children: [
                     Icon(
                       Icons.timer_outlined, 
-                      color: _restTimerRunning ? accentColor : Colors.white, 
-                      size: 20,
+                      color: _restTimerRunning ? accentColor : accentColor.withValues(alpha: 0.7), 
+                      size: 22,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Text(
                       _restTimerRunning 
                           ? _formatTime(_restSeconds)
-                          : _formatTime(_defaultRestDuration), // Dynamic Timer Value
+                          : _formatTime(_defaultRestDuration),
                       style: TextStyle(
-                        color: _restTimerRunning ? accentColor : Colors.white,
-                        fontSize: 18,
+                        color: Colors.white,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
+                        letterSpacing: 1.2,
+                        fontFamily: 'Courier', // Monospace for numbers
                       ),
                     ),
                   ],
@@ -1110,22 +1111,31 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             ),
           ),
           const SizedBox(width: 12),
-          // 2. End Button (Destructive Action) - Takes 25% width
+          // 2. Finish Button (The Exit Door) - Compact space
           Expanded(
             flex: 1,
-            child: SizedBox(
-              height: 56, // Match height with Timer
-              child: OutlinedButton(
+            child: Container(
+              height: 56,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C1C1C), // Very dark red background (Subtle)
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: dangerColor.withValues(alpha: 0.3), // Subtle border
+                  width: 1,
+                ),
+              ),
+              child: TextButton(
                 onPressed: _finishWorkout,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: dangerColor, width: 1.2), // Crimson Red Border
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  foregroundColor: dangerColor, // Text Color
+                style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(
-                  l10n.endWorkout, // Concise text
+                  l10n.endWorkout, // Short & Clear (종료)
                   style: const TextStyle(
+                    color: dangerColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
