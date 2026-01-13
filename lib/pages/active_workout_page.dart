@@ -1104,164 +1104,129 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   void _showRestTimeSettings() {
-    final TextEditingController timeController = TextEditingController(
-      text: _defaultRestDuration.toString(),
-    );
+    int currentValue = _defaultRestDuration;
     bool showOverlay = _showRestTimerOverlay;
     
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: Colors.black, // Terminal Background
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(4)), // Sharp
       ),
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Padding(
+        builder: (context, setModalState) => Container(
           padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            left: 24, right: 24, top: 30,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 30,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 헤더
-              Row(
-                children: [
-                  const Icon(Icons.timer, color: Color(0xFF2196F3)),
-                  const SizedBox(width: 8),
-                  Text(
-                    AppLocalizations.of(context).restTimeSettings,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (_restTimerRunning)
-                    TextButton(
-                      onPressed: () {
-                        _restTimer?.cancel();
-                        setState(() => _restTimerRunning = false);
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        AppLocalizations.of(context).cancelTimer,
-                        style: const TextStyle(color: Colors.redAccent),
-                      ),
-                    ),
-                ],
+              // 1. Header
+              Text(
+                'SET REST DURATION',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Courier',
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2.0,
+                ),
               ),
-              const SizedBox(height: 20),
-              // 시간 조절
+              const SizedBox(height: 30),
+              // 2. Main Machine Counter
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      int current = int.tryParse(timeController.text) ?? 90;
-                      current = (current - 10).clamp(10, 600);
-                      timeController.text = current.toString();
-                      setModalState(() {});
+                  // Minus Button
+                  _buildSquareIconBtn(
+                    Icons.remove,
+                    () {
+                      setModalState(() {
+                        currentValue = (currentValue - 10).clamp(10, 600);
+                      });
                     },
-                    icon: const Icon(Icons.remove_circle_outline, color: Colors.white, size: 32),
                   ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2C2C2C),
-                        borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 24),
+                  // Value Display
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        currentValue.toString(),
+                        style: const TextStyle(
+                          fontFamily: 'Courier',
+                          fontSize: 64,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          height: 1.0,
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: timeController,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              decoration: const InputDecoration(border: InputBorder.none),
-                            ),
-                          ),
-                          Text('초', style: TextStyle(fontSize: 18, color: Colors.grey[400])),
-                        ],
+                      Text(
+                        'SECONDS',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 10,
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.5,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () {
-                      int current = int.tryParse(timeController.text) ?? 90;
-                      current = (current + 10).clamp(10, 600);
-                      timeController.text = current.toString();
-                      setModalState(() {});
+                  const SizedBox(width: 24),
+                  // Plus Button
+                  _buildSquareIconBtn(
+                    Icons.add,
+                    () {
+                      setModalState(() {
+                        currentValue = (currentValue + 10).clamp(10, 600);
+                      });
                     },
-                    icon: const Icon(Icons.add_circle_outline, color: Colors.white, size: 32),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              // 프리셋
-              Row(
-                children: [60, 90, 120, 180].map((sec) {
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: OutlinedButton(
-                        onPressed: () {
-                          timeController.text = sec.toString();
-                          setModalState(() {});
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.grey[600]!),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                        ),
-                        child: Text(
-                          sec >= 60 ? '${sec ~/ 60}분${sec % 60 > 0 ? '${sec % 60}초' : ''}' : '$sec초',
-                          style: TextStyle(color: Colors.grey[400], fontSize: 12),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+              const SizedBox(height: 30),
+              // 3. Preset Grid (Rectangular)
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  _buildPresetBtn('60', currentValue == 60, () {
+                    setModalState(() => currentValue = 60);
+                  }),
+                  _buildPresetBtn('90', currentValue == 90, () {
+                    setModalState(() => currentValue = 90);
+                  }),
+                  _buildPresetBtn('120', currentValue == 120, () {
+                    setModalState(() => currentValue = 120);
+                  }),
+                  _buildPresetBtn('180', currentValue == 180, () {
+                    setModalState(() => currentValue = 180);
+                  }),
+                ],
               ),
-              const SizedBox(height: 20),
-              // 화면에 표시 옵션
+              const SizedBox(height: 30),
+              // 4. Visual Toggle (Styled)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2C2C2C),
-                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white12),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.visibility, color: Colors.grey, size: 20),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context).showOnScreen,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            AppLocalizations.of(context).showOnScreenDescription,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
+                    Text(
+                      'SHOW ON SCREEN',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontFamily: 'Courier',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     Switch(
@@ -1269,20 +1234,30 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       onChanged: (value) {
                         setModalState(() => showOverlay = value);
                       },
-                      activeColor: const Color(0xFF2196F3),
+                      activeColor: Colors.white,
+                      activeTrackColor: Colors.grey[700],
+                      inactiveThumbColor: Colors.grey[600],
+                      inactiveTrackColor: Colors.grey[800],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-              // 확인 버튼
+              const SizedBox(height: 30),
+              // 5. Confirm Button (Tactical)
               SizedBox(
-                width: double.infinity,
+                height: 56,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // High Contrast
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    elevation: 0,
+                  ),
                   onPressed: () {
-                    final newDuration = int.tryParse(timeController.text) ?? 90;
                     setState(() {
-                      _defaultRestDuration = newDuration.clamp(10, 600);
+                      _defaultRestDuration = currentValue;
                       _showRestTimerOverlay = showOverlay;
                       if (_restTimerRunning) {
                         _restSeconds = _defaultRestDuration;
@@ -1290,17 +1265,82 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                     });
                     Navigator.pop(context);
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2196F3),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context).confirm,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  child: const Text(
+                    'CONFIRM',
+                    style: TextStyle(
+                      fontFamily: 'Courier',
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                      letterSpacing: 2.0,
+                    ),
                   ),
                 ),
               ),
+              // Cancel Timer Button (if running)
+              if (_restTimerRunning) ...[
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () {
+                    _restTimer?.cancel();
+                    setState(() => _restTimerRunning = false);
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'CANCEL TIMER',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontFamily: 'Courier',
+                      fontSize: 12,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+              ],
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper for Square Buttons
+  Widget _buildSquareIconBtn(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white24),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Icon(icon, color: Colors.white, size: 24),
+      ),
+    );
+  }
+
+  // Helper for Presets
+  Widget _buildPresetBtn(String seconds, bool isSelected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 70,
+        height: 40,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent,
+          border: Border.all(
+            color: isSelected ? Colors.white : Colors.white24,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          '${seconds}s',
+          style: TextStyle(
+            color: isSelected ? Colors.black : Colors.white,
+            fontFamily: 'Courier',
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
