@@ -1,7 +1,7 @@
 # Iron Log - Master Documentation
 
-> **최종 업데이트**: 2026년 1월 13일 (02:30)  
-> **버전**: 1.0.1  
+> **최종 업데이트**: 2026년 1월 14일 (15:00)  
+> **버전**: 1.0.2  
 > **상태**: 🚀 MVP 개발 중
 
 ---
@@ -698,6 +698,235 @@ flutter build apk --release
 ---
 
 ## 6. 최근 업데이트
+
+### 📅 2026-01-14 (화요일)
+
+#### 6.10 Active Workout Screen - Noir Log Style 적용
+
+**목표**: 운동 중 화면(Active Workout Screen)에 Calendar Page와 동일한 Hardcore Noir Table Grid 스타일 적용
+
+##### 6.10.1 디자인 동기화
+**문제**: Planning Screen(Calendar)은 Noir Log 스타일로 완성되었으나, Active Workout Screen은 구형 Card Style 사용
+**해결**: 두 화면의 디자인 일관성 확보
+
+##### 6.10.2 Container & Background 변경
+- **배경**: Pure Black (투명)
+- **카드 제거**: 둥근 모서리 및 박스 테두리 제거
+- **구분선**: 하단 Divider만 유지 (Colors.white12, 1px)
+- **헤더**: 좌측 정렬 `#01 CRUNCH` 형식
+
+##### 6.10.3 Table Grid 구조 추가
+**헤더 행**: `SET | KG | REPS | DONE`
+- Planning Screen과 동일한 컬럼 구조
+- DONE 컬럼 추가 (체크박스)
+
+**행 높이**: 28px (극도 압축)
+**입력 스타일**: 
+- `filled: true` 제거
+- `OutlineInputBorder` 제거
+- Raw text 스타일 (Bold, White, 15-17pt)
+
+##### 6.10.4 Utility Row 적용
+- 부위 태그: `[ BRACKET ]` 스타일 (Chip 제거)
+- Info/Memo 아이콘 배치
+
+##### 6.10.5 Column Alignment 수정
+
+**문제**: Header와 Input Row의 정렬 축 불일치 (산만한 느낌)
+
+**해결 과정**:
+
+1. **Fixed Width Strategy (초기)**:
+   - SET: 40px
+   - KG: 80px
+   - REPS: 80px
+   - DONE: 50px
+   - `MainAxisAlignment.center`로 중앙 정렬
+
+2. **Full-Width Flex Layout (최종)**:
+   - Golden Grid Ratio 적용:
+     - SET: `Expanded(flex: 2)`
+     - KG: `Expanded(flex: 4)`
+     - REPS: `Expanded(flex: 4)`
+     - DONE: `Expanded(flex: 2)`
+   - 16px 수평 패딩
+   - 화면 전체 너비 활용
+   - 헤더와 입력 행 완벽 정렬
+
+**결과**: 
+- 좁은 중앙 컬럼 → 전체 너비 활용
+- 빈 공간 제거
+- 프로페셔널한 스프레드시트 느낌
+
+##### 6.10.6 Top Header - Hardcore Industrial Style
+
+**변경 사항**:
+- **배경**: Pure Black (#000000)
+- **폰트**: Courier 모노스페이스
+- **타이머**: 52pt → 42pt (20% 감소)
+- **세트 진행**: 32pt → 42pt (타이머와 동일)
+- **Divider**: 하단 구분선 추가 (white12, 1px)
+
+**결과**: 타이머 지배력 감소, 시각적 균형 확보
+
+##### 6.10.7 Bottom Bar - Safer UX Design
+
+**디자인 진화**:
+
+1. **First Iteration**:
+   - Rest Timer (Flex 7, 큰 버튼)
+   - End Workout (Flex 3, 작은 outlined button with stop icon)
+
+2. **Second Iteration**:
+   - Rest Timer (Flex 3)
+   - End Workout (Flex 1, TextButton, Crimson Red text)
+
+3. **Third Iteration**:
+   - Rest Timer (Flex 3)
+   - End Workout (Flex 1, OutlinedButton, Crimson Red border 0.5px)
+   - Padding: `fromLTRB(16, 10, 16, 30)` → `fromLTRB(16, 12, 16, 40)`
+   - Border radius: 12px → 8px
+
+4. **Final Spec (최종)**:
+   - **Rest Timer**: 
+     - Flex 3 (75% width)
+     - Surface color: #2C2C2E
+     - Height: 56px
+     - Border radius: 8px
+     - Dynamic value display
+     - Active state: Blue border + tint
+   - **End Button**:
+     - Flex 1 (25% width)
+     - OutlinedButton
+     - Crimson Red (#FF453A) border 1.2px
+     - Height: 56px
+     - Localized text: `l10n.endWorkout`
+   - **Spacing**: 12px between buttons
+   - **Border**: Top border 0.5px (subtle separator)
+
+**UX 개선**:
+- Rest Timer가 주요 액션 (더 큼)
+- End Workout은 파괴적 액션 (작고 빨간색)
+- 실수로 종료하기 어려운 구조
+
+##### 6.10.8 Completed Sets - Visual Feedback
+
+**기능**: 완료된 세트 시각적 구분
+**구현**:
+- 체크 시 모든 텍스트 (index, weight, reps) → `Colors.grey[800]`
+- `isDimmed` 파라미터 추가
+- `_buildGridInput`에 dimmed 상태 전달
+
+##### 6.10.9 Expanded Touch Area
+
+**문제**: 체크박스가 너무 작아 터치하기 어려움
+**해결**:
+- DONE 컬럼 전체를 `GestureDetector`로 감싸기
+- `HitTestBehavior.opaque` 설정
+- 체크박스는 시각적 요소만, 탭은 부모가 처리
+
+**코드**:
+```dart
+Expanded(
+  flex: 2,
+  child: GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onTap: () { /* 체크 로직 */ },
+    child: Center(
+      child: Checkbox(
+        value: set.isCompleted,
+        onChanged: null, // GestureDetector가 처리
+      ),
+    ),
+  ),
+)
+```
+
+##### 6.10.10 파일 변경 사항
+
+**수정된 파일**:
+1. `lib/pages/active_workout_page.dart`:
+   - `_buildHeader()`: Industrial style 적용
+   - `_buildBottomBar()`: Final spec 구현
+   - Timer/Sets 폰트 크기 균형 조정
+
+2. `lib/widgets/workout/exercise_card.dart`:
+   - Container decoration 제거 (투명)
+   - Table grid header 추가
+   - Utility row 추가
+   - Flex layout 적용 (2:4:4:2)
+   - Completed sets dimming
+   - Expanded touch area
+   - Smart number formatting
+
+**변경 라인 수**: ~300줄
+
+##### 6.10.11 시각적 일관성 확보
+
+**Before (Active Screen)**:
+```
+┌─────────────────────────────┐
+│ [Card Background]           │
+│ 1. 크런치 [복근]            │
+│                             │
+│ SET 1: 100kg x 10  [Delete] │
+│ SET 2: 100kg x 10  [Delete] │
+│                             │
+└─────────────────────────────┘
+```
+
+**After (Active Screen)**:
+```
+┌─────────────────────────────┐
+│ #01 CRUNCH           0/5    │
+│ [ 복근 ]              [i][m]│
+│ SET   KG    REPS    DONE    │
+│ #1   100     10      [✓]    │  ← 28px
+│ #2   100     10      [ ]    │
+│ #3   100     10      [ ]    │
+│ #4   100     10      [ ]    │
+│ #5   100     10      [ ]    │
+└─────────────────────────────┘
+```
+
+**Planning Screen과 동일**:
+- 동일한 헤더 구조
+- 동일한 행 높이 (28px)
+- 동일한 Flex ratio (2:4:4:2)
+- 동일한 폰트 (Courier, 15pt)
+- 동일한 색상 (Pure Black, White, Electric Blue)
+
+##### 6.10.12 기술적 도전과 해결
+
+**도전 1**: 두 화면의 코드 중복
+- **문제**: Calendar와 Active에서 동일한 ExerciseCard 사용
+- **해결**: `isWorkoutStarted` prop으로 조건부 렌더링
+  - Planning: Delete button
+  - Active: Checkbox
+
+**도전 2**: Flex layout 정렬
+- **문제**: Fixed width에서 Flex로 전환 시 정렬 깨짐
+- **해결**: Header와 Row 모두 동일한 flex 값 적용
+
+**도전 3**: Bottom bar 레이아웃
+- **문제**: Rest Timer와 End Button의 비율 결정
+- **해결**: 여러 iteration을 거쳐 3:1 비율 확정
+
+##### 6.10.13 사용자 경험 개선
+
+**개선 사항**:
+1. **시각적 일관성**: Planning과 Active 화면이 동일한 느낌
+2. **정보 밀도**: 한 화면에 더 많은 세트 표시
+3. **터치 편의성**: DONE 컬럼 전체가 터치 가능
+4. **시각적 피드백**: 완료된 세트 즉시 구분
+5. **안전한 UX**: End 버튼이 작고 빨간색으로 실수 방지
+
+##### 6.10.14 성능 영향
+- **렌더링**: 변화 없음 (위젯 구조 유사)
+- **메모리**: 약간 감소 (불필요한 decoration 제거)
+- **사용자 경험**: 크게 개선 (일관성, 밀도, 터치 편의성)
+
+---
 
 ### 📅 2026-01-13 (월요일)
 

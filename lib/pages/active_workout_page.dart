@@ -770,72 +770,67 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final dayName = weekDays[widget.date.weekday - 1];
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: const BoxDecoration(
-        color: Color(0xFF1E1E1E),
-        border: Border(bottom: BorderSide(color: Color(0xFF2C2C2C), width: 1)),
+        color: Colors.black, // Pure black
+        border: Border(bottom: BorderSide(color: Colors.white12, width: 1)), // Divider
       ),
       child: Column(
         children: [
-          // 타이틀
-          Column(
-            children: [
-              Text(
-                l10n.workingOut,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF2196F3),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                '${widget.date.month}/${widget.date.day} ($dayName)',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
+          // Date label (small, grey)
+          Text(
+            '${widget.date.month}/${widget.date.day} ($dayName)',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Courier',
+              letterSpacing: 1.0,
+            ),
           ),
-          const SizedBox(height: 16),
-          // 운동 시간 + 진행률
+          const SizedBox(height: 12),
+          // Main Dashboard Row (Balanced sizes)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // 운동 시간
+              // Timer (Reduced by 20% - was 52, now 42)
+              Text(
+                _formatTime(_elapsedSeconds),
+                style: const TextStyle(
+                  fontSize: 42, // Reduced from 52
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontFamily: 'Courier', // Monospace
+                  height: 1.0,
+                  letterSpacing: -1.0,
+                ),
+              ),
+              const SizedBox(width: 24),
+              // Set Progress (Same size as timer for balance)
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _formatTime(_elapsedSeconds),
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontFamily: 'monospace',
+                    'SETS',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.0,
                     ),
                   ),
-                  Text(
-                    l10n.workoutDuration,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 40),
-              // 진행률
-              Column(
-                children: [
+                  const SizedBox(height: 2),
                   Text(
                     '$completedSets / $totalSets',
                     style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2196F3),
+                      fontSize: 42, // Same as timer for balance
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF2196F3), // Iron Blue
+                      fontFamily: 'Courier',
+                      height: 1.0,
                     ),
-                  ),
-                  Text(
-                    l10n.setsCompleted,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                   ),
                 ],
               ),
@@ -1030,110 +1025,91 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   Widget _buildBottomBar(AppLocalizations l10n) {
-    const accentColor = Color(0xFF2196F3);
+    const accentColor = Color(0xFF2196F3); // Iron Blue
+    const dangerColor = Color(0xFFFF453A); // Crimson Red (Apple style)
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 12,
-            offset: const Offset(0, -4),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 40), // Safe area bottom padding included
+      decoration: const BoxDecoration(
+        color: Colors.black, // Merge with background
+        border: Border(top: BorderSide(color: Colors.white12, width: 0.5)), // Subtle separator
+      ),
+      child: Row(
+        children: [
+          // 1. Rest Timer (Main Action) - Takes 75% width
+          Expanded(
+            flex: 3,
+            child: GestureDetector(
+              onTap: () {
+                // 타이머가 실행 중이면 UI 다시 표시, 아니면 설정 모달
+                if (_restTimerRunning) {
+                  setState(() => _isTimerUIVisible = true);
+                } else {
+                  _showRestTimeSettings();
+                }
+              },
+              onLongPress: _showRestTimeSettings, // 길게 누르면 항상 설정 모달
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: _restTimerRunning 
+                      ? accentColor.withValues(alpha: 0.15)
+                      : const Color(0xFF2C2C2E), // Surface color
+                  borderRadius: BorderRadius.circular(8),
+                  border: _restTimerRunning 
+                      ? Border.all(color: accentColor, width: 2)
+                      : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.timer_outlined, 
+                      color: _restTimerRunning ? accentColor : Colors.white, 
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _restTimerRunning 
+                          ? _formatTime(_restSeconds)
+                          : _formatTime(_defaultRestDuration), // Dynamic Timer Value
+                      style: TextStyle(
+                        color: _restTimerRunning ? accentColor : Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // 2. End Button (Destructive Action) - Takes 25% width
+          Expanded(
+            flex: 1,
+            child: SizedBox(
+              height: 56, // Match height with Timer
+              child: OutlinedButton(
+                onPressed: _finishWorkout,
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: dangerColor, width: 1.2), // Crimson Red Border
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  foregroundColor: dangerColor, // Text Color
+                  padding: EdgeInsets.zero,
+                ),
+                child: Text(
+                  l10n.endWorkout, // Concise text
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
-      ),
-      child: SafeArea(
-        child: Row(
-          children: [
-            // 휴식 타이머
-            Expanded(
-              flex: 4,
-              child: GestureDetector(
-                onTap: () {
-                  // 타이머가 실행 중이면 UI 다시 표시, 아니면 설정 모달
-                  if (_restTimerRunning) {
-                    setState(() => _isTimerUIVisible = true);
-                  } else {
-                    _showRestTimeSettings();
-                  }
-                },
-                onLongPress: _showRestTimeSettings, // 길게 누르면 항상 설정 모달
-                child: Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: _restTimerRunning 
-                        ? accentColor.withValues(alpha: 0.2)
-                        : const Color(0xFF2C2C2C),
-                    borderRadius: BorderRadius.circular(12),
-                    border: _restTimerRunning 
-                        ? Border.all(color: accentColor, width: 2)
-                        : null,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.timer,
-                        color: _restTimerRunning ? accentColor : Colors.grey[400],
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.rest,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: _restTimerRunning ? accentColor : Colors.grey[500],
-                            ),
-                          ),
-                          Text(
-                            _restTimerRunning 
-                                ? _formatTime(_restSeconds)
-                                : _formatTime(_defaultRestDuration),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: _restTimerRunning ? accentColor : Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // 운동 완료 버튼
-            Expanded(
-              flex: 6,
-              child: SizedBox(
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _finishWorkout,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: accentColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    l10n.endWorkout,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -130,383 +130,313 @@ class _ExerciseCardState extends State<ExerciseCard> {
     final totalSets = widget.exercise.sets.length;
     final bool isCompleted = completedSets > 0 && completedSets == totalSets;
 
-    // 완료된 운동은 Dimmed 처리
-    final cardBgColor = isCompleted 
-        ? const Color(0xFF1A1D22) 
-        : const Color(0xFF252932);
-    final textOpacity = isCompleted ? 0.5 : 1.0;
-
     return Container(
-      margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-      padding: const EdgeInsets.all(16),
+      // NO box decoration - flat log style (Noir)
       decoration: BoxDecoration(
-        color: cardBgColor,
-        borderRadius: BorderRadius.circular(14),
-        border: isCompleted 
-            ? Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.3), width: 1)
-            : null,
+        color: Colors.transparent, // No background
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.white.withValues(alpha: 0.12), // Subtle bottom line only
+            width: 1.0,
+          ),
+        ),
       ),
-      child: Opacity(
-        opacity: isCompleted ? 0.7 : 1.0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            InkWell(
-              onTap: () {
-                // 개별 토글 항상 가능
-                setState(() {
-                  _isExpanded = !_isExpanded;
-                });
-                HapticFeedback.lightImpact();
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: _buildHeader(locale, totalVolume, completedSets, totalSets, isCompleted, textOpacity, _isExpanded),
-            ),
-            
-            // Body (Collapsible)
-            AnimatedCrossFade(
-              firstChild: const SizedBox.shrink(),
-              secondChild: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      // Full width - no horizontal padding
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          InkWell(
+            onTap: () {
+              // 개별 토글 항상 가능
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+              HapticFeedback.lightImpact();
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 10),
-                  // Memo Display Section (if exists)
-                  if (widget.exercise.memo != null && widget.exercise.memo!.trim().isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        _showMemoBottomSheet(context);
-                        HapticFeedback.lightImpact();
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  // 1️⃣ Index (Simple Grey Text)
+                  Text(
+                    '#${(widget.exerciseIndex + 1).toString().padLeft(2, '0')}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[600],
+                      fontFamily: 'Courier',
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  
+                  // 2️⃣ Exercise Name (Expanded - Text First!)
+                  Expanded(
+                    child: Text(
+                      _getLocalizedExerciseName(widget.exercise.name, locale).toUpperCase(),
+                      maxLines: _isExpanded ? null : 1,
+                      overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  
+                  // 3️⃣ Set Progress Badge (Right aligned)
+                  if (isCompleted)
+                    const Icon(Icons.check_circle, color: Colors.white, size: 24)
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(color: Colors.grey[700]!, width: 1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$completedSets / $totalSets',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Courier',
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Body (Collapsible)
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Utility Bar (Body Part + Info + Memo)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 16),
+                  child: Row(
+                    children: [
+                      // Left: Target Label (Tech Style - Bracket Format)
+                      RichText(
+                        text: TextSpan(
                           children: [
-                            const Icon(
-                              Icons.format_quote_rounded,
-                              size: 14,
-                              color: Color(0xFF3B82F6),
+                            TextSpan(
+                              text: '[ ',
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                fontFamily: 'Courier',
+                              ),
                             ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                widget.exercise.memo!,
-                                style: TextStyle(
-                                  color: Colors.grey[300],
-                                  fontSize: 13,
-                                  height: 1.4,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                            TextSpan(
+                              text: _getLocalizedBodyPart(widget.exercise.bodyPart, locale).toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                color: Color(0xFF3B82F6),
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.0,
+                                fontFamily: 'Courier',
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' ]',
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                fontFamily: 'Courier',
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  _buildColumnHeaders(l10n),
-                  const SizedBox(height: 8),
-                  ...List.generate(
-                    widget.exercise.sets.length,
-                    (index) => _SetRowGrid(
-                      exercise: widget.exercise,
-                      setIndex: index,
-                      onDelete: () {
-                        if (widget.exercise.sets.length > 1) {
-                          setState(() {
-                            widget.exercise.sets.removeAt(index);
-                          });
-                          widget.onUpdate();
-                        } else {
-                          ErrorHandler.showInfoSnackBar(context, l10n.minOneSetRequired);
-                        }
-                      },
-                      onUpdate: widget.onUpdate,
-                      onSetCompleted: widget.onSetCompleted,
-                      isWorkoutStarted: widget.isWorkoutStarted,
-                      isEditingEnabled: widget.isEditingEnabled,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildFooterActions(l10n),
-                ],
-              ),
-              crossFadeState: _isExpanded 
-                  ? CrossFadeState.showSecond 
-                  : CrossFadeState.showFirst,
-              duration: const Duration(milliseconds: 300),
-              sizeCurve: Curves.easeInOutQuart,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(String locale, double totalVolume, int completedSets, int totalSets, bool isCompleted, double textOpacity, bool isExpanded) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 메인 타이틀 행
-        Row(
-          children: [
-            // 1. 운동 번호
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2196F3).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '${widget.exerciseIndex + 1}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2196F3),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // 2. 부위 태그 + 운동 이름 (Column으로 세로 배치)
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 부위 태그 (Chip 스타일)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      _getLocalizedBodyPart(widget.exercise.bodyPart, locale),
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[400]?.withValues(alpha: textOpacity),
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  // 운동 이름
-                  Text(
-                    _getLocalizedExerciseName(widget.exercise.name, locale),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white.withValues(alpha: textOpacity),
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // 3. 운동 정보 아이콘
-            IconButton(
-              onPressed: () => _showExerciseDetail(context),
-              icon: Icon(
-                Icons.info_outline,
-                size: 18,
-                color: Colors.grey[500],
-              ),
-              constraints: const BoxConstraints(),
-              padding: const EdgeInsets.all(4),
-              visualDensity: VisualDensity.compact,
-            ),
-            // 4. 메모 아이콘 (반드시 보여야 함)
-            IconButton(
-              onPressed: () {
-                _showMemoBottomSheet(context);
-                HapticFeedback.lightImpact();
-              },
-              icon: Icon(
-                Icons.note_alt_outlined,
-                size: 18,
-                color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
-                    ? const Color(0xFF3B82F6)
-                    : Colors.grey[500],
-              ),
-              constraints: const BoxConstraints(),
-              padding: const EdgeInsets.all(4),
-              visualDensity: VisualDensity.compact,
-            ),
-            // 5. 세트 진행률 표시
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: isCompleted 
-                    ? const Color(0xFF2196F3).withValues(alpha: 0.2)
-                    : const Color(0xFF3A4452),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '$completedSets / $totalSets',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isCompleted ? const Color(0xFF2196F3) : Colors.white70,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            // 6. 드래그 핸들 아이콘
-            Icon(
-              Icons.drag_handle,
-              color: Colors.grey[600],
-              size: 20,
-            ),
-            const SizedBox(width: 4),
-            // 7. 확장/축소 아이콘
-            Icon(
-              isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-              color: Colors.grey[500],
-              size: 24,
-            ),
-          ],
-        ),
-        
-        // 확장 시 추가 정보
-        if (isExpanded) ...[
-          const SizedBox(height: 12),
-          // 볼륨 + 최근 기록 + 템포 정보
-          Row(
-            children: [
-              // 총 볼륨
-              _buildInfoChip(
-                icon: Icons.fitness_center,
-                label: AppLocalizations.of(context).totalVolumeShort(totalVolume.toStringAsFixed(0)),
-                color: Colors.grey[600]!,
-              ),
-              const Spacer(),
-              // 템포 버튼 (완료되지 않은 운동만 표시)
-              if (widget.isEditingEnabled && !isCompleted)
-                GestureDetector(
-                  onTap: _showTempoSettings,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: widget.exercise.isTempoEnabled
-                          ? const Color(0xFF2196F3).withValues(alpha: 0.15)
-                          : Colors.transparent,
-                      border: Border.all(
-                        color: widget.exercise.isTempoEnabled
-                            ? const Color(0xFF2196F3)
-                            : Colors.grey[700]!,
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          size: 14,
-                          color: widget.exercise.isTempoEnabled
-                              ? const Color(0xFF2196F3)
-                              : Colors.grey[500],
+                      const Spacer(),
+                      // Right: Info Icon (clickable)
+                      GestureDetector(
+                        onTap: () => _showExerciseDetail(context),
+                        child: Icon(
+                          Icons.info_outline,
+                          size: 16,
+                          color: Colors.grey[600],
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.exercise.isTempoEnabled
-                              ? '${widget.exercise.eccentricSeconds}/${widget.exercise.concentricSeconds}s'
-                              : 'テンポ',
+                      ),
+                      const SizedBox(width: 12),
+                      // Right: Memo Icon (clickable)
+                      GestureDetector(
+                        onTap: () {
+                          _showMemoBottomSheet(context);
+                          HapticFeedback.lightImpact();
+                        },
+                        child: Icon(
+                          Icons.edit_note,
+                          size: 16,
+                          color: (widget.exercise.memo != null && widget.exercise.memo!.isNotEmpty)
+                              ? Colors.grey[400]
+                              : Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Memo Display Section (if exists)
+                if (widget.exercise.memo != null && widget.exercise.memo!.trim().isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      _showMemoBottomSheet(context);
+                      HapticFeedback.lightImpact();
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(top: 2, bottom: 2, left: 16, right: 16),
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.format_quote_rounded,
+                            size: 10,
+                            color: const Color(0xFF3B82F6),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              widget.exercise.memo!,
+                              style: TextStyle(
+                                color: Colors.grey[300],
+                                fontSize: 11,
+                                height: 1.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                
+                const SizedBox(height: 1),
+                
+                // Table Grid Header (Column Headers)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      // SET column (flex: 2)
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'SET',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: widget.exercise.isTempoEnabled
-                                ? const Color(0xFF2196F3)
-                                : Colors.grey[500],
-                            fontWeight: widget.exercise.isTempoEnabled
-                                ? FontWeight.w600
-                                : FontWeight.normal,
+                            fontSize: 9,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      // KG column (flex: 4)
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          'KG',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      // REPS column (flex: 4)
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          'REPS',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                      // DONE column (flex: 2)
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'DONE',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-            ],
-          ),
-        ],
-      ],
-    );
-  }
-  
-  /// 정보 칩 위젯
-  Widget _buildInfoChip({
-    required IconData icon,
-    required String label,
-    required Color color,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: color),
-          ),
-        ],
-      ),
-    );
-  }
-
-
-  Widget _buildColumnHeaders(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              l10n.setLabel,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w500),
+                
+                // Set list (NO spacing between rows for maximum density)
+                ...List.generate(
+                  widget.exercise.sets.length,
+                  (index) => _SetRowGrid(
+                    exercise: widget.exercise,
+                    setIndex: index,
+                    onDelete: () {
+                      if (widget.exercise.sets.length > 1) {
+                        setState(() {
+                          widget.exercise.sets.removeAt(index);
+                        });
+                        widget.onUpdate();
+                      } else {
+                        ErrorHandler.showInfoSnackBar(context, l10n.minOneSetRequired);
+                      }
+                    },
+                    onUpdate: widget.onUpdate,
+                    onSetCompleted: widget.onSetCompleted,
+                    isWorkoutStarted: widget.isWorkoutStarted,
+                    isEditingEnabled: widget.isEditingEnabled,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                _buildFooterActions(l10n),
+              ],
             ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              'kg',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w500),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              l10n.repsUnit,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w500),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              l10n.completeLabel,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w500),
-            ),
+            crossFadeState: _isExpanded 
+                ? CrossFadeState.showSecond 
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 300),
+            sizeCurve: Curves.easeInOutQuart,
           ),
         ],
       ),
@@ -804,12 +734,20 @@ class _SetRowGridState extends State<_SetRowGrid> {
   late final TextEditingController _weightController;
   late final TextEditingController _repsController;
 
+  /// Smart number formatting: Remove unnecessary decimals
+  String _formatNumber(double value) {
+    if (value == value.toInt()) {
+      return value.toInt().toString(); // 150.0 → 150
+    }
+    return value.toString(); // 2.5 → 2.5
+  }
+
   @override
   void initState() {
     super.initState();
     final set = widget.exercise.sets[widget.setIndex];
     _weightController = TextEditingController(
-      text: set.weight > 0 ? set.weight.toString() : '',
+      text: set.weight > 0 ? _formatNumber(set.weight) : '',
     );
     _repsController = TextEditingController(
       text: set.reps > 0 ? set.reps.toString() : '',
@@ -842,148 +780,168 @@ class _SetRowGridState extends State<_SetRowGrid> {
   Widget build(BuildContext context) {
     final set = widget.exercise.sets[widget.setIndex];
     final l10n = AppLocalizations.of(context);
+    final isDimmed = set.isCompleted; // Completed sets are dimmed
     
-    return Container(
-      margin: EdgeInsets.zero,
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-      child: Row(
-        children: [
-          // Set Number
-          Expanded(
-            flex: 2,
-            child: Center(
-              child: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3A4452),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                alignment: Alignment.center,
+    return SizedBox(
+      height: 28.0, // EXTREME COMPACT
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          children: [
+            // SET column (flex: 2 - matches header)
+            Expanded(
+              flex: 2,
+              child: Center(
                 child: Text(
-                  '${widget.setIndex + 1}',
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                  '#${widget.setIndex + 1}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: isDimmed ? Colors.grey[800] : Colors.grey[600],
+                    fontFamily: 'Courier',
+                    height: 1.0,
+                  ),
                 ),
               ),
             ),
-          ),
-          // Weight Input
-          Expanded(
-            flex: 3,
-            child: _buildStackInput(
-              controller: _weightController,
-              label: 'kg',
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              isEnabled: widget.isEditingEnabled,
+            
+            // KG column (flex: 4 - matches header)
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _buildGridInput(
+                  controller: _weightController,
+                  textAlign: TextAlign.center,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  isEnabled: widget.isEditingEnabled,
+                  isDimmed: isDimmed,
+                ),
+              ),
             ),
-          ),
-          // Reps Input
-          Expanded(
-            flex: 3,
-            child: _buildStackInput(
-              controller: _repsController,
-              label: l10n.repsUnit,
-              keyboardType: TextInputType.number,
-              isEnabled: widget.isEditingEnabled,
+            
+            // REPS column (flex: 4 - matches header)
+            Expanded(
+              flex: 4,
+              child: Center(
+                child: _buildGridInput(
+                  controller: _repsController,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  isEnabled: widget.isEditingEnabled,
+                  isDimmed: isDimmed,
+                ),
+              ),
             ),
-          ),
-          // Action (Checkbox or Delete)
-          Expanded(
-            flex: 2,
-            child: Center(
-              child: widget.isWorkoutStarted
-                  ? Transform.scale(
-                      scale: 0.75,
-                      child: Checkbox(
-                        value: set.isCompleted,
-                        onChanged: (value) {
-                          final isChecked = value ?? false;
-                          
-                          // 체크 시 kg와 횟수 입력 검증
-                          if (isChecked && (set.weight <= 0 || set.reps <= 0)) {
-                            HapticFeedback.heavyImpact();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(AppLocalizations.of(context).enterWeightAndReps),
-                                backgroundColor: Colors.redAccent,
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                            return;
-                          }
-                          
-                          setState(() {
-                            set.isCompleted = isChecked;
-                          });
-                          widget.onUpdate();
-                          if (isChecked && widget.onSetCompleted != null) {
-                            widget.onSetCompleted!(isChecked);
-                          }
-                        },
-                        activeColor: const Color(0xFF2196F3),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+            
+            // DONE column (flex: 2 - matches header) - EXPANDED TOUCH AREA
+            Expanded(
+              flex: 2,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque, // Entire area is tappable
+                onTap: widget.isWorkoutStarted && widget.isEditingEnabled ? () {
+                  final isChecked = !set.isCompleted;
+                  
+                  // 체크 시 kg와 횟수 입력 검증
+                  if (isChecked && (set.weight <= 0 || set.reps <= 0)) {
+                    HapticFeedback.heavyImpact();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.enterWeightAndReps),
+                        backgroundColor: Colors.redAccent,
+                        duration: const Duration(seconds: 2),
                       ),
-                    )
-                  : IconButton(
-                      onPressed: widget.isEditingEnabled ? widget.onDelete : null,
-                      icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent, size: 18),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                    ),
+                    );
+                    return;
+                  }
+                  
+                  setState(() {
+                    set.isCompleted = isChecked;
+                  });
+                  widget.onUpdate();
+                  if (isChecked && widget.onSetCompleted != null) {
+                    widget.onSetCompleted!(isChecked);
+                  }
+                } : null,
+                child: Center(
+                  child: widget.isWorkoutStarted
+                      ? Transform.scale(
+                          scale: 0.7,
+                          child: Checkbox(
+                            value: set.isCompleted,
+                            onChanged: null, // Handled by GestureDetector
+                            activeColor: const Color(0xFF2196F3),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+                          ),
+                        )
+                      : IconButton(
+                          onPressed: widget.isEditingEnabled ? widget.onDelete : null,
+                          icon: Icon(
+                            Icons.close,
+                            size: 13,
+                            color: Colors.grey[700],
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 40, minHeight: 28),
+                        ),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildStackInput({
+  Widget _buildGridInput({
     required TextEditingController controller,
-    required String label,
+    required TextAlign textAlign,
     required TextInputType keyboardType,
     required bool isEnabled,
+    bool isDimmed = false,
   }) {
-    return Container(
-      height: 32,
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      decoration: BoxDecoration(
-        color: isEnabled ? const Color(0xFF2C2C2C) : const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: isEnabled ? Colors.grey.shade800 : Colors.grey.shade900,
-          width: 0.5,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 2,
-            left: 6,
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 9, color: isEnabled ? Colors.grey.shade500 : Colors.grey.shade700),
+    return Focus(
+      onFocusChange: (hasFocus) {
+        setState(() {}); // Rebuild to show focus color
+      },
+      child: Builder(
+        builder: (context) {
+          final hasFocus = Focus.of(context).hasFocus;
+          final isEmpty = controller.text.isEmpty;
+          
+          return TextField(
+            controller: controller,
+            enabled: isEnabled,
+            keyboardType: keyboardType,
+            textAlign: textAlign,
+            style: TextStyle(
+              fontSize: 15, // Compact but readable
+              fontWeight: FontWeight.w900,
+              color: isDimmed 
+                  ? Colors.grey[800] // Dimmed when completed
+                  : (hasFocus 
+                      ? const Color(0xFF2196F3) // Electric Blue when focused
+                      : (isEmpty ? Colors.grey[800] : Colors.white)),
+              fontFamily: 'Courier',
+              height: 1.0, // TIGHT!
             ),
-          ),
-          Center(
-            child: TextFormField(
-              controller: controller,
-              enabled: isEnabled,
-              keyboardType: keyboardType,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: isEnabled ? Colors.white : Colors.grey.shade600,
+            decoration: InputDecoration(
+              isDense: true,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              filled: false,
+              contentPadding: EdgeInsets.zero, // ZERO PADDING
+              hintText: '0',
+              hintStyle: TextStyle(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Courier',
                 height: 1.0,
               ),
-              decoration: const InputDecoration(
-                isDense: true,
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 4),
-              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
