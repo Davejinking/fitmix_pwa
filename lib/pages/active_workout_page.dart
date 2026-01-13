@@ -1009,20 +1009,19 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
 
   Widget _buildBottomBar(AppLocalizations l10n) {
     const dangerColor = Color(0xFFFF453A); // Crimson Red
-    const surfaceColor = Color(0xFF1C1C1E); // Dark Gunmetal Surface
     
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 34), // Safe Area Bottom
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 34),
       decoration: const BoxDecoration(
         color: Colors.black,
-        border: Border(top: BorderSide(color: Colors.white12, width: 1)), // Crisp separator
+        border: Border(top: BorderSide(color: Colors.white12, width: 1)),
       ),
       child: Row(
         children: [
-          // 1. Timer Block (Solid)
+          // 1. Timer Button (Calendar Ghost Style)
           Expanded(
-            flex: 5, // Slightly wider
-            child: GestureDetector(
+            flex: 2,
+            child: InkWell(
               onTap: () {
                 // 타이머가 실행 중이면 UI 다시 표시, 아니면 설정 모달
                 if (_restTimerRunning) {
@@ -1032,18 +1031,20 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 }
               },
               onLongPress: _showRestTimeSettings,
+              borderRadius: BorderRadius.circular(8),
               child: Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: surfaceColor, // Solid Surface
-                  borderRadius: BorderRadius.circular(4), // Sharp corners
+                  color: Colors.transparent, // Ghost
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.white24, width: 1), // Calendar Border
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.timer_outlined,
-                      color: Colors.grey[600],
+                      color: Colors.white,
                       size: 20,
                     ),
                     const SizedBox(width: 12),
@@ -1054,7 +1055,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       style: const TextStyle(
                         fontFamily: 'Courier',
                         color: Colors.white,
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -1064,26 +1065,38 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             ),
           ),
           const SizedBox(width: 12), // Gap
-          // 2. End Block (Solid - Matches Timer Style)
+          // 2. End Button (Calendar Ghost Style)
           Expanded(
-            flex: 2, // Compact
-            child: GestureDetector(
+            flex: 1,
+            child: InkWell(
               onTap: _finishWorkout,
+              borderRadius: BorderRadius.circular(8),
               child: Container(
                 height: 56,
-                alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: surfaceColor, // SAME Surface color as Timer
-                  borderRadius: BorderRadius.circular(4), // Same Sharp corners
+                  color: Colors.transparent, // Ghost
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.white24, width: 1), // Same Grey Border
                 ),
-                child: Text(
-                  l10n.endWorkout, // 종료 (Short & Clean)
-                  style: const TextStyle(
-                    color: dangerColor, // The only Red part is the text
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    fontFamily: 'Courier',
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.stop_circle_outlined,
+                      color: dangerColor, // Red Icon
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.endWorkout, // 종료
+                      style: const TextStyle(
+                        color: dangerColor, // Red Text looks good INSIDE a box
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
