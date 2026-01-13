@@ -1011,21 +1011,21 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   Widget _buildBottomBar(AppLocalizations l10n) {
-    const accentColor = Color(0xFF00E5FF); // Electric Cyan
     const dangerColor = Color(0xFFFF453A); // Crimson Red
     
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 40), // Safe area bottom padding included
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 34), // Safe Area Bottom
       decoration: const BoxDecoration(
-        color: Colors.black, // Merge with background
-        border: Border(top: BorderSide(color: Colors.white10, width: 1)), // Subtle separator
+        color: Colors.black,
+        border: Border(top: BorderSide(color: Colors.white12, width: 1)), // Crisp separator
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // 1. Rest Timer (The Main Tool) - Dominant space
+          // 1. Tactical Timer Display (Flex 3)
           Expanded(
             flex: 3,
-            child: InkWell(
+            child: GestureDetector(
               onTap: () {
                 // 타이머가 실행 중이면 UI 다시 표시, 아니면 설정 모달
                 if (_restTimerRunning) {
@@ -1034,37 +1034,33 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                   _showRestTimeSettings();
                 }
               },
-              onLongPress: _showRestTimeSettings, // 길게 누르면 항상 설정 모달
+              onLongPress: _showRestTimeSettings,
               child: Container(
-                height: 56,
+                height: 52, // Slightly compact
                 decoration: BoxDecoration(
-                  color: _restTimerRunning 
-                      ? const Color(0xFF1A2A2A) // Dark cyan tint when active
-                      : const Color(0xFF1C1C1E), // Solid Gunmetal Grey
-                  borderRadius: BorderRadius.circular(12),
-                  border: _restTimerRunning 
-                      ? Border.all(color: accentColor.withValues(alpha: 0.5), width: 1)
-                      : null,
+                  color: Colors.white.withValues(alpha: 0.05), // Dark Surface
+                  borderRadius: BorderRadius.circular(4), // Sharp Corners (Terminal Style)
+                  border: Border.all(color: Colors.white12, width: 1),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.timer_outlined, 
-                      color: _restTimerRunning ? accentColor : accentColor.withValues(alpha: 0.7), 
-                      size: 22,
+                      Icons.timer_outlined,
+                      color: Colors.grey[600], // Small, Grey
+                      size: 18,
                     ),
                     const SizedBox(width: 10),
                     Text(
                       _restTimerRunning 
                           ? _formatTime(_restSeconds)
                           : _formatTime(_defaultRestDuration),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
-                        fontFamily: 'Courier', // Monospace for numbers
+                        fontFamily: 'Courier', // Monospace
                       ),
                     ),
                   ],
@@ -1073,33 +1069,30 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             ),
           ),
           const SizedBox(width: 12),
-          // 2. Finish Button (The Exit Door) - Compact space
+          // 2. End Workout Button (Flex 1)
           Expanded(
             flex: 1,
-            child: Container(
-              height: 56,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2C1C1C), // Very dark red background (Subtle)
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: dangerColor.withValues(alpha: 0.3), // Subtle border
-                  width: 1,
-                ),
-              ),
-              child: TextButton(
-                onPressed: _finishWorkout,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            child: GestureDetector(
+              onTap: _finishWorkout,
+              child: Container(
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.transparent, // Black
+                  borderRadius: BorderRadius.circular(4), // Sharp Corners
+                  border: Border.all(
+                    color: dangerColor.withValues(alpha: 0.5), // Dim Crimson Red
+                    width: 1,
                   ),
                 ),
-                child: Text(
-                  l10n.endWorkout, // Short & Clear (종료)
-                  style: const TextStyle(
-                    color: dangerColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                child: Center(
+                  child: Text(
+                    l10n.endWorkout, // 종료 (Keep it short)
+                    style: const TextStyle(
+                      color: dangerColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      fontFamily: 'Courier',
+                    ),
                   ),
                 ),
               ),
