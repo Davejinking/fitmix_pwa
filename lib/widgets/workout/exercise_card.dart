@@ -190,27 +190,33 @@ class _ExerciseCardState extends State<ExerciseCard> {
                   ),
                   const SizedBox(width: 8),
                   
-                  // 3️⃣ Set Progress Badge (Right aligned)
-                  if (isCompleted)
-                    const Icon(Icons.check_circle, color: Colors.white, size: 24)
-                  else
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        border: Border.all(color: Colors.grey[700]!, width: 1),
-                        borderRadius: BorderRadius.circular(8),
+                  // 3️⃣ Dynamic Status Badge (Right aligned)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      // IF COMPLETED: Solid White Background (Inverted)
+                      // IF ONGOING: Transparent Black Background
+                      color: isCompleted ? Colors.white : Colors.transparent,
+                      // IF COMPLETED: White Border (matches background)
+                      // IF ONGOING: Thin Grey Border
+                      border: Border.all(
+                        color: isCompleted ? Colors.white : Colors.white24,
+                        width: 1.5,
                       ),
-                      child: Text(
-                        '$completedSets / $totalSets',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Courier',
-                        ),
+                      borderRadius: BorderRadius.circular(4), // Sharp Terminal Look
+                    ),
+                    child: Text(
+                      '$completedSets / $totalSets',
+                      style: TextStyle(
+                        fontFamily: 'Courier',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        // IF COMPLETED: Black Text (Inverted)
+                        // IF ONGOING: White Text
+                        color: isCompleted ? Colors.black : Colors.white,
                       ),
                     ),
+                  ),
                 ],
               ),
             ),
