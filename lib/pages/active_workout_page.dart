@@ -418,18 +418,15 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 전체 화면 타이머 오버레이 (Industrial/Tactical Style)
+  /// 전체 화면 타이머 오버레이 (Retro-Terminal/Raw Data Style)
   Widget _buildFullScreenTimerOverlay(AppLocalizations l10n) {
-    final progress = _restSeconds / _defaultRestDuration;
-    const accentColor = Color(0xFF00E5FF); // Electric Cyan
-    
     return Positioned.fill(
       child: Container(
-        color: const Color(0xFF121212), // Deep dark background
+        color: Colors.black, // Pure black background
         child: SafeArea(
           child: Stack(
             children: [
-              // 좌측 상단 X 버튼 (Angular style)
+              // 좌측 상단 X 버튼
               Positioned(
                 top: 8,
                 left: 16,
@@ -442,8 +439,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2C2C2E),
-                      borderRadius: BorderRadius.circular(8), // Angular
+                      border: Border.all(color: Colors.white24, width: 1),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Icon(
                       Icons.close,
@@ -454,121 +451,98 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 ),
               ),
               // 메인 콘텐츠
-              Column(
-                children: [
-                  const Spacer(flex: 2),
-                  // Thin Ring Timer with Massive Typography
-                  SizedBox(
-                    width: 320,
-                    height: 320,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Thin progress ring
-                        CustomPaint(
-                          size: const Size(320, 320),
-                          painter: _TimerRingPainter(
-                            progress: progress.clamp(0.0, 1.0),
-                            strokeWidth: 4, // Thin and sharp
-                            backgroundColor: const Color(0xFF2C2C2E),
-                            progressColor: accentColor,
-                          ),
-                        ),
-                        // Massive monospace timer
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Label
-                            Text(
-                              'REST',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.grey[600],
-                                letterSpacing: 2.0,
-                                fontFamily: 'Courier',
-                                decoration: TextDecoration.none,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            // Timer (HUGE)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                _formatTime(_restSeconds),
-                                style: TextStyle(
-                                  fontSize: 72,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  fontFeatures: const [FontFeature.tabularFigures()],
-                                  letterSpacing: 4,
-                                  fontFamily: 'Courier',
-                                  decoration: TextDecoration.none,
-                                  shadows: [
-                                    Shadow(
-                                      color: accentColor.withValues(alpha: 0.5),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  // 시간 조절 버튼들 (Angular Machine Interface)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildTacticalTimeButton(-60, '-1M'),
-                      const SizedBox(width: 12),
-                      _buildTacticalTimeButton(-10, '-10'),
-                      const SizedBox(width: 12),
-                      _buildTacticalTimeButton(10, '+10'),
-                      const SizedBox(width: 12),
-                      _buildTacticalTimeButton(60, '+1M'),
-                    ],
-                  ),
-                  const Spacer(flex: 2),
-                  // 하단 메인 버튼 (Outlined style)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: OutlinedButton(
-                      onPressed: () {
-                        HapticFeedback.mediumImpact();
-                        _restTimer?.cancel();
-                        setState(() => _restTimerRunning = false);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 56),
-                        side: const BorderSide(color: accentColor, width: 2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        foregroundColor: accentColor,
-                      ),
-                      child: Text(
-                        l10n.skipRest.toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2.0,
+                      // 1. Header Label
+                      Text(
+                        'REST PERIOD',
+                        style: TextStyle(
+                          color: Colors.grey[600],
                           fontFamily: 'Courier',
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 2.0,
                           decoration: TextDecoration.none,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 32),
+                      // 2. The Timer (Massive, Monospace, No Circle)
+                      Text(
+                        _formatTime(_restSeconds),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 80,
+                          fontFamily: 'Courier',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -2.0,
+                          decoration: TextDecoration.none,
+                          height: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      // 3. Dashed Divider (The "Receipt" Look)
+                      Text(
+                        '- - - - - - - - - - - - - - - - - - - - - -',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          letterSpacing: 2,
+                          fontFamily: 'Courier',
+                          fontSize: 12,
+                          decoration: TextDecoration.none,
+                        ),
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
+                      const SizedBox(height: 32),
+                      // 4. Adjust Buttons (Raw Text Style)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildTerminalTimeButton(-60, '-1M'),
+                          _buildTerminalTimeButton(-10, '-10'),
+                          _buildTerminalTimeButton(10, '+10'),
+                          _buildTerminalTimeButton(60, '+1M'),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                      // 5. Skip Button (Matches Calendar Button style)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            _restTimer?.cancel();
+                            setState(() => _restTimerRunning = false);
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.white.withValues(alpha: 0.15), width: 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            backgroundColor: Colors.white.withValues(alpha: 0.03),
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text(
+                            l10n.skipRest.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2.0,
+                              fontFamily: 'Courier',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 32),
-                ],
+                ),
               ),
             ],
           ),
@@ -577,139 +551,129 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 미니 플로팅 타이머 → 하단 고정 바 스타일 (Industrial)
+  /// 미니 플로팅 타이머 → 하단 고정 바 스타일 (Retro-Terminal)
   Widget _buildMiniFloatingTimer(AppLocalizations l10n) {
-    final progress = _restSeconds / _defaultRestDuration;
-    const accentColor = Color(0xFF00E5FF); // Electric Cyan
-    
     return Positioned(
       left: 0,
       right: 0,
       bottom: 0,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: const BoxDecoration(
-          color: Color(0xFF121212), // Deep dark
-          border: Border(top: BorderSide(color: Color(0xFF2C2C2C), width: 1)),
+          color: Colors.black,
+          border: Border(top: BorderSide(color: Colors.white10, width: 1)),
         ),
         child: SafeArea(
           top: false,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 상단: 프로그레스 + 시간 + X버튼
+              // Header + Close
               Row(
                 children: [
-                  // 미니 Thin Ring
-                  SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: CustomPaint(
-                      painter: _TimerRingPainter(
-                        progress: progress.clamp(0.0, 1.0),
-                        strokeWidth: 3,
-                        backgroundColor: const Color(0xFF2C2C2E),
-                        progressColor: accentColor,
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.timer_outlined,
-                          color: accentColor,
-                          size: 20,
-                        ),
-                      ),
+                  Text(
+                    'REST PERIOD',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                      fontFamily: 'Courier',
+                      decoration: TextDecoration.none,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  // 시간 표시 (Monospace)
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'REST',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.5,
-                            fontFamily: 'Courier',
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                        Text(
-                          _formatTime(_restSeconds),
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            fontFeatures: [FontFeature.tabularFigures()],
-                            fontFamily: 'Courier',
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // X 버튼 (Angular)
+                  const Spacer(),
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.lightImpact();
                       setState(() => _isTimerUIVisible = false);
                     },
                     child: Container(
-                      width: 32,
-                      height: 32,
+                      width: 28,
+                      height: 28,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2C2C2E),
-                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: Colors.white24, width: 1),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Icon(
                         Icons.close,
                         color: Colors.white70,
-                        size: 18,
+                        size: 16,
                       ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              // 시간 조절 버튼들 (Angular)
+              // Massive Timer
+              Text(
+                _formatTime(_restSeconds),
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontFamily: 'Courier',
+                  letterSpacing: -1.0,
+                  decoration: TextDecoration.none,
+                  height: 1.0,
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Dashed Divider
+              Text(
+                '- - - - - - - - - - - - - - - - - - - - - -',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  letterSpacing: 2,
+                  fontFamily: 'Courier',
+                  fontSize: 10,
+                  decoration: TextDecoration.none,
+                ),
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: false,
+              ),
+              const SizedBox(height: 12),
+              // 시간 조절 버튼들
               Row(
                 children: [
-                  _buildMiniTimeButton(-60, '-1M'),
+                  _buildMiniTerminalButton(-60, '-1M'),
                   const SizedBox(width: 8),
-                  _buildMiniTimeButton(-10, '-10'),
+                  _buildMiniTerminalButton(-10, '-10'),
                   const SizedBox(width: 8),
-                  _buildMiniTimeButton(10, '+10'),
+                  _buildMiniTerminalButton(10, '+10'),
                   const SizedBox(width: 8),
-                  _buildMiniTimeButton(60, '+1M'),
+                  _buildMiniTerminalButton(60, '+1M'),
                 ],
               ),
               const SizedBox(height: 12),
-              // 스킵 버튼 (Outlined)
-              OutlinedButton(
-                onPressed: () {
-                  HapticFeedback.mediumImpact();
-                  _restTimer?.cancel();
-                  setState(() => _restTimerRunning = false);
-                },
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                  side: const BorderSide(color: accentColor, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              // 스킵 버튼
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton(
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    _restTimer?.cancel();
+                    setState(() => _restTimerRunning = false);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.15), width: 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: Colors.white.withValues(alpha: 0.03),
+                    foregroundColor: Colors.white,
                   ),
-                  foregroundColor: accentColor,
-                ),
-                child: Text(
-                  l10n.skipRest.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2.0,
-                    fontFamily: 'Courier',
-                    decoration: TextDecoration.none,
+                  child: Text(
+                    l10n.skipRest.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
+                      fontFamily: 'Courier',
+                      decoration: TextDecoration.none,
+                    ),
                   ),
                 ),
               ),
@@ -720,8 +684,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 미니 타이머용 시간 조절 버튼 (Angular Machine Interface)
-  Widget _buildMiniTimeButton(int seconds, String label) {
+  /// 미니 타이머용 Terminal 스타일 버튼
+  Widget _buildMiniTerminalButton(int seconds, String label) {
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -731,16 +695,17 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
           });
         },
         child: Container(
-          height: 40,
+          height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFF2C2C2E),
-            borderRadius: BorderRadius.circular(8), // Angular
+            border: Border.all(color: Colors.white24, width: 1),
+            borderRadius: BorderRadius.circular(4),
+            color: Colors.white.withValues(alpha: 0.03),
           ),
           child: Center(
             child: Text(
               label,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
                 fontFamily: 'Courier',
@@ -753,8 +718,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
   }
   
-  /// 전체 화면용 Tactical 시간 조절 버튼
-  Widget _buildTacticalTimeButton(int seconds, String label) {
+  /// 전체 화면용 Terminal 스타일 시간 조절 버튼
+  Widget _buildTerminalTimeButton(int seconds, String label) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -764,20 +729,17 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       },
       child: Container(
         width: 72,
-        height: 72,
+        height: 48,
         decoration: BoxDecoration(
-          color: const Color(0xFF2C2C2E),
-          borderRadius: BorderRadius.circular(12), // Angular, not circle
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.1),
-            width: 1,
-          ),
+          border: Border.all(color: Colors.white24, width: 1),
+          borderRadius: BorderRadius.circular(4),
+          color: Colors.white.withValues(alpha: 0.03),
         ),
         child: Center(
           child: Text(
             label,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
               color: Colors.white,
               fontFamily: 'Courier',
@@ -1350,58 +1312,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         ),
       ),
     );
-  }
-}
-
-/// 세련된 원형 프로그레스 링 페인터
-class _TimerRingPainter extends CustomPainter {
-  final double progress;
-  final double strokeWidth;
-  final Color backgroundColor;
-  final Color progressColor;
-
-  _TimerRingPainter({
-    required this.progress,
-    required this.strokeWidth,
-    required this.backgroundColor,
-    required this.progressColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width - strokeWidth) / 2;
-
-    // 배경 원 (어두운 회색)
-    final backgroundPaint = Paint()
-      ..color = backgroundColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawCircle(center, radius, backgroundPaint);
-
-    // 진행 원 (오렌지)
-    final progressPaint = Paint()
-      ..color = progressColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    final sweepAngle = 2 * 3.141592653589793 * progress;
-    
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -3.141592653589793 / 2, // 12시 방향에서 시작
-      sweepAngle,
-      false,
-      progressPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _TimerRingPainter oldDelegate) {
-    return oldDelegate.progress != progress;
   }
 }
 
