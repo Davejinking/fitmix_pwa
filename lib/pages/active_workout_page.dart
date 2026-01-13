@@ -1018,9 +1018,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       ),
       child: Row(
         children: [
-          // 1. Timer Button (Calendar Ghost Style)
+          // 1. Timer Button (Calendar Ghost Style) - Takes most space
           Expanded(
-            flex: 2,
             child: InkWell(
               onTap: () {
                 // 타이머가 실행 중이면 UI 다시 표시, 아니면 설정 모달
@@ -1065,38 +1064,23 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             ),
           ),
           const SizedBox(width: 12), // Gap
-          // 2. End Button (Calendar Ghost Style)
-          Expanded(
-            flex: 1,
-            child: InkWell(
-              onTap: _finishWorkout,
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.transparent, // Ghost
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white24, width: 1), // Same Grey Border
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.stop_circle_outlined,
-                      color: dangerColor, // Red Icon
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.endWorkout, // 종료
-                      style: const TextStyle(
-                        color: dangerColor, // Red Text looks good INSIDE a box
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: 'Courier',
-                      ),
-                    ),
-                  ],
+          // 2. End Button (Icon Only) - Wider for easier tapping
+          InkWell(
+            onTap: _finishWorkout,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: 80, // Wider than square for better tap target
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.transparent, // Ghost
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.white24, width: 1),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.stop_circle_outlined,
+                  color: dangerColor, // Red Icon
+                  size: 28,
                 ),
               ),
             ),
