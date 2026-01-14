@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/constants.dart';
 import '../core/iron_theme.dart';
 import '../data/exercise_library_repo.dart';
@@ -78,15 +79,63 @@ class _SettingsPageState extends State<SettingsPage> {
           // 구분선
           Divider(color: IronTheme.textMedium.withValues(alpha: 0.3)),
           
+          // 지원 및 정보 섹션 헤더
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            child: Text(
+              '지원 및 정보',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: IronTheme.textMedium,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+          
+          // 문의하기 / 피드백 보내기
+          ListTile(
+            leading: Icon(Icons.bug_report_outlined, color: IronTheme.textHigh),
+            title: Text(
+              '🐛 문의하기 / 피드백 보내기',
+              style: TextStyle(color: IronTheme.textHigh),
+            ),
+            subtitle: Text(
+              'ironlog.official@gmail.com',
+              style: TextStyle(color: IronTheme.textMedium, fontSize: 12),
+            ),
+            trailing: Icon(Icons.chevron_right, color: IronTheme.textMedium),
+            onTap: () => _launchEmail(),
+          ),
+          
+          // 공식 인스타그램
+          ListTile(
+            leading: Icon(Icons.camera_alt_outlined, color: IronTheme.textHigh),
+            title: Text(
+              '📸 공식 인스타그램 (News)',
+              style: TextStyle(color: IronTheme.textHigh),
+            ),
+            subtitle: Text(
+              '@ironlog.official',
+              style: TextStyle(color: IronTheme.textMedium, fontSize: 12),
+            ),
+            trailing: Icon(Icons.chevron_right, color: IronTheme.textMedium),
+            onTap: () => _launchInstagram(),
+          ),
+          
+          // 구분선
+          Divider(color: IronTheme.textMedium.withValues(alpha: 0.3)),
+          
           // 위험 구역 헤더
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
             child: Text(
               '위험 구역',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
                 color: IronTheme.danger,
+                letterSpacing: 1.0,
               ),
             ),
           ),
@@ -123,6 +172,71 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
     );
+  }
+
+  // 이메일 실행
+  Future<void> _launchEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'ironlog.official@gmail.com',
+      query: 'subject=Iron Log 문의&body=',
+    );
+    
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(emailUri);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('이메일 앱을 열 수 없습니다'),
+              backgroundColor: IronTheme.danger,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('오류가 발생했습니다: $e'),
+            backgroundColor: IronTheme.danger,
+          ),
+        );
+      }
+    }
+  }
+
+  // 인스타그램 실행
+  Future<void> _launchInstagram() async {
+    final Uri instagramUri = Uri.parse('https://www.instagram.com/ironlog.official/');
+    
+    try {
+      if (await canLaunchUrl(instagramUri)) {
+        await launchUrl(
+          instagramUri,
+          mode: LaunchMode.externalApplication, // 외부 브라우저/앱으로 열기
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('인스타그램을 열 수 없습니다'),
+              backgroundColor: IronTheme.danger,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('오류가 발생했습니다: $e'),
+            backgroundColor: IronTheme.danger,
+          ),
+        );
+      }
+    }
   }
 
   void _showDeleteAccountDialog() {
