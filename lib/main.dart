@@ -36,11 +36,15 @@ Future<void> main() async {
     final seedingService = ExerciseSeedingService();
     await seedingService.initializeAndSeed();
     
-    // 시딩 통계 출력
-    final stats = await seedingService.getStatistics();
-    print('📊 Iron Log 운동 라이브러리: ${stats['total']}개 운동 로드 완료');
+    // 시딩 통계 출력 (디버그 모드만)
+    if (kDebugMode) {
+      final stats = await seedingService.getStatistics();
+      print('📊 Iron Log 운동 라이브러리: ${stats['total']}개 운동 로드 완료');
+    }
   } catch (e) {
-    print('❌ 운동 라이브러리 시딩 실패: $e');
+    if (kDebugMode) {
+      print('❌ 운동 라이브러리 시딩 실패: $e');
+    }
   }
 
   // 디버그 모드에서만 더미 데이터 생성
@@ -116,25 +120,33 @@ class _IronLogAppState extends State<IronLogApp> {
       
       // 🎯 Custom Locale Resolution Callback
       localeResolutionCallback: (deviceLocale, supportedLocales) {
-        // 디버그 로깅
-        print('🌐 Detected Device Locale: $deviceLocale');
+        // 디버그 로깅 (디버그 모드만)
+        if (kDebugMode) {
+          print('🌐 Detected Device Locale: $deviceLocale');
+        }
         
         // 기기 언어가 null인 경우 기본값 반환
         if (deviceLocale == null) {
-          print('⚠️ Device locale is null, using default: ko');
+          if (kDebugMode) {
+            print('⚠️ Device locale is null, using default: ko');
+          }
           return supportedLocales.first; // ko
         }
         
         // 기기 언어 코드가 지원 언어 목록에 있는지 확인
         for (var supportedLocale in supportedLocales) {
           if (supportedLocale.languageCode == deviceLocale.languageCode) {
-            print('✅ Matched locale: ${supportedLocale.languageCode}');
+            if (kDebugMode) {
+              print('✅ Matched locale: ${supportedLocale.languageCode}');
+            }
             return supportedLocale;
           }
         }
         
         // 매칭되는 언어가 없으면 기본값(한국어) 반환
-        print('⚠️ No match found, using default: ko');
+        if (kDebugMode) {
+          print('⚠️ No match found, using default: ko');
+        }
         return supportedLocales.first; // ko
       },
       

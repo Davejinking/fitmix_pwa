@@ -123,6 +123,17 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: () => _launchInstagram(),
           ),
           
+          // 개인정보 처리방침
+          ListTile(
+            leading: Icon(Icons.privacy_tip_outlined, color: IronTheme.textHigh),
+            title: Text(
+              '개인정보 처리방침 (Privacy Policy)',
+              style: TextStyle(color: IronTheme.textHigh),
+            ),
+            trailing: Icon(Icons.chevron_right, color: IronTheme.textMedium),
+            onTap: () => _launchPrivacyPolicy(),
+          ),
+          
           // 구분선
           Divider(color: IronTheme.textMedium.withValues(alpha: 0.3)),
           
@@ -222,6 +233,39 @@ class _SettingsPageState extends State<SettingsPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('인스타그램을 열 수 없습니다'),
+              backgroundColor: IronTheme.danger,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('오류가 발생했습니다: $e'),
+            backgroundColor: IronTheme.danger,
+          ),
+        );
+      }
+    }
+  }
+
+  // 개인정보 처리방침 실행
+  Future<void> _launchPrivacyPolicy() async {
+    // TODO: 여기에 노션 링크 넣기
+    final Uri privacyPolicyUri = Uri.parse('https://www.notion.so/ironlog-privacy-policy'); // 임시 URL
+    
+    try {
+      if (await canLaunchUrl(privacyPolicyUri)) {
+        await launchUrl(
+          privacyPolicyUri,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('개인정보 처리방침을 열 수 없습니다'),
               backgroundColor: IronTheme.danger,
             ),
           );
