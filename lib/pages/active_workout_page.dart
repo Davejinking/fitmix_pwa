@@ -11,6 +11,7 @@ import '../widgets/workout/exercise_card.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../core/l10n_extensions.dart';
+import '../services/ad_service.dart';
 import 'exercise_selection_page_v2.dart';
 
 /// 운동 중 전체 화면 모달 (탭바 숨김, 집중 모드)
@@ -51,12 +52,18 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   
   // 운동 카드 전체 열기/닫기 상태
   bool _allCardsExpanded = true;
+  
+  // 💰 광고 서비스
+  final AdService _adService = AdService();
 
   @override
   void initState() {
     super.initState();
     _session = widget.session;
     _startWorkoutTimer();
+    
+    // 🎯 운동 시작 시 광고 미리 로드
+    _adService.loadInterstitialAd();
   }
 
   void _startWorkoutTimer() {
@@ -308,7 +315,15 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     
     if (mounted) {
       ErrorHandler.showSuccessSnackBar(context, context.l10n.workoutCompleted);
-      Navigator.of(context).pop(true); // true = 운동 완료
+      
+      // 🎯 광고 표시 후 홈으로 이동
+      await _adService.showInterstitialAd(
+        onAdClosed: () {
+          if (mounted) {
+            Navigator.of(context).pop(true); // true = 운동 완료
+          }
+        },
+      );
     }
   }
   
@@ -366,6 +381,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   void dispose() {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
+    _adService.dispose(); // 광고 리소스 정리
     super.dispose();
   }
 

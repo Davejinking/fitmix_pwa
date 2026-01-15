@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'l10n/app_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -23,6 +24,12 @@ import 'services/exercise_seeding_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
+  
+  // 🎯 Google AdMob 초기화
+  await MobileAds.instance.initialize();
+  if (kDebugMode) {
+    print('💰 Google AdMob 초기화 완료');
+  }
   
   // Hive 초기화 및 어댑터 등록
   await Hive.initFlutter();
