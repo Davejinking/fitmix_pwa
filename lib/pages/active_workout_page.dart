@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';
 import '../models/session.dart';
@@ -62,8 +63,14 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _session = widget.session;
     _startWorkoutTimer();
     
-    // 🎯 운동 시작 시 광고 미리 로드
-    _adService.loadInterstitialAd();
+    // 🎯 출시 모드에서만 광고 미리 로드
+    if (!kDebugMode) {
+      _adService.loadInterstitialAd();
+    } else {
+      if (kDebugMode) {
+        print('🚀 개발 모드라 광고 로드를 스킵했습니다.');
+      }
+    }
   }
 
   void _startWorkoutTimer() {
@@ -316,14 +323,21 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     if (mounted) {
       ErrorHandler.showSuccessSnackBar(context, context.l10n.workoutCompleted);
       
-      // 🎯 광고 표시 후 홈으로 이동
-      await _adService.showInterstitialAd(
-        onAdClosed: () {
-          if (mounted) {
-            Navigator.of(context).pop(true); // true = 운동 완료
-          }
-        },
-      );
+      // 🎯 개발 모드 vs 출시 모드 분기
+      if (kDebugMode) {
+        // 개발 모드: 광고 스킵하고 즉시 홈으로 이동
+        print('🚀 개발 모드라 광고를 스킵했습니다.');
+        Navigator.of(context).pop(true); // true = 운동 완료
+      } else {
+        // 출시 모드: 광고 표시 후 홈으로 이동
+        await _adService.showInterstitialAd(
+          onAdClosed: () {
+            if (mounted) {
+              Navigator.of(context).pop(true); // true = 운동 완료
+            }
+          },
+        );
+      }
     }
   }
   
