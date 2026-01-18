@@ -66,7 +66,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
       try {
         // 🔥 ExerciseSeedingService를 사용하여 커스텀 운동 추가
         final seedingService = ExerciseSeedingService();
-        await seedingService.initializeAndSeed();
         await seedingService.addCustomExercise(
           name: name,
           bodyPart: bodyPart,

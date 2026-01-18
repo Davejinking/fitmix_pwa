@@ -10,15 +10,20 @@ class ExerciseSeedingService {
   
   late Box<ExerciseLibraryItem> _box;
 
+  /// Hive Box 열기 (초기화)
+  Future<void> _openBox() async {
+    if (Hive.isBoxOpen(_boxName)) {
+      _box = Hive.box<ExerciseLibraryItem>(_boxName);
+    } else {
+      _box = await Hive.openBox<ExerciseLibraryItem>(_boxName);
+    }
+  }
+
   /// 초기화 및 시딩 실행
   Future<void> initializeAndSeed() async {
     try {
       // Hive Box 열기
-      if (Hive.isBoxOpen(_boxName)) {
-        _box = Hive.box<ExerciseLibraryItem>(_boxName);
-      } else {
-        _box = await Hive.openBox<ExerciseLibraryItem>(_boxName);
-      }
+      await _openBox();
 
       // JSON 파일에서 운동 데이터 로드
       final jsonData = await _loadExercisesFromJson();
@@ -115,6 +120,9 @@ class ExerciseSeedingService {
     required String bodyPart,
     String equipmentType = 'Bodyweight',
   }) async {
+    // 🔥 Box가 열려있는지 확인 및 초기화
+    await _openBox();
+
     // 커스텀 운동 ID 생성 (custom_ 접두사 사용)
     final id = 'custom_${DateTime.now().millisecondsSinceEpoch}';
     
