@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../core/burn_fit_style.dart';
-import '../core/error_handler.dart';
 import '../data/session_repo.dart';
 import '../models/session.dart';
 import '../l10n/app_localizations.dart';
@@ -14,8 +13,14 @@ import '../widgets/workout/set_tile.dart';
 class WorkoutPage extends StatefulWidget {
   final SessionRepo sessionRepo;
   final DateTime? date; // 선택적 날짜 파라미터 (null이면 오늘)
+  final bool isEditing; // Edit mode flag
 
-  const WorkoutPage({super.key, required this.sessionRepo, this.date});
+  const WorkoutPage({
+    super.key, 
+    required this.sessionRepo, 
+    this.date,
+    this.isEditing = false,
+  });
 
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
@@ -61,16 +66,21 @@ class _WorkoutPageState extends State<WorkoutPage> with WidgetsBindingObserver {
     _currentSession = await widget.sessionRepo.get(widget.sessionRepo.ymd(targetDate));
     
     if (_currentSession != null) {
-      // Restore workout start time if session has duration
-      if (_currentSession!.durationInSeconds > 0) {
-        _workoutStartTime = DateTime.now().subtract(
-          Duration(seconds: _currentSession!.durationInSeconds),
-        );
+      if (widget.isEditing) {
+        // Edit mode: Load saved duration, don't start timer
+        _currentDurationSeconds = _currentSession!.durationInSeconds;
       } else {
-        _workoutStartTime = DateTime.now();
+        // Active workout mode: Start timer
+        if (_currentSession!.durationInSeconds > 0) {
+          _workoutStartTime = DateTime.now().subtract(
+            Duration(seconds: _currentSession!.durationInSeconds),
+          );
+        } else {
+          _workoutStartTime = DateTime.now();
+        }
+        _startGlobalTimer();
+        _startAutoSaveTimer();
       }
-      _startGlobalTimer();
-      _startAutoSaveTimer();
     }
   }
   
@@ -322,24 +332,100 @@ class _WorkoutPageState extends State<WorkoutPage> with WidgetsBindingObserver {
     return '$hours:$minutes:$seconds';
   }
 
-  Future<void> _endWorkout(Session session) async {
+  Future<void> _showFinishDialog(Session session) async {
     final l10n = AppLocalizations.of(context);
-    final confirmed = await ErrorHandler.showConfirmDialog(
-      context,
-      l10n.endWorkout,
-      l10n.endWorkoutConfirm,
-    );
-
-    if (confirmed && mounted) {
-      // Final save before ending
+    
+    // Update current duration before showing dialog
+    if (!widget.isEditing) {
       _updateCurrentDuration();
-      session.durationInSeconds = _currentDurationSeconds;
-      await widget.sessionRepo.put(session);
-      if (mounted) {
-        // 캘린더 탭(1)으로 이동
-        Navigator.of(context).pop(1);
-      }
     }
+    
+    // Show duration picker dialog
+    Duration selectedDuration = Duration(seconds: _currentDurationSeconds);
+    
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: true,
+      builder: (context) => Container(
+        height: 350,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(l10n.close),
+                  ),
+                  Text(
+                    widget.isEditing ? '수정 완료' : '운동 기록 확정',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      // Save with selected duration
+                      session.durationInSeconds = selectedDuration.inSeconds;
+                      await widget.sessionRepo.put(session);
+                      if (mounted) {
+                        Navigator.pop(context); // Close dialog
+                        Navigator.of(context).pop(1); // Return to calendar
+                      }
+                    },
+                    child: Text(
+                      l10n.confirm,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Duration display
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                '운동 시간',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
+            
+            // CupertinoTimerPicker
+            Expanded(
+              child: CupertinoTimerPicker(
+                mode: CupertinoTimerPickerMode.hms,
+                initialTimerDuration: selectedDuration,
+                onTimerDurationChanged: (Duration newDuration) {
+                  selectedDuration = newDuration;
+                },
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Legacy method - kept for compatibility but redirects to _showFinishDialog
+  Future<void> _endWorkout(Session session) async {
+    await _showFinishDialog(session);
   }
 
   @override
@@ -439,11 +525,11 @@ class _WorkoutPageState extends State<WorkoutPage> with WidgetsBindingObserver {
                             child: OutlinedButton(
                               onPressed: () => _endWorkout(session),
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(
-                                  color: Colors.red,
+                                side: BorderSide(
+                                  color: widget.isEditing ? Colors.blue : Colors.red,
                                   width: 2,
                                 ),
-                                foregroundColor: Colors.red,
+                                foregroundColor: widget.isEditing ? Colors.blue : Colors.red,
                                 padding: const EdgeInsets.symmetric(vertical: 18),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -451,7 +537,7 @@ class _WorkoutPageState extends State<WorkoutPage> with WidgetsBindingObserver {
                                 minimumSize: const Size(double.infinity, 56),
                               ),
                               child: Text(
-                                l10n.endAndSaveWorkout,
+                                widget.isEditing ? '수정 완료' : l10n.endAndSaveWorkout,
                                 style: const TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
@@ -490,12 +576,14 @@ class _WorkoutPageState extends State<WorkoutPage> with WidgetsBindingObserver {
                                   // 세트 완료 상태를 Session에 저장
                                   set.isCompleted = isCompleted;
                                   
-                                  // Immediate auto-save on set completion
-                                  await _saveSession();
+                                  // Immediate auto-save on set completion (only in active workout mode)
+                                  if (!widget.isEditing) {
+                                    await _saveSession();
+                                  }
                                   
                                   if (isCompleted) {
-                                    // 2. 체크 시 자동 휴식 타이머 시작
-                                    if (setIndex < exercise.sets.length - 1) {
+                                    // 2. 체크 시 자동 휴식 타이머 시작 (only in active workout mode)
+                                    if (!widget.isEditing && setIndex < exercise.sets.length - 1) {
                                       _startRestTimer(setKey);
                                     }
                                   } else {
