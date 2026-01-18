@@ -616,6 +616,9 @@ class _PlanPageState extends State<PlanPage> {
                         _currentSession!.isWorkoutDay && 
                         _currentSession!.exercises.isNotEmpty;
     
+    // 이미 완료된 운동인 경우 ViewOnly 모드로 처리
+    final isEffectiveViewOnly = widget.isViewOnly || (_currentSession?.isCompleted ?? false);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
@@ -632,7 +635,7 @@ class _PlanPageState extends State<PlanPage> {
         child: Row(
           children: [
             // 좌측 (40%): 운동 추가 버튼 (편집 모드에서만 표시)
-            if (!widget.isViewOnly || _isEditingMode)
+            if (!isEffectiveViewOnly || _isEditingMode)
               Expanded(
                 flex: 4,
                 child: SizedBox(
@@ -657,27 +660,27 @@ class _PlanPageState extends State<PlanPage> {
                   ),
                 ),
               ),
-            if (!widget.isViewOnly || _isEditingMode)
+            if (!isEffectiveViewOnly || _isEditingMode)
               const SizedBox(width: 12),
             // 우측: 운동 시작 / 운동 편집 / 편집 완료 버튼
             Expanded(
-              flex: widget.isViewOnly && !_isEditingMode ? 12 : 6,
+              flex: isEffectiveViewOnly && !_isEditingMode ? 12 : 6,
               child: SizedBox(
                 height: 52, // 고정 높이
                 child: ElevatedButton.icon(
                   onPressed: hasExercises ? (
-                    widget.isViewOnly 
+                    isEffectiveViewOnly
                       ? (_isEditingMode ? _finishEditingWorkout : _startEditingMode)
                       : _startWorkout
                   ) : null,
                   icon: Icon(
-                    widget.isViewOnly 
+                    isEffectiveViewOnly
                       ? (_isEditingMode ? Icons.check : Icons.edit)
                       : Icons.play_arrow,
                     size: 22,
                   ),
                   label: Text(
-                    widget.isViewOnly 
+                    isEffectiveViewOnly
                       ? (_isEditingMode ? context.l10n.editComplete : context.l10n.editWorkout)
                       : context.l10n.startWorkout,
                     style: const TextStyle(
@@ -686,7 +689,7 @@ class _PlanPageState extends State<PlanPage> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.isViewOnly 
+                    backgroundColor: isEffectiveViewOnly
                       ? const Color(0xFF34C759)  // 초록색 (편집 모드)
                       : const Color(0xFF2196F3), // 파란색 (시작 모드)
                     disabledBackgroundColor: Colors.grey[800],

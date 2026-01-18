@@ -1310,4 +1310,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get onboardingSubtitle4 => '주간, 월간 통계로 발전을 확인하고\n목표를 향해 나아가세요';
+
+  @override
+  String get exerciseAddedSuccessfully => '운동이 성공적으로 추가되었습니다.';
 }
