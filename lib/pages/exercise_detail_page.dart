@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/exercise_db.dart';
-import '../models/exercise_set.dart';
 import '../l10n/app_localizations.dart';
 import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';

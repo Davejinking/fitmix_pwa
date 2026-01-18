@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -11,7 +10,6 @@ import '../models/exercise_set.dart';
 import '../widgets/workout/exercise_card.dart';
 import '../core/error_handler.dart';
 import '../l10n/app_localizations.dart';
-import '../core/l10n_extensions.dart';
 import '../services/ad_service.dart';
 import 'exercise_selection_page_v2.dart';
 
@@ -56,6 +54,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 운동 카드 전체 열기/닫기 상태
   bool _allCardsExpanded = true;
   
+  // 저장 중 상태 (중복 저장 방지)
+  bool _isSaving = false;
+
   // 💰 광고 서비스
   final AdService _adService = AdService();
 
@@ -327,41 +328,93 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   Future<void> _finishWorkout() async {
+    // 1. 중복 저장 방지 (Concurrency T11)
+    if (_isSaving) return;
+
+    // 2. 입력값 검증 (Validation T01, T02)
+    final l10n = AppLocalizations.of(context)!;
+    bool hasInvalidReps = false;
+    bool hasZeroWeight = false;
+
+    for (final exercise in _session.exercises) {
+      for (final set in exercise.sets) {
+        if (set.reps <= 0) {
+          hasInvalidReps = true;
+        }
+        // T01: 0kg 경고 (맨몸 운동이 아닐 수 있으므로 체크)
+        // 실제로는 '맨몸' 여부를 판단하기 어렵다면 0kg 입력을 허용하되 경고를 줄 수도 있음
+        // 여기서는 T01 요구사항에 따라 0kg도 체크하지만,
+        // 0kg가 유효한 경우(맨몸)도 있을 수 있어 '경고' 메시지를 띄우고 저장을 막습니다.
+        if (set.weight == 0) {
+          hasZeroWeight = true;
+        }
+      }
+    }
+
+    if (hasInvalidReps) {
+      ErrorHandler.showErrorSnackBar(context, '0회 반복은 저장할 수 없습니다.');
+      return;
+    }
+
+    if (hasZeroWeight) {
+      // 0kg가 무조건 안 되는지, 경고만 할지 정책 결정 필요.
+      // T01 시나리오: "저장 불가(경고 표시)"
+      ErrorHandler.showErrorSnackBar(context, '0kg 무게는 저장할 수 없습니다. (맨몸 운동인 경우 1kg로 기록하거나 무게 설정을 확인하세요)');
+      return;
+    }
+
+    // 종료 확인 다이얼로그 표시
     final confirmed = await _showEndWorkoutDialog(isCompleting: true);
     if (!confirmed) return;
+
+    // 다이얼로그 후 재확인 (중복 저장 방지 강화)
+    if (_isSaving) return;
+
+    setState(() => _isSaving = true);
     
-    _workoutTimer?.cancel();
-    _restTimer?.cancel();
-    
-    // Always mark as completed (both in active and edit mode)
-    _session.isCompleted = true;
-    _session.durationInSeconds = _elapsedSeconds;
-    
-    await widget.repo.put(_session);
-    
-    HapticFeedback.heavyImpact();
-    
-    if (mounted) {
-      ErrorHandler.showSuccessSnackBar(
-        context, 
-        widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
-      );
+    try {
+      _workoutTimer?.cancel();
+      _restTimer?.cancel();
       
-      // Skip ads in edit mode or debug mode
-      if (widget.isEditing || kDebugMode) {
-        if (kDebugMode) {
-          print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
-        }
-        Navigator.of(context).pop(true);
-      } else {
-        // 출시 모드: 광고 표시 후 홈으로 이동
-        await _adService.showInterstitialAd(
-          onAdClosed: () {
-            if (mounted) {
-              Navigator.of(context).pop(true);
-            }
-          },
+      // Always mark as completed (both in active and edit mode)
+      _session.isCompleted = true;
+      _session.durationInSeconds = _elapsedSeconds;
+
+      await widget.repo.put(_session);
+
+      HapticFeedback.heavyImpact();
+
+      if (mounted) {
+        ErrorHandler.showSuccessSnackBar(
+          context,
+          widget.isEditing ? '수정 완료' : l10n.workoutCompleted,
         );
+
+        // Skip ads in edit mode or debug mode
+        if (widget.isEditing || kDebugMode) {
+          if (kDebugMode) {
+            print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+          }
+          Navigator.of(context).pop(true);
+        } else {
+          // 출시 모드: 광고 표시 후 홈으로 이동
+          await _adService.showInterstitialAd(
+            onAdClosed: () {
+              if (mounted) {
+                Navigator.of(context).pop(true);
+              }
+            },
+          );
+        }
+      }
+    } catch (e) {
+      // 저장 실패 처리 (T24)
+      if (mounted) {
+        ErrorHandler.showErrorSnackBar(context, '저장 중 오류가 발생했습니다: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
       }
     }
   }
@@ -1276,7 +1329,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       onChanged: (value) {
                         setModalState(() => showOverlay = value);
                       },
-                      activeColor: Colors.white,
+                      activeThumbColor: Colors.white,
                       activeTrackColor: Colors.grey[700],
                       inactiveThumbColor: Colors.grey[600],
                       inactiveTrackColor: Colors.grey[800],
