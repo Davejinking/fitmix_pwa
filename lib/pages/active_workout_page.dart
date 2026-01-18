@@ -21,6 +21,7 @@ class ActiveWorkoutPage extends StatefulWidget {
   final SessionRepo repo;
   final ExerciseLibraryRepo exerciseRepo;
   final DateTime date;
+  final bool isEditing; // Edit mode flag
 
   const ActiveWorkoutPage({
     super.key,
@@ -28,6 +29,7 @@ class ActiveWorkoutPage extends StatefulWidget {
     required this.repo,
     required this.exerciseRepo,
     required this.date,
+    this.isEditing = false,
   });
 
   @override
@@ -61,7 +63,14 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   void initState() {
     super.initState();
     _session = widget.session;
-    _startWorkoutTimer();
+    
+    // Edit 모드가 아닐 때만 타이머 시작
+    if (!widget.isEditing) {
+      _startWorkoutTimer();
+    } else {
+      // Edit 모드: 저장된 시간 로드
+      _elapsedSeconds = _session.durationInSeconds;
+    }
     
     // 🎯 출시 모드에서만 광고 미리 로드
     if (!kDebugMode) {
@@ -83,7 +92,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   void _onSetChecked(bool value) {
-    if (value) {
+    if (value && !widget.isEditing) {
       _startRestTimer(_defaultRestDuration);
       setState(() => _isTimerUIVisible = true); // 타이머 시작 시 UI 표시
     }
@@ -174,7 +183,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
               const SizedBox(height: 20),
               // 제목
               Text(
-                isCompleting ? l10n.finishWorkoutTitle : l10n.endWorkout,
+                widget.isEditing 
+                    ? '수정 완료' 
+                    : (isCompleting ? l10n.finishWorkoutTitle : l10n.endWorkout),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -250,7 +261,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                     elevation: 0,
                   ),
                   child: Text(
-                    isCompleting ? l10n.finishWorkout : l10n.confirm,
+                    widget.isEditing 
+                        ? '저장' 
+                        : (isCompleting ? l10n.finishWorkout : l10n.confirm),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
