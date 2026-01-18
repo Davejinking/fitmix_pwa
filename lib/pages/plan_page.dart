@@ -744,10 +744,11 @@ class _PlanPageState extends State<PlanPage> {
   }
 
   void _finishWorkout() async {
-    if (_currentSession == null) return;
+    final session = _currentSession;
+    if (session == null) return;
     
     // 미완료 세트가 있는지 확인
-    final hasIncompleteSets = _currentSession!.exercises.any((e) => 
+    final hasIncompleteSets = session.exercises.any((e) =>
         e.sets.any((s) => !s.isCompleted));
     
     if (hasIncompleteSets) {
@@ -784,7 +785,7 @@ class _PlanPageState extends State<PlanPage> {
     _restTimer?.cancel();
     
     // 세션을 완료 상태로 설정
-    _currentSession!.isCompleted = true;
+    session.isCompleted = true;
     
     setState(() {
       _isWorkoutStarted = false;

@@ -234,7 +234,9 @@ class HiveSessionRepo implements SessionRepo {
         if (records.length >= limit) break;
         
         // 해당 운동이 있는지 확인 (다국어 매칭 지원)
-        final exercise = session.exercises.where((ex) => _isExerciseNameMatch(ex.name, exerciseName)).firstOrNull;
+        final matchedExercises = session.exercises.where((ex) => _isExerciseNameMatch(ex.name, exerciseName));
+        final exercise = matchedExercises.isEmpty ? null : matchedExercises.first;
+
         if (exercise != null && exercise.sets.isNotEmpty) {
           print('✅ 매칭된 운동 발견: ${exercise.name}, 세트 수: ${exercise.sets.length}');
           
