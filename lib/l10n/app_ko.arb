@@ -574,5 +574,6 @@
   "onboardingSubtitle3": "매일 운동하고 연속 기록을 세워보세요\n꾸준함이 최고의 결과를 만들어요",
   "onboardingTitle4": "성장을 확인하세요",
   "onboardingSubtitle4": "주간, 월간 통계로 발전을 확인하고\n목표를 향해 나아가세요",
-  "next": "다음"
+  "next": "다음",
+  "exerciseAddedSuccessfully": "운동이 성공적으로 추가되었습니다."
 }

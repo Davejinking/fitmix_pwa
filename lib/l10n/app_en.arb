@@ -574,5 +574,6 @@
   "onboardingSubtitle3": "Work out daily and build your record\nConsistency creates the best results",
   "onboardingTitle4": "Track Your Progress",
   "onboardingSubtitle4": "Check your growth with weekly and monthly stats\nMove towards your goals",
-  "next": "Next"
+  "next": "Next",
+  "exerciseAddedSuccessfully": "Exercise added successfully"
 }

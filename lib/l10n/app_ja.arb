@@ -574,5 +574,6 @@
   "onboardingSubtitle3": "毎日ワークアウトして記録を作ろう\n継続が最高の結果を生みます",
   "onboardingTitle4": "成長を確認",
   "onboardingSubtitle4": "週間・月間統計で進歩を確認\n目標に向かって進みましょう",
-  "next": "次へ"
+  "next": "次へ",
+  "exerciseAddedSuccessfully": "エクササイズが正常に追加されました。"
 }

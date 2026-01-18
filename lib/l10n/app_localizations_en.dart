@@ -1326,4 +1326,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingSubtitle4 =>
       'Check your growth with weekly and monthly stats\nMove towards your goals';
+
+  @override
+  String get exerciseAddedSuccessfully => 'Exercise added successfully';
 }
