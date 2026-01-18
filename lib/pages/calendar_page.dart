@@ -165,15 +165,16 @@ class _CalendarPageState extends State<CalendarPage> {
 
 
   Future<void> _startWorkout() async {
-    if (_currentSession == null) return;
+    final session = _currentSession;
+    if (session == null) return;
     
     // Check if this is an edit mode BEFORE saving (session already completed)
-    final isEditing = _currentSession!.isCompleted;
+    final isEditing = session.isCompleted;
     
     debugPrint('🔍 [CalendarPage] _startWorkout called');
-    debugPrint('🔍 [CalendarPage] isCompleted: ${_currentSession!.isCompleted}');
+    debugPrint('🔍 [CalendarPage] isCompleted: ${session.isCompleted}');
     debugPrint('🔍 [CalendarPage] isEditing: $isEditing');
-    debugPrint('🔍 [CalendarPage] durationInSeconds: ${_currentSession!.durationInSeconds}');
+    debugPrint('🔍 [CalendarPage] durationInSeconds: ${session.durationInSeconds}');
     
     await _saveSession();
     
@@ -182,7 +183,7 @@ class _CalendarPageState extends State<CalendarPage> {
         MaterialPageRoute(
           fullscreenDialog: true, // 전체 화면 모달
           builder: (context) => ActiveWorkoutPage(
-            session: _currentSession!,
+            session: session,
             repo: repo,
             exerciseRepo: exerciseRepo,
             date: _selectedDay,
@@ -201,10 +202,11 @@ class _CalendarPageState extends State<CalendarPage> {
   
   // 편집 완료 - Duration Picker 표시
   Future<void> _finishEditing() async {
-    if (_currentSession == null) return;
+    final session = _currentSession;
+    if (session == null) return;
     
     // Show duration picker
-    Duration selectedDuration = Duration(seconds: _currentSession!.durationInSeconds);
+    Duration selectedDuration = Duration(seconds: session.durationInSeconds);
     
     await showModalBottomSheet(
       context: context,
@@ -239,9 +241,9 @@ class _CalendarPageState extends State<CalendarPage> {
                   TextButton(
                     onPressed: () async {
                       // Save with selected duration
-                      _currentSession!.durationInSeconds = selectedDuration.inSeconds;
-                      _currentSession!.isCompleted = true; // Ensure it stays completed
-                      await repo.put(_currentSession!);
+                      session.durationInSeconds = selectedDuration.inSeconds;
+                      session.isCompleted = true; // Ensure it stays completed
+                      await repo.put(session);
                       
                       if (mounted) {
                         setState(() {
