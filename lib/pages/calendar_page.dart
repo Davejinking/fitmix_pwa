@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../core/service_locator.dart';
 import '../data/exercise_library_repo.dart';
@@ -49,6 +50,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Set<String> _workoutDates = {};
   Set<String> _restDates = {};
   bool _isLoading = true;
+  bool _isEditingMode = false; // 편집 모드 플래그
   
   // 스크롤 컨트롤러 추가
   final ScrollController _scrollController = ScrollController();
@@ -195,6 +197,100 @@ class _CalendarPageState extends State<CalendarPage> {
         await _loadWorkoutDates();
       }
     }
+  }
+  
+  // 편집 완료 - Duration Picker 표시
+  Future<void> _finishEditing() async {
+    if (_currentSession == null) return;
+    
+    // Show duration picker
+    Duration selectedDuration = Duration(seconds: _currentSession!.durationInSeconds);
+    
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: true,
+      builder: (context) => Container(
+        height: 350,
+        decoration: const BoxDecoration(
+          color: Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('취소', style: TextStyle(color: Colors.white)),
+                  ),
+                  const Text(
+                    '운동 시간 설정',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      // Save with selected duration
+                      _currentSession!.durationInSeconds = selectedDuration.inSeconds;
+                      _currentSession!.isCompleted = true; // Ensure it stays completed
+                      await repo.put(_currentSession!);
+                      
+                      if (mounted) {
+                        setState(() {
+                          _isEditingMode = false; // Exit edit mode
+                        });
+                        Navigator.pop(context); // Close dialog
+                        await _loadSession(); // Reload
+                      }
+                    },
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2196F3),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Duration display
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                '운동 시간',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+            
+            // CupertinoTimerPicker
+            Expanded(
+              child: CupertinoTimerPicker(
+                mode: CupertinoTimerPickerMode.hms,
+                initialTimerDuration: selectedDuration,
+                onTimerDurationChanged: (Duration newDuration) {
+                  selectedDuration = newDuration;
+                },
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
   }
 
   // 오늘로 이동
@@ -575,7 +671,7 @@ class _CalendarPageState extends State<CalendarPage> {
     final bool isCompleted = _currentSession?.isCompleted ?? false;
 
     if (isCompleted) {
-      // Completed - Show edit button that opens workout in edit mode
+      // Completed - Show edit button that enables edit mode
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
@@ -587,7 +683,11 @@ class _CalendarPageState extends State<CalendarPage> {
             width: double.infinity,
             height: 56, // Reduced
             child: OutlinedButton.icon(
-              onPressed: _startWorkout, // Open in edit mode (isEditing will be true)
+              onPressed: () {
+                setState(() {
+                  _isEditingMode = true; // Enable edit mode
+                });
+              },
               icon: const Icon(Icons.edit, size: 20),
               label: Text(
                 l10n.editWorkout.toUpperCase(),
@@ -682,22 +782,18 @@ class _CalendarPageState extends State<CalendarPage> {
               ],
             ),
             const SizedBox(height: 8),
-            // Row 2: 운동 시작 / 수정
+            // Row 2: 운동 시작 / 수정 완료
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: _startWorkout,
+                onPressed: _isEditingMode ? _finishEditing : _startWorkout,
                 icon: Icon(
-                  _currentSession?.isCompleted == true 
-                      ? Icons.edit_outlined 
-                      : Icons.play_arrow, 
+                  _isEditingMode ? Icons.check : Icons.play_arrow,
                   size: 22,
                 ),
                 label: Text(
-                  (_currentSession?.isCompleted == true 
-                      ? '수정' 
-                      : l10n.startWorkout).toUpperCase(),
+                  (_isEditingMode ? '수정 완료' : l10n.startWorkout).toUpperCase(),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
