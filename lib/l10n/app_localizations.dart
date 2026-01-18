@@ -2516,6 +2516,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check your growth with weekly and monthly stats\nMove towards your goals'**
   String get onboardingSubtitle4;
+
+  /// No description provided for @exerciseAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise added successfully'**
+  String get exerciseAddedSuccessfully;
 }
 
 class _AppLocalizationsDelegate

@@ -75,7 +75,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         if (mounted) {
           ErrorHandler.showSuccessSnackBar(
             context,
-            'Exercise added successfully', // TODO: Add i18n
+            AppLocalizations.of(context).exerciseAddedSuccessfully,
           );
           
           // 🔥 리스트 새로고침을 위해 key 변경
