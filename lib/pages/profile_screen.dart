@@ -33,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
           
           // Gear Locker
           SliverToBoxAdapter(
-            child: _buildGearLocker(),
+            child: _buildGearLocker(context),
           ),
           
           // Bottom Padding
@@ -215,7 +215,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGearLocker() {
+  Widget _buildGearLocker(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       padding: const EdgeInsets.all(24),
