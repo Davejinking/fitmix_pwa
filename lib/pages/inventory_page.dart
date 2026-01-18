@@ -58,12 +58,9 @@ class _InventoryPageState extends State<InventoryPage> {
             child: ValueListenableBuilder(
               valueListenable: _equipmentRepo.listenable(),
               builder: (context, Box<Equipment> box, _) {
-                var items = box.values.toList();
-                
-                // 카테고리 필터 적용
-                if (_selectedCategory != null) {
-                  items = items.where((e) => e.category == _selectedCategory).toList();
-                }
+                var items = box.values
+                    .where((e) => _selectedCategory == null || e.category == _selectedCategory)
+                    .toList();
                 
                 // 등급순 정렬 (높은 등급 먼저)
                 items.sort((a, b) => b.rarityIndex.compareTo(a.rarityIndex));
