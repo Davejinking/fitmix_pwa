@@ -8,6 +8,7 @@ import '../data/settings_repo.dart';
 import '../data/auth_repo.dart';
 import 'settings_page.dart';
 import 'analysis_page.dart';
+import 'inventory_page.dart';
 
 /// Professional Profile Screen - High-Tech Athlete Dashboard
 /// Design: Noir/Dark Mode with Electric Blue Accents
@@ -249,7 +250,11 @@ class ProfileScreen extends StatelessWidget {
             width: double.infinity,
             child: TextButton(
               onPressed: () {
-                // Navigate to full gear list
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const InventoryPage(),
+                  ),
+                );
               },
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
