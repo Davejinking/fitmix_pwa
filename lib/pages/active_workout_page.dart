@@ -64,11 +64,18 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     super.initState();
     _session = widget.session;
     
+    debugPrint('🔍 [ActiveWorkoutPage] initState called');
+    debugPrint('🔍 [ActiveWorkoutPage] isEditing: ${widget.isEditing}');
+    debugPrint('🔍 [ActiveWorkoutPage] session.isCompleted: ${_session.isCompleted}');
+    debugPrint('🔍 [ActiveWorkoutPage] session.durationInSeconds: ${_session.durationInSeconds}');
+    
     // Edit 모드가 아닐 때만 타이머 시작
     if (!widget.isEditing) {
+      debugPrint('🔍 [ActiveWorkoutPage] Starting workout timer (Active mode)');
       _startWorkoutTimer();
     } else {
       // Edit 모드: 저장된 시간 로드
+      debugPrint('🔍 [ActiveWorkoutPage] Loading saved duration (Edit mode)');
       _elapsedSeconds = _session.durationInSeconds;
     }
     

@@ -168,6 +168,11 @@ class _CalendarPageState extends State<CalendarPage> {
     // Check if this is an edit mode BEFORE saving (session already completed)
     final isEditing = _currentSession!.isCompleted;
     
+    debugPrint('🔍 [CalendarPage] _startWorkout called');
+    debugPrint('🔍 [CalendarPage] isCompleted: ${_currentSession!.isCompleted}');
+    debugPrint('🔍 [CalendarPage] isEditing: $isEditing');
+    debugPrint('🔍 [CalendarPage] durationInSeconds: ${_currentSession!.durationInSeconds}');
+    
     await _saveSession();
     
     if (mounted) {
