@@ -7,6 +7,7 @@ import '../data/session_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/auth_repo.dart';
 import 'settings_page.dart';
+import 'analytics_detail_screen.dart';
 
 /// Professional Profile Screen - High-Tech Athlete Dashboard
 /// Design: Noir/Dark Mode with Electric Blue Accents
@@ -26,7 +27,7 @@ class ProfileScreen extends StatelessWidget {
           
           // Pro Stat Board (Radar Chart)
           SliverToBoxAdapter(
-            child: _buildRadarSection(),
+            child: _buildRadarSection(context),
           ),
           
           // Gear Locker
@@ -137,43 +138,78 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRadarSection() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFF121212),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'PERFORMANCE PROFILE',
-            style: TextStyle(
-              color: Color(0xFFFFFFFF),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.5,
-            ),
+  Widget _buildRadarSection(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to detailed analytics
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const AnalyticsDetailScreen(),
           ),
-          const SizedBox(height: 24),
-          
-          // Radar Chart
-          SizedBox(
-            height: 280,
-            child: _RadarChart(
-              stats: const {
-                'Strength': 0.85,
-                'Hypertrophy': 0.72,
-                'Endurance': 0.58,
-                'Consistency': 0.91,
-                'Technique': 0.76,
-                'Recovery': 0.64,
-              },
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF121212),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text(
+                  'PERFORMANCE PROFILE',
+                  style: TextStyle(
+                    color: Color(0xFFFFFFFF),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const Spacer(),
+                // Visual cue for navigation
+                Row(
+                  children: [
+                    Text(
+                      'VIEW HISTORY',
+                      style: TextStyle(
+                        color: const Color(0xFF3D5AFE).withValues(alpha: 0.8),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: const Color(0xFF3D5AFE).withValues(alpha: 0.8),
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            
+            // Radar Chart
+            SizedBox(
+              height: 280,
+              child: _RadarChart(
+                stats: const {
+                  'Strength': 0.85,
+                  'Hypertrophy': 0.72,
+                  'Endurance': 0.58,
+                  'Consistency': 0.91,
+                  'Technique': 0.76,
+                  'Recovery': 0.64,
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
