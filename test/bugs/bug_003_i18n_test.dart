@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/analysis_page.dart';
+import 'package:fitmix_pwa/features/progress/pages/analysis_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
 
 class MockSessionRepo extends Mock implements SessionRepo {}
 class MockUserRepo extends Mock implements UserRepo {}
@@ -18,11 +19,25 @@ void main() {
     mockSessionRepo = MockSessionRepo();
     mockUserRepo = MockUserRepo();
 
+    // Setup GetIt
+    if (GetIt.I.isRegistered<SessionRepo>()) {
+      GetIt.I.unregister<SessionRepo>();
+    }
+    if (GetIt.I.isRegistered<UserRepo>()) {
+      GetIt.I.unregister<UserRepo>();
+    }
+    GetIt.I.registerSingleton<SessionRepo>(mockSessionRepo);
+    GetIt.I.registerSingleton<UserRepo>(mockUserRepo);
+
     // Stub methods to prevent crashes
     when(() => mockSessionRepo.getSessionsInRange(any(), any()))
         .thenAnswer((_) async => []);
     when(() => mockSessionRepo.getWorkoutSessions())
         .thenAnswer((_) async => []);
+  });
+
+  tearDown(() {
+    GetIt.I.reset();
   });
 
   testWidgets('BUG-003: AnalysisPage should not contain hardcoded Korean text when locale is English', (WidgetTester tester) async {
@@ -37,7 +52,7 @@ void main() {
         ],
         supportedLocales: const [Locale('en'), Locale('ko')],
         home: Scaffold(
-          body: AnalysisPage(repo: mockSessionRepo, userRepo: mockUserRepo),
+          body: const AnalysisPage(),
         ),
       ),
     );
