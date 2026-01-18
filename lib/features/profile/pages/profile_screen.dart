@@ -7,8 +7,8 @@ import '../../../data/session_repo.dart';
 import '../../../data/settings_repo.dart';
 import '../../../data/auth_repo.dart';
 import 'settings_page.dart';
-import 'analysis_page.dart';
-import 'inventory_page.dart';
+import '../../analysis/pages/analysis_page.dart';
+import '../../gamification/pages/inventory_page.dart';
 
 /// Professional Profile Screen - High-Tech Athlete Dashboard
 /// Design: Noir/Dark Mode with Electric Blue Accents

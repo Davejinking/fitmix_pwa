@@ -1,6 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../services/exercise_seeding_service.dart';
-import '../models/exercise_library.dart';
 
 /// 운동 라이브러리 데이터 저장소 인터페이스
 abstract class ExerciseLibraryRepo {

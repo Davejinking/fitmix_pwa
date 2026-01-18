@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/burn_fit_style.dart';
 import '../../../core/service_locator.dart';
-import '../../../data/exercise_library_repo.dart';
-import '../../../data/session_repo.dart';
-import '../../../data/settings_repo.dart';
 import '../../../data/auth_repo.dart';
 import '../../../data/user_repo.dart';
 import '../../../l10n/app_localizations.dart';

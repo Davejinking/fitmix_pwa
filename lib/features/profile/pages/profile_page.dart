@@ -8,7 +8,7 @@ import '../../../data/auth_repo.dart';
 import '../../../data/user_repo.dart';
 import '../../../models/user_profile.dart';
 import '../../../l10n/app_localizations.dart';
-import 'user_info_form_page.dart';
+import '../../auth/pages/user_info_form_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final UserRepo userRepo;

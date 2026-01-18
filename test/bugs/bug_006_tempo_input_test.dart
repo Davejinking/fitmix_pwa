@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/widgets/tempo_settings_modal.dart';
+import 'package:fitmix_pwa/features/workout/widgets/tempo_settings_modal.dart';
 import 'package:fitmix_pwa/models/exercise.dart';
 import 'package:fitmix_pwa/services/tempo_controller.dart';
 

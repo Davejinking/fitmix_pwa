@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/analysis_page.dart';
+import 'package:fitmix_pwa/features/analysis/pages/analysis_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
 
 class MockSessionRepo extends Mock implements SessionRepo {}
 class MockUserRepo extends Mock implements UserRepo {}
@@ -17,6 +18,11 @@ void main() {
   setUp(() {
     mockSessionRepo = MockSessionRepo();
     mockUserRepo = MockUserRepo();
+
+    final getIt = GetIt.instance;
+    getIt.reset();
+    getIt.registerSingleton<SessionRepo>(mockSessionRepo);
+    getIt.registerSingleton<UserRepo>(mockUserRepo);
 
     // Stub methods to prevent crashes
     when(() => mockSessionRepo.getSessionsInRange(any(), any()))
@@ -37,7 +43,7 @@ void main() {
         ],
         supportedLocales: const [Locale('en'), Locale('ko')],
         home: Scaffold(
-          body: AnalysisPage(repo: mockSessionRepo, userRepo: mockUserRepo),
+          body: const AnalysisPage(),
         ),
       ),
     );

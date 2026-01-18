@@ -7,7 +7,7 @@ import '../../../data/exercise_library_repo.dart';
 import '../../../data/settings_repo.dart';
 import '../../../data/auth_repo.dart';
 import '../../../data/user_repo.dart';
-import 'shell_page.dart';
+import '../../home/pages/shell_page.dart';
 import 'onboarding_page.dart';
 
 class SplashPage extends StatefulWidget {

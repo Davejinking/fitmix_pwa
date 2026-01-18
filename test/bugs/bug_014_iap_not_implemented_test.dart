@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fitmix_pwa/pages/upgrade_page.dart';
+import 'package:fitmix_pwa/features/monetization/pages/upgrade_page.dart';
 
 void main() {
   testWidgets('BUG-014: In-app purchase button should be implemented', (WidgetTester tester) async {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fitmix_pwa/pages/user_info_form_page.dart';
+import 'package:fitmix_pwa/features/auth/pages/user_info_form_page.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/models/user_profile.dart';
 import 'package:mocktail/mocktail.dart';

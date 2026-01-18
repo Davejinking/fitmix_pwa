@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/library_page_v2.dart';
+import 'package:fitmix_pwa/features/library/pages/library_page.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mocktail/mocktail.dart';
@@ -26,14 +26,14 @@ void main() {
         .thenAnswer((_) async => []);
   });
 
-  testWidgets('BUG-001: LibraryPageV2 should build correctly within a Scaffold (ShellPage context)', (WidgetTester tester) async {
-    // In LibraryPageV2, repositories are instantiated internally (e.g. HiveExerciseLibraryRepo()).
+  testWidgets('BUG-001: LibraryPage should build correctly within a Scaffold (ShellPage context)', (WidgetTester tester) async {
+    // In LibraryPage, repositories are instantiated internally (e.g. HiveExerciseLibraryRepo()).
     // This makes it hard to inject mocks without a dependency injection system or constructor injection.
     // Looking at the code:
     // final ExerciseDBService _service = ExerciseDBService();
     // final ExerciseLibraryRepo _customRepo = HiveExerciseLibraryRepo();
     //
-    // Since we cannot easily inject mocks into LibraryPageV2 without refactoring the page code
+    // Since we cannot easily inject mocks into LibraryPage without refactoring the page code
     // (which is outside scope of "write test code" unless we refactor),
     // we acknowledge this test might fail in a real environment if Hive is not initialized.
     //
@@ -48,7 +48,7 @@ void main() {
     // I will write the test assuming the environment handles Hive or catches the error gracefully,
     // or just verify the build structure if possible.
 
-    // NOTE: In a real scenario, I would refactor LibraryPageV2 to accept dependencies.
+    // NOTE: In a real scenario, I would refactor LibraryPage to accept dependencies.
 
     await tester.pumpWidget(
       MaterialApp(
@@ -60,7 +60,7 @@ void main() {
         ],
         supportedLocales: const [Locale('ko'), Locale('en')],
         home: Scaffold(
-          body: const LibraryPageV2(),
+          body: const LibraryPage(),
         ),
       ),
     );

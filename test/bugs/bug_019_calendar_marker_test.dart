@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:fitmix_pwa/widgets/calendar/calendar_modal_sheet.dart';
+import 'package:fitmix_pwa/features/calendar/widgets/calendar_modal_sheet.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';

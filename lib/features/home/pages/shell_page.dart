@@ -51,7 +51,7 @@ class ShellPageState extends State<ShellPage> {
       const Scaffold(
         appBar: IronAppBar(),
         backgroundColor: IronTheme.background,
-        body: const LibraryPage(),
+        body: LibraryPage(),
       ),
       const CharacterPage(), // Professional Profile Dashboard
     ];

@@ -177,7 +177,7 @@ class _ModernWorkoutCardState extends State<ModernWorkoutCard> {
         color: isCompleted ? const Color(0xFF1A1D22) : const Color(0xFF252932),
         borderRadius: BorderRadius.circular(12),
         border: isCompleted 
-            ? Border.all(color: const Color(0xFF2196F3).withOpacity(0.3), width: 1)
+            ? Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.3), width: 1)
             : null,
       ),
       child: Material(
@@ -246,7 +246,7 @@ class _ModernWorkoutCardState extends State<ModernWorkoutCard> {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: isCompleted 
-                        ? const Color(0xFF2196F3).withOpacity(0.2)
+                        ? const Color(0xFF2196F3).withValues(alpha: 0.2)
                         : const Color(0xFF3A4452),
                     borderRadius: BorderRadius.circular(12),
                   ),
