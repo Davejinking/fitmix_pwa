@@ -681,15 +681,22 @@ class _CalendarPageState extends State<CalendarPage> {
               ],
             ),
             const SizedBox(height: 8),
-            // Row 2: 운동 시작
+            // Row 2: 운동 시작 / 수정
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
                 onPressed: _startWorkout,
-                icon: const Icon(Icons.play_arrow, size: 22),
+                icon: Icon(
+                  _currentSession?.isCompleted == true 
+                      ? Icons.edit_outlined 
+                      : Icons.play_arrow, 
+                  size: 22,
+                ),
                 label: Text(
-                  l10n.startWorkout.toUpperCase(),
+                  (_currentSession?.isCompleted == true 
+                      ? '수정' 
+                      : l10n.startWorkout).toUpperCase(),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
