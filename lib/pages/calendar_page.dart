@@ -422,12 +422,12 @@ class _CalendarPageState extends State<CalendarPage> {
     final exerciseCount = _currentSession!.exercises.length;
     final isCompleted = _currentSession!.isCompleted;
     
-    // 완료된 운동은 Receipt 스타일로 표시
-    if (isCompleted) {
+    // 완료된 운동은 Receipt 스타일로 표시 (편집 모드가 아닐 때만)
+    if (isCompleted && !_isEditingMode) {
       return _buildReceiptStyleLog();
     }
     
-    // 진행 중인 운동은 기존 카드 스타일로 표시
+    // 진행 중인 운동 OR 편집 모드 - 기존 카드 스타일로 표시
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
