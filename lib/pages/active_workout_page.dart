@@ -326,6 +326,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
+    // Always mark as completed (both in active and edit mode)
     _session.isCompleted = true;
     _session.durationInSeconds = _elapsedSeconds;
     
@@ -334,19 +335,23 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     HapticFeedback.heavyImpact();
     
     if (mounted) {
-      ErrorHandler.showSuccessSnackBar(context, context.l10n.workoutCompleted);
+      ErrorHandler.showSuccessSnackBar(
+        context, 
+        widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
+      );
       
-      // 🎯 개발 모드 vs 출시 모드 분기
-      if (kDebugMode) {
-        // 개발 모드: 광고 스킵하고 즉시 홈으로 이동
-        print('🚀 개발 모드라 광고를 스킵했습니다.');
-        Navigator.of(context).pop(true); // true = 운동 완료
+      // Skip ads in edit mode or debug mode
+      if (widget.isEditing || kDebugMode) {
+        if (kDebugMode) {
+          print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+        }
+        Navigator.of(context).pop(true);
       } else {
         // 출시 모드: 광고 표시 후 홈으로 이동
         await _adService.showInterstitialAd(
           onAdClosed: () {
             if (mounted) {
-              Navigator.of(context).pop(true); // true = 운동 완료
+              Navigator.of(context).pop(true);
             }
           },
         );
