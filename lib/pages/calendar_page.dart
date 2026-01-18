@@ -165,10 +165,10 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _startWorkout() async {
     if (_currentSession == null) return;
     
-    await _saveSession();
-    
-    // Check if this is an edit mode (session already completed)
+    // Check if this is an edit mode BEFORE saving (session already completed)
     final isEditing = _currentSession!.isCompleted;
+    
+    await _saveSession();
     
     if (mounted) {
       await Navigator.of(context).push<bool>(

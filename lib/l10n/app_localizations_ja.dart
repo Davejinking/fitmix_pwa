@@ -1310,4 +1310,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get onboardingSubtitle4 => '週間・月間統計で進歩を確認\n目標に向かって進みましょう';
+
+  @override
+  String get exerciseAddedSuccessfully => 'エクササイズが正常に追加されました。';
 }
