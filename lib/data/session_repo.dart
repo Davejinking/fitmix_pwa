@@ -229,10 +229,8 @@ class HiveSessionRepo implements SessionRepo {
       
       final records = <ExerciseHistoryRecord>[];
       
-      // 최신 날짜부터 역순으로 정렬
-      allSessions.sort((a, b) => b.ymd.compareTo(a.ymd));
-      
-      for (final session in allSessions) {
+      // listAll()이 이미 오름차순으로 정렬했으므로 .reversed를 사용해 역순으로 순회
+      for (final session in allSessions.reversed) {
         if (records.length >= limit) break;
         
         // 해당 운동이 있는지 확인 (다국어 매칭 지원)
