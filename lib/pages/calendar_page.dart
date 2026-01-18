@@ -570,7 +570,7 @@ class _CalendarPageState extends State<CalendarPage> {
     final bool isCompleted = _currentSession?.isCompleted ?? false;
 
     if (isCompleted) {
-      // Completed
+      // Completed - Show edit button that opens workout in edit mode
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
@@ -582,11 +582,7 @@ class _CalendarPageState extends State<CalendarPage> {
             width: double.infinity,
             height: 56, // Reduced
             child: OutlinedButton.icon(
-              onPressed: () {
-                setState(() {
-                  _currentSession!.isCompleted = false;
-                });
-              },
+              onPressed: _startWorkout, // Open in edit mode (isEditing will be true)
               icon: const Icon(Icons.edit, size: 20),
               label: Text(
                 l10n.editWorkout.toUpperCase(),
