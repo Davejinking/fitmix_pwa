@@ -143,9 +143,10 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Future<void> _saveSession() async {
-    if (_currentSession != null) {
+    final session = _currentSession;
+    if (session != null) {
       try {
-        await repo.put(_currentSession!);
+        await repo.put(session);
         await _loadWorkoutDates();
         await _loadRestDates();
       } catch (e) {
@@ -165,19 +166,21 @@ class _CalendarPageState extends State<CalendarPage> {
 
 
   Future<void> _startWorkout() async {
-    if (_currentSession == null) return;
+    final session = _currentSession;
+    if (session == null) return;
     
     // Check if this is an edit mode BEFORE saving (session already completed)
-    final isEditing = _currentSession!.isCompleted;
+    final isEditing = session.isCompleted;
     
     debugPrint('🔍 [CalendarPage] _startWorkout called');
-    debugPrint('🔍 [CalendarPage] isCompleted: ${_currentSession!.isCompleted}');
+    debugPrint('🔍 [CalendarPage] isCompleted: ${session.isCompleted}');
     debugPrint('🔍 [CalendarPage] isEditing: $isEditing');
-    debugPrint('🔍 [CalendarPage] durationInSeconds: ${_currentSession!.durationInSeconds}');
+    debugPrint('🔍 [CalendarPage] durationInSeconds: ${session.durationInSeconds}');
     
     await _saveSession();
     
-    if (mounted) {
+    // Check again after await/save to ensure session is still valid
+    if (mounted && _currentSession != null) {
       await Navigator.of(context).push<bool>(
         MaterialPageRoute(
           fullscreenDialog: true, // 전체 화면 모달
@@ -201,10 +204,11 @@ class _CalendarPageState extends State<CalendarPage> {
   
   // 편집 완료 - Duration Picker 표시
   Future<void> _finishEditing() async {
-    if (_currentSession == null) return;
+    final session = _currentSession;
+    if (session == null) return;
     
     // Show duration picker
-    Duration selectedDuration = Duration(seconds: _currentSession!.durationInSeconds);
+    Duration selectedDuration = Duration(seconds: session.durationInSeconds);
     
     await showModalBottomSheet(
       context: context,
@@ -239,16 +243,19 @@ class _CalendarPageState extends State<CalendarPage> {
                   TextButton(
                     onPressed: () async {
                       // Save with selected duration
-                      _currentSession!.durationInSeconds = selectedDuration.inSeconds;
-                      _currentSession!.isCompleted = true; // Ensure it stays completed
-                      await repo.put(_currentSession!);
-                      
-                      if (mounted) {
-                        setState(() {
-                          _isEditingMode = false; // Exit edit mode
-                        });
-                        Navigator.pop(context); // Close dialog
-                        await _loadSession(); // Reload
+                      // Re-check session validity inside closure
+                      if (_currentSession != null) {
+                        _currentSession!.durationInSeconds = selectedDuration.inSeconds;
+                        _currentSession!.isCompleted = true; // Ensure it stays completed
+                        await repo.put(_currentSession!);
+
+                        if (mounted) {
+                          setState(() {
+                            _isEditingMode = false; // Exit edit mode
+                          });
+                          Navigator.pop(context); // Close dialog
+                          await _loadSession(); // Reload
+                        }
                       }
                     },
                     child: const Text(
