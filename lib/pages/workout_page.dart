@@ -21,16 +21,19 @@ class WorkoutPage extends StatefulWidget {
   State<WorkoutPage> createState() => _WorkoutPageState();
 }
 
-class _WorkoutPageState extends State<WorkoutPage> {
+class _WorkoutPageState extends State<WorkoutPage> with WidgetsBindingObserver {
   late Future<Session?> _sessionFuture;
+  Session? _currentSession;
   
-  // 1. 전체 운동 시간 타이머 (Global Timer)
+  // 1. 전체 운동 시간 타이머 (Background-Aware)
   Timer? _globalTimer;
-  int _totalWorkoutSeconds = 0;
+  DateTime? _workoutStartTime;
+  int _currentDurationSeconds = 0;
   
-  // 2. 자동 휴식 타이머 (Auto-Rest Timer)
+  // 2. 자동 휴식 타이머 (Background-Aware)
   Timer? _restTimer;
-  int? _restSecondsRemaining;
+  DateTime? _restEndTime;
+  int _restSecondsRemaining = 0;
   int _defaultRestDuration = 90; // 기본 90초
   
   // 휴식 타이머를 트리거한 세트 추적 (체크 해제 시 타이머 취소용)
@@ -39,14 +42,51 @@ class _WorkoutPageState extends State<WorkoutPage> {
   // 3. Tempo Controller
   TempoController? _tempoController;
   bool _isTempoRunning = false;
+  
+  // 4. Auto-save timer
+  Timer? _autoSaveTimer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     final targetDate = widget.date ?? DateTime.now();
     _sessionFuture = widget.sessionRepo.get(widget.sessionRepo.ymd(targetDate));
-    _startGlobalTimer();
+    _loadSession();
     _initTempoController();
+  }
+  
+  Future<void> _loadSession() async {
+    final targetDate = widget.date ?? DateTime.now();
+    _currentSession = await widget.sessionRepo.get(widget.sessionRepo.ymd(targetDate));
+    
+    if (_currentSession != null) {
+      // Restore workout start time if session has duration
+      if (_currentSession!.durationInSeconds > 0) {
+        _workoutStartTime = DateTime.now().subtract(
+          Duration(seconds: _currentSession!.durationInSeconds),
+        );
+      } else {
+        _workoutStartTime = DateTime.now();
+      }
+      _startGlobalTimer();
+      _startAutoSaveTimer();
+    }
+  }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    if (state == AppLifecycleState.resumed) {
+      // Force UI update when app resumes from background
+      if (mounted) {
+        setState(() {
+          _updateCurrentDuration();
+          _updateRestTimer();
+        });
+      }
+    }
   }
 
   Future<void> _initTempoController() async {
@@ -62,40 +102,75 @@ class _WorkoutPageState extends State<WorkoutPage> {
     };
   }
 
-  // 1. 전체 운동 시간 타이머 시작
+  // 1. 전체 운동 시간 타이머 시작 (Background-Aware)
   void _startGlobalTimer() {
+    _globalTimer?.cancel();
     _globalTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
-          _totalWorkoutSeconds++;
+          _updateCurrentDuration();
         });
       }
     });
   }
+  
+  void _updateCurrentDuration() {
+    if (_workoutStartTime != null) {
+      _currentDurationSeconds = DateTime.now().difference(_workoutStartTime!).inSeconds;
+    }
+  }
+  
+  // Auto-save timer (every 30 seconds)
+  void _startAutoSaveTimer() {
+    _autoSaveTimer?.cancel();
+    _autoSaveTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      _saveSession();
+    });
+  }
+  
+  // Save session to repository
+  Future<void> _saveSession() async {
+    if (_currentSession == null) return;
+    
+    _updateCurrentDuration();
+    _currentSession!.durationInSeconds = _currentDurationSeconds;
+    
+    try {
+      await widget.sessionRepo.put(_currentSession!);
+    } catch (e) {
+      debugPrint('❌ Auto-save failed: $e');
+    }
+  }
 
-  // 2. 자동 휴식 타이머 시작 (세트 완료 시 호출)
+  // 2. 자동 휴식 타이머 시작 (Background-Aware)
   void _startRestTimer(String setKey) {
-    print('🚀 _startRestTimer 호출됨: $setKey');
     _cancelRestTimer(); // 기존 타이머 취소
     
     setState(() {
-      _restSecondsRemaining = _defaultRestDuration;
+      _restEndTime = DateTime.now().add(Duration(seconds: _defaultRestDuration));
       _activeRestSetKey = setKey;
+      _restSecondsRemaining = _defaultRestDuration;
     });
-    
-    print('⏰ 휴식 타이머 설정: $_restSecondsRemaining초, _isResting: $_isResting');
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_restSecondsRemaining! > 0) {
-        if (mounted) {
-          setState(() {
-            _restSecondsRemaining = _restSecondsRemaining! - 1;
-          });
-        }
-      } else {
-        _onRestTimerComplete();
+      if (mounted) {
+        setState(() {
+          _updateRestTimer();
+        });
       }
     });
+  }
+  
+  void _updateRestTimer() {
+    if (_restEndTime == null) return;
+    
+    final remaining = _restEndTime!.difference(DateTime.now()).inSeconds;
+    
+    if (remaining <= 0) {
+      _onRestTimerComplete();
+    } else {
+      _restSecondsRemaining = remaining;
+    }
   }
 
   // 휴식 타이머 취소 (체크 해제 시 호출)
@@ -103,7 +178,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
     _restTimer?.cancel();
     if (mounted) {
       setState(() {
-        _restSecondsRemaining = null;
+        _restEndTime = null;
+        _restSecondsRemaining = 0;
         _activeRestSetKey = null;
       });
     }
@@ -115,7 +191,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
     HapticFeedback.heavyImpact(); // 진동
     if (mounted) {
       setState(() {
-        _restSecondsRemaining = null;
+        _restEndTime = null;
+        _restSecondsRemaining = 0;
         _activeRestSetKey = null;
       });
     }
@@ -123,10 +200,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
   // 휴식 시간 조절 (-10초, +30초)
   void _adjustRestTime(int seconds) {
-    if (_restSecondsRemaining != null) {
+    if (_restEndTime != null) {
       setState(() {
-        _restSecondsRemaining = (_restSecondsRemaining! + seconds).clamp(0, 999);
-        if (_restSecondsRemaining == 0) {
+        _restEndTime = _restEndTime!.add(Duration(seconds: seconds));
+        _updateRestTimer();
+        
+        if (_restSecondsRemaining <= 0) {
           _onRestTimerComplete();
         }
       });
@@ -135,8 +214,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
   // 휴식 시간 직접 입력
   Future<void> _showRestTimePicker() async {
-    final currentMinutes = (_restSecondsRemaining ?? _defaultRestDuration) ~/ 60;
-    final currentSeconds = (_restSecondsRemaining ?? _defaultRestDuration) % 60;
+    final currentMinutes = _restSecondsRemaining ~/ 60;
+    final currentSeconds = _restSecondsRemaining % 60;
     
     int selectedMinutes = currentMinutes;
     int selectedSeconds = currentSeconds;
@@ -168,9 +247,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   TextButton(
                     onPressed: () {
                       final totalSeconds = selectedMinutes * 60 + selectedSeconds;
-                      if (_restSecondsRemaining != null) {
+                      if (_restEndTime != null) {
                         setState(() {
-                          _restSecondsRemaining = totalSeconds;
+                          _restEndTime = DateTime.now().add(Duration(seconds: totalSeconds));
+                          _updateRestTimer();
                         });
                       } else {
                         setState(() {
@@ -232,7 +312,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
     );
   }
 
-  bool get _isResting => _restSecondsRemaining != null && _restSecondsRemaining! > 0;
+  bool get _isResting => _restEndTime != null && _restSecondsRemaining > 0;
 
   String _formatDuration(int totalSeconds) {
     final duration = Duration(seconds: totalSeconds);
@@ -251,7 +331,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
     );
 
     if (confirmed && mounted) {
-      session.durationInSeconds = _totalWorkoutSeconds;
+      // Final save before ending
+      _updateCurrentDuration();
+      session.durationInSeconds = _currentDurationSeconds;
       await widget.sessionRepo.put(session);
       if (mounted) {
         // 캘린더 탭(1)으로 이동
@@ -262,9 +344,19 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _globalTimer?.cancel();
     _restTimer?.cancel();
+    _autoSaveTimer?.cancel();
     _tempoController?.dispose();
+    
+    // Final save on dispose
+    if (_currentSession != null) {
+      _updateCurrentDuration();
+      _currentSession!.durationInSeconds = _currentDurationSeconds;
+      widget.sessionRepo.put(_currentSession!);
+    }
+    
     super.dispose();
   }
 
@@ -302,7 +394,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatDuration(_totalWorkoutSeconds),
+                      _formatDuration(_currentDurationSeconds),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 42,
@@ -394,9 +486,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                 isTempoEnabled: exercise.isTempoEnabled,
                                 eccentricSeconds: exercise.eccentricSeconds,
                                 concentricSeconds: exercise.concentricSeconds,
-                                onSetCompleted: (isCompleted) {
+                                onSetCompleted: (isCompleted) async {
                                   // 세트 완료 상태를 Session에 저장
                                   set.isCompleted = isCompleted;
+                                  
+                                  // Immediate auto-save on set completion
+                                  await _saveSession();
                                   
                                   if (isCompleted) {
                                     // 2. 체크 시 자동 휴식 타이머 시작
@@ -427,7 +522,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
           // 3. 휴식 타이머 플로팅 패널 (하단)
           if (_isResting)
             RestTimerPanel(
-              restSecondsRemaining: _restSecondsRemaining!,
+              restSecondsRemaining: _restSecondsRemaining,
               defaultRestDuration: _defaultRestDuration,
               onCancel: _cancelRestTimer,
               onAdjustTime: _adjustRestTime,
