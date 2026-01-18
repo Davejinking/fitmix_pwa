@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:fitmix_pwa/pages/settings_page.dart';
+import 'package:fitmix_pwa/features/profile/pages/settings_page.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/settings_repo.dart';
 import 'package:fitmix_pwa/data/auth_repo.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
+import 'package:get_it/get_it.dart';
 
 // Mocks
 class MockUserRepo extends Mock implements UserRepo {}
@@ -29,13 +30,26 @@ void main() {
     mockSessionRepo = MockSessionRepo();
     mockSettingsRepo = MockSettingsRepo();
     mockAuthRepo = MockAuthRepo();
+
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<UserRepo>()) getIt.unregister<UserRepo>();
+    if (getIt.isRegistered<ExerciseLibraryRepo>()) getIt.unregister<ExerciseLibraryRepo>();
+    if (getIt.isRegistered<SessionRepo>()) getIt.unregister<SessionRepo>();
+    if (getIt.isRegistered<SettingsRepo>()) getIt.unregister<SettingsRepo>();
+    if (getIt.isRegistered<AuthRepo>()) getIt.unregister<AuthRepo>();
+
+    getIt.registerSingleton<UserRepo>(mockUserRepo);
+    getIt.registerSingleton<ExerciseLibraryRepo>(mockExerciseLibraryRepo);
+    getIt.registerSingleton<SessionRepo>(mockSessionRepo);
+    getIt.registerSingleton<SettingsRepo>(mockSettingsRepo);
+    getIt.registerSingleton<AuthRepo>(mockAuthRepo);
+  });
+
+  tearDown(() {
+    GetIt.instance.reset();
   });
 
   testWidgets('BUG-017: SettingsPage should render without error (Unused imports check)', (WidgetTester tester) async {
-    // The bug report mentions an unused import in settings_page.dart.
-    // While we can't test "unused imports" via WidgetTest, we can verify
-    // that the page renders correctly and the fix (removing it) didn't break anything.
-
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -50,11 +64,7 @@ void main() {
       ),
     );
 
-    // Verify the page title 'Settings' (or '설정' in Korean default) exists
-    // We use a finder that matches the localized string or key
     expect(find.byType(AppBar), findsOneWidget);
-
-    // Since default locale might be English in test environment
     expect(find.text('Settings'), findsOneWidget);
   });
 }

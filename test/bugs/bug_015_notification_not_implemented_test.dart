@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fitmix_pwa/pages/home_page.dart';
+import 'package:fitmix_pwa/features/home/pages/home_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
 import 'package:fitmix_pwa/data/settings_repo.dart';
 import 'package:fitmix_pwa/data/auth_repo.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
 
 class MockSessionRepo extends Mock implements SessionRepo {}
 class MockUserRepo extends Mock implements UserRepo {}
@@ -29,16 +30,29 @@ void main() {
     mockExerciseRepo = MockExerciseLibraryRepo();
     mockSettingsRepo = MockSettingsRepo();
     mockAuthRepo = MockAuthRepo();
+
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<SessionRepo>()) getIt.unregister<SessionRepo>();
+    if (getIt.isRegistered<UserRepo>()) getIt.unregister<UserRepo>();
+    if (getIt.isRegistered<ExerciseLibraryRepo>()) getIt.unregister<ExerciseLibraryRepo>();
+    if (getIt.isRegistered<SettingsRepo>()) getIt.unregister<SettingsRepo>();
+    if (getIt.isRegistered<AuthRepo>()) getIt.unregister<AuthRepo>();
+
+    getIt.registerSingleton<SessionRepo>(mockSessionRepo);
+    getIt.registerSingleton<UserRepo>(mockUserRepo);
+    getIt.registerSingleton<ExerciseLibraryRepo>(mockExerciseRepo);
+    getIt.registerSingleton<SettingsRepo>(mockSettingsRepo);
+    getIt.registerSingleton<AuthRepo>(mockAuthRepo);
+  });
+
+  tearDown(() {
+    GetIt.instance.reset();
   });
 
   testWidgets('BUG-015: Notification icon should navigate to notification page', (WidgetTester tester) async {
-    // Issue: Notification icon does nothing (or shows "Coming Soon").
-    // Screen: HomePage
-    // Expected: Navigate to Notification Page.
-
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: [
+        localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -48,29 +62,20 @@ void main() {
           Locale('en'),
           Locale('ko'),
         ],
-        home: Scaffold(
-          body: HomePage(
-            sessionRepo: mockSessionRepo,
-            userRepo: mockUserRepo,
-            exerciseRepo: mockExerciseRepo,
-            settingsRepo: mockSettingsRepo,
-            authRepo: mockAuthRepo,
-          ),
+        home: const Scaffold(
+          body: HomePage(),
         ),
       ),
     );
 
-    // Find notification icon
     final iconFinder = find.byIcon(Icons.notifications_outlined);
     expect(iconFinder, findsOneWidget);
 
-    // Tap it
     await tester.tap(iconFinder);
     await tester.pump();
 
     // Verify "Coming Soon" SnackBar appears (current behavior)
+    // Note: The actual text might vary, but we keep the test logic
     expect(find.text('알림 기능은 준비 중입니다.'), findsOneWidget);
-
-    // Once fixed, this test should be updated to expect navigation.
   });
 }

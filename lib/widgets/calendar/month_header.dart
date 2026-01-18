@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../data/exercise_library_repo.dart';
 import '../../data/session_repo.dart';
-import '../../pages/plan_page.dart';
+import '../../features/calendar/pages/plan_page.dart';
 import 'calendar_modal_sheet.dart';
 
 class MonthHeader extends StatelessWidget {

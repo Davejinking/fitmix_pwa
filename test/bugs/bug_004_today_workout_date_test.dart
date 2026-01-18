@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/plan_page.dart';
+import 'package:fitmix_pwa/features/calendar/pages/plan_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';

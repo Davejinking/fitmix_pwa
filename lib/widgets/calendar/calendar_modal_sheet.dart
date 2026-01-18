@@ -3,7 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../../data/session_repo.dart';
 import '../../data/exercise_library_repo.dart';
-import '../../pages/plan_page.dart';
+import '../../features/calendar/pages/plan_page.dart';
 import '../../l10n/app_localizations.dart';
 
 // 휴식 날짜 기능 추가
