@@ -670,7 +670,8 @@ class _CalendarPageState extends State<CalendarPage> {
     // Has Plan
     final bool isCompleted = _currentSession?.isCompleted ?? false;
 
-    if (isCompleted) {
+    // If in edit mode, show normal plan UI (not the "edit" button)
+    if (isCompleted && !_isEditingMode) {
       // Completed - Show edit button that enables edit mode
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -712,7 +713,7 @@ class _CalendarPageState extends State<CalendarPage> {
       );
     }
 
-    // Not Completed - "운동 추가" + "루틴 저장" + "운동 시작"
+    // Not Completed OR in edit mode - Show normal action buttons
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
