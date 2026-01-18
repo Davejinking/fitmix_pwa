@@ -167,6 +167,9 @@ class _CalendarPageState extends State<CalendarPage> {
     
     await _saveSession();
     
+    // Check if this is an edit mode (session already completed)
+    final isEditing = _currentSession!.isCompleted;
+    
     if (mounted) {
       await Navigator.of(context).push<bool>(
         MaterialPageRoute(
@@ -176,6 +179,7 @@ class _CalendarPageState extends State<CalendarPage> {
             repo: repo,
             exerciseRepo: exerciseRepo,
             date: _selectedDay,
+            isEditing: isEditing,
           ),
         ),
       );
