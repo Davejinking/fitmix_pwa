@@ -15,6 +15,7 @@ import '../core/subscription_limits.dart';
 import '../core/iron_theme.dart';
 import 'shell_page.dart';
 import 'exercise_selection_page_v2.dart';
+import 'paywall_page.dart';
 
 class LibraryPageV2 extends StatefulWidget {
   const LibraryPageV2({super.key});
@@ -819,60 +820,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
 
   // Show upgrade to PRO dialog
   void _showUpgradeDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        final l10n = AppLocalizations.of(context);
-        return AlertDialog(
-          backgroundColor: IronTheme.surface,
-          title: Text(
-            l10n.routineLimitReached.toUpperCase(),
-            style: const TextStyle(
-              color: IronTheme.textHigh,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Courier',
-              letterSpacing: 1.5,
-            ),
-          ),
-          content: Text(
-            l10n.routineLimitMessage(SubscriptionLimits.freeRoutineLimit),
-            style: const TextStyle(
-              color: IronTheme.textMedium,
-              fontSize: 14,
-              height: 1.5,
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                l10n.cancel.toUpperCase(),
-                style: TextStyle(color: IronTheme.textMedium),
-              ),
-              onPressed: () => Navigator.pop(ctx),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: IronTheme.primary,
-                foregroundColor: IronTheme.background,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              child: Text(
-                l10n.upgradeToProShort.toUpperCase(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(ctx);
-                // TODO: Navigate to subscription/upgrade page
-                Navigator.pushNamed(context, '/upgrade');
-              },
-            ),
-          ],
-        );
-      },
+    // Paywall 페이지로 바로 이동
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PaywallPage()),
     );
   }
 }

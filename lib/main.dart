@@ -19,6 +19,7 @@ import 'widgets/workout_heatmap_demo.dart';
 import 'pages/demo_calendar_screen.dart';
 import 'models/session.dart';
 import 'models/exercise_library.dart';
+import 'models/equipment.dart';
 import 'services/exercise_seeding_service.dart';
 
 Future<void> main() async {
@@ -33,7 +34,12 @@ Future<void> main() async {
   
   // Hive 초기화 및 어댑터 등록
   await Hive.initFlutter();
-  Hive.registerAdapter(ExerciseLibraryItemAdapter());
+  if (!Hive.isAdapterRegistered(10)) {
+    Hive.registerAdapter(ExerciseLibraryItemAdapter());
+  }
+  if (!Hive.isAdapterRegistered(11)) {
+    Hive.registerAdapter(EquipmentAdapter());
+  }
 
   // Service Locator 설정 (의존성 주입)
   await setupServiceLocator();

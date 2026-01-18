@@ -5,6 +5,8 @@ import '../data/user_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/auth_repo.dart';
 import '../data/routine_repo.dart';
+import '../data/equipment_repo.dart';
+import '../services/pro_service.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -27,6 +29,12 @@ Future<void> setupServiceLocator() async {
   final routineRepo = HiveRoutineRepo();
   await routineRepo.init();
 
+  final equipmentRepo = HiveEquipmentRepo();
+  await equipmentRepo.init();
+
+  // ProService 초기화
+  await proService.init();
+
   // GetIt에 싱글톤으로 등록
   getIt.registerSingleton<SessionRepo>(sessionRepo);
   getIt.registerSingleton<ExerciseLibraryRepo>(exerciseRepo);
@@ -34,4 +42,6 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<SettingsRepo>(settingsRepo);
   getIt.registerSingleton<AuthRepo>(authRepo);
   getIt.registerSingleton<RoutineRepo>(routineRepo);
+  getIt.registerSingleton<EquipmentRepo>(equipmentRepo);
+  getIt.registerSingleton<ProService>(proService);
 }

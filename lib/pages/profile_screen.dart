@@ -7,7 +7,7 @@ import '../data/session_repo.dart';
 import '../data/settings_repo.dart';
 import '../data/auth_repo.dart';
 import 'settings_page.dart';
-import 'analytics_detail_screen.dart';
+import 'analysis_page.dart';
 
 /// Professional Profile Screen - High-Tech Athlete Dashboard
 /// Design: Noir/Dark Mode with Electric Blue Accents
@@ -141,10 +141,10 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildRadarSection(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to detailed analytics
+        // Navigate to existing analysis page
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const AnalyticsDetailScreen(),
+            builder: (context) => const AnalysisPage(),
           ),
         );
       },
