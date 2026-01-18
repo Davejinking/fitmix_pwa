@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/library_page_v2.dart';
-import 'package:fitmix_pwa/pages/exercise_detail_page.dart';
+import 'package:fitmix_pwa/features/library/pages/library_page.dart';
+import 'package:fitmix_pwa/features/workout/pages/exercise_detail_page.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-// Since we can't easily inject mocks into LibraryPageV2 (internal instantiation),
+// Since we can't easily inject mocks into LibraryPage (internal instantiation),
 // this test is primarily symbolic of the verification logic needed.
-// To properly test this, we would need to refactor LibraryPageV2 to accept a repo in constructor.
+// To properly test this, we would need to refactor LibraryPage to accept a repo in constructor.
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
@@ -31,7 +31,7 @@ void main() {
         supportedLocales: const [Locale('ko')],
         navigatorObservers: [mockObserver],
         home: Scaffold(
-          body: const LibraryPageV2(),
+          body: const LibraryPage(),
         ),
       ),
     );
@@ -47,6 +47,6 @@ void main() {
     // expect(find.byType(ExerciseDetailPage), findsOneWidget);
 
     // Placeholder assertion until Refactor allow dependency injection
-    expect(find.byType(LibraryPageV2), findsOneWidget);
+    expect(find.byType(LibraryPage), findsOneWidget);
   });
 }

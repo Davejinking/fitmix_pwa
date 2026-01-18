@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/library_page_v2.dart';
-import 'package:fitmix_pwa/pages/shell_page.dart';
+import 'package:fitmix_pwa/features/library/pages/library_page.dart';
+import 'package:fitmix_pwa/features/home/pages/shell_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/auth_repo.dart';
 import 'package:fitmix_pwa/data/settings_repo.dart';
@@ -15,6 +15,7 @@ import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart'; // ymd 포맷팅을 위해 추가
+import 'package:get_it/get_it.dart';
 
 // Mocks with mocktail
 class MockSessionRepo extends Mock implements SessionRepo {}
@@ -41,6 +42,14 @@ void main() {
     userRepo = MockUserRepo();
     settingsRepo = MockSettingsRepo();
     authRepo = MockAuthRepo();
+
+    final getIt = GetIt.instance;
+    getIt.reset();
+    getIt.registerSingleton<SessionRepo>(sessionRepo);
+    getIt.registerSingleton<ExerciseLibraryRepo>(exerciseRepo);
+    getIt.registerSingleton<UserRepo>(userRepo);
+    getIt.registerSingleton<SettingsRepo>(settingsRepo);
+    getIt.registerSingleton<AuthRepo>(authRepo);
 
     // Stubbing required methods
     when(() => exerciseRepo.init()).thenAnswer((_) async {});
@@ -88,13 +97,7 @@ void main() {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('ko')],
-      home: ShellPage(
-        sessionRepo: sessionRepo,
-        exerciseRepo: exerciseRepo,
-        userRepo: userRepo,
-        settingsRepo: settingsRepo,
-        authRepo: authRepo,
-      ),
+      home: const ShellPage(),
     );
   }
 
@@ -117,7 +120,7 @@ void main() {
       await tester.pump(); // Start animation
       await tester.pump(const Duration(milliseconds: 500)); // Finish animation
 
-      // 4. Verify LibraryPageV2 is displayed
+      // 4. Verify LibraryPage is displayed
       expect(find.text('라이브러리'), findsWidgets);
 
       // 5. Verify internal TabBar exists
@@ -127,7 +130,7 @@ void main() {
       expect(find.text('가슴'), findsOneWidget);
       expect(find.text('등'), findsOneWidget);
 
-      // 6. Switch internal tabs in LibraryPageV2
+      // 6. Switch internal tabs in LibraryPage
       await tester.tap(find.text('등'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500)); // Wait for tab animation
@@ -148,8 +151,8 @@ void main() {
 
       expect(libraryTabScaffoldFinder, findsOneWidget);
 
-      // LibraryPageV2 itself should NOT have a Scaffold
-      final libraryPageFinder = find.byType(LibraryPageV2);
+      // LibraryPage itself should NOT have a Scaffold
+      final libraryPageFinder = find.byType(LibraryPage);
       expect(libraryPageFinder, findsOneWidget);
 
       final scaffoldInsideLibraryPage = find.descendant(
@@ -157,7 +160,7 @@ void main() {
         matching: find.byType(Scaffold)
       );
 
-      expect(scaffoldInsideLibraryPage, findsNothing, reason: 'LibraryPageV2 should not contain a Scaffold');
+      expect(scaffoldInsideLibraryPage, findsNothing, reason: 'LibraryPage should not contain a Scaffold');
     });
   });
 }

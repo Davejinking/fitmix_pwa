@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/library_page_v2.dart';
+import 'package:fitmix_pwa/features/library/pages/library_page.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -19,7 +19,7 @@ class MockPathProviderPlatform extends Fake
 void main() {
   setUpAll(() async {
     PathProviderPlatform.instance = MockPathProviderPlatform();
-    // Initialize Hive for the hardcoded HiveExerciseLibraryRepo in LibraryPageV2
+    // Initialize Hive for the hardcoded HiveExerciseLibraryRepo in LibraryPage
     // Using a temporary directory for tests
     await Hive.initFlutter();
 
@@ -31,12 +31,12 @@ void main() {
   });
 
   testWidgets('BUG-016: Library Search Bar should exist and accept input', (WidgetTester tester) async {
-    // Build the LibraryPageV2 wrapped in MaterialApp for localization
+    // Build the LibraryPage wrapped in MaterialApp for localization
     await tester.pumpWidget(
       const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: LibraryPageV2()),
+        home: Scaffold(body: LibraryPage()),
       ),
     );
 
@@ -56,7 +56,7 @@ void main() {
     expect(find.text('Bench Press'), findsOneWidget);
 
     // Note: Verifying actual filtering requires mocking the data source which is
-    // hardcoded in LibraryPageV2. For now, we verify the UI component exists
+    // hardcoded in LibraryPage. For now, we verify the UI component exists
     // and is interactive, confirming the feature is "Implemented".
   });
 }

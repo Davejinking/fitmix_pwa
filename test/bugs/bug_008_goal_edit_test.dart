@@ -2,14 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/home_page.dart';
-import 'package:fitmix_pwa/pages/user_info_form_page.dart';
+import 'package:fitmix_pwa/features/home/pages/home_page.dart';
+import 'package:fitmix_pwa/features/auth/pages/user_info_form_page.dart';
 import 'package:fitmix_pwa/data/session_repo.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
 import 'package:fitmix_pwa/data/settings_repo.dart';
 import 'package:fitmix_pwa/data/auth_repo.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
 
 class MockSessionRepo extends Mock implements SessionRepo {}
 class MockUserRepo extends Mock implements UserRepo {}
@@ -31,6 +32,14 @@ void main() {
       mockExerciseRepo = MockExerciseLibraryRepo();
       mockSettingsRepo = MockSettingsRepo();
       mockAuthRepo = MockAuthRepo();
+
+      final getIt = GetIt.instance;
+      getIt.reset();
+      getIt.registerSingleton<SessionRepo>(mockSessionRepo);
+      getIt.registerSingleton<UserRepo>(mockUserRepo);
+      getIt.registerSingleton<ExerciseLibraryRepo>(mockExerciseRepo);
+      getIt.registerSingleton<SettingsRepo>(mockSettingsRepo);
+      getIt.registerSingleton<AuthRepo>(mockAuthRepo);
       
       when(() => mockUserRepo.getUserProfile()).thenAnswer((_) async => null);
     });
@@ -42,13 +51,7 @@ void main() {
       // If environment prevents Hive initialization, this acts as a template for the fix verification.
       await tester.pumpWidget(
         MaterialApp(
-          home: HomePage(
-            sessionRepo: mockSessionRepo,
-            userRepo: mockUserRepo,
-            exerciseRepo: mockExerciseRepo,
-            settingsRepo: mockSettingsRepo,
-            authRepo: mockAuthRepo,
-          ),
+          home: const HomePage(),
           navigatorObservers: [mockObserver],
           routes: {
             '/profile': (context) => UserInfoFormPage(userRepo: mockUserRepo),

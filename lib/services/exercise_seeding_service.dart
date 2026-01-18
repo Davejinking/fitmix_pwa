@@ -92,12 +92,12 @@ class ExerciseSeedingService {
     for (final deletedId in deletedIds) {
       final deletedExercise = _box.get(deletedId);
       if (deletedExercise != null) {
-        print('⚠️ JSON에서 제거된 운동 발견: ${deletedExercise.nameKr} (${deletedId})');
+        print('⚠️ JSON에서 제거된 운동 발견: ${deletedExercise.nameKr} ($deletedId)');
         // 실제 삭제는 하지 않고 로그만 남김 (사용자 데이터 보호)
       }
     }
 
-    print('📊 시딩 결과: 신규 ${insertCount}개, 업데이트 ${updateCount}개, 총 ${_box.length}개');
+    print('📊 시딩 결과: 신규 $insertCount개, 업데이트 $updateCount개, 총 ${_box.length}개');
   }
 
   /// 업데이트가 필요한지 확인

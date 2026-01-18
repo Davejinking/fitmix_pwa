@@ -35,7 +35,7 @@ class _CalendarModalSheetState extends State<CalendarModalSheet> {
   static const int _initialPage = 500;
   
   // 세션 상태 캐싱을 위한 변수들
-  Map<String, dynamic> _sessionCache = {};
+  final Map<String, dynamic> _sessionCache = {};
   bool _isLoadingSession = false;
 
   @override

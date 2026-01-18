@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -1266,7 +1265,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       onChanged: (value) {
                         setModalState(() => showOverlay = value);
                       },
-                      activeColor: Colors.white,
+                      activeThumbColor: Colors.white,
                       activeTrackColor: Colors.grey[700],
                       inactiveThumbColor: Colors.grey[600],
                       inactiveTrackColor: Colors.grey[800],
