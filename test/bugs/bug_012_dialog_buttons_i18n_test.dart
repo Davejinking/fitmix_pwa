@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fitmix_pwa/pages/user_info_form_page.dart';
+import 'package:fitmix_pwa/features/auth/pages/user_info_form_page.dart';
 import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/models/user_profile.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
 
 class MockUserRepo extends Mock implements UserRepo {}
 
@@ -20,6 +21,14 @@ void main() {
       birthDate: DateTime(1990, 1, 1),
       gender: '남성',
     ));
+
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<UserRepo>()) getIt.unregister<UserRepo>();
+    getIt.registerSingleton<UserRepo>(mockUserRepo);
+  });
+
+  tearDown(() {
+    GetIt.instance.reset();
   });
 
   testWidgets('BUG-012: Dialog buttons should be localized', (WidgetTester tester) async {
@@ -29,7 +38,7 @@ void main() {
     
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: [
+        localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,

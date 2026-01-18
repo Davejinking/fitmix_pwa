@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitmix_pwa/pages/library_page_v2.dart';
+import 'package:fitmix_pwa/features/library/pages/library_page.dart';
 import 'package:fitmix_pwa/l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -28,7 +28,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: Locale('ko'),
-        home: Scaffold(body: LibraryPageV2()),
+        home: Scaffold(body: LibraryPage()),
       ),
     );
 
@@ -46,7 +46,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: Locale('en'),
-        home: Scaffold(body: LibraryPageV2()),
+        home: Scaffold(body: LibraryPage()),
       ),
     );
 
