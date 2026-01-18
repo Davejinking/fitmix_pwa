@@ -16,7 +16,6 @@ import '../services/achievement_service.dart';
 import '../models/achievement.dart';
 import 'achievements_page.dart';
 import '../widgets/common/iron_app_bar.dart';
-import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -118,22 +117,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: IronTheme.textHigh),
             onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.settings_outlined, color: IronTheme.textHigh),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => SettingsPage(
-                    userRepo: userRepo,
-                    exerciseRepo: exerciseRepo,
-                    sessionRepo: sessionRepo,
-                    settingsRepo: settingsRepo,
-                    authRepo: authRepo,
-                  ),
-                ),
-              );
-            },
           ),
         ],
       ),

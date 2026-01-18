@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import '../core/service_locator.dart';
+import '../data/user_repo.dart';
+import '../data/exercise_library_repo.dart';
+import '../data/session_repo.dart';
+import '../data/settings_repo.dart';
+import '../data/auth_repo.dart';
+import 'settings_page.dart';
 
 /// Professional Profile Screen - High-Tech Athlete Dashboard
 /// Design: Noir/Dark Mode with Electric Blue Accents
@@ -107,6 +114,17 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             onPressed: () {
               // Navigate to settings
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => SettingsPage(
+                    userRepo: getIt<UserRepo>(),
+                    exerciseRepo: getIt<ExerciseLibraryRepo>(),
+                    sessionRepo: getIt<SessionRepo>(),
+                    settingsRepo: getIt<SettingsRepo>(),
+                    authRepo: getIt<AuthRepo>(),
+                  ),
+                ),
+              );
             },
             icon: const Icon(
               Icons.settings_outlined,
