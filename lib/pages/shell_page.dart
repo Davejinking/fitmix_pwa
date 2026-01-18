@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import '../core/service_locator.dart';
-import '../data/session_repo.dart';
-import '../data/auth_repo.dart';
-import '../data/settings_repo.dart';
-import '../data/user_repo.dart';
-import '../data/exercise_library_repo.dart';
 import '../core/l10n_extensions.dart';
 import '../core/iron_theme.dart';
 import '../widgets/common/iron_app_bar.dart';
 import '../widgets/common/fm_bottom_nav.dart';
-import 'analysis_page.dart';
 import 'calendar_page.dart';
 import 'home_page.dart';
 import 'library_page_v2.dart';
+import 'character_page.dart';
 
 class ShellPage extends StatefulWidget {
   const ShellPage({super.key});
@@ -59,7 +53,7 @@ class ShellPageState extends State<ShellPage> {
         backgroundColor: IronTheme.background,
         body: LibraryPageV2(),
       ),
-      const AnalysisPage(),
+      const CharacterPage(), // Professional Profile Dashboard
     ];
   }
 
@@ -95,9 +89,9 @@ class ShellPageState extends State<ShellPage> {
             activeIcon: Icons.list_alt,
           ),
           FMBottomNavItem(
-            label: context.l10n.analysis,
-            icon: Icons.analytics_outlined,
-            activeIcon: Icons.analytics,
+            label: '프로필', // Professional Profile instead of Character
+            icon: Icons.person_outline,
+            activeIcon: Icons.person,
           ),
         ],
       ),
