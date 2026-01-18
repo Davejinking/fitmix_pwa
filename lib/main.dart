@@ -11,12 +11,12 @@ import 'core/iron_theme.dart';
 import 'core/service_locator.dart';
 import 'data/session_repo.dart';
 import 'data/user_repo.dart';
-import 'pages/login_page.dart';
-import 'pages/splash_page.dart';
-import 'pages/library_page_v2.dart';
+import 'features/auth/pages/login_page.dart';
+import 'features/home/pages/splash_page.dart';
+import 'features/library/pages/library_page.dart';
 import 'widgets/exercise_log_card_demo.dart';
 import 'widgets/workout_heatmap_demo.dart';
-import 'pages/demo_calendar_screen.dart';
+import 'features/calendar/pages/demo_calendar_page.dart';
 import 'models/session.dart';
 import 'models/exercise_library.dart';
 import 'models/equipment.dart';
@@ -170,10 +170,10 @@ class _IronLogAppState extends State<IronLogApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       routes: {
-        '/library': (context) => const LibraryPageV2(),
+        '/library': (context) => const LibraryPage(),
         '/demo/exercise-log-card': (context) => const ExerciseLogCardDemo(),
         '/demo/workout-heatmap': (context) => const WorkoutHeatmapDemo(),
-        '/demo/calendar': (context) => const DemoCalendarScreen(),
+        '/demo/calendar': (context) => const DemoCalendarPage(),
       },
       home: kDebugMode
           // 디버그 모드: 로그인 여부와 상관없이 바로 SplashPage 진입

@@ -8,7 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/tempo_controller.dart';
 import '../../data/session_repo.dart';
 import '../../data/exercise_library_repo.dart';
-import '../../pages/exercise_detail_page.dart';
+import '../../features/workout/pages/exercise_detail_page.dart';
 import '../tempo_settings_modal.dart';
 import '../tempo_countdown_modal.dart';
 

@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import '../../data/exercise_library_repo.dart';
 import '../../data/session_repo.dart';
 import '../../models/session.dart';
-import '../../pages/plan_page.dart';
-import '../../pages/log_detail_page.dart';
+import '../../features/calendar/pages/plan_page.dart';
+import '../../features/workout/pages/log_detail_page.dart';
 import '../../l10n/app_localizations.dart';
 
 class DayTimelineList extends StatelessWidget {
