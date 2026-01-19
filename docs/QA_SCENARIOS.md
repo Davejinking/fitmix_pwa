@@ -1,78 +1,105 @@
-# Fitmix QA 테스트 시나리오 (Final 30)
+# Fitmix PWA QA 시나리오 및 테스트 결과 리포트
 
-*   **P0 (Blocker):** 서비스 출시 불가 수준. 데이터 유실, 크래시, 치명적 UX 결함.
-*   **P1 (Critical):** 주요 기능 오작동. 반드시 수정해야 함.
-*   **P2 (Major):** 사용성 저하, UI/UX 버그.
-
-| ID | 케이스명 | 재현 방법 (Steps) | 기대 결과 (Expected) | 우선순위 | 관련 파일 (Source) |
-|:---:|:---:|:---|:---|:---:|:---|
-| **T01** | **0kg/무입력 방어** | 운동 중 무게 필드에 `0` 또는 `빈 값` 입력 후 완료 시도 | (맨몸운동 제외) `0` 입력 시 경고 또는 저장 불가, 빈 값은 `0` 처리 방지 | P1 | `lib/pages/active_workout_page.dart`<br>`lib/widgets/workout/exercise_card.dart` |
-| **T02** | **0reps 입력 방어** | 렙스(Reps) 필드에 `0` 입력 후 세트 완료 | `1` 이상의 정수만 허용, 유효성 검사 실패 토스트 노출 | P1 | `lib/widgets/workout/exercise_card.dart` |
-| **T03** | **음수 입력 방어** | 무게/렙스에 `-10`, `-5` 등 음수 입력 시도 | 키보드 레벨에서 `-` 입력 차단 또는 `abs()` 처리 | P2 | `lib/widgets/workout/exercise_card.dart` |
-| **T04** | **빈 세트 저장 방어** | 세트가 하나도 없는 상태에서 운동 완료 체크 | "최소 1개 세트가 필요합니다" 경고 후 완료 취소 | P1 | `lib/pages/active_workout_page.dart` |
-| **T05** | **빈 세션 저장 방어** | 운동(Exercise)이 하나도 추가되지 않은 상태로 '운동 완료' 버튼 클릭 | 저장 로직 수행되지 않고, "운동을 추가해주세요" 안내 (데이터 오염 방지) | **P0** | `lib/pages/active_workout_page.dart`<br>`lib/data/session_repo.dart` |
-| **T06** | **운동 중 이탈 방어** | `ActiveWorkoutPage`에서 진행 중 뒤로가기(Back) 또는 제스처 사용 | "운동을 종료하시겠습니까?" 다이얼로그 노출 (실수 방지) | **P0** | `lib/pages/active_workout_page.dart` |
-| **T07** | **편집 후 앱 재시작** | `PlanPage` 진입 → 일부 수정 → 앱 강제 종료 → 재실행 | (이상적) 수정사항 임시저장 / (현실적) 최소한 크래시 없이 초기 상태 로드 | P2 | `lib/pages/plan_page.dart` |
-| **T08** | **탭 전환 상태 유지** | `ActiveWorkout` 진행 중 → 캘린더/홈 탭 이동 → 다시 복귀 | 타이머가 계속 흐르고 있고, 입력 데이터가 초기화되지 않아야 함 | **P0** | `lib/pages/shell_page.dart` |
-| **T09** | **백그라운드 타이머** | 휴식 타이머 작동 중 앱 백그라운드 → 3분 후 복귀 | 타이머가 3분 경과된 상태로 갱신되어야 함 (OS 서스펜드 대응) | P2 | `lib/pages/active_workout_page.dart` |
-| **T10** | **화면 전환 레이스** | 운동 완료 직후(저장 중) 빠르게 다른 탭/화면으로 이동 | 비동기 저장 완료 후, 에러 없이 화면 전환 성공 | P1 | `lib/pages/active_workout_page.dart` |
-| **T11** | **저장 중복 방지** | `PlanPage` 또는 완료 화면에서 '저장' 버튼 빠르게 5회 연타 | **단 1건**의 세션만 저장되어야 함 (UUID 중복 또는 로직 방어) | **P0** | `lib/pages/plan_page.dart`<br>`lib/data/session_repo.dart` |
-| **T12** | **Plan 수정 저장** | 기존 세션 불러오기 → 수정 → 저장 | 새로운 세션이 생성되지 않고, 기존 ID의 세션이 `Update` 되어야 함 | P1 | `lib/pages/plan_page.dart` |
-| **T13** | **루틴 로드 덮어쓰기** | 이미 운동이 있는 날짜에 '루틴 불러오기' 실행 | "기존 운동에 추가" vs "덮어쓰기" 선택 팝업 또는 명확한 정책(Append) 동작 | P1 | `lib/pages/library_page_v2.dart` |
-| **T14** | **캘린더 즉시 동기화** | 운동 완료 후 `CalendarPage` 진입 | 별도 새로고침 없이 완료된 날짜에 'DOT' 마킹 또는 색상 변경 | P1 | `lib/pages/calendar_page.dart` |
-| **T15** | **로그 상세 진입** | 캘린더 리스트에서 완료된 로그 탭하여 상세 진입 | 데이터 로딩 에러(Null check operator) 없이 렌더링 | P1 | `lib/pages/log_detail_page.dart` |
-| **T16** | **완료 세션 재편집** | 완료된 세션(로그) → 편집 모드 진입 → 수정 후 저장 | '완료' 상태가 유지되거나, 명시적으로 '미완료'로 변경 가능한지 확인 | P1 | `lib/pages/plan_page.dart` |
-| **T17** | **세션 삭제 정합성** | 로그 상세에서 세션 삭제 → 캘린더 복귀 | 해당 날짜의 마킹이 사라지고, 통계(총 볼륨 등)에서 제외됨 | P1 | `lib/data/session_repo.dart` |
-| **T18** | **운동 기록 조회 크래시** | `ExerciseDetail` 진입 시 과거 기록이 없거나 포맷이 다를 때 | `firstOrNull` 에러 등 크래시 없이 '기록 없음' 빈 상태 노출 | **P0** | `lib/pages/exercise_detail_page.dart`<br>`lib/data/session_repo.dart` |
-| **T19** | **기록 0개 빈 상태** | 기록이 없는 운동 상세 페이지 진입 | 그래프/리스트 영역에 Placeholder 정상 표시 | P2 | `lib/pages/exercise_detail_page.dart` |
-| **T20** | **히스토리 0개 캘린더** | 앱 최초 설치 직후 캘린더 진입 | 에러 없이 빈 달력 표시 | P2 | `lib/pages/calendar_page.dart` |
-| **T21** | **자정 경계 테스트** | 23:59분에 운동 시작 → 00:01분에 종료 및 저장 | 세션 날짜가 '시작일' 또는 '종료일' 중 정책대로 일관되게 저장됨 | P2 | `lib/data/session_repo.dart` |
-| **T22** | **최신순 정렬 확인** | 같은 날짜에 2개 이상의 세션 저장 | 로그 리스트에서 시간순/역순 정렬이 일관되게 표시 | P2 | `lib/pages/calendar_page.dart` |
-| **T23** | **타임존 변경** | 해외 시간대로 변경 후 앱 실행/저장 | 날짜가 꼬이지 않고 로컬 시간 기준으로 표시/저장 | P2 | `lib/data/session_repo.dart` |
-| **T24** | **저장 실패 핸들링** | 저장 시점에 강제로 예외 발생 (Mocking) | 앱이 꺼지지 않고 "저장에 실패했습니다" 토스트/알럿 노출 | P1 | `lib/pages/plan_page.dart` |
-| **T25** | **로딩 인디케이터** | 저장 버튼 클릭 직후 | 저장 완료 전까지 버튼 비활성화 + 로딩 스피너 표시 (UX) | P1 | `lib/pages/plan_page.dart` |
-| **T26** | **시딩 실패 복구** | 앱 최초 실행 시 기본 운동 데이터 로드 실패 가정 | 재시도 버튼 노출 또는 재실행 시 자동 복구 로직 동작 | P1 | `lib/services/exercise_seeding_service.dart` |
-| **T27** | **Upgrade 라우트** | 구독/업그레이드 버튼 클릭 | 미등록 라우트 에러 없이 페이지 이동 또는 "준비 중" 팝업 | P1 | `lib/main.dart` |
-| **T28** | **Paywall 이탈** | `PaywallPage` 진입 후 'X' 또는 뒤로가기 | 이전 화면으로 정상 복귀 (갇힘 현상 없음) | P2 | `lib/pages/paywall_page.dart` |
-| **T29** | **대량 데이터 성능** | 세션 100개 이상 더미 데이터 생성 후 캘린더 스크롤 | 버벅임(Jank) 없이 60fps 유지 여부 확인 | P2 | `lib/pages/calendar_page.dart` |
-| **T30** | **히트맵 렌더링** | `AnalysisPage` 진입 | 데이터가 많거나 없을 때 오버플로우(Pixel Overflow) 없이 렌더링 | P2 | `lib/pages/analysis_page.dart` |
+본 문서는 QA 테스트 시나리오 30선과, 이 중 우선순위(P0)로 선정되어 안정화 작업이 완료된 항목들의 결과를 기술합니다.
 
 ---
 
-### 2. 치명적 P0 Top 5 및 방어 전략
+## 1. P0 안정화 작업 결과 (2025-05-20)
 
-다음 5가지 항목은 유저의 **데이터를 파괴**하거나 **앱을 강제 종료**시키는 치명적인 결함이므로, 출시 전 반드시 해결되어야 합니다.
+### ✅ 조치 요약
+데이터 무결성(Data Integrity)과 앱 안정성(Crash Prevention)에 치명적인 **P0 시나리오 5종**을 선정하여 코드 수정 및 자동화 테스트 작성을 완료했습니다.
 
-#### **1. T11: 저장 버튼 연타 (Data Duplication)**
-*   **이유:** 유저가 네트워크 지연이나 UI 반응이 느릴 때 버튼을 여러 번 누르는 습관이 있습니다. 이로 인해 동일한 운동 세션이 2~3개씩 생성되면 **통계 데이터(총 볼륨)가 왜곡**되고, 캘린더가 엉망이 됩니다.
-*   **방어 전략:**
-    *   **State Guard:** `isSaving` 상태 변수를 도입하여, 저장 로직 시작 시 `true`로 설정하고 버튼을 `disabled` 처리합니다.
-    *   **Debounce:** 버튼 클릭 이벤트에 500ms~1s 정도의 쓰로틀링(Throttling)을 적용합니다.
-*   **추천 테스트:** `WidgetTest`에서 `tester.tap()`을 `await` 없이 연속 호출하고, `SessionRepo.save`가 1회만 호출되었는지 검증.
+| ID | 시나리오 명 | 우선순위 | 조치 내용 | 상태 |
+| :--- | :--- | :--- | :--- | :--- |
+| **T01** | **0kg 입력 방어** | **P0** | 저장 시 `weight == 0` 감지 시 경고 스낵바 표시 및 저장 차단 (유효성 검증 추가) | ✅ 완료 |
+| **T02** | **0reps 입력 방어** | **P0** | 저장 시 `reps <= 0` 감지 시 경고 스낵바 표시 및 저장 차단 (유효성 검증 추가) | ✅ 완료 |
+| **T11** | **저장 버튼 연타 방지** | **P0** | `_isSaving` 상태 플래그 도입 및 다이얼로그 전후 이중 체크로 중복 저장 원천 차단 | ✅ 완료 |
+| **T18** | **최근 기록 조회 안전성** | **P0** | 기록 조회 시 예외 발생 또는 데이터 오류 상황에서도 앱이 크래시되지 않음을 테스트로 검증 | ✅ 완료 |
+| **T19** | **기록 0개 진입 안전성** | **P0** | 빈 리스트 상태(`[]`) 처리 로직 검증, "기록이 없습니다" UI 표시 확인 | ✅ 완료 |
 
-#### **2. T18: 운동 기록 조회 크래시 (Null Safety Crash)**
-*   **이유:** `STATUS_REPORT.md`에서도 지적된 `Iterable.firstOrNull` 이슈나, 빈 리스트에 접근할 때 발생하는 예외는 앱을 즉시 **꺼지게(Crash)** 만듭니다. 운동 상세 페이지는 빈번하게 접근하는 메뉴이므로 치명적입니다.
-*   **방어 전략:**
-    *   **Extension/Utility:** `collection` 패키지를 사용하여 안전한 `.firstOrNull`을 사용하거나, `if (list.isNotEmpty)` 검사를 강제합니다.
-    *   **Fallback UI:** 데이터 로드 실패 시 에러 위젯(`ErrorWidget`)을 보여주도록 `FutureBuilder` 등의 에러 처리를 보강합니다.
-*   **추천 테스트:** `Unit Test`로 `SessionRepo.getRecentHistory`에 빈 데이터를 주입하고 예외가 발생하지 않는지 확인.
+### 📊 기술 검증 결과
 
-#### **3. T05: 빈 운동 세션 저장 (Dirty Data Integrity)**
-*   **이유:** 운동 종목이 하나도 없는데 '완료' 처리가 되면, 통계 시스템에서 `0`값 처리에 대한 예외가 발생하거나(나눗셈 에러 등), 유저에게 **"빈 껍데기" 로그**가 보여 서비스 품질이 낮아 보입니다.
-*   **방어 전략:**
-    *   **Validation:** 저장 버튼 클릭 시 `session.exercises.isEmpty`를 체크하여 리턴시킵니다.
-    *   **UI Feedback:** SnackBar로 "최소 1개의 운동을 추가해주세요"라고 안내합니다.
-*   **추천 테스트:** `WidgetTest`에서 운동 추가 없이 완료 버튼을 찾고 탭했을 때, 리포지토리 저장 함수가 호출되지 않음을 검증.
+*   **Flutter Test**: `All tests passed!`
+    *   `test/features/active_workout_validation_test.dart`: 입력값 검증(T01, T02) 및 동시성 제어(T11) 통과.
+    *   `test/features/exercise_detail_robustness_test.dart`: 상세 페이지 안정성(T18, T19) 통과.
+*   **Dart Analyze**: `No issues found!`
+    *   관련 파일(`active_workout_page.dart`, `exercise_detail_page.dart`)의 Lint 이슈 및 Deprecated API 수정 완료.
 
-#### **4. T08: 탭 전환 시 상태 초기화 (State Loss)**
-*   **이유:** 운동 중에 다른 탭(캘린더 확인 등)을 다녀왔는데 **타이머가 리셋**되거나 입력한 무게가 사라지면 유저는 운동할 의욕을 상실합니다. 이는 **앱 삭제**로 이어지는 가장 큰 UX 결함입니다.
-*   **방어 전략:**
-    *   **IndexedStack:** `ShellPage`에서 탭 구현 시 `IndexedStack`을 사용하여 페이지 위젯을 메모리에 유지합니다.
-    *   **AutomaticKeepAliveClientMixin:** 각 페이지 위젯 상태에 이 Mixin을 적용하여 파괴되지 않도록 합니다.
-*   **추천 테스트:** `Integration Test`로 운동 탭 입력 -> 캘린더 탭 이동 -> 운동 탭 복귀 시 입력값이 그대로인지 확인.
+---
 
-#### **5. T06: 운동 중 이탈 방어 (Accidental Data Loss)**
-*   **이유:** 격렬한 운동 중에는 손떨림 등으로 실수로 '뒤로가기'를 누를 확률이 높습니다. 경고 없이 화면이 닫히면 **진행 중이던 세트 데이터가 모두 날아갑니다.**
-*   **방어 전략:**
-    *   **WillPopScope (PopScope):** 안드로이드 뒤로가기 버튼 및 iOS 스와이프 제스처를 가로채서, "정말 종료하시겠습니까?" 팝업을 띄웁니다.
-*   **추천 테스트:** `WidgetTest`에서 `ActiveWorkoutPage`를 띄우고 뒤로가기 시그널(`simulateAndroidBackBtn`)을 보냈을 때 다이얼로그가 뜨는지 확인.
+## 2. 전체 테스트 시나리오 (30선)
+
+### A. 입력값 검증 (Validation)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **T01** | **0kg 입력 방어** | ActiveWorkoutPage에서 세트 kg = 0 입력 후 저장 | 저장 불가(경고 표시) 또는 자동 보정(최소 1) / 데이터 깨짐 없음 | **P0** | `lib/pages/active_workout_page.dart`<br>`lib/models/exercise_set.dart` |
+| **T02** | **0reps 입력 방어** | reps = 0 입력 후 저장 | 저장 불가 또는 경고 / 볼륨 계산 오류 없음 | **P0** | `lib/pages/active_workout_page.dart`<br>`lib/models/exercise_set.dart` |
+| T03 | 음수 입력 방어 | 음수 값(-10kg/-5reps) 입력 시도 후 저장 | 입력 자체 차단 또는 저장 차단 | P0 | `lib/pages/active_workout_page.dart` |
+| T04 | 빈 세트 저장 방어 | 운동은 추가했지만 세트 추가 없이 완료/저장 | 저장 시 “세트 없음” 처리(저장 금지 또는 빈 세트 허용 정책 명확) | P1 | `lib/pages/active_workout_page.dart`<br>`lib/data/session_repo.dart` |
+| T05 | 운동 0개 세션 저장 | 세션 생성 후 운동 추가 없이 저장 | 저장 금지 또는 “빈 세션” 정책 적용(캘린더 표시/로그 처리 일관) | P1 | `lib/pages/plan_page.dart`<br>`lib/pages/calendar_page.dart` |
+
+### B. 저장 타이밍/상태 유실 (State & Save timing)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| T06 | 뒤로가기 시 저장 여부 | ActiveWorkoutPage 세트 입력 후 뒤로가기(Back) | 정책대로 동작(자동 저장 or 변경사항 경고) | P0 | `lib/pages/active_workout_page.dart`<br>`lib/data/session_repo.dart` |
+| T07 | 강제 종료 후 재실행 | PlanPage/ActivePage 수정 후 앱 강제 종료 → 재실행 | 저장/미저장 정책대로 일관 (유실 방지) | P0 | `lib/pages/plan_page.dart`<br>`lib/data/session_repo.dart` |
+| T08 | 탭 전환 시 state 유지 | ActiveWorkout 진행 중 Shell 탭 이동 후 복귀 | 입력 상태 유지 + 중복 저장 없음 | P1 | `lib/pages/shell_page.dart`<br>`lib/pages/active_workout_page.dart` |
+| T09 | 백그라운드 복귀 유지 | 운동 중 홈 화면으로 나갔다가 복귀 | 세트 입력값 유지, 저장 충돌 없음 | P1 | `lib/pages/active_workout_page.dart` |
+| T10 | 화면 전환 중 레이스 | 완료 → 즉시 화면 전환/연타 | 세션 1개만 저장, 중복 기록 생성되지 않음 | P0 | `lib/pages/active_workout_page.dart`<br>`lib/data/session_repo.dart` |
+
+### C. 중복 저장 / 동시 저장 (Concurrency)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **T11** | **저장 버튼 연타** | 저장/완료 버튼 연타(2~10회) | 동일 세션 중복 저장 0건(락/디바운스 적용) | **P0** | `lib/pages/active_workout_page.dart`<br>`lib/data/session_repo.dart` |
+| T12 | PlanPage 반복 저장 | PlanPage에서 저장을 여러 번 시도 | 세션 업데이트(override)만 발생, 중복 row 없음 | P1 | `lib/pages/plan_page.dart`<br>`lib/data/session_repo.dart` |
+| T13 | 루틴 로드 덮어쓰기 | 오늘 이미 세션 있음 → 루틴 불러오기 | 병합/덮어쓰기 정책 일관 + 데이터 유실 방지 | P0 | `lib/pages/library_page_v2.dart`<br>`lib/data/routine_repo.dart` |
+
+### D. 완료/편집/삭제 정합성 (Data consistency)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| T14 | 캘린더 즉시 반영 | ActiveWorkout 완료 후 Calendar로 돌아오기 | 캘린더 마킹/리스트 즉시 갱신 | P1 | `lib/pages/calendar_page.dart`<br>`lib/data/session_repo.dart` |
+| T15 | LogDetail 진입 | Calendar에서 완료 로그 클릭 | 크래시 없이 세트/운동 표시 | P0 | `lib/pages/log_detail_page.dart`<br>`lib/data/session_repo.dart` |
+| T16 | 완료 세션 재편집 | 완료 세션을 PlanPage로 편집 → 저장 | 완료 플래그/타이머 등 상태 깨짐 없음 | P1 | `lib/pages/plan_page.dart`<br>`lib/models/session.dart` |
+| T17 | 세션 삭제 일관성 | 세션 삭제(가능 UI 경로) | 캘린더 마킹 제거, 히트맵/통계 재계산 정상 | P1 | `lib/pages/calendar_page.dart`<br>`lib/pages/analysis_page.dart` |
+
+### E. 조회 안정성 (History / Recent / firstOrNull)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **T18** | **최근 기록 조회 안전성** | ExerciseDetailPage에서 최근 기록 로드 | 빌드/런타임 오류 없이 표시 (firstOrNull 문제 없어야 함) | **P0** | `lib/pages/exercise_detail_page.dart`<br>`lib/data/session_repo.dart` |
+| **T19** | **기록 0개 진입** | 기록 없는 운동 상세 진입 | 빈 상태 UI 표시, 크래시 없음 | **P0** | `lib/pages/exercise_detail_page.dart` |
+| T20 | 빈 히스토리 캘린더 | 데이터 초기화 후 Calendar 진입 | 크래시 없이 빈 캘린더 표시 | P1 | `lib/pages/calendar_page.dart`<br>`lib/data/session_repo.dart` |
+
+### F. 날짜/정렬 (Date & sorting)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| T21 | 날짜 경계(00:00) | 날짜 경계(23:59~00:01)에서 저장 후 캘린더 확인 | 날짜별로 올바르게 분리/표시 | P1 | `lib/pages/calendar_page.dart`<br>`lib/models/session.dart` |
+| T22 | 최신순 정렬 | 여러 세션 저장 후 리스트 정렬 확인 | 최신 날짜가 상단에 위치 | P2 | `lib/pages/calendar_page.dart`<br>`lib/data/session_repo.dart` |
+| T23 | 타임존 변화 | 시스템 시간대 변경 후 캘린더 확인 | 날짜 계산 오류/중복 없음 | P2 | `lib/pages/calendar_page.dart` |
+
+### G. 실패 UX / 로딩 UX (User experience)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| T24 | 저장 실패 안내 | Hive write 실패를 가정/시뮬레이션 | 스낵바/다이얼로그로 실패 안내 + 앱 크래시 없음 | P0 | `lib/data/session_repo.dart`<br>`lib/pages/active_workout_page.dart` |
+| T25 | 저장 중 UI 차단 | 저장 중 버튼 연타 시도 | 2중 저장 차단 + 로딩 UI 표시 | P1 | `lib/pages/active_workout_page.dart` |
+| T26 | 루틴 로드 실패 | 시딩 실패 상황 가정 | 오류 안내 + 재시도 가능 | P2 | `lib/services/exercise_seeding_service.dart`<br>`lib/pages/library_page_v2.dart` |
+
+### H. 라우트/내비 안정성 (Routing)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| T27 | /upgrade 라우트 | 업그레이드 진입 버튼/경로 호출 | 정상 이동 또는 안전하게 막힘(크래시 없음) | P0 | `lib/pages/calendar_page.dart`<br>`lib/main.dart` |
+| T28 | Paywall 복귀 | Library에서 Paywall 진입 후 뒤로가기 | 복귀 시 상태 이상 없음 | P2 | `lib/pages/paywall_page.dart`<br>`lib/pages/library_page_v2.dart` |
+
+### I. 성능/대량 데이터 (Performance)
+
+| ID | 케이스명 | 재현 방법 | 기대 결과 | 우선순위 | 관련 파일 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| T29 | 대량 데이터 캘린더 | 세션 100개 이상에서 CalendarPage 스크롤 | 스크롤 끊김 최소, 크래시 없음 | P2 | `lib/pages/calendar_page.dart` |
+| T30 | 대량 데이터 히트맵 | 세션 많을 때 AnalysisPage 진입 | 멈춤/ANR 없이 정상 표시 | P2 | `lib/pages/analysis_page.dart` |
