@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/common/iron_app_bar.dart';
 
 class UpgradePage extends StatelessWidget {
   const UpgradePage({super.key});
@@ -8,7 +7,11 @@ class UpgradePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: const IronAppBar(title: 'Upgrade to PRO'),
+      appBar: AppBar(
+        title: const Text('Upgrade to PRO'),
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
