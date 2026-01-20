@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/exercise.dart';
+import '../models/muscle_group.dart';
 
 /// 🎨 Modern Workout Card - 완전히 새로운 디자인
 /// NO PIPES | Vertical Layout | Chip Style
@@ -170,6 +171,11 @@ class _ModernWorkoutCardState extends State<ModernWorkoutCard> {
     final totalSets = widget.exercise.sets.length;
     final isCompleted = completedSets > 0 && completedSets == totalSets;
 
+    // 🎯 CRITICAL FIX: Convert string to MuscleGroup enum
+    final muscleGroup = MuscleGroupParsing.fromString(widget.exercise.bodyPart);
+    final avatarColor = muscleGroup?.color ?? Colors.grey;
+    final avatarText = muscleGroup?.abbreviation ?? '??';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8, left: 12, right: 12),
       // 🎯 DYNAMIC HEIGHT - Remove fixed height to allow expansion
@@ -206,19 +212,27 @@ class _ModernWorkoutCardState extends State<ModernWorkoutCard> {
                 ),
                 const SizedBox(width: 12),
                 
-                // 2️⃣ Muscle Tag (Small Chip)
+                // 2️⃣ Color-Coded Avatar with Abbreviation
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
-                    color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(4),
+                    color: avatarColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: avatarColor.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
                   ),
+                  alignment: Alignment.center,
                   child: Text(
-                    widget.exercise.bodyPart,
+                    avatarText,
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.grey[400],
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w900,
+                      color: avatarColor,
+                      fontFamily: 'Courier',
+                      letterSpacing: -0.5,
                     ),
                   ),
                 ),

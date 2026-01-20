@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/exercise_library.dart';
 import '../models/exercise.dart';
+import '../models/muscle_group.dart';
 import '../services/exercise_seeding_service.dart';
 import '../l10n/app_localizations.dart';
 import '../core/iron_theme.dart';
@@ -467,6 +468,11 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
         final isBookmarked = _bookmarkedIds.contains(exercise.id);
         final isSelected = _isExerciseSelected(exercise);
         
+        // 🎯 CRITICAL FIX: Convert string to MuscleGroup enum
+        final muscleGroup = MuscleGroupParsing.fromString(exercise.targetPart);
+        final avatarColor = muscleGroup?.color ?? Colors.grey;
+        final avatarText = muscleGroup?.abbreviation ?? '??';
+        
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
@@ -504,13 +510,29 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
                     ),
                     const SizedBox(width: 12),
                   ],
+                  // 🎨 Color-Coded Avatar with Abbreviation
                   Container(
-                    width: 32, height: 32,
+                    width: 32,
+                    height: 32,
                     decoration: BoxDecoration(
-                      color: IronTheme.primary.withValues(alpha: 0.15), 
-                      borderRadius: BorderRadius.circular(6)
+                      color: avatarColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: avatarColor.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                     ),
-                    child: const Icon(Icons.fitness_center, color: IronTheme.primary, size: 18),
+                    alignment: Alignment.center,
+                    child: Text(
+                      avatarText,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: avatarColor,
+                        fontFamily: 'Courier',
+                        letterSpacing: -0.5,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
