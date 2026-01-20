@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../core/iron_theme.dart';
+import '../core/service_locator.dart';
+import '../services/subscription_service.dart';
 
 /// Iron Log PRO Paywall 페이지
 /// 고급스러운 프리미엄 업그레이드 유도 화면
@@ -512,11 +514,41 @@ class _PaywallPageState extends State<PaywallPage>
     final productId = _selectedPlan == 1 ? 'lifetime_pro' : 'monthly_pro';
     print('🛒 구매 프로세스 시작: $productId');
     
-    // TODO: RevenueCat 연동
-    await Future.delayed(const Duration(seconds: 1));
-    
-    if (mounted) {
+    try {
+      final success = await getIt<SubscriptionService>().purchase(productId);
+
+      if (!mounted) return;
+
       setState(() => _isLoading = false);
+
+      if (success) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Iron Log PRO가 되신 것을 환영합니다! 🎉'),
+            backgroundColor: IronTheme.surface,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('구매 중 오류가 발생했습니다: $e'),
+          backgroundColor: IronTheme.surface,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
     }
   }
 
@@ -524,16 +556,58 @@ class _PaywallPageState extends State<PaywallPage>
     HapticFeedback.lightImpact();
     print('🔄 구매 복원 시작');
     
-    // TODO: RevenueCat 연동
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('구매 복원 기능 준비 중'),
-        backgroundColor: IronTheme.surface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    setState(() => _isLoading = true);
+
+    try {
+      final isPro = await getIt<SubscriptionService>().restorePurchases();
+
+      if (!mounted) return;
+
+      setState(() => _isLoading = false);
+
+      if (isPro) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('구매가 성공적으로 복원되었습니다! 🎉'),
+            backgroundColor: IronTheme.surfaceHighlight,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            contentTextStyle: TextStyle(
+              color: IronTheme.textHigh,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('복원할 수 있는 구매 내역이 없습니다.'),
+            backgroundColor: IronTheme.surface,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('복원 중 오류가 발생했습니다: $e'),
+          backgroundColor: IronTheme.surface,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
