@@ -10,6 +10,9 @@ class ExerciseSeedingService {
   
   late Box<ExerciseLibraryItem> _box;
 
+  // 검색 성능 최적화를 위한 인메모리 캐시
+  List<_SearchCacheEntry> _searchCache = [];
+
   /// Hive Box 열기 (초기화)
   Future<void> _openBox() async {
     if (Hive.isBoxOpen(_boxName)) {
@@ -31,6 +34,9 @@ class ExerciseSeedingService {
       // 스마트 시딩 실행
       await _performSmartSeeding(jsonData);
       
+      // 캐시 초기화
+      _rebuildCache();
+
       print('✅ 운동 라이브러리 시딩 완료: ${_box.length}개 운동');
     } catch (e) {
       print('❌ 운동 라이브러리 시딩 실패: $e');
@@ -91,6 +97,8 @@ class ExerciseSeedingService {
 
     if (batchOperations.isNotEmpty) {
       await _box.putAll(batchOperations);
+      // 데이터 변경 시 캐시 갱신
+      _rebuildCache();
     }
 
     // 삭제된 운동 처리 (JSON에 없지만 DB에 있는 경우)
@@ -144,7 +152,21 @@ class ExerciseSeedingService {
     );
     
     await _box.put(id, customExercise);
+
+    // 캐시 갱신
+    _rebuildCache();
+
     print('✅ 커스텀 운동 추가: $name ($id)');
+  }
+
+  /// 검색 캐시 갱신
+  void _rebuildCache() {
+    _searchCache = _box.values.map((item) => _SearchCacheEntry(
+      item: item,
+      lowerNameKr: item.nameKr.toLowerCase(),
+      lowerNameEn: item.nameEn.toLowerCase(),
+      lowerNameJp: item.nameJp.toLowerCase(),
+    )).toList();
   }
 
   /// 부위별 운동 조회
@@ -165,12 +187,20 @@ class ExerciseSeedingService {
   Future<List<ExerciseLibraryItem>> searchExercises(String query) async {
     if (query.isEmpty) return getAllExercises();
     
+    // 캐시가 비어있으면 (예: 앱 재시작 후 첫 검색) 빌드
+    if (_searchCache.isEmpty && _box.isNotEmpty) {
+      _rebuildCache();
+    }
+
     final lowerQuery = query.toLowerCase();
-    return _box.values
-        .where((exercise) =>
-            exercise.nameKr.toLowerCase().contains(lowerQuery) ||
-            exercise.nameEn.toLowerCase().contains(lowerQuery) ||
-            exercise.nameJp.toLowerCase().contains(lowerQuery))
+
+    // 최적화된 캐시 검색 사용
+    return _searchCache
+        .where((entry) =>
+            entry.lowerNameKr.contains(lowerQuery) ||
+            entry.lowerNameEn.contains(lowerQuery) ||
+            entry.lowerNameJp.contains(lowerQuery))
+        .map((entry) => entry.item)
         .toList();
   }
 
@@ -200,5 +230,21 @@ class ExerciseSeedingService {
     if (_box.isOpen) {
       await _box.close();
     }
+    _searchCache.clear();
   }
+}
+
+/// 검색 최적화를 위한 캐시 엔트리
+class _SearchCacheEntry {
+  final ExerciseLibraryItem item;
+  final String lowerNameKr;
+  final String lowerNameEn;
+  final String lowerNameJp;
+
+  _SearchCacheEntry({
+    required this.item,
+    required this.lowerNameKr,
+    required this.lowerNameEn,
+    required this.lowerNameJp,
+  });
 }
