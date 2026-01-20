@@ -42,8 +42,11 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 타이머
   Timer? _workoutTimer;
   Timer? _restTimer;
-  int _elapsedSeconds = 0;
-  int _restSeconds = 0;
+
+  // OPTIMIZATION: Use ValueNotifier to prevent full rebuilds every second
+  final ValueNotifier<int> _elapsedSecondsNotifier = ValueNotifier(0);
+  final ValueNotifier<int> _restSecondsNotifier = ValueNotifier(0);
+
   bool _restTimerRunning = false;
   int _defaultRestDuration = 90;
   
@@ -81,7 +84,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     } else {
       // Edit 모드: 저장된 시간 로드
       debugPrint('🔍 [ActiveWorkoutPage] Loading saved duration (Edit mode)');
-      _elapsedSeconds = _session.durationInSeconds;
+      _elapsedSecondsNotifier.value = _session.durationInSeconds;
     }
     
     // 🎯 출시 모드에서만 광고 미리 로드
@@ -97,7 +100,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   void _startWorkoutTimer() {
     _workoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
-        setState(() => _elapsedSeconds++);
+        // Optimization: updating notifier instead of setState
+        _elapsedSecondsNotifier.value++;
       }
     });
     HapticFeedback.mediumImpact();
@@ -115,13 +119,15 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     
     setState(() {
       _restTimerRunning = true;
-      _restSeconds = seconds;
     });
+    // Set initial value
+    _restSecondsNotifier.value = seconds;
     
     _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_restSeconds > 0) {
+      if (_restSecondsNotifier.value > 0) {
         if (mounted) {
-          setState(() => _restSeconds--);
+           // Optimization: updating notifier instead of setState
+           _restSecondsNotifier.value--;
         }
       } else {
         timer.cancel();
@@ -215,10 +221,15 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildSummaryItem(
-                      icon: Icons.timer_outlined,
-                      value: _formatTime(_elapsedSeconds),
-                      label: l10n.workoutDuration,
+                    ValueListenableBuilder<int>(
+                      valueListenable: _elapsedSecondsNotifier,
+                      builder: (context, seconds, _) {
+                        return _buildSummaryItem(
+                          icon: Icons.timer_outlined,
+                          value: _formatTime(seconds),
+                          label: l10n.workoutDuration,
+                        );
+                      }
                     ),
                     Container(width: 1, height: 40, color: Colors.grey[700]),
                     _buildSummaryItem(
@@ -341,34 +352,15 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
-    // Always mark as completed (both in active and edit mode)
-    _session.isCompleted = true;
-    _session.durationInSeconds = _elapsedSeconds;
-    
-    try {
-      await widget.repo.put(_session);
     setState(() => _isSaving = true);
     
     try {
       // Always mark as completed (both in active and edit mode)
       _session.isCompleted = true;
-      _session.durationInSeconds = _elapsedSeconds;
+      _session.durationInSeconds = _elapsedSecondsNotifier.value;
 
       await widget.repo.put(_session);
 
-      HapticFeedback.heavyImpact();
-    } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
-    }
-    
-    if (mounted) {
-      ErrorHandler.showSuccessSnackBar(
-        context, 
-        widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
-      );
-      
       HapticFeedback.heavyImpact();
 
       if (mounted) {
@@ -380,7 +372,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         // Skip ads in edit mode or debug mode
         if (widget.isEditing || kDebugMode) {
           if (kDebugMode) {
-          debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+            debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
           }
           Navigator.of(context).pop(true);
         } else {
@@ -401,7 +393,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
           context,
           '저장 중 오류가 발생했습니다: $e',
         );
-        // 타이머 재개 등 복구 로직이 필요할 수 있음
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
       }
     }
   }
@@ -417,6 +412,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
+    setState(() => _isSaving = true);
+
     try {
       // 현재 상태 저장 (미완료)
       await widget.repo.put(_session);
@@ -434,19 +431,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         // 여기서는 사용자 경험을 위해 에러 표시 후 종료 허용
         Navigator.of(context).pop(false);
       }
-    setState(() => _isSaving = true);
-
-    try {
-      // 현재 상태 저장 (미완료)
-      await widget.repo.put(_session);
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
       }
-    }
-    
-    if (mounted) {
-      Navigator.of(context).pop(false); // false = 중도 종료
     }
   }
   
@@ -498,6 +486,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     _saveDebounceTimer?.cancel();
+    _elapsedSecondsNotifier.dispose();
+    _restSecondsNotifier.dispose();
     _adService.dispose(); // 광고 리소스 정리
     super.dispose();
   }
@@ -614,17 +604,22 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       ),
                       const SizedBox(height: 32),
                       // 2. The Timer (Massive, Monospace, No Circle)
-                      Text(
-                        _formatTime(_restSeconds),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 80,
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -2.0,
-                          decoration: TextDecoration.none,
-                          height: 1.0,
-                        ),
+                      ValueListenableBuilder<int>(
+                        valueListenable: _restSecondsNotifier,
+                        builder: (context, seconds, _) {
+                          return Text(
+                            _formatTime(seconds),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 80,
+                              fontFamily: 'Courier',
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -2.0,
+                              decoration: TextDecoration.none,
+                              height: 1.0,
+                            ),
+                          );
+                        }
                       ),
                       const SizedBox(height: 32),
                       // 3. Dashed Divider (The "Receipt" Look)
@@ -749,17 +744,22 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
               ),
               const SizedBox(height: 12),
               // Massive Timer
-              Text(
-                _formatTime(_restSeconds),
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  fontFamily: 'Courier',
-                  letterSpacing: -1.0,
-                  decoration: TextDecoration.none,
-                  height: 1.0,
-                ),
+              ValueListenableBuilder<int>(
+                valueListenable: _restSecondsNotifier,
+                builder: (context, seconds, _) {
+                  return Text(
+                    _formatTime(seconds),
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      fontFamily: 'Courier',
+                      letterSpacing: -1.0,
+                      decoration: TextDecoration.none,
+                      height: 1.0,
+                    ),
+                  );
+                }
               ),
               const SizedBox(height: 12),
               // Dashed Divider
@@ -833,9 +833,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.selectionClick();
-          setState(() {
-            _restSeconds = (_restSeconds + seconds).clamp(1, 600);
-          });
+          // Update notifier, no setState needed for timer value, but UI uses setState to update _restSeconds var in original
+          // Wait, I replaced _restSeconds with notifier.
+          final newValue = (_restSecondsNotifier.value + seconds).clamp(1, 600);
+          _restSecondsNotifier.value = newValue;
         },
         child: Container(
           height: 36,
@@ -866,9 +867,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     return GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
-        setState(() {
-          _restSeconds = (_restSeconds + seconds).clamp(1, 600);
-        });
+        final newValue = (_restSecondsNotifier.value + seconds).clamp(1, 600);
+        _restSecondsNotifier.value = newValue;
       },
       child: Container(
         width: 72,
@@ -924,16 +924,21 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Timer (Reduced by 20% - was 52, now 42)
-              Text(
-                _formatTime(_elapsedSeconds),
-                style: const TextStyle(
-                  fontSize: 42, // Reduced from 52
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  fontFamily: 'Courier', // Monospace
-                  height: 1.0,
-                  letterSpacing: -1.0,
-                ),
+              ValueListenableBuilder<int>(
+                valueListenable: _elapsedSecondsNotifier,
+                builder: (context, seconds, _) {
+                  return Text(
+                    _formatTime(seconds),
+                    style: const TextStyle(
+                      fontSize: 42, // Reduced from 52
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      fontFamily: 'Courier', // Monospace
+                      height: 1.0,
+                      letterSpacing: -1.0,
+                    ),
+                  );
+                }
               ),
               const SizedBox(width: 24),
               // Set Progress (Same size as timer for balance)
@@ -1197,16 +1202,21 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       size: 20,
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      _restTimerRunning 
-                          ? _formatTime(_restSeconds)
-                          : _formatTime(_defaultRestDuration),
-                      style: const TextStyle(
-                        fontFamily: 'Courier',
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    ValueListenableBuilder<int>(
+                      valueListenable: _restSecondsNotifier,
+                      builder: (context, seconds, _) {
+                        return Text(
+                          _restTimerRunning
+                              ? _formatTime(seconds)
+                              : _formatTime(_defaultRestDuration),
+                          style: const TextStyle(
+                            fontFamily: 'Courier',
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }
                     ),
                   ],
                 ),
@@ -1397,7 +1407,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       _defaultRestDuration = currentValue;
                       _showRestTimerOverlay = showOverlay;
                       if (_restTimerRunning) {
-                        _restSeconds = _defaultRestDuration;
+                         // Update notifier for rest timer
+                         _restSecondsNotifier.value = _defaultRestDuration;
                       }
                     });
                     Navigator.pop(context);
