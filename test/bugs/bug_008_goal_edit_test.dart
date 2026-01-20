@@ -9,6 +9,10 @@ import 'package:fitmix_pwa/data/user_repo.dart';
 import 'package:fitmix_pwa/data/exercise_library_repo.dart';
 import 'package:fitmix_pwa/data/settings_repo.dart';
 import 'package:fitmix_pwa/data/auth_repo.dart';
+import 'package:fitmix_pwa/data/routine_repo.dart';
+import 'package:fitmix_pwa/core/service_locator.dart';
+import 'package:fitmix_pwa/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockSessionRepo extends Mock implements SessionRepo {}
@@ -16,6 +20,7 @@ class MockUserRepo extends Mock implements UserRepo {}
 class MockExerciseLibraryRepo extends Mock implements ExerciseLibraryRepo {}
 class MockSettingsRepo extends Mock implements SettingsRepo {}
 class MockAuthRepo extends Mock implements AuthRepo {}
+class MockRoutineRepo extends Mock implements RoutineRepo {}
 
 void main() {
   group('BUG-008: My Goal Edit Navigation', () {
@@ -24,52 +29,71 @@ void main() {
     late MockExerciseLibraryRepo mockExerciseRepo;
     late MockSettingsRepo mockSettingsRepo;
     late MockAuthRepo mockAuthRepo;
+    late MockRoutineRepo mockRoutineRepo;
 
-    setUp(() {
+    setUp(() async {
       mockSessionRepo = MockSessionRepo();
       mockUserRepo = MockUserRepo();
       mockExerciseRepo = MockExerciseLibraryRepo();
       mockSettingsRepo = MockSettingsRepo();
       mockAuthRepo = MockAuthRepo();
+      mockRoutineRepo = MockRoutineRepo();
+
+      await getIt.reset();
+      getIt.registerSingleton<SessionRepo>(mockSessionRepo);
+      getIt.registerSingleton<UserRepo>(mockUserRepo);
+      getIt.registerSingleton<ExerciseLibraryRepo>(mockExerciseRepo);
+      getIt.registerSingleton<SettingsRepo>(mockSettingsRepo);
+      getIt.registerSingleton<AuthRepo>(mockAuthRepo);
+      getIt.registerSingleton<RoutineRepo>(mockRoutineRepo);
       
       when(() => mockUserRepo.getUserProfile()).thenAnswer((_) async => null);
+      when(() => mockSessionRepo.getSessionsInRange(any(), any())).thenAnswer((_) async => []);
+      when(() => mockSessionRepo.getWorkoutSessions()).thenAnswer((_) async => []);
+      when(() => mockSessionRepo.ymd(any())).thenReturn('2023-01-01');
+      when(() => mockSessionRepo.get(any())).thenAnswer((_) async => null);
     });
 
     testWidgets('Clicking Edit on My Goal card should navigate to Goal Settings, not Profile', (WidgetTester tester) async {
       final mockObserver = NavigatorObserver();
 
-      // Note: This test expects HomePage to be renderable.
-      // If environment prevents Hive initialization, this acts as a template for the fix verification.
       await tester.pumpWidget(
         MaterialApp(
-          home: HomePage(
-            sessionRepo: mockSessionRepo,
-            userRepo: mockUserRepo,
-            exerciseRepo: mockExerciseRepo,
-            settingsRepo: mockSettingsRepo,
-            authRepo: mockAuthRepo,
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('ko'),
+          ],
+          home: const HomePage(),
           navigatorObservers: [mockObserver],
           routes: {
             '/profile': (context) => UserInfoFormPage(userRepo: mockUserRepo),
-            '/goal_settings': (context) => const Scaffold(body: Text('Goal Settings')),
+            '/goal_settings': (context) => const Scaffold(body: Text('Goal Settings Page')),
           },
         ),
       );
 
-      // Find "나의 목표" text
-      expect(find.text('나의 목표'), findsOneWidget);
+      // Animation settle
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      // Find the edit button
+      // Find "MONTHLY GOAL" text (Current UI)
+      expect(find.text('MONTHLY GOAL'), findsOneWidget);
+
+      // Find the edit button - currently missing in UI, so this is expected to fail initially
       final editButton = find.widgetWithIcon(IconButton, Icons.edit);
-      expect(editButton, findsOneWidget);
+      expect(editButton, findsOneWidget, reason: 'Edit button should exist on Goal card');
 
       await tester.tap(editButton);
       await tester.pumpAndSettle();
 
       // Assertion for BUG-008
       expect(find.byType(UserInfoFormPage), findsNothing, reason: "BUG-008: Should not navigate to UserInfoFormPage");
-      expect(find.text('Goal Settings'), findsOneWidget, reason: "Should navigate to Goal Settings page");
+      expect(find.text('Goal Settings Page'), findsOneWidget, reason: "Should navigate to Goal Settings page");
     });
   });
 }

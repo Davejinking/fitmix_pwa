@@ -39,4 +39,26 @@ class UserProfile extends HiveObject {
     this.monthlyVolumeGoal = 100000.0, // 기본 볼륨 목표 100,000 kg
     this.isPro = false, // 기본값: 무료 사용자
   });
+
+  UserProfile copyWith({
+    double? weight,
+    int? height,
+    DateTime? birthDate,
+    String? gender,
+    int? monthlyWorkoutGoal,
+    Uint8List? profileImage,
+    double? monthlyVolumeGoal,
+    bool? isPro,
+  }) {
+    return UserProfile(
+      weight: weight ?? this.weight,
+      height: height ?? this.height,
+      birthDate: birthDate ?? this.birthDate,
+      gender: gender ?? this.gender,
+      monthlyWorkoutGoal: monthlyWorkoutGoal ?? this.monthlyWorkoutGoal,
+      profileImage: profileImage ?? this.profileImage,
+      monthlyVolumeGoal: monthlyVolumeGoal ?? this.monthlyVolumeGoal,
+      isPro: isPro ?? this.isPro,
+    );
+  }
 }
