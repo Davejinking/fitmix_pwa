@@ -358,10 +358,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     setState(() => _isSaving = true);
     
     try {
-      // Always mark as completed (both in active and edit mode)
-      _session.isCompleted = true;
-      _session.durationInSeconds = _elapsedSeconds;
-
       await widget.repo.put(_session);
 
       HapticFeedback.heavyImpact();
