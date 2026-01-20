@@ -1,6 +1,13 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/exercise_db.dart';
+
+/// Top-level function for parsing exercises in an isolate
+List<ExerciseDB> parseExercises(String jsonString) {
+  final List<dynamic> jsonData = json.decode(jsonString);
+  return jsonData.map((json) => ExerciseDB.fromJson(json)).toList();
+}
 
 /// ExerciseDB 로컬 데이터 서비스 (JSON 파일 기반)
 class ExerciseDBService {
@@ -14,8 +21,8 @@ class ExerciseDBService {
     
     try {
       final jsonString = await rootBundle.loadString('assets/data/exercises.json');
-      final List<dynamic> jsonData = json.decode(jsonString);
-      _cachedExercises = jsonData.map((json) => ExerciseDB.fromJson(json)).toList();
+      // Use compute to run parsing in a background isolate
+      _cachedExercises = await compute(parseExercises, jsonString);
       return _cachedExercises!;
     } catch (e) {
       throw Exception('로컬 운동 데이터 로드 실패: $e');
