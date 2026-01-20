@@ -124,9 +124,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // Align to start
             children: [
-              // DELETED: Level/XP/Streak section (gamification removed)
-              
               // Weekly Status Module (Wireframe HUD)
               SlideTransition(
                 position: _slideAnimations[0],
@@ -135,7 +134,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildWeeklyCalendar(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24), // Reduced from 16 + internal 60
               
               // Today's Plan Module (Wireframe HUD)
               SlideTransition(
@@ -145,7 +144,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildMainActionCard(),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24), // Reduced from 8 + internal 60
               
               // 🎯 Performance Widgets (Side by Side) - Tactical HUD Style
               SlideTransition(
@@ -165,7 +164,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
               
               // Monthly Goal Module (Wireframe HUD)
               SlideTransition(
@@ -175,7 +174,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildGoalProgress(),
                 ),
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 40), // Bottom padding
             ],
           ),
         ),
@@ -197,11 +196,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         final isCompleted = todaySession?.isCompleted ?? false;
 
         if (isRest) {
-          return Column(
+          return const Column(
             children: [
-              const SizedBox(height: 60),
               // Status (영어 고정 - Design Element)
-              const Text(
+              Text(
                 'STATUS: RESTING',
                 style: TextStyle(
                   fontSize: 12,
@@ -211,7 +209,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   letterSpacing: 2.0,
                 ),
               ),
-              const SizedBox(height: 60),
             ],
           );
         }
@@ -219,7 +216,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         if (!hasPlan) {
           return Column(
             children: [
-              const SizedBox(height: 60),
               // Status text - minimalist (영어 고정 - Design Element)
               const Text(
                 'NO ACTIVE SESSION',
@@ -231,7 +227,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   letterSpacing: 2.0,
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 24),
               // Ghost button - transparent
               SizedBox(
                 width: double.infinity,
@@ -262,7 +258,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   ),
                 ),
               ),
-              const SizedBox(height: 60),
             ],
           );
         }
@@ -283,7 +278,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 60),
             // Status (영어 고정 - Design Element)
             Text(
               isCompleted ? 'SESSION COMPLETE' : 'SESSION READY',
@@ -339,7 +333,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 ),
               ],
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 24),
             // Ghost button
             SizedBox(
               width: double.infinity,
@@ -368,7 +362,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 ),
               ),
             ),
-            const SizedBox(height: 60),
           ],
         );
       },
