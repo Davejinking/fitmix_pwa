@@ -124,7 +124,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align to start
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start, // Force top alignment
             children: [
               // Weekly Status Module (Wireframe HUD)
               SlideTransition(
@@ -134,7 +135,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildWeeklyCalendar(),
                 ),
               ),
-              const SizedBox(height: 24), // Reduced from 16 + internal 60
+              const SizedBox(height: 16), // 🎯 DRASTICALLY REDUCED - Law of Proximity
               
               // Today's Plan Module (Wireframe HUD)
               SlideTransition(
@@ -144,7 +145,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildMainActionCard(),
                 ),
               ),
-              const SizedBox(height: 24), // Reduced from 8 + internal 60
+              const SizedBox(height: 32), // Gap after button
               
               // 🎯 Performance Widgets (Side by Side) - Tactical HUD Style
               SlideTransition(
@@ -174,7 +175,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildGoalProgress(),
                 ),
               ),
-              const SizedBox(height: 40), // Bottom padding
+              const SizedBox(height: 20), // Bottom padding
             ],
           ),
         ),
@@ -479,9 +480,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 );
               }).toList(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16), // Reduced from 32
             Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
-            const SizedBox(height: 32),
           ],
         );
       },
