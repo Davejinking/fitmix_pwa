@@ -375,8 +375,7 @@ class HiveSessionRepo implements SessionRepo {
       for (final date in sortedDates) {
         if (records.length >= limit) break;
 
-        final session = _box.get(key);
-        final session = await _box.get(date);
+        final session = _box.get(date);
         if (session == null) continue;
         
         // 해당 운동이 있는지 확인 (다국어 매칭 지원)
@@ -389,8 +388,6 @@ class HiveSessionRepo implements SessionRepo {
           // 완료된 세트만 필터링
           final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
           debugPrint('  - 완료된 세트 수: ${completedSets.length}');
-          // 완료된 세트만 필터링
-          final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
           
           if (completedSets.isNotEmpty) {
             records.add(ExerciseHistoryRecord(
@@ -404,10 +401,6 @@ class HiveSessionRepo implements SessionRepo {
       }
       
       debugPrint('🔍 최종 기록 수: ${records.length}');
-          }
-        }
-      }
-      
       return records;
     } catch (e) {
       debugPrint('❌ 운동 기록 조회 중 오류: $e');
@@ -460,7 +453,7 @@ class HiveSessionRepo implements SessionRepo {
       final dummySessions = [
         // 7일 전 - 벤치프레스, 스쿼트
         Session(
-          ymd: ymd(now.subtract(const Duration(days: 7))),
+          ymd: this.ymd(now.subtract(const Duration(days: 7))),
           exercises: [
             Exercise(
               name: 'Bench Press', // 영어 원본명
@@ -488,7 +481,7 @@ class HiveSessionRepo implements SessionRepo {
         
         // 5일 전 - 데드리프트, 랫풀다운
         Session(
-          ymd: ymd(now.subtract(const Duration(days: 5))),
+          ymd: this.ymd(now.subtract(const Duration(days: 5))),
           exercises: [
             Exercise(
               name: 'Deadlift', // 영어 원본명
@@ -515,7 +508,7 @@ class HiveSessionRepo implements SessionRepo {
         
         // 3일 전 - 벤치프레스 (진전된 기록)
         Session(
-          ymd: ymd(now.subtract(const Duration(days: 3))),
+          ymd: this.ymd(now.subtract(const Duration(days: 3))),
           exercises: [
             Exercise(
               name: 'Bench Press', // 영어 원본명
@@ -544,7 +537,7 @@ class HiveSessionRepo implements SessionRepo {
         
         // 1일 전 - 스쿼트 (진전된 기록)
         Session(
-          ymd: ymd(now.subtract(const Duration(days: 1))),
+          ymd: this.ymd(now.subtract(const Duration(days: 1))),
           exercises: [
             Exercise(
               name: 'Squat', // 영어 원본명
@@ -572,7 +565,7 @@ class HiveSessionRepo implements SessionRepo {
         
         // 10일 전 - 오래된 벤치프레스 기록
         Session(
-          ymd: ymd(now.subtract(const Duration(days: 10))),
+          ymd: this.ymd(now.subtract(const Duration(days: 10))),
           exercises: [
             Exercise(
               name: 'Bench Press', // 영어 원본명

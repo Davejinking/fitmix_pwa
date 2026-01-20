@@ -569,15 +569,17 @@ class _PaywallPageState extends State<PaywallPage>
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('구매가 성공적으로 복원되었습니다! 🎉'),
+            content: Text(
+              '구매가 성공적으로 복원되었습니다! 🎉',
+              style: TextStyle(
+                color: IronTheme.textHigh,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             backgroundColor: IronTheme.surfaceHighlight,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-            ),
-            contentTextStyle: TextStyle(
-              color: IronTheme.textHigh,
-              fontWeight: FontWeight.bold,
             ),
           ),
         );

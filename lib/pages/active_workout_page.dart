@@ -63,8 +63,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
 
   // 저장 중 상태 (T25: 저장 중 UI 차단)
   bool _isSaving = false;
-  // 저장 중복 방지 플래그
-  bool _isSaving = false;
   // Debouncer for auto-save
   Timer? _saveDebounceTimer;
 
@@ -352,18 +350,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
 
       await widget.repo.put(_session);
 
-    _workoutTimer?.cancel();
-    _restTimer?.cancel();
-    
-    setState(() => _isSaving = true);
-    
-    try {
-      // Always mark as completed (both in active and edit mode)
-      _session.isCompleted = true;
-      _session.durationInSeconds = _elapsedSeconds;
-
-      await widget.repo.put(_session);
-
       HapticFeedback.heavyImpact();
 
       if (mounted) {
@@ -376,7 +362,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         if (widget.isEditing || kDebugMode) {
           if (kDebugMode) {
             debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
-            print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
           }
           Navigator.of(context).pop(true);
         } else {
@@ -393,32 +378,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ErrorHandler.showErrorSnackBar(context, e.toString());
-        );
-
-        // Skip ads in edit mode or debug mode
-        if (widget.isEditing || kDebugMode) {
-          if (kDebugMode) {
-          debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
-          }
-          Navigator.of(context).pop(true);
-        } else {
-          // 출시 모드: 광고 표시 후 홈으로 이동
-          await _adService.showInterstitialAd(
-            onAdClosed: () {
-              if (mounted) {
-                Navigator.of(context).pop(true);
-              }
-            },
-          );
-        }
-      }
-    } catch (e) {
-      // 저장 실패 처리
-      if (mounted) {
         ErrorHandler.showErrorSnackBar(
           context,
-          '저장 중 오류가 발생했습니다: $e',
+          '저장 실패: $e',
         );
         // 타이머 재개 등 복구 로직이 필요할 수 있음
       }
@@ -444,14 +406,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       _workoutTimer?.cancel();
       _restTimer?.cancel();
 
-    _workoutTimer?.cancel();
-    _restTimer?.cancel();
-
-    setState(() => _isSaving = true);
-    
-    setState(() => _isSaving = true);
-
-    try {
       // 현재 상태 저장 (미완료)
       await widget.repo.put(_session);
 
@@ -461,8 +415,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ErrorHandler.showErrorSnackBar(context, e.toString());
-      }
         ErrorHandler.showErrorSnackBar(
           context,
           '자동 저장 실패: $e',
