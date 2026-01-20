@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 /// Pro 구독 상태 관리 서비스
-/// RevenueCat 연동 전까지 Mock으로 사용
 class ProService extends ChangeNotifier {
   static const String _boxName = 'pro_settings';
   static const String _isProKey = 'is_pro';
   
+  // TODO: 실제 RevenueCat API Key로 교체 필요
+  static const String _revenueCatApiKey = 'appl_REPLACE_WITH_YOUR_API_KEY';
+  static const String _entitlementId = 'pro';
+
   late Box _box;
   bool _isPro = false;
   
@@ -20,9 +24,41 @@ class ProService extends ChangeNotifier {
     if (kDebugMode) {
       print('💎 ProService 초기화: isPro = $_isPro');
     }
+
+    await _initRevenueCat();
+  }
+
+  Future<void> _initRevenueCat() async {
+    try {
+      if (kIsWeb) return;
+
+      // RevenueCat 설정
+      // TODO: 플랫폼별 키 분기 처리 권장 (Platform.isAndroid ? ... : ...)
+      await Purchases.configure(PurchasesConfiguration(_revenueCatApiKey));
+
+      // 초기 상태 동기화
+      final customerInfo = await Purchases.getCustomerInfo();
+      _updateProStatusFromInfo(customerInfo);
+
+      // 실시간 상태 변경 감지
+      Purchases.addCustomerInfoUpdateListener((info) {
+        _updateProStatusFromInfo(info);
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ RevenueCat 초기화 실패: $e');
+      }
+    }
+  }
+
+  void _updateProStatusFromInfo(CustomerInfo info) {
+    final isActive = info.entitlements.all[_entitlementId]?.isActive ?? false;
+    if (_isPro != isActive) {
+      setProStatus(isActive);
+    }
   }
   
-  /// Pro 상태 업데이트 (RevenueCat 연동 시 사용)
+  /// Pro 상태 업데이트
   Future<void> setProStatus(bool value) async {
     _isPro = value;
     await _box.put(_isProKey, value);
@@ -33,13 +69,28 @@ class ProService extends ChangeNotifier {
     }
   }
   
-  /// 구매 복원 (RevenueCat 연동 시 구현)
+  /// 구매 복원
   Future<bool> restorePurchases() async {
     if (kDebugMode) {
       print('🔄 구매 복원 시도...');
     }
-    // TODO: RevenueCat 연동 시 구현
-    return false;
+
+    if (kIsWeb) {
+      return false;
+    }
+
+    try {
+      final customerInfo = await Purchases.restorePurchases();
+      _updateProStatusFromInfo(customerInfo);
+
+      final isActive = customerInfo.entitlements.all[_entitlementId]?.isActive ?? false;
+      return isActive;
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ 구매 복원 실패: $e');
+      }
+      rethrow;
+    }
   }
   
   /// 디버그용: Pro 상태 토글
@@ -50,6 +101,9 @@ class ProService extends ChangeNotifier {
 
 /// 전역 ProService 인스턴스
 ProService? _proServiceInstance;
+
+@visibleForTesting
+set proServiceInstance(ProService service) => _proServiceInstance = service;
 
 ProService get proService {
   _proServiceInstance ??= ProService();
