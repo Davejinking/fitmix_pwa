@@ -7,6 +7,7 @@ import '../data/auth_repo.dart';
 import '../data/routine_repo.dart';
 import '../data/equipment_repo.dart';
 import '../services/pro_service.dart';
+import '../services/subscription_service.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -35,6 +36,10 @@ Future<void> setupServiceLocator() async {
   // ProService 초기화
   await proService.init();
 
+  // SubscriptionService 초기화
+  final subscriptionService = SubscriptionService();
+  await subscriptionService.init();
+
   // GetIt에 싱글톤으로 등록
   getIt.registerSingleton<SessionRepo>(sessionRepo);
   getIt.registerSingleton<ExerciseLibraryRepo>(exerciseRepo);
@@ -44,4 +49,5 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<RoutineRepo>(routineRepo);
   getIt.registerSingleton<EquipmentRepo>(equipmentRepo);
   getIt.registerSingleton<ProService>(proService);
+  getIt.registerSingleton<SubscriptionService>(subscriptionService);
 }
