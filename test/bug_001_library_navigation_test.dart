@@ -56,7 +56,8 @@ void main() {
     // SessionRepo stubbing
     when(() => sessionRepo.init()).thenAnswer((_) async {});
     when(() => sessionRepo.getWorkoutSessions()).thenAnswer((_) async => []);
-    when(() => sessionRepo.listAll()).thenAnswer((_) async => []);
+    when(() => sessionRepo.getAllWorkoutDates()).thenAnswer((_) async => {});
+    when(() => sessionRepo.getAllRestDates()).thenAnswer((_) async => {});
 
     // ymd 메서드는 String을 반환하는 동기 메서드입니다.
     // ArgumentMatcher를 사용하여 모든 DateTime 입력에 대해 처리합니다.
