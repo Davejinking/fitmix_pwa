@@ -59,6 +59,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 💰 광고 서비스
   final AdService _adService = AdService();
 
+  // 저장 중복 방지 플래그
+  bool _isSaving = false;
   // Debouncer for auto-save
   Timer? _saveDebounceTimer;
 
@@ -330,19 +332,30 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   Future<void> _finishWorkout() async {
+    // 이미 저장 중이면 무시
+    if (_isSaving) return;
+
     final confirmed = await _showEndWorkoutDialog(isCompleting: true);
     if (!confirmed) return;
     
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
-    // Always mark as completed (both in active and edit mode)
-    _session.isCompleted = true;
-    _session.durationInSeconds = _elapsedSeconds;
+    setState(() => _isSaving = true);
     
-    await widget.repo.put(_session);
-    
-    HapticFeedback.heavyImpact();
+    try {
+      // Always mark as completed (both in active and edit mode)
+      _session.isCompleted = true;
+      _session.durationInSeconds = _elapsedSeconds;
+
+      await widget.repo.put(_session);
+
+      HapticFeedback.heavyImpact();
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
     
     if (mounted) {
       ErrorHandler.showSuccessSnackBar(
@@ -371,14 +384,25 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   
   /// 뒤로가기 시 중도 종료 처리
   Future<void> _handleBackPress() async {
+    // 이미 저장 중이면 무시 (화면 전환 충돌 방지)
+    if (_isSaving) return;
+
     final confirmed = await _showEndWorkoutDialog(isCompleting: false);
     if (!confirmed) return;
     
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
-    // 현재 상태 저장 (미완료)
-    await widget.repo.put(_session);
+    setState(() => _isSaving = true);
+
+    try {
+      // 현재 상태 저장 (미완료)
+      await widget.repo.put(_session);
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
     
     if (mounted) {
       Navigator.of(context).pop(false); // false = 중도 종료
