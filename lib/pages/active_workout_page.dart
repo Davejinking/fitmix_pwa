@@ -59,6 +59,11 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 💰 광고 서비스
   final AdService _adService = AdService();
 
+  // 저장 중복 방지 플래그
+  bool _isSaving = false;
+  // Debouncer for auto-save
+  Timer? _saveDebounceTimer;
+
   @override
   void initState() {
     super.initState();
@@ -327,6 +332,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   }
 
   Future<void> _finishWorkout() async {
+    // 이미 저장 중이면 무시
+    if (_isSaving) return;
+
     final confirmed = await _showEndWorkoutDialog(isCompleting: true);
     if (!confirmed) return;
     
@@ -339,6 +347,27 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     
     try {
       await widget.repo.put(_session);
+    setState(() => _isSaving = true);
+    
+    try {
+      // Always mark as completed (both in active and edit mode)
+      _session.isCompleted = true;
+      _session.durationInSeconds = _elapsedSeconds;
+
+      await widget.repo.put(_session);
+
+      HapticFeedback.heavyImpact();
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+    
+    if (mounted) {
+      ErrorHandler.showSuccessSnackBar(
+        context, 
+        widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
+      );
       
       HapticFeedback.heavyImpact();
 
@@ -379,6 +408,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   
   /// 뒤로가기 시 중도 종료 처리
   Future<void> _handleBackPress() async {
+    // 이미 저장 중이면 무시 (화면 전환 충돌 방지)
+    if (_isSaving) return;
+
     final confirmed = await _showEndWorkoutDialog(isCompleting: false);
     if (!confirmed) return;
     
@@ -402,6 +434,19 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         // 여기서는 사용자 경험을 위해 에러 표시 후 종료 허용
         Navigator.of(context).pop(false);
       }
+    setState(() => _isSaving = true);
+
+    try {
+      // 현재 상태 저장 (미완료)
+      await widget.repo.put(_session);
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+    
+    if (mounted) {
+      Navigator.of(context).pop(false); // false = 중도 종료
     }
   }
   
@@ -452,8 +497,19 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   void dispose() {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
+    _saveDebounceTimer?.cancel();
     _adService.dispose(); // 광고 리소스 정리
     super.dispose();
+  }
+
+  void _debouncedSave() {
+    if (_saveDebounceTimer?.isActive ?? false) _saveDebounceTimer!.cancel();
+    _saveDebounceTimer = Timer(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        widget.repo.put(_session);
+        debugPrint('💾 [ActiveWorkoutPage] Auto-saved via debounce');
+      }
+    });
   }
 
   @override
@@ -1032,9 +1088,16 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                     setState(() {
                       _session.exercises.removeAt(index);
                     });
+                    _debouncedSave(); // Delete also triggers save
                   },
-                  onUpdate: () => setState(() {}),
-                  onSetCompleted: _onSetChecked,
+                  onUpdate: () {
+                    setState(() {});
+                    _debouncedSave(); // Edit triggers save
+                  },
+                  onSetCompleted: (val) {
+                    _onSetChecked(val);
+                    _debouncedSave(); // Check triggers save
+                  },
                   isWorkoutStarted: true,
                   isEditingEnabled: true,
                   forceExpanded: _allCardsExpanded,

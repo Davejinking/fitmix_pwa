@@ -1345,7 +1345,6 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
             onPressed: () {
               Navigator.pop(ctx);
-              // TODO: Navigate to subscription/upgrade page
               Navigator.pushNamed(context, '/upgrade');
             },
           ),
