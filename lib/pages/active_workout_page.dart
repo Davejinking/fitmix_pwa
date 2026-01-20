@@ -59,6 +59,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 💰 광고 서비스
   final AdService _adService = AdService();
 
+  // 저장 중 상태 (T25: 저장 중 UI 차단)
+  bool _isSaving = false;
   // 저장 중복 방지 플래그
   bool _isSaving = false;
   // Debouncer for auto-save
@@ -338,6 +340,19 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final confirmed = await _showEndWorkoutDialog(isCompleting: true);
     if (!confirmed) return;
     
+    // T25: 저장 중 로딩 UI 표시 및 사용자 입력 차단
+    if (mounted) setState(() => _isSaving = true);
+    
+    try {
+      _workoutTimer?.cancel();
+      _restTimer?.cancel();
+      
+      // Always mark as completed (both in active and edit mode)
+      _session.isCompleted = true;
+      _session.durationInSeconds = _elapsedSeconds;
+
+      await widget.repo.put(_session);
+
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
@@ -380,6 +395,29 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         // Skip ads in edit mode or debug mode
         if (widget.isEditing || kDebugMode) {
           if (kDebugMode) {
+            print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+          }
+          Navigator.of(context).pop(true);
+        } else {
+          // 출시 모드: 광고 표시 후 홈으로 이동
+          await _adService.showInterstitialAd(
+            onAdClosed: () {
+              if (mounted) {
+                Navigator.of(context).pop(true);
+              }
+            },
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ErrorHandler.showErrorSnackBar(context, e.toString());
+        );
+
+        // Skip ads in edit mode or debug mode
+        if (widget.isEditing || kDebugMode) {
+          if (kDebugMode) {
           debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
           }
           Navigator.of(context).pop(true);
@@ -404,6 +442,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         // 타이머 재개 등 복구 로직이 필요할 수 있음
       }
     }
+    // 성공 시에는 화면이 닫히거나 이동하므로 setState(false)는 에러 상황에서만 처리
   }
   
   /// 뒤로가기 시 중도 종료 처리
@@ -414,6 +453,12 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final confirmed = await _showEndWorkoutDialog(isCompleting: false);
     if (!confirmed) return;
     
+    if (mounted) setState(() => _isSaving = true);
+
+    try {
+      _workoutTimer?.cancel();
+      _restTimer?.cancel();
+
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
@@ -426,6 +471,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSaving = false);
+        ErrorHandler.showErrorSnackBar(context, e.toString());
+      }
         ErrorHandler.showErrorSnackBar(
           context,
           '자동 저장 실패: $e',
@@ -556,6 +604,17 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             _showRestTimerOverlay 
                 ? _buildFullScreenTimerOverlay(l10n)
                 : _buildMiniFloatingTimer(l10n),
+
+          // T25: 저장 중 로딩 오버레이
+          if (_isSaving)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black54,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ),
         ],
       ),
     );
