@@ -147,9 +147,29 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
               ),
               const SizedBox(height: 16),
               
-              // Monthly Goal Module (Wireframe HUD)
+              // 🎯 Performance Widgets (Side by Side)
               SlideTransition(
                 position: _slideAnimations[2],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _HomeBigThreeWidget(sessionRepo: sessionRepo),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _HomeVolumeWidget(sessionRepo: sessionRepo),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // Monthly Goal Module (Wireframe HUD)
+              SlideTransition(
+                position: _slideAnimations[3],
                 child: FadeTransition(
                   opacity: _animationController,
                   child: _buildGoalProgress(),
@@ -367,89 +387,109 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         // Generate current week dates (Mon-Sun)
         final weekDays = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
         
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title - Monospace (영어 고정 - Design Element)
-            const Text(
-              'WEEKLY STATUS',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF616161), // Colors.grey[700]
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
-              ),
-            ),
-            const SizedBox(height: 24),
-            // Day Labels + Dots - Dynamic
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: weekDays.map((date) {
-                // Check if this is TODAY
-                final isToday = date.year == now.year && 
-                                date.month == now.month && 
-                                date.day == now.day;
-                
-                // Check workout status
-                final dateYmd = sessionRepo.ymd(date);
-                final hasWorkout = workoutDates.contains(dateYmd);
-                
-                // Day label - Localized
-                final dayLabels = [
-                  context.l10n.weekdayMonShort,
-                  context.l10n.weekdayTueShort,
-                  context.l10n.weekdayWedShort,
-                  context.l10n.weekdayThuShort,
-                  context.l10n.weekdayFriShort,
-                  context.l10n.weekdaySatShort,
-                  context.l10n.weekdaySunShort,
-                ];
-                final dayLabel = dayLabels[date.weekday - 1];
-                
-                return Column(
+        return GestureDetector(
+          onTap: () {
+            // 🎯 Navigate to Analysis Screen
+            Navigator.pushNamed(context, '/analysis');
+          },
+          child: Container(
+            color: Colors.transparent, // Ensure tap area is visible
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title - Monospace (영어 고정 - Design Element) with Chevron
+                Row(
                   children: [
-                    // A. Day Label (Highlight TODAY)
-                    SizedBox(
-                      width: 12,
-                      child: Text(
-                        dayLabel,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: isToday ? FontWeight.w900 : FontWeight.w700,
-                          color: isToday ? Colors.white : Colors.grey[700],
-                          fontFamily: 'Courier',
-                          letterSpacing: 0,
-                        ),
+                    const Text(
+                      'WEEKLY STATUS',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF616161), // Colors.grey[700]
+                        fontFamily: 'Courier',
+                        letterSpacing: 2.0,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    // B. Status Chip (Rounded Square)
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        // Solid white for workout, hollow for inactive
-                        color: hasWorkout ? Colors.white : Colors.transparent,
-                        // Border for hollow look (inactive days)
-                        border: hasWorkout ? null : Border.all(
-                          color: Colors.white.withValues(alpha: 0.3), 
-                          width: 1.0,
-                        ),
-                        // Tactical rounded square (matching Calendar)
-                        borderRadius: BorderRadius.circular(2.0),
-                        shape: BoxShape.rectangle,
-                      ),
+                    const SizedBox(width: 8),
+                    // 🎯 Chevron hint for clickability
+                    Icon(
+                      Icons.chevron_right,
+                      size: 14,
+                      color: Colors.grey[700],
                     ),
                   ],
-                );
-              }).toList(),
+                ),
+                const SizedBox(height: 24),
+                // Day Labels + Dots - Dynamic
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: weekDays.map((date) {
+                    // Check if this is TODAY
+                    final isToday = date.year == now.year && 
+                                    date.month == now.month && 
+                                    date.day == now.day;
+                    
+                    // Check workout status
+                    final dateYmd = sessionRepo.ymd(date);
+                    final hasWorkout = workoutDates.contains(dateYmd);
+                    
+                    // Day label - Localized
+                    final dayLabels = [
+                      context.l10n.weekdayMonShort,
+                      context.l10n.weekdayTueShort,
+                      context.l10n.weekdayWedShort,
+                      context.l10n.weekdayThuShort,
+                      context.l10n.weekdayFriShort,
+                      context.l10n.weekdaySatShort,
+                      context.l10n.weekdaySunShort,
+                    ];
+                    final dayLabel = dayLabels[date.weekday - 1];
+                    
+                    return Column(
+                      children: [
+                        // A. Day Label (Highlight TODAY)
+                        SizedBox(
+                          width: 12,
+                          child: Text(
+                            dayLabel,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: isToday ? FontWeight.w900 : FontWeight.w700,
+                              color: isToday ? Colors.white : Colors.grey[700],
+                              fontFamily: 'Courier',
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // B. Status Chip (Rounded Square)
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            // Solid white for workout, hollow for inactive
+                            color: hasWorkout ? Colors.white : Colors.transparent,
+                            // Border for hollow look (inactive days)
+                            border: hasWorkout ? null : Border.all(
+                              color: Colors.white.withValues(alpha: 0.3), 
+                              width: 1.0,
+                            ),
+                            // Tactical rounded square (matching Calendar)
+                            borderRadius: BorderRadius.circular(2.0),
+                            shape: BoxShape.rectangle,
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 32),
+                Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 32),
-            Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
-            const SizedBox(height: 32),
-          ],
+          ),
         );
       },
     );
@@ -564,6 +604,251 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       'completed': workoutDays,
       'total': monthlyGoal,
     };
+  }
+}
+
+// 🎯 Big Three Widget - Strength Gauge
+class _HomeBigThreeWidget extends StatelessWidget {
+  final SessionRepo sessionRepo;
+  
+  const _HomeBigThreeWidget({required this.sessionRepo});
+
+  Future<double> _calculateBigThreeTotal() async {
+    // Get all workout sessions
+    final sessions = await sessionRepo.getWorkoutSessions();
+    
+    // Track max weights for each of the Big 3
+    double maxBench = 0;
+    double maxSquat = 0;
+    double maxDeadlift = 0;
+    
+    for (final session in sessions) {
+      for (final exercise in session.exercises) {
+        final name = exercise.name.toLowerCase();
+        
+        // Find max weight for this exercise
+        double maxWeight = 0;
+        for (final set in exercise.sets) {
+          if (set.weight > maxWeight) {
+            maxWeight = set.weight;
+          }
+        }
+        
+        // Categorize into Big 3
+        if (name.contains('bench') || name.contains('벤치') || name.contains('ベンチ')) {
+          if (maxWeight > maxBench) maxBench = maxWeight;
+        } else if (name.contains('squat') || name.contains('스쿼트') || name.contains('スクワット')) {
+          if (maxWeight > maxSquat) maxSquat = maxWeight;
+        } else if (name.contains('deadlift') || name.contains('데드리프트') || name.contains('デッドリフト')) {
+          if (maxWeight > maxDeadlift) maxDeadlift = maxWeight;
+        }
+      }
+    }
+    
+    return maxBench + maxSquat + maxDeadlift;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<double>(
+      future: _calculateBigThreeTotal(),
+      builder: (context, snapshot) {
+        final total = snapshot.data ?? 0;
+        final hasData = total > 0;
+        
+        return GestureDetector(
+          onTap: () {
+            // 🎯 Navigate to Analysis Screen (PR Section)
+            Navigator.pushNamed(context, '/analysis');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A), // Dark Grey Card
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Label
+                const Text(
+                  'BIG 3 TOTAL',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF616161),
+                    fontFamily: 'Courier',
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Value
+                if (hasData)
+                  Text(
+                    '${total.toInt()} kg',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF69F0AE), // Neon Green Accent
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.0,
+                    ),
+                  )
+                else
+                  const Text(
+                    '-- kg',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF616161),
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                // Hint
+                Row(
+                  children: [
+                    Text(
+                      hasData ? 'VIEW PRs' : 'NO DATA',
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF616161),
+                        fontFamily: 'Courier',
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    if (hasData)
+                      Icon(
+                        Icons.chevron_right,
+                        size: 12,
+                        color: Colors.grey[700],
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// 🎯 Volume Widget - Workload Gauge
+class _HomeVolumeWidget extends StatelessWidget {
+  final SessionRepo sessionRepo;
+  
+  const _HomeVolumeWidget({required this.sessionRepo});
+
+  Future<double> _calculateWeeklyVolume() async {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    
+    final sessions = await sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
+    
+    double totalVolume = 0;
+    for (final session in sessions) {
+      totalVolume += session.totalVolume;
+    }
+    
+    return totalVolume;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<double>(
+      future: _calculateWeeklyVolume(),
+      builder: (context, snapshot) {
+        final volume = snapshot.data ?? 0;
+        final hasData = volume > 0;
+        
+        // Convert to tons if > 1000 kg
+        final displayValue = volume >= 1000 
+            ? '${(volume / 1000).toStringAsFixed(1)} t'
+            : '${volume.toInt()} kg';
+        
+        return GestureDetector(
+          onTap: () {
+            // 🎯 Navigate to Analysis Screen (Volume Section)
+            Navigator.pushNamed(context, '/analysis');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A), // Dark Grey Card
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Label
+                const Text(
+                  'WEEKLY VOL',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF616161),
+                    fontFamily: 'Courier',
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Value
+                if (hasData)
+                  Text(
+                    displayValue,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF448AFF), // Electric Blue Accent
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.0,
+                    ),
+                  )
+                else
+                  const Text(
+                    '-- kg',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF616161),
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                // Hint
+                Row(
+                  children: [
+                    Text(
+                      hasData ? 'VIEW STATS' : 'NO DATA',
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF616161),
+                        fontFamily: 'Courier',
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    if (hasData)
+                      Icon(
+                        Icons.chevron_right,
+                        size: 12,
+                        color: Colors.grey[700],
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
