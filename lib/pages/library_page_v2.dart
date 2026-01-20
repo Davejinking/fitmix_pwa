@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../core/service_locator.dart';
 import '../models/routine.dart';
+import '../models/routine_tag.dart';
 import '../models/session.dart';
 import '../models/exercise.dart';
 import '../l10n/app_localizations.dart';
@@ -846,9 +847,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _customTagController = TextEditingController();
   final Set<String> _selectedTags = {};
-  
-  // System preset tags
-  final List<String> _systemTags = ['PUSH', 'PULL', 'LEGS', 'UPPER', 'LOWER', 'FULL BODY'];
+  final Map<String, Color> _tagColors = {}; // Store colors for custom tags
 
   @override
   void dispose() {
@@ -867,14 +866,143 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
     });
   }
 
-  void _addCustomTag() {
-    final tag = _customTagController.text.trim().toUpperCase();
-    if (tag.isNotEmpty && !_selectedTags.contains(tag)) {
-      setState(() {
-        _selectedTags.add(tag);
-        _customTagController.clear();
-      });
+  void _showCustomTagDialog() {
+    Color selectedColor = RoutineTag.neonPalette[4]; // Default to Cyan
+    final customTagController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+            side: const BorderSide(color: Colors.white24, width: 1),
+          ),
+          title: const Text(
+            'CUSTOM TAG',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Courier',
+              letterSpacing: 1.5,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Tag name input
+              TextField(
+                controller: customTagController,
+                style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
+                decoration: const InputDecoration(
+                  hintText: 'TAG NAME',
+                  hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Courier', fontSize: 12),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white24),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1.5),
+                  ),
+                ),
+                autofocus: true,
+                textCapitalization: TextCapitalization.characters,
+              ),
+              const SizedBox(height: 24),
+              
+              // Color selection label
+              const Text(
+                'COLOR',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  fontFamily: 'Courier',
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              // Color picker (Neon Palette)
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: RoutineTag.neonPalette.map((color) {
+                  final isSelected = color == selectedColor;
+                  return GestureDetector(
+                    onTap: () {
+                      setDialogState(() {
+                        selectedColor = color;
+                      });
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected ? color : color.withValues(alpha: 0.3),
+                          width: isSelected ? 3 : 1.5,
+                        ),
+                      ),
+                      child: isSelected
+                          ? Icon(Icons.check, color: color, size: 20)
+                          : null,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text(
+                'CANCEL',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontFamily: 'Courier',
+                  letterSpacing: 1.0,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: const Text(
+                'ADD',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontFamily: 'Courier',
+                  letterSpacing: 1.5,
+                ),
+              ),
+              onPressed: () {
+                final tag = customTagController.text.trim().toUpperCase();
+                if (tag.isNotEmpty) {
+                  setState(() {
+                    _selectedTags.add(tag);
+                    _tagColors[tag] = selectedColor;
+                  });
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getTagColor(String tag) {
+    // Check if it's a custom tag with stored color
+    if (_tagColors.containsKey(tag)) {
+      return _tagColors[tag]!;
     }
+    // Check if it's a system preset
+    return RoutineTag.getColorForKey(tag, defaultColor: const Color(0xFF69F0AE));
   }
 
   @override
@@ -945,28 +1073,31 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
             ),
             const SizedBox(height: 12),
             
-            // System preset tags
+            // System preset tags (localized with colors)
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _systemTags.map((tag) {
+              children: RoutineTag.systemPresets.map((routineTag) {
+                final tag = routineTag.getLabel(context);
                 final isSelected = _selectedTags.contains(tag);
+                final color = routineTag.color;
+                
                 return GestureDetector(
                   onTap: () => _toggleTag(tag),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : Colors.transparent,
+                      color: isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
                       border: Border.all(
-                        color: isSelected ? Colors.white : Colors.white24,
-                        width: 1.0,
+                        color: isSelected ? color : Colors.white24,
+                        width: isSelected ? 1.5 : 1.0,
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       tag,
                       style: TextStyle(
-                        color: isSelected ? Colors.black : Colors.grey,
+                        color: isSelected ? color : Colors.grey,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         fontFamily: 'Courier',
@@ -979,65 +1110,57 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
             ),
             const SizedBox(height: 12),
             
-            // Custom tag input
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _customTagController,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontFamily: 'Courier',
-                    ),
-                    decoration: const InputDecoration(
-                      hintText: '+ CUSTOM TAG',
-                      hintStyle: TextStyle(
+            // Custom tag button
+            GestureDetector(
+              onTap: _showCustomTagDialog,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white24, width: 1.0),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add, color: Colors.white, size: 16),
+                    SizedBox(width: 6),
+                    Text(
+                      'CUSTOM TAG',
+                      style: TextStyle(
                         color: Colors.grey,
-                        fontSize: 11,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
                         fontFamily: 'Courier',
+                        letterSpacing: 0.5,
                       ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white24),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white, width: 1.5),
-                      ),
-                      isDense: true,
                     ),
-                    onSubmitted: (_) => _addCustomTag(),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.add, color: Colors.white, size: 20),
-                  onPressed: _addCustomTag,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                ),
-              ],
+              ),
             ),
             
-            // Selected tags display
+            // Selected tags display (with colors)
             if (_selectedTags.isNotEmpty) ...[
               const SizedBox(height: 16),
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
                 children: _selectedTags.map((tag) {
+                  final color = _getTagColor(tag);
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: color.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           tag,
-                          style: const TextStyle(
-                            color: Colors.black,
+                          style: TextStyle(
+                            color: color,
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                             fontFamily: 'Courier',
@@ -1046,7 +1169,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                         const SizedBox(width: 4),
                         GestureDetector(
                           onTap: () => _toggleTag(tag),
-                          child: const Icon(Icons.close, size: 14, color: Colors.black),
+                          child: Icon(Icons.close, size: 14, color: color),
                         ),
                       ],
                     ),
