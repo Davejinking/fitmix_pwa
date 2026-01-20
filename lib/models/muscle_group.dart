@@ -101,49 +101,63 @@ extension MuscleGroupExtension on MuscleGroup {
 
 /// Helper methods for parsing strings to MuscleGroup
 extension MuscleGroupParsing on MuscleGroup {
-  /// Parse a string to MuscleGroup (case-insensitive)
+  /// Parse a string to MuscleGroup (supports English, Korean, Japanese)
+  /// Returns null if no match is found
   static MuscleGroup? fromString(String value) {
-    final normalized = value.toLowerCase().trim();
-    switch (normalized) {
-      case 'chest':
-      case '가슴':
-      case '胸':
-        return MuscleGroup.chest;
-      case 'back':
-      case '등':
-      case '背中':
-        return MuscleGroup.back;
-      case 'legs':
-      case '하체':
-      case '脚':
-        return MuscleGroup.legs;
-      case 'shoulders':
-      case '어깨':
-      case '肩':
-        return MuscleGroup.shoulders;
-      case 'arms':
-      case '팔':
-      case '腕':
-        return MuscleGroup.arms;
-      case 'abs':
-      case '복근':
-      case '腹筋':
-        return MuscleGroup.abs;
-      case 'cardio':
-      case '유산소':
-      case '有酸素':
-        return MuscleGroup.cardio;
-      case 'stretching':
-      case '스트레칭':
-      case 'ストレッチ':
-        return MuscleGroup.stretching;
-      case 'fullbody':
-      case 'full body':
-      case '전신':
-      case '全身':
-        return MuscleGroup.fullBody;
-      default:
-        return null;
+    final input = value.trim();
+    
+    // CHEST (Red) - English, Korean, Japanese
+    if (['Chest', 'chest', 'CHEST', '가슴', '胸'].contains(input)) {
+      return MuscleGroup.chest;
     }
+    
+    // BACK (Blue) - English, Korean, Japanese
+    if (['Back', 'back', 'BACK', '등', '背中'].contains(input)) {
+      return MuscleGroup.back;
+    }
+    
+    // LEGS (Yellow) - English, Korean, Japanese
+    if (['Legs', 'legs', 'LEGS', 'Leg', 'leg', '하체', '下半身', '脚', '다리'].contains(input)) {
+      return MuscleGroup.legs;
+    }
+    
+    // SHOULDERS (Purple) - English, Korean, Japanese
+    if (['Shoulders', 'shoulders', 'SHOULDERS', 'Shoulder', 'shoulder', '어깨', '肩'].contains(input)) {
+      return MuscleGroup.shoulders;
+    }
+    
+    // ARMS (Cyan) - English, Korean, Japanese
+    if (['Arms', 'arms', 'ARMS', 'Arm', 'arm', '팔', '腕'].contains(input)) {
+      return MuscleGroup.arms;
+    }
+    
+    // ABS (Green) - English, Korean, Japanese
+    if (['Abs', 'abs', 'ABS', 'Core', 'core', 'CORE', '복근', '腹筋', '코어'].contains(input)) {
+      return MuscleGroup.abs;
+    }
+    
+    // CARDIO (Orange) - English, Korean, Japanese
+    if (['Cardio', 'cardio', 'CARDIO', '유산소', '有酸素', 'カーディオ'].contains(input)) {
+      return MuscleGroup.cardio;
+    }
+    
+    // STRETCHING (Teal) - English, Korean, Japanese
+    if (['Stretching', 'stretching', 'STRETCHING', 'Stretch', 'stretch', '스트레칭', 'ストレッチ'].contains(input)) {
+      return MuscleGroup.stretching;
+    }
+    
+    // FULL BODY (White) - English, Korean, Japanese
+    if (['Full Body', 'full body', 'FULL BODY', 'FullBody', 'fullbody', 'FULLBODY', '전신', '全身'].contains(input)) {
+      return MuscleGroup.fullBody;
+    }
+    
+    // No match found
+    return null;
+  }
+  
+  /// Parse a string to MuscleGroup with a fallback default
+  /// This is useful when you always need a MuscleGroup (never null)
+  static MuscleGroup fromStringWithFallback(String value, {MuscleGroup fallback = MuscleGroup.fullBody}) {
+    return fromString(value) ?? fallback;
   }
 }
