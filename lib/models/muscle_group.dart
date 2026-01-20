@@ -147,7 +147,16 @@ extension MuscleGroupParsing on MuscleGroup {
     }
     
     // FULL BODY (White) - English, Korean, Japanese
-    if (['Full Body', 'full body', 'FULL BODY', 'FullBody', 'fullbody', 'FULLBODY', '전신', '全身'].contains(input)) {
+    // Note: Also check for common variations and typos
+    if (['Full Body', 'full body', 'FULL BODY', 'FullBody', 'fullbody', 'FULLBODY', 
+         'Full-Body', 'full-body', 'Fullbody', 
+         '전신', '全身', '全身運動'].contains(input)) {
+      return MuscleGroup.fullBody;
+    }
+    
+    // Case-insensitive fallback check for "full" and "body" keywords
+    final lowerInput = input.toLowerCase();
+    if (lowerInput.contains('full') && lowerInput.contains('body')) {
       return MuscleGroup.fullBody;
     }
     
@@ -159,5 +168,16 @@ extension MuscleGroupParsing on MuscleGroup {
   /// This is useful when you always need a MuscleGroup (never null)
   static MuscleGroup fromStringWithFallback(String value, {MuscleGroup fallback = MuscleGroup.fullBody}) {
     return fromString(value) ?? fallback;
+  }
+  
+  /// Debug helper: Get a detailed parsing result with the original input
+  /// Useful for troubleshooting why certain strings aren't matching
+  static String debugParse(String value) {
+    final result = fromString(value);
+    if (result != null) {
+      return 'SUCCESS: "$value" → ${result.name} (${result.abbreviation})';
+    } else {
+      return 'FAILED: "$value" → No match found. Check spelling and add to fromString() if needed.';
+    }
   }
 }
