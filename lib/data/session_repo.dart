@@ -60,9 +60,6 @@ abstract class SessionRepo {
   /// 모든 세션 데이터 삭제
   Future<void> clearAllData();
   
-  /// 모든 세션을 조회 (날짜순 정렬)
-  Future<List<Session>> listAll();
-  
   /// 휴식일로 표시/해제
   Future<void> markRest(String ymd, {required bool rest});
   
@@ -76,8 +73,14 @@ abstract class SessionRepo {
   /// 특정 기간의 세션들을 조회
   Future<List<Session>> getSessionsInRange(DateTime start, DateTime end);
   
-  /// 운동 기록이 있는 날짜들만 조회
+  /// 운동 기록이 있는 날짜들만 조회 (전체 세션 객체 로드)
   Future<List<Session>> getWorkoutSessions();
+
+  /// 운동 기록이 있는 모든 날짜 조회 (최적화)
+  Future<Set<String>> getAllWorkoutDates();
+
+  /// 휴식일로 지정된 모든 날짜 조회 (최적화)
+  Future<Set<String>> getAllRestDates();
   
   /// 특정 운동의 최근 기록들을 조회 (최대 5개)
   Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5});
@@ -131,13 +134,6 @@ class HiveSessionRepo implements SessionRepo {
   Future<void> clearAllData() async => _box.clear();
 
   @override
-  Future<List<Session>> listAll() async {
-    final list = _box.values.toList();
-    list.sort((a, b) => a.ymd.compareTo(b.ymd));
-    return list;
-  }
-
-  @override
   Future<void> markRest(String ymd, {required bool rest}) async {
     final existing = await get(ymd);
     if (existing != null) {
@@ -178,14 +174,17 @@ class HiveSessionRepo implements SessionRepo {
   @override
   Future<List<Session>> getSessionsInRange(DateTime start, DateTime end) async {
     try {
-      final allSessions = await listAll();
       final startYmd = ymd(start);
       final endYmd = ymd(end);
       
-      return allSessions.where((session) {
+      // Hive의 lazy iterable을 직접 사용하여 메모리 효율성 증대
+      final sessions = _box.values.where((session) {
         return session.ymd.compareTo(startYmd) >= 0 && 
                session.ymd.compareTo(endYmd) <= 0;
       }).toList();
+      // listAll()이 수행하던 정렬을 여기서 직접 수행
+      sessions.sort((a, b) => a.ymd.compareTo(b.ymd));
+      return sessions;
     } catch (e) {
       throw Exception('기간별 세션 조회 중 오류가 발생했습니다: $e');
     }
@@ -194,8 +193,8 @@ class HiveSessionRepo implements SessionRepo {
   @override
   Future<List<Session>> getWorkoutSessions() async {
     try {
-      final allSessions = await listAll();
-      final workoutSessions = allSessions.where((session) {
+      // .values는 lazy iterable. listAll()을 호출해 전체를 메모리에 올릴 필요 없음
+      final workoutSessions = _box.values.where((session) {
         try {
           return session.isWorkoutDay;
         } catch (e) {
@@ -203,6 +202,8 @@ class HiveSessionRepo implements SessionRepo {
           return false;
         }
       }).toList();
+      // listAll()이 수행하던 정렬을 여기서 직접 수행
+      workoutSessions.sort((a, b) => a.ymd.compareTo(b.ymd));
       return workoutSessions;
     } catch (e) {
       print('❌ 운동 세션 조회 중 오류: $e');
@@ -211,27 +212,46 @@ class HiveSessionRepo implements SessionRepo {
   }
 
   @override
+  Future<Set<String>> getAllWorkoutDates() async {
+    try {
+      // .values는 lazy iterable이므로 전체 객체를 메모리에 로드하지 않음
+      return _box.values
+          .where((session) => session.isWorkoutDay)
+          .map((session) => session.ymd)
+          .toSet();
+    } catch (e) {
+      print('❌ 운동 날짜 조회 중 오류: $e');
+      return {};
+    }
+  }
+
+  @override
+  Future<Set<String>> getAllRestDates() async {
+    try {
+      return _box.values
+          .where((session) => session.isRest)
+          .map((session) => session.ymd)
+          .toSet();
+    } catch (e) {
+      print('❌ 휴식 날짜 조회 중 오류: $e');
+      return {};
+    }
+  }
+
+  @override
   Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5}) async {
     try {
-      print('🔍 getRecentExerciseHistory 호출됨');
-      print('🔍 검색할 운동명: "$exerciseName"');
-      
-      final allSessions = await listAll();
-      print('🔍 전체 세션 수: ${allSessions.length}');
-      
-      // 모든 세션의 운동 이름들을 출력
-      for (final session in allSessions) {
-        print('🔍 세션 ${session.ymd}:');
-        for (final exercise in session.exercises) {
-          print('  - 운동: "${exercise.name}"');
-        }
-      }
-      
       final records = <ExerciseHistoryRecord>[];
       
-      // listAll()이 이미 오름차순으로 정렬했으므로 .reversed를 사용해 역순으로 순회
-      for (final session in allSessions.reversed) {
+      // 최신 기록부터 조회하기 위해 key(날짜)를 역순으로 정렬
+      final sortedKeys = _box.keys.cast<String>().toList()
+        ..sort((a, b) => b.compareTo(a));
+
+      for (final key in sortedKeys) {
         if (records.length >= limit) break;
+
+        final session = await _box.get(key);
+        if (session == null) continue;
         
         // 해당 운동이 있는지 확인 (다국어 매칭 지원)
         final matches = session.exercises.where((ex) => _isExerciseNameMatch(ex.name, exerciseName));

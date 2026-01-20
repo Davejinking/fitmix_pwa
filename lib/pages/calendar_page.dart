@@ -78,10 +78,11 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<void> _loadWorkoutDates() async {
     try {
-      final sessions = await repo.getWorkoutSessions();
+      // 최적화된 메서드 사용
+      final dates = await repo.getAllWorkoutDates();
       if (mounted) {
         setState(() {
-          _workoutDates = sessions.map((s) => s.ymd).toSet();
+          _workoutDates = dates;
         });
       }
     } catch (e) {
@@ -91,10 +92,11 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<void> _loadRestDates() async {
     try {
-      final allSessions = await repo.listAll();
+      // 최적화된 메서드 사용
+      final dates = await repo.getAllRestDates();
       if (mounted) {
         setState(() {
-          _restDates = allSessions.where((s) => s.isRest).map((s) => s.ymd).toSet();
+          _restDates = dates;
         });
       }
     } catch (e) {
