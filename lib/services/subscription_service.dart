@@ -1,15 +1,16 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'pro_service.dart';
 
 /// RevenueCat 구독 서비스
 /// 인앱 결제 및 구독 관리
 class SubscriptionService {
-  // TODO: 실제 RevenueCat API 키로 교체 필요
-  static const String _googleApiKey = 'goog_placeholder_api_key';
-  static const String _appleApiKey = 'appl_placeholder_api_key';
+  // .env 파일에서 키 로드 (없을 경우 기존 플레이스홀더 사용)
+  static String get _googleApiKey => dotenv.env['REVENUECAT_GOOGLE_API_KEY'] ?? 'goog_placeholder_api_key';
+  static String get _appleApiKey => dotenv.env['REVENUECAT_APPLE_API_KEY'] ?? 'appl_placeholder_api_key';
 
   // Entitlement ID (RevenueCat 대시보드에서 설정한 값)
   static const String _entitlementId = 'pro';
