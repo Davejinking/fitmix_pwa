@@ -60,6 +60,9 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   // Data State
   List<ExerciseLibraryItem> _allExercises = [];
   List<ExerciseLibraryItem> _filteredExercises = [];
+  // Cache available equipment keys based on body part filter to avoid re-calculation on every build
+  List<String> _availableEquipmentKeys = [];
+
   bool _isLoading = false;
   String? _error;
   
@@ -104,44 +107,38 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
     }
   }
 
-  List<ExerciseLibraryItem> get _bodyPartFilteredExercises {
-    if (_selectedBodyPart == 'all') {
-      return List.from(_allExercises);
-    } else if (_selectedBodyPart == 'favorites') {
-      return _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
-    } else {
-      return _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
-    }
-  }
-  
-  List<String> get _availableEquipmentKeys {
-    return _bodyPartFilteredExercises
-        .map((ex) => ex.equipmentType.toLowerCase())
-        .toSet()
-        .toList()
-      ..sort();
-  }
-
   void _applyFilter() {
     setState(() {
       // Step 1: Body Part Filter
+      List<ExerciseLibraryItem> bodyPartFiltered;
       if (_selectedBodyPart == 'all') {
-        _filteredExercises = List.from(_allExercises);
+        bodyPartFiltered = List.from(_allExercises);
       } else if (_selectedBodyPart == 'favorites') {
-        _filteredExercises = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
+        bodyPartFiltered = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
       } else {
-        _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
+        bodyPartFiltered = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
       }
+
+      // Update cached available equipment keys based on current body part filter
+      _availableEquipmentKeys = bodyPartFiltered
+          .map((ex) => ex.equipmentType.toLowerCase())
+          .toSet()
+          .toList()
+        ..sort();
       
       // Step 2: Equipment Filter
+      // Start filtering from the result of body part filter
+      List<ExerciseLibraryItem> tempFiltered = bodyPartFiltered;
       if (_selectedEquipmentKey != null) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey!.toLowerCase()).toList();
+        tempFiltered = tempFiltered.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey!.toLowerCase()).toList();
       }
       
       // Step 3: Search Query Filter
       if (_searchQuery.isNotEmpty) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+        tempFiltered = tempFiltered.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
       }
+
+      _filteredExercises = tempFiltered;
     });
   }
 
