@@ -5,6 +5,7 @@ import '../models/exercise.dart';
 import '../services/exercise_seeding_service.dart';
 import '../l10n/app_localizations.dart';
 import '../core/iron_theme.dart';
+import '../core/body_part_colors.dart';
 import '../widgets/modals/exercise_detail_modal.dart';
 import '../data/session_repo.dart';
 import '../data/exercise_library_repo.dart';
@@ -323,6 +324,24 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
           final key = _bodyPartKeys[index];
           final isSelected = key == _selectedBodyPart;
           
+          // Get color for this body part (skip for 'all' and 'favorites')
+          final Color? categoryColor = (key != 'all' && key != 'favorites') 
+              ? BodyPartColors.getColor(key) 
+              : null;
+          
+          // Determine text and border colors based on selection state
+          final Color textColor = isSelected 
+              ? (categoryColor ?? Colors.white)
+              : Colors.grey;
+          
+          final Color borderColor = isSelected 
+              ? (categoryColor ?? Colors.white)
+              : Colors.transparent;
+          
+          final Color backgroundColor = isSelected && categoryColor != null
+              ? categoryColor.withValues(alpha: 0.1)
+              : Colors.transparent;
+          
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
@@ -333,7 +352,7 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Courier',
                   letterSpacing: 0.5,
-                  color: isSelected ? Colors.white : Colors.grey,
+                  color: textColor,
                 ),
               ),
               selected: isSelected,
@@ -344,14 +363,14 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
                   _applyFilter();
                 });
               },
-              backgroundColor: Colors.transparent,
-              selectedColor: Colors.transparent,
+              backgroundColor: backgroundColor,
+              selectedColor: backgroundColor,
               showCheckmark: false,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
                 side: BorderSide(
-                  color: isSelected ? Colors.white : Colors.white24,
+                  color: borderColor,
                   width: isSelected ? 1.5 : 1.0,
                 ),
               ),
