@@ -95,6 +95,10 @@ void main() {
   }
 
   group('Session 04 QA Scenarios', () {
+    setUp(() {
+      when(mockSessionRepo.listAll()).thenAnswer((_) async => []);
+    });
+
     testWidgets('T07: Force quit simulation (Check auto-save policy)', (tester) async {
       // 재현 방법: ActivePage 수정 후 앱 강제 종료 -> 저장 확인
       // Test strategy: Edit a value, verified if repo.put is called immediately (or eventually).

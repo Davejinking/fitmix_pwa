@@ -73,6 +73,9 @@ abstract class SessionRepo {
   /// 특정 기간의 세션들을 조회
   Future<List<Session>> getSessionsInRange(DateTime start, DateTime end);
   
+  /// 모든 세션 조회 (날짜순 정렬)
+  Future<List<Session>> listAll();
+
   /// 운동 기록이 있는 날짜들만 조회 (전체 세션 객체 로드)
   Future<List<Session>> getWorkoutSessions();
 
@@ -92,6 +95,10 @@ abstract class SessionRepo {
 class HiveSessionRepo implements SessionRepo {
   static const boxName = 'sessions';
   late Box<Session> _box;
+
+  /// 메모리 상에 정렬된 세션 리스트를 캐싱 (listAll 성능 최적화)
+  /// _box.values.toList() + sort() 비용 제거
+  List<Session>? _cachedSessions;
 
   @override
   Future<void> init() async {
@@ -113,6 +120,58 @@ class HiveSessionRepo implements SessionRepo {
     } else {
       _box = await Hive.openBox<Session>(boxName);
     }
+
+    // 초기 캐시 구성
+    _refreshCache();
+  }
+
+  /// 캐시 갱신 (전체 다시 로드)
+  void _refreshCache() {
+    _cachedSessions = _box.values.toList()
+      ..sort((a, b) => a.ymd.compareTo(b.ymd));
+  }
+
+  /// 캐시 부분 갱신 (단일 항목 추가/수정)
+  void _updateCache(Session session) {
+    if (_cachedSessions == null) {
+      _refreshCache();
+      return;
+    }
+
+    final index = _cachedSessions!.indexWhere((s) => s.ymd == session.ymd);
+    if (index != -1) {
+      // 기존 항목 업데이트
+      _cachedSessions![index] = session;
+      // 날짜(키)가 같다면 정렬 순서는 변하지 않으므로 sort 불필요
+    } else {
+      // 새 항목 추가: 이진 탐색으로 위치 찾아서 삽입 (정렬 유지)
+      // 리스트가 이미 정렬되어 있다고 가정
+      int low = 0;
+      int high = _cachedSessions!.length - 1;
+      int insertIndex = _cachedSessions!.length;
+
+      while (low <= high) {
+        int mid = (low + high) ~/ 2;
+        int cmp = _cachedSessions![mid].ymd.compareTo(session.ymd);
+        if (cmp < 0) {
+          low = mid + 1;
+        } else if (cmp > 0) {
+          insertIndex = mid;
+          high = mid - 1;
+        } else {
+          // 이미 존재? 위에서 처리했어야 함.
+          insertIndex = mid;
+          break;
+        }
+      }
+      _cachedSessions!.insert(insertIndex, session);
+    }
+  }
+
+  /// 캐시에서 항목 제거
+  void _removeFromCache(String ymd) {
+    if (_cachedSessions == null) return;
+    _cachedSessions!.removeWhere((s) => s.ymd == ymd);
   }
 
   @override
@@ -125,13 +184,22 @@ class HiveSessionRepo implements SessionRepo {
   Future<Session?> get(String ymd) async => _box.get(ymd);
 
   @override
-  Future<void> put(Session s) async => _box.put(s.ymd, s);
+  Future<void> put(Session s) async {
+    await _box.put(s.ymd, s);
+    _updateCache(s);
+  }
 
   @override
-  Future<void> delete(String ymd) async => _box.delete(ymd);
+  Future<void> delete(String ymd) async {
+    await _box.delete(ymd);
+    _removeFromCache(ymd);
+  }
 
   @override
-  Future<void> clearAllData() async => _box.clear();
+  Future<void> clearAllData() async {
+    await _box.clear();
+    _cachedSessions?.clear();
+  }
 
   @override
   Future<void> markRest(String ymd, {required bool rest}) async {
@@ -169,6 +237,20 @@ class HiveSessionRepo implements SessionRepo {
     } catch (e) {
       throw Exception('세션 복사 중 오류가 발생했습니다: $e');
     }
+  }
+
+  @override
+  Future<List<Session>> listAll() async {
+    if (_cachedSessions == null) {
+      _refreshCache();
+    }
+    // 외부에서 수정하지 못하도록 복사본 반환 or 문서화
+    // 성능을 위해 UnmodifiableListView? 아니면 그냥 반환 (호출자가 수정 안한다고 가정)
+    // 여기서는 안전하게 toList()를 하되, sort 비용은 절약됨.
+    // 하지만 "Inefficient Full Data Load"가 메모리 할당 문제라면, 복사도 피하는게 좋음.
+    // listAll() signature가 List<Session>이므로 리스트 반환은 필수.
+    // 캐시된 리스트의 얕은 복사(toList)는 sort보다 훨씬 빠름.
+    return _cachedSessions!.toList();
   }
 
   @override
