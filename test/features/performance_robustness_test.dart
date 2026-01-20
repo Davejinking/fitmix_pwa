@@ -37,7 +37,6 @@ class ManualMockSessionRepo extends Mock implements SessionRepo {
   @override
   Future<List<Session>> getWorkoutSessions() async => _sessions;
 
-  @override
   Future<List<Session>> listAll() async => _sessions;
 
   @override
@@ -52,6 +51,13 @@ class ManualMockSessionRepo extends Mock implements SessionRepo {
 
   @override
   Future<void> markRest(String ymd, {required bool rest}) async {}
+
+  @override
+  Future<({Set<String> workoutDates, Set<String> restDates})> getAllSessionDates() async {
+    final workoutDates = _sessions.where((s) => s.isWorkoutDay).map((s) => s.ymd).toSet();
+    final restDates = _sessions.where((s) => s.isRest).map((s) => s.ymd).toSet();
+    return (workoutDates: workoutDates, restDates: restDates);
+  }
 }
 
 class ManualMockExerciseLibraryRepo extends Mock implements ExerciseLibraryRepo {}

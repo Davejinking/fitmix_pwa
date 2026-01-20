@@ -137,8 +137,8 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
               _buildProgressBar(),
               const SizedBox(height: 24),
               
-              // 취소 버튼
-              _buildCancelButton(),
+              // 하단 버튼 (숨기기 / 중지)
+              _buildActions(),
             ],
           ),
         ),
@@ -287,24 +287,49 @@ class _TempoCountdownModalState extends State<TempoCountdownModal>
     );
   }
 
-  Widget _buildCancelButton() {
-    return TextButton.icon(
-      onPressed: () {
-        widget.controller.stop();
-        widget.onCancel?.call();
-        Navigator.of(context).pop();
-      },
-      icon: const Icon(Icons.stop, color: Colors.redAccent),
-      label: const Text(
-        '중지',
-        style: TextStyle(
-          color: Colors.redAccent,
-          fontSize: 16,
+  Widget _buildActions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // 숨기기 버튼 (Minimize/Hide)
+        TextButton.icon(
+          onPressed: () {
+            // 컨트롤러는 멈추지 않고 팝업만 닫음
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+          label: const Text(
+            '숨기기',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 16,
+            ),
+          ),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
         ),
-      ),
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      ),
+
+        // 중지 버튼
+        TextButton.icon(
+          onPressed: () {
+            widget.controller.stop();
+            widget.onCancel?.call();
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(Icons.stop, color: Colors.redAccent),
+          label: const Text(
+            '중지',
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontSize: 16,
+            ),
+          ),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+        ),
+      ],
     );
   }
 

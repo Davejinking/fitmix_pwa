@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/session.dart';
 import '../models/exercise_set.dart';
@@ -81,6 +82,9 @@ abstract class SessionRepo {
 
   /// 휴식일로 지정된 모든 날짜 조회 (최적화)
   Future<Set<String>> getAllRestDates();
+
+  /// 운동 날짜와 휴식 날짜를 한 번에 조회 (최적화)
+  Future<({Set<String> workoutDates, Set<String> restDates})> getAllSessionDates();
   
   /// 특정 운동의 최근 기록들을 조회 (최대 5개)
   Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5});
@@ -91,7 +95,10 @@ abstract class SessionRepo {
 
 class HiveSessionRepo implements SessionRepo {
   static const boxName = 'sessions';
+  static const indexBoxName = 'exercise_index';
+
   late Box<Session> _box;
+  late Box _indexBox; // Key: Exercise Name, Value: List<String> (ymds)
 
   @override
   Future<void> init() async {
@@ -113,6 +120,39 @@ class HiveSessionRepo implements SessionRepo {
     } else {
       _box = await Hive.openBox<Session>(boxName);
     }
+
+    // 인덱스 박스 오픈
+    if (Hive.isBoxOpen(indexBoxName)) {
+      _indexBox = Hive.box(indexBoxName);
+    } else {
+      _indexBox = await Hive.openBox(indexBoxName);
+    }
+
+    // 인덱스 마이그레이션 (세션은 있는데 인덱스가 비어있는 경우)
+    if (_indexBox.isEmpty && _box.isNotEmpty) {
+      await _rebuildIndex();
+    }
+  }
+
+  /// 인덱스 전체 재구축
+  Future<void> _rebuildIndex() async {
+    print('🔄 운동 기록 인덱스 재구축 중...');
+    final tempIndex = <String, List<String>>{};
+
+    for (final session in _box.values) {
+      for (final exercise in session.exercises) {
+        if (!tempIndex.containsKey(exercise.name)) {
+          tempIndex[exercise.name] = [];
+        }
+        // 중복 방지
+        if (!tempIndex[exercise.name]!.contains(session.ymd)) {
+          tempIndex[exercise.name]!.add(session.ymd);
+        }
+      }
+    }
+
+    await _indexBox.putAll(tempIndex);
+    print('✅ 인덱스 재구축 완료');
   }
 
   @override
@@ -125,13 +165,67 @@ class HiveSessionRepo implements SessionRepo {
   Future<Session?> get(String ymd) async => _box.get(ymd);
 
   @override
-  Future<void> put(Session s) async => _box.put(s.ymd, s);
+  Future<void> put(Session s) async {
+    // 인덱스 업데이트
+    final oldSession = await _box.get(s.ymd);
+
+    // 1. 이전 세션의 운동들을 인덱스에서 제거 (혹은 업데이트)
+    // 간단하게 구현하기 위해: 일단 이전 세션의 운동들에서 해당 날짜 제거
+    if (oldSession != null) {
+      for (final exercise in oldSession.exercises) {
+        await _removeFromIndex(exercise.name, s.ymd);
+      }
+    }
+
+    // 2. 새로운 세션의 운동들을 인덱스에 추가
+    for (final exercise in s.exercises) {
+      await _addToIndex(exercise.name, s.ymd);
+    }
+
+    await _box.put(s.ymd, s);
+  }
 
   @override
-  Future<void> delete(String ymd) async => _box.delete(ymd);
+  Future<void> delete(String ymd) async {
+    final session = await _box.get(ymd);
+    if (session != null) {
+      for (final exercise in session.exercises) {
+        await _removeFromIndex(exercise.name, ymd);
+      }
+    }
+    await _box.delete(ymd);
+  }
 
   @override
-  Future<void> clearAllData() async => _box.clear();
+  Future<void> clearAllData() async {
+    await _box.clear();
+    await _indexBox.clear();
+  }
+
+  /// 인덱스에 날짜 추가
+  Future<void> _addToIndex(String exerciseName, String ymd) async {
+    final List<String> currentList = (_indexBox.get(exerciseName) as List?)?.cast<String>() ?? [];
+    if (!currentList.contains(ymd)) {
+      currentList.add(ymd);
+      // 날짜 순 정렬은 읽을 때 해도 됨. 하지만 저장할 때 해두면 읽기가 빠름.
+      // 여기서는 추가만 하고, 읽을 때 정렬하거나, 아니면 내림차순 유지
+      // 편의상 읽을 때 정렬한다고 가정 (데이터 양이 많지 않음)
+      await _indexBox.put(exerciseName, currentList);
+    }
+  }
+
+  /// 인덱스에서 날짜 제거
+  Future<void> _removeFromIndex(String exerciseName, String ymd) async {
+    final List<String> currentList = (_indexBox.get(exerciseName) as List?)?.cast<String>() ?? [];
+    if (currentList.contains(ymd)) {
+      currentList.remove(ymd);
+      if (currentList.isEmpty) {
+        await _indexBox.delete(exerciseName);
+      } else {
+        await _indexBox.put(exerciseName, currentList);
+      }
+    }
+  }
 
   @override
   Future<void> markRest(String ymd, {required bool rest}) async {
@@ -198,7 +292,7 @@ class HiveSessionRepo implements SessionRepo {
         try {
           return session.isWorkoutDay;
         } catch (e) {
-          print('⚠️ 세션 확인 중 오류: ${session.ymd}, $e');
+          debugPrint('⚠️ 세션 확인 중 오류: ${session.ymd}, $e');
           return false;
         }
       }).toList();
@@ -206,7 +300,7 @@ class HiveSessionRepo implements SessionRepo {
       workoutSessions.sort((a, b) => a.ymd.compareTo(b.ymd));
       return workoutSessions;
     } catch (e) {
-      print('❌ 운동 세션 조회 중 오류: $e');
+      debugPrint('❌ 운동 세션 조회 중 오류: $e');
       return [];
     }
   }
@@ -220,7 +314,7 @@ class HiveSessionRepo implements SessionRepo {
           .map((session) => session.ymd)
           .toSet();
     } catch (e) {
-      print('❌ 운동 날짜 조회 중 오류: $e');
+      debugPrint('❌ 운동 날짜 조회 중 오류: $e');
       return {};
     }
   }
@@ -233,8 +327,28 @@ class HiveSessionRepo implements SessionRepo {
           .map((session) => session.ymd)
           .toSet();
     } catch (e) {
-      print('❌ 휴식 날짜 조회 중 오류: $e');
+      debugPrint('❌ 휴식 날짜 조회 중 오류: $e');
       return {};
+    }
+  }
+
+  @override
+  Future<({Set<String> workoutDates, Set<String> restDates})> getAllSessionDates() async {
+    try {
+      final workoutDates = <String>{};
+      final restDates = <String>{};
+
+      for (final session in _box.values) {
+        if (session.isWorkoutDay) {
+          workoutDates.add(session.ymd);
+        } else if (session.isRest) {
+          restDates.add(session.ymd);
+        }
+      }
+      return (workoutDates: workoutDates, restDates: restDates);
+    } catch (e) {
+      debugPrint('❌ 세션 날짜 전체 조회 중 오류: $e');
+      return (workoutDates: <String>{}, restDates: <String>{});
     }
   }
 
@@ -243,14 +357,26 @@ class HiveSessionRepo implements SessionRepo {
     try {
       final records = <ExerciseHistoryRecord>[];
       
-      // 최신 기록부터 조회하기 위해 key(날짜)를 역순으로 정렬
-      final sortedKeys = _box.keys.cast<String>().toList()
+      // 1. 검색할 운동 이름의 모든 별칭(다국어 등) 가져오기
+      final searchAliases = _getAliases(exerciseName);
+
+      // 2. 인덱스에서 해당 운동 이름들로 날짜 목록 조회 (중복 제거)
+      final targetDates = <String>{};
+      for (final name in searchAliases) {
+        final dates = (_indexBox.get(name) as List?)?.cast<String>() ?? [];
+        targetDates.addAll(dates);
+      }
+
+      // 3. 날짜 역순 정렬 (최신순)
+      final sortedDates = targetDates.toList()
         ..sort((a, b) => b.compareTo(a));
 
-      for (final key in sortedKeys) {
+      // 4. 인덱싱된 날짜에 대해서만 세션 조회
+      for (final date in sortedDates) {
         if (records.length >= limit) break;
 
-        final session = await _box.get(key);
+        final session = _box.get(key);
+        final session = await _box.get(date);
         if (session == null) continue;
         
         // 해당 운동이 있는지 확인 (다국어 매칭 지원)
@@ -258,11 +384,13 @@ class HiveSessionRepo implements SessionRepo {
         final exercise = matches.isEmpty ? null : matches.first;
 
         if (exercise != null && exercise.sets.isNotEmpty) {
-          print('✅ 매칭된 운동 발견: ${exercise.name}, 세트 수: ${exercise.sets.length}');
+          debugPrint('✅ 매칭된 운동 발견: ${exercise.name}, 세트 수: ${exercise.sets.length}');
           
           // 완료된 세트만 필터링
           final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
-          print('  - 완료된 세트 수: ${completedSets.length}');
+          debugPrint('  - 완료된 세트 수: ${completedSets.length}');
+          // 완료된 세트만 필터링
+          final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
           
           if (completedSets.isNotEmpty) {
             records.add(ExerciseHistoryRecord(
@@ -270,26 +398,32 @@ class HiveSessionRepo implements SessionRepo {
               sets: completedSets,
               memo: exercise.memo, // 메모 추가
             ));
-            print('  - 기록 추가됨: ${session.ymd}, 메모: ${exercise.memo ?? "없음"}');
+            debugPrint('  - 기록 추가됨: ${session.ymd}, 메모: ${exercise.memo ?? "없음"}');
           }
         }
       }
       
-      print('🔍 최종 기록 수: ${records.length}');
+      debugPrint('🔍 최종 기록 수: ${records.length}');
+          }
+        }
+      }
+      
       return records;
     } catch (e) {
-      print('❌ 운동 기록 조회 중 오류: $e');
+      debugPrint('❌ 운동 기록 조회 중 오류: $e');
       return [];
     }
   }
 
   /// 운동 이름 매칭 (다국어 지원)
   bool _isExerciseNameMatch(String storedName, String searchName) {
-    // 정확한 매칭
     if (storedName == searchName) return true;
-    
-    // 다국어 매칭 - ExerciseDB의 매핑을 활용
-    // 영어 → 한국어/일본어 매칭
+    final aliases = _getAliases(searchName);
+    return aliases.contains(storedName);
+  }
+
+  /// 운동 이름의 모든 별칭(원어 및 번역) 반환
+  Set<String> _getAliases(String name) {
     const exerciseNameMap = {
       'Bench Press': ['벤치프레스', 'ベンチプレス'],
       'Squat': ['스쿼트', 'スクワット'],
@@ -298,26 +432,23 @@ class HiveSessionRepo implements SessionRepo {
       'Incline Dumbbell Press': ['인클라인 덤벨 프레스', 'インクライン・ダンベル・プレス'],
       'Leg Press': ['레그 프레스', 'レッグプレス'],
     };
-    
-    // 저장된 이름이 영어인 경우, 검색 이름이 번역된 이름인지 확인
-    if (exerciseNameMap.containsKey(storedName)) {
-      return exerciseNameMap[storedName]!.contains(searchName);
+
+    final aliases = <String>{name};
+
+    // 1. name이 키(영어)인 경우
+    if (exerciseNameMap.containsKey(name)) {
+      aliases.addAll(exerciseNameMap[name]!);
     }
-    
-    // 검색 이름이 영어인 경우, 저장된 이름이 번역된 이름인지 확인
-    if (exerciseNameMap.containsKey(searchName)) {
-      return exerciseNameMap[searchName]!.contains(storedName);
-    }
-    
-    // 번역된 이름들 간의 매칭
+
+    // 2. name이 값(번역어) 중 하나인 경우 -> 키(영어)와 다른 번역어들 추가
     for (final entry in exerciseNameMap.entries) {
-      final translations = entry.value;
-      if (translations.contains(storedName) && translations.contains(searchName)) {
-        return true;
+      if (entry.value.contains(name)) {
+        aliases.add(entry.key); // 영어 추가
+        aliases.addAll(entry.value); // 다른 번역어들 추가
       }
     }
-    
-    return false;
+
+    return aliases;
   }
 
   @override
@@ -461,9 +592,9 @@ class HiveSessionRepo implements SessionRepo {
       // 더미 데이터 저장
       await Future.wait(dummySessions.map((session) => put(session)));
       
-      print('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (영어 원본명)');
+      debugPrint('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (영어 원본명)');
     } catch (e) {
-      print('❌ 더미 데이터 생성 중 오류: $e');
+      debugPrint('❌ 더미 데이터 생성 중 오류: $e');
     }
   }
 }
