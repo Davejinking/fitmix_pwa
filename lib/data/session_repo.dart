@@ -439,9 +439,7 @@ class HiveSessionRepo implements SessionRepo {
       ];
       
       // 더미 데이터 저장
-      for (final session in dummySessions) {
-        await put(session);
-      }
+      await Future.wait(dummySessions.map((session) => put(session)));
       
       print('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (영어 원본명)');
     } catch (e) {
