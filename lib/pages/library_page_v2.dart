@@ -306,8 +306,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   // 🔥 루틴 필터 (Dynamic Tags)
   Widget _buildRoutineFilter(AppLocalizations l10n) {
     return Container(
-      height: 48, // 🔥 Reduced height
-      padding: const EdgeInsets.symmetric(vertical: 6), // 🔥 Tighter padding
+      height: 48,
+      padding: const EdgeInsets.symmetric(vertical: 6),
       color: IronTheme.background,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -316,59 +316,47 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         itemBuilder: (context, index) {
           final key = _allRoutineFilterKeys[index];
           final isSelected = key == _selectedRoutineFilterKey;
-          final isSystemTag = _systemRoutineFilterKeys.contains(key);
           
           // Get the localized label
           final label = _getRoutineFilterLabel(l10n, key);
           
-          // Get color for this tag (skip for 'all')
-          final Color? tagColor = (key != 'all') 
+          // Resolve color for this tag (skip for 'all')
+          final color = (key != 'all') 
               ? RoutineTag.getColorForLocalizedName(label)
-              : null;
-          
-          // Determine text and border colors based on selection state
-          final Color textColor = isSelected 
-              ? (tagColor ?? Colors.white)
-              : Colors.grey;
-          
-          final Color borderColor = isSelected 
-              ? (tagColor ?? Colors.white)
-              : (isSystemTag ? Colors.white24 : Colors.white12);
-          
-          final Color backgroundColor = isSelected && tagColor != null
-              ? tagColor.withValues(alpha: 0.1)
-              : Colors.transparent;
+              : Colors.white;
           
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Courier',
-                  letterSpacing: 0.5,
-                  color: textColor,
+            child: ChoiceChip(
+              label: Text(label),
+              selected: isSelected,
+              // 1. Text Style
+              labelStyle: TextStyle(
+                color: isSelected ? color : Colors.grey,
+                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                fontSize: 11,
+                fontFamily: 'Courier',
+                letterSpacing: 0.5,
+              ),
+              // 2. Background Color
+              selectedColor: color.withValues(alpha: 0.15), // Subtle glow background
+              backgroundColor: Colors.black, // Dark background when inactive
+              // 3. Border
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  // Glow border when selected, subtle grey when not
+                  color: isSelected ? color : Colors.grey[800]!,
+                  width: isSelected ? 1.5 : 1.0,
                 ),
               ),
-              selected: isSelected,
+              showCheckmark: false,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               onSelected: (_) {
                 setState(() {
                   _selectedRoutineFilterKey = key;
                 });
               },
-              backgroundColor: backgroundColor,
-              selectedColor: backgroundColor,
-              showCheckmark: false,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-                side: BorderSide(
-                  color: borderColor,
-                  width: isSelected ? 1.5 : 1.0,
-                ),
-              ),
             ),
           );
         },
