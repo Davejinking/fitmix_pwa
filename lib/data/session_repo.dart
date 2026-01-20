@@ -88,7 +88,21 @@ abstract class SessionRepo {
 
 class HiveSessionRepo implements SessionRepo {
   static const boxName = 'sessions';
+  static const indexBoxName = 'exercise_index';
+
   late Box<Session> _box;
+  late Box _indexBox;
+
+  // 다국어 매칭 - ExerciseDB의 매핑을 활용
+  // 영어 → 한국어/일본어 매칭
+  static const _exerciseNameMap = {
+    'Bench Press': ['벤치프레스', 'ベンチプレス'],
+    'Squat': ['스쿼트', 'スクワット'],
+    'Deadlift': ['데드리프트', 'デッドリフト'],
+    'Lat Pulldown': ['랫풀다운', 'ラットプルダウン'],
+    'Incline Dumbbell Press': ['인클라인 덤벨 프레스', 'インクライン・ダンベル・プレス'],
+    'Leg Press': ['레그 프레스', 'レッグプレス'],
+  };
 
   @override
   Future<void> init() async {
@@ -104,11 +118,67 @@ class HiveSessionRepo implements SessionRepo {
       // 이미 초기화된 환경(예: 테스트)에서는 무시
     }
 
-    // 이미 열려 있으면 재사용, 아니면 오픈
+    // 세션 박스 오픈
     if (Hive.isBoxOpen(boxName)) {
       _box = Hive.box<Session>(boxName);
     } else {
       _box = await Hive.openBox<Session>(boxName);
+    }
+
+    // 인덱스 박스 오픈
+    if (Hive.isBoxOpen(indexBoxName)) {
+      _indexBox = Hive.box(indexBoxName);
+    } else {
+      _indexBox = await Hive.openBox(indexBoxName);
+    }
+
+    // 마이그레이션: 세션은 있는데 인덱스가 비어있다면 인덱스 재구축
+    if (_box.isNotEmpty && _indexBox.isEmpty) {
+      print('⚡ [Performance] 인덱스 구축 시작...');
+      await _rebuildIndex();
+      print('✅ [Performance] 인덱스 구축 완료');
+    }
+  }
+
+  /// 전체 세션을 순회하며 인덱스 생성
+  Future<void> _rebuildIndex() async {
+    // 인덱스 초기화
+    await _indexBox.clear();
+
+    // 모든 세션에 대해 인덱스 업데이트
+    for (final session in _box.values) {
+      await _updateIndexForSession(session);
+    }
+  }
+
+  /// 특정 세션의 운동들을 인덱스에 추가
+  Future<void> _updateIndexForSession(Session session) async {
+    if (!session.hasExercises) return;
+
+    for (final exercise in session.exercises) {
+      final name = exercise.name;
+      final List<String> dates = (_indexBox.get(name) ?? []).cast<String>().toList();
+
+      if (!dates.contains(session.ymd)) {
+        dates.add(session.ymd);
+        await _indexBox.put(name, dates);
+      }
+    }
+  }
+
+  /// 인덱스에서 특정 세션의 날짜 제거
+  Future<void> _removeFromIndex(Session session) async {
+    for (final exercise in session.exercises) {
+      final name = exercise.name;
+      final List<String> dates = (_indexBox.get(name) ?? []).cast<String>().toList();
+
+      if (dates.remove(session.ymd)) {
+        if (dates.isEmpty) {
+          await _indexBox.delete(name);
+        } else {
+          await _indexBox.put(name, dates);
+        }
+      }
     }
   }
 
@@ -122,13 +192,26 @@ class HiveSessionRepo implements SessionRepo {
   Future<Session?> get(String ymd) async => _box.get(ymd);
 
   @override
-  Future<void> put(Session s) async => _box.put(s.ymd, s);
+  Future<void> put(Session s) async {
+    // 인덱스 업데이트 (추가만 수행, 제시는 Lazy Cleanup)
+    await _updateIndexForSession(s);
+    await _box.put(s.ymd, s);
+  }
 
   @override
-  Future<void> delete(String ymd) async => _box.delete(ymd);
+  Future<void> delete(String ymd) async {
+    final session = _box.get(ymd);
+    if (session != null) {
+      await _removeFromIndex(session);
+    }
+    await _box.delete(ymd);
+  }
 
   @override
-  Future<void> clearAllData() async => _box.clear();
+  Future<void> clearAllData() async {
+    await _indexBox.clear();
+    await _box.clear();
+  }
 
   @override
   Future<List<Session>> listAll() async {
@@ -142,7 +225,11 @@ class HiveSessionRepo implements SessionRepo {
     final existing = await get(ymd);
     if (existing != null) {
       existing.isRest = rest;
-      if (rest) existing.exercises.clear();
+      if (rest) {
+        // 운동 제거 전 인덱스 정리
+        await _removeFromIndex(existing);
+        existing.exercises.clear();
+      }
       await put(existing);
     } else {
       await put(Session(ymd: ymd, isRest: rest));
@@ -210,87 +297,126 @@ class HiveSessionRepo implements SessionRepo {
     }
   }
 
+  /// 운동 이름 확장 (동의어 포함)
+  Set<String> _expandSynonyms(String searchName) {
+    final names = <String>{searchName};
+
+    // 1. searchName이 Key(영어)인 경우 Value(번역) 추가
+    if (_exerciseNameMap.containsKey(searchName)) {
+      names.addAll(_exerciseNameMap[searchName]!);
+    }
+
+    // 2. searchName이 Value(번역)에 포함된 경우 Key(영어) 및 다른 번역 추가
+    for (final entry in _exerciseNameMap.entries) {
+      if (entry.value.contains(searchName)) {
+        names.add(entry.key); // 영어 이름 추가
+        names.addAll(entry.value); // 다른 번역 이름들 추가
+      }
+    }
+
+    return names;
+  }
+
+  /// 인덱스에서 잘못된 참조 제거 (Self-Repairing)
+  Future<void> _repairIndex(String exerciseName, String date) async {
+    // print('🔧 인덱스 복구: $exerciseName @ $date 제거');
+    final dates = (_indexBox.get(exerciseName) ?? []).cast<String>().toList();
+    if (dates.remove(date)) {
+        await _indexBox.put(exerciseName, dates);
+    }
+  }
+
   @override
   Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5}) async {
     try {
-      print('🔍 getRecentExerciseHistory 호출됨');
+      print('🔍 getRecentExerciseHistory 호출됨 (Indexed)');
       print('🔍 검색할 운동명: "$exerciseName"');
       
-      final allSessions = await listAll();
-      print('🔍 전체 세션 수: ${allSessions.length}');
+      // 1. 검색어 확장 (동의어 포함)
+      final searchNames = _expandSynonyms(exerciseName);
       
-      // 모든 세션의 운동 이름들을 출력
-      for (final session in allSessions) {
-        print('🔍 세션 ${session.ymd}:');
-        for (final exercise in session.exercises) {
-          print('  - 운동: "${exercise.name}"');
-        }
+      // 2. 인덱스 조회
+      final allDates = <String>{};
+      for (final name in searchNames) {
+        final dates = (_indexBox.get(name) ?? []).cast<String>();
+        allDates.addAll(dates);
       }
       
+      print('🔍 인덱스 검색 결과: ${allDates.length}개의 날짜 발견');
+
+      // 3. 날짜 역순 정렬 (최신순)
+      final sortedDates = allDates.toList()..sort((a, b) => b.compareTo(a));
+
       final records = <ExerciseHistoryRecord>[];
       
-      // listAll()이 이미 오름차순으로 정렬했으므로 .reversed를 사용해 역순으로 순회
-      for (final session in allSessions.reversed) {
+      // 4. 세션 조회 및 필터링
+      for (final date in sortedDates) {
         if (records.length >= limit) break;
         
-        // 해당 운동이 있는지 확인 (다국어 매칭 지원)
-        final matches = session.exercises.where((ex) => _isExerciseNameMatch(ex.name, exerciseName));
+        final session = _box.get(date);
+        if (session == null) {
+           // 세션이 없으면 인덱스 정리
+           for (final name in searchNames) {
+             await _repairIndex(name, date);
+           }
+           continue;
+        }
+
+        // 해당 운동 찾기
+        // 주의: 인덱스는 운동이 있다고 했지만, 실제 세션에는 없을 수 있음 (삭제/수정된 경우)
+        // 이 경우 Self-Repairing 메커니즘 동작
+
+        // 검색어 집합(searchNames)에 포함된 운동 찾기
+        // 또는 기존 로직대로 _isExerciseNameMatch 사용 가능하지만,
+        // 이미 searchNames를 확장했으므로 이름이 포함되어 있는지 확인하면 됨.
+        final matches = session.exercises.where((ex) => searchNames.contains(ex.name) || _isExerciseNameMatch(ex.name, exerciseName));
         final exercise = matches.isEmpty ? null : matches.first;
 
         if (exercise != null && exercise.sets.isNotEmpty) {
-          print('✅ 매칭된 운동 발견: ${exercise.name}, 세트 수: ${exercise.sets.length}');
-          
           // 완료된 세트만 필터링
           final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
-          print('  - 완료된 세트 수: ${completedSets.length}');
           
           if (completedSets.isNotEmpty) {
             records.add(ExerciseHistoryRecord(
               date: session.ymd,
               sets: completedSets,
-              memo: exercise.memo, // 메모 추가
+              memo: exercise.memo,
             ));
-            print('  - 기록 추가됨: ${session.ymd}, 메모: ${exercise.memo ?? "없음"}');
+          }
+        } else {
+          // 인덱스에는 있었지만 실제로는 없는 경우 (False Positive) -> 인덱스 정리
+          // 정확히 어떤 이름으로 인덱싱 되었는지 모르므로, searchNames에 있는 후보들에서 해당 날짜 제거 시도
+          for (final name in searchNames) {
+             // 현재 세션에 이 이름의 운동이 없다면 인덱스에서 제거
+             if (!session.exercises.any((e) => e.name == name)) {
+                await _repairIndex(name, date);
+             }
           }
         }
       }
       
       print('🔍 최종 기록 수: ${records.length}');
       return records;
-    } catch (e) {
+    } catch (e, stack) {
       print('❌ 운동 기록 조회 중 오류: $e');
+      print(stack);
       return [];
     }
   }
 
-  /// 운동 이름 매칭 (다국어 지원)
+  /// 운동 이름 매칭 (다국어 지원) - 기존 호환성 유지용
   bool _isExerciseNameMatch(String storedName, String searchName) {
-    // 정확한 매칭
     if (storedName == searchName) return true;
     
-    // 다국어 매칭 - ExerciseDB의 매핑을 활용
-    // 영어 → 한국어/일본어 매칭
-    const exerciseNameMap = {
-      'Bench Press': ['벤치프레스', 'ベンチプレス'],
-      'Squat': ['스쿼트', 'スクワット'],
-      'Deadlift': ['데드리프트', 'デッドリフト'],
-      'Lat Pulldown': ['랫풀다운', 'ラットプルダウン'],
-      'Incline Dumbbell Press': ['인클라인 덤벨 프레스', 'インクライン・ダンベル・プレス'],
-      'Leg Press': ['레그 프레스', 'レッグプレス'],
-    };
-    
-    // 저장된 이름이 영어인 경우, 검색 이름이 번역된 이름인지 확인
-    if (exerciseNameMap.containsKey(storedName)) {
-      return exerciseNameMap[storedName]!.contains(searchName);
+    if (_exerciseNameMap.containsKey(storedName)) {
+      return _exerciseNameMap[storedName]!.contains(searchName);
     }
     
-    // 검색 이름이 영어인 경우, 저장된 이름이 번역된 이름인지 확인
-    if (exerciseNameMap.containsKey(searchName)) {
-      return exerciseNameMap[searchName]!.contains(storedName);
+    if (_exerciseNameMap.containsKey(searchName)) {
+      return _exerciseNameMap[searchName]!.contains(storedName);
     }
     
-    // 번역된 이름들 간의 매칭
-    for (final entry in exerciseNameMap.entries) {
+    for (final entry in _exerciseNameMap.entries) {
       final translations = entry.value;
       if (translations.contains(storedName) && translations.contains(searchName)) {
         return true;
