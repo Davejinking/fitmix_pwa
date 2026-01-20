@@ -121,12 +121,11 @@ class _ExerciseCardState extends State<ExerciseCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).languageCode;
-    final totalVolume = widget.exercise.sets.fold<double>(
-      0,
-      (sum, set) => sum + (set.weight * set.reps),
-    );
+    int completedSets = 0;
+    for (final set in widget.exercise.sets) {
+      if (set.isCompleted) completedSets++;
+    }
     
-    final completedSets = widget.exercise.sets.where((set) => set.isCompleted).length;
     final totalSets = widget.exercise.sets.length;
     final bool isCompleted = completedSets > 0 && completedSets == totalSets;
 

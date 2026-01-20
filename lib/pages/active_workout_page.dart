@@ -38,6 +38,8 @@ class ActiveWorkoutPage extends StatefulWidget {
 
 class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   late Session _session;
+  int _completedSetsCount = 0;
+  int _totalSetsCount = 0;
   
   // 타이머
   Timer? _workoutTimer;
@@ -59,6 +61,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 💰 광고 서비스
   final AdService _adService = AdService();
 
+  // 저장 중 상태 (T25: 저장 중 UI 차단)
+  bool _isSaving = false;
   // 저장 중복 방지 플래그
   bool _isSaving = false;
   // Debouncer for auto-save
@@ -68,6 +72,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   void initState() {
     super.initState();
     _session = widget.session;
+    _updateAndRecalculateCounts();
     
     debugPrint('🔍 [ActiveWorkoutPage] initState called');
     debugPrint('🔍 [ActiveWorkoutPage] isEditing: ${widget.isEditing}');
@@ -150,10 +155,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         e.sets.any((s) => !s.isCompleted));
     
     final l10n = AppLocalizations.of(context);
-    final completedSets = _session.exercises.fold<int>(
-      0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length);
-    final totalSets = _session.exercises.fold<int>(
-      0, (sum, e) => sum + e.sets.length);
     
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
@@ -223,7 +224,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                     Container(width: 1, height: 40, color: Colors.grey[700]),
                     _buildSummaryItem(
                       icon: Icons.check_circle_outline,
-                      value: '$completedSets / $totalSets',
+                      value: '$_completedSetsCount / $_totalSetsCount',
                       label: l10n.setsCompleted,
                     ),
                   ],
@@ -338,6 +339,19 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final confirmed = await _showEndWorkoutDialog(isCompleting: true);
     if (!confirmed) return;
     
+    // T25: 저장 중 로딩 UI 표시 및 사용자 입력 차단
+    if (mounted) setState(() => _isSaving = true);
+    
+    try {
+      _workoutTimer?.cancel();
+      _restTimer?.cancel();
+      
+      // Always mark as completed (both in active and edit mode)
+      _session.isCompleted = true;
+      _session.durationInSeconds = _elapsedSeconds;
+
+      await widget.repo.put(_session);
+
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
@@ -362,6 +376,30 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         if (widget.isEditing || kDebugMode) {
           if (kDebugMode) {
             debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+            print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+          }
+          Navigator.of(context).pop(true);
+        } else {
+          // 출시 모드: 광고 표시 후 홈으로 이동
+          await _adService.showInterstitialAd(
+            onAdClosed: () {
+              if (mounted) {
+                Navigator.of(context).pop(true);
+              }
+            },
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ErrorHandler.showErrorSnackBar(context, e.toString());
+        );
+
+        // Skip ads in edit mode or debug mode
+        if (widget.isEditing || kDebugMode) {
+          if (kDebugMode) {
+          debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
           }
           Navigator.of(context).pop(true);
         } else {
@@ -389,6 +427,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         setState(() => _isSaving = false);
       }
     }
+    // 성공 시에는 화면이 닫히거나 이동하므로 setState(false)는 에러 상황에서만 처리
   }
   
   /// 뒤로가기 시 중도 종료 처리
@@ -399,6 +438,12 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final confirmed = await _showEndWorkoutDialog(isCompleting: false);
     if (!confirmed) return;
     
+    if (mounted) setState(() => _isSaving = true);
+
+    try {
+      _workoutTimer?.cancel();
+      _restTimer?.cancel();
+
     _workoutTimer?.cancel();
     _restTimer?.cancel();
 
@@ -413,6 +458,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSaving = false);
+        ErrorHandler.showErrorSnackBar(context, e.toString());
+      }
         ErrorHandler.showErrorSnackBar(
           context,
           '자동 저장 실패: $e',
@@ -438,17 +486,16 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     );
     
     if (result != null && result.isNotEmpty && mounted) {
-      setState(() {
-        for (final exercise in result) {
-          _session.exercises.add(
-            Exercise(
-              name: exercise.name,
-              bodyPart: exercise.bodyPart,
-              sets: [ExerciseSet(weight: 0, reps: 0)],
-            ),
-          );
-        }
-      });
+      for (final exercise in result) {
+        _session.exercises.add(
+          Exercise(
+            name: exercise.name,
+            bodyPart: exercise.bodyPart,
+            sets: [ExerciseSet(weight: 0, reps: 0)],
+          ),
+        );
+      }
+      _updateAndRecalculateCounts();
       
       try {
         // 자동 저장
@@ -480,6 +527,18 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     super.dispose();
   }
 
+  void _updateAndRecalculateCounts() {
+    final completed = _session.exercises.fold<int>(
+      0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length);
+    final total = _session.exercises.fold<int>(
+      0, (sum, e) => sum + e.sets.length);
+
+    setState(() {
+      _completedSetsCount = completed;
+      _totalSetsCount = total;
+    });
+  }
+
   void _debouncedSave() {
     if (_saveDebounceTimer?.isActive ?? false) _saveDebounceTimer!.cancel();
     _saveDebounceTimer = Timer(const Duration(milliseconds: 1000), () {
@@ -493,10 +552,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final completedSets = _session.exercises.fold<int>(
-      0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length);
-    final totalSets = _session.exercises.fold<int>(
-      0, (sum, e) => sum + e.sets.length);
 
     return PopScope(
       canPop: false,
@@ -512,7 +567,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
               child: Column(
                 children: [
                   // 상단 헤더
-                  _buildHeader(l10n, completedSets, totalSets),
+                  _buildHeader(l10n, _completedSetsCount, _totalSetsCount),
                   
                   // 액션 바 (모두 접기/펼치기 + 순서 변경)
                   _buildActionBar(l10n),
@@ -534,6 +589,17 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             _showRestTimerOverlay 
                 ? _buildFullScreenTimerOverlay(l10n)
                 : _buildMiniFloatingTimer(l10n),
+
+          // T25: 저장 중 로딩 오버레이
+          if (_isSaving)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black54,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -1039,9 +1105,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                 ),
                 onDismissed: (direction) {
                   final deletedExercise = exercise;
-                  setState(() {
-                    _session.exercises.removeAt(index);
-                  });
+                  _session.exercises.removeAt(index);
+                  _updateAndRecalculateCounts();
                   
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -1050,9 +1115,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                       action: SnackBarAction(
                         label: '실행 취소',
                         onPressed: () {
-                          setState(() {
-                            _session.exercises.insert(index, deletedExercise);
-                          });
+                          _session.exercises.insert(index, deletedExercise);
+                          _updateAndRecalculateCounts();
                         },
                       ),
                     ),
@@ -1063,17 +1127,17 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                   exercise: exercise,
                   exerciseIndex: index,
                   onDelete: () {
-                    setState(() {
-                      _session.exercises.removeAt(index);
-                    });
+                    _session.exercises.removeAt(index);
+                    _updateAndRecalculateCounts();
                     _debouncedSave(); // Delete also triggers save
                   },
                   onUpdate: () {
-                    setState(() {});
+                    _updateAndRecalculateCounts();
                     _debouncedSave(); // Edit triggers save
                   },
                   onSetCompleted: (val) {
                     _onSetChecked(val);
+                    _updateAndRecalculateCounts();
                     _debouncedSave(); // Check triggers save
                   },
                   isWorkoutStarted: true,
