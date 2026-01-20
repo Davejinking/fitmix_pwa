@@ -318,17 +318,38 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           final isSelected = key == _selectedRoutineFilterKey;
           final isSystemTag = _systemRoutineFilterKeys.contains(key);
           
+          // Get the localized label
+          final label = _getRoutineFilterLabel(l10n, key);
+          
+          // Get color for this tag (skip for 'all')
+          final Color? tagColor = (key != 'all') 
+              ? RoutineTag.getColorForLocalizedName(label)
+              : null;
+          
+          // Determine text and border colors based on selection state
+          final Color textColor = isSelected 
+              ? (tagColor ?? Colors.white)
+              : Colors.grey;
+          
+          final Color borderColor = isSelected 
+              ? (tagColor ?? Colors.white)
+              : (isSystemTag ? Colors.white24 : Colors.white12);
+          
+          final Color backgroundColor = isSelected && tagColor != null
+              ? tagColor.withValues(alpha: 0.1)
+              : Colors.transparent;
+          
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
               label: Text(
-                _getRoutineFilterLabel(l10n, key),
+                label,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Courier',
                   letterSpacing: 0.5,
-                  color: isSelected ? Colors.white : (isSystemTag ? Colors.grey : Colors.grey[600]),
+                  color: textColor,
                 ),
               ),
               selected: isSelected,
@@ -337,14 +358,14 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                   _selectedRoutineFilterKey = key;
                 });
               },
-              backgroundColor: Colors.transparent,
-              selectedColor: Colors.transparent,
+              backgroundColor: backgroundColor,
+              selectedColor: backgroundColor,
               showCheckmark: false,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
                 side: BorderSide(
-                  color: isSelected ? Colors.white : (isSystemTag ? Colors.white24 : Colors.white12),
+                  color: borderColor,
                   width: isSelected ? 1.5 : 1.0,
                 ),
               ),
