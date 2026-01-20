@@ -59,6 +59,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 💰 광고 서비스
   final AdService _adService = AdService();
 
+  // 저장 중 상태 (T25: 저장 중 UI 차단)
+  bool _isSaving = false;
+
   @override
   void initState() {
     super.initState();
@@ -330,40 +333,51 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final confirmed = await _showEndWorkoutDialog(isCompleting: true);
     if (!confirmed) return;
     
-    _workoutTimer?.cancel();
-    _restTimer?.cancel();
+    // T25: 저장 중 로딩 UI 표시 및 사용자 입력 차단
+    if (mounted) setState(() => _isSaving = true);
     
-    // Always mark as completed (both in active and edit mode)
-    _session.isCompleted = true;
-    _session.durationInSeconds = _elapsedSeconds;
-    
-    await widget.repo.put(_session);
-    
-    HapticFeedback.heavyImpact();
-    
-    if (mounted) {
-      ErrorHandler.showSuccessSnackBar(
-        context, 
-        widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
-      );
+    try {
+      _workoutTimer?.cancel();
+      _restTimer?.cancel();
       
-      // Skip ads in edit mode or debug mode
-      if (widget.isEditing || kDebugMode) {
-        if (kDebugMode) {
-          print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
-        }
-        Navigator.of(context).pop(true);
-      } else {
-        // 출시 모드: 광고 표시 후 홈으로 이동
-        await _adService.showInterstitialAd(
-          onAdClosed: () {
-            if (mounted) {
-              Navigator.of(context).pop(true);
-            }
-          },
+      // Always mark as completed (both in active and edit mode)
+      _session.isCompleted = true;
+      _session.durationInSeconds = _elapsedSeconds;
+
+      await widget.repo.put(_session);
+
+      HapticFeedback.heavyImpact();
+
+      if (mounted) {
+        ErrorHandler.showSuccessSnackBar(
+          context,
+          widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
         );
+
+        // Skip ads in edit mode or debug mode
+        if (widget.isEditing || kDebugMode) {
+          if (kDebugMode) {
+            print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+          }
+          Navigator.of(context).pop(true);
+        } else {
+          // 출시 모드: 광고 표시 후 홈으로 이동
+          await _adService.showInterstitialAd(
+            onAdClosed: () {
+              if (mounted) {
+                Navigator.of(context).pop(true);
+              }
+            },
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ErrorHandler.showErrorSnackBar(context, e.toString());
       }
     }
+    // 성공 시에는 화면이 닫히거나 이동하므로 setState(false)는 에러 상황에서만 처리
   }
   
   /// 뒤로가기 시 중도 종료 처리
@@ -371,14 +385,23 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     final confirmed = await _showEndWorkoutDialog(isCompleting: false);
     if (!confirmed) return;
     
-    _workoutTimer?.cancel();
-    _restTimer?.cancel();
-    
-    // 현재 상태 저장 (미완료)
-    await widget.repo.put(_session);
-    
-    if (mounted) {
-      Navigator.of(context).pop(false); // false = 중도 종료
+    if (mounted) setState(() => _isSaving = true);
+
+    try {
+      _workoutTimer?.cancel();
+      _restTimer?.cancel();
+
+      // 현재 상태 저장 (미완료)
+      await widget.repo.put(_session);
+
+      if (mounted) {
+        Navigator.of(context).pop(false); // false = 중도 종료
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ErrorHandler.showErrorSnackBar(context, e.toString());
+      }
     }
   }
   
@@ -468,6 +491,17 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
             _showRestTimerOverlay 
                 ? _buildFullScreenTimerOverlay(l10n)
                 : _buildMiniFloatingTimer(l10n),
+
+          // T25: 저장 중 로딩 오버레이
+          if (_isSaving)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black54,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ),
         ],
       ),
     );

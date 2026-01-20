@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Test artifacts
+flutter_sdk/
+assets/sounds/
+assets/audio/
+setup_log.txt
+*.log

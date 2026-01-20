@@ -103,6 +103,7 @@ void main() {
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('ko'), // Force Korean locale
           home: ActiveWorkoutPage(
             session: session,
             repo: mockSessionRepo,
@@ -164,15 +165,16 @@ void main() {
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('ko'), // Force Korean locale
           home: Scaffold(body: LibraryPageV2()),
         ),
       );
 
-      // Verify Tab Switch
-      expect(find.text('EXERCISE'), findsOneWidget);
+      // Verify Tab Switch (Localized to Korean '엑서사이즈')
+      expect(find.text('엑서사이즈'), findsOneWidget);
 
       // Switch to Exercises
-      await tester.tap(find.text('EXERCISE'));
+      await tester.tap(find.text('엑서사이즈'));
       await tester.pumpAndSettle();
 
       // We can't easily click "Add Custom Exercise" and fail the seeding service
