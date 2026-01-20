@@ -54,6 +54,7 @@ void main() {
     // Default Mock Setup
     when(mockRoutineRepo.listenable()).thenAnswer((_) => ValueNotifier(fakeRoutineBox));
     when(mockRoutineRepo.listAll()).thenAnswer((_) async => []);
+    when(mockSessionRepo.listAll()).thenAnswer((_) async => []);
     when(mockUserRepo.getUserProfile()).thenAnswer((_) async => UserProfile(weight: 70, height: 175, birthDate: DateTime(1990), gender: 'M'));
     when(mockSessionRepo.ymd(any)).thenAnswer((Invocation inv) {
         final date = inv.positionalArguments[0] as DateTime;

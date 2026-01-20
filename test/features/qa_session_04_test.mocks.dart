@@ -207,6 +207,17 @@ class MockSessionRepo extends _i1.Mock implements _i3.SessionRepo {
       ) as _i4.Future<List<_i6.Session>>);
 
   @override
+  _i4.Future<List<_i6.Session>> listAll() => (super.noSuchMethod(
+        Invocation.method(
+          #listAll,
+          [],
+        ),
+        returnValue: _i4.Future<List<_i6.Session>>.value(<_i6.Session>[]),
+        returnValueForMissingStub:
+            _i4.Future<List<_i6.Session>>.value(<_i6.Session>[]),
+      ) as _i4.Future<List<_i6.Session>>);
+
+  @override
   _i4.Future<List<_i6.Session>> getWorkoutSessions() => (super.noSuchMethod(
         Invocation.method(
           #getWorkoutSessions,
