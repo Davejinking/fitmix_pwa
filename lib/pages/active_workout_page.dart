@@ -59,6 +59,9 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   // 💰 광고 서비스
   final AdService _adService = AdService();
 
+  // Debouncer for auto-save
+  Timer? _saveDebounceTimer;
+
   @override
   void initState() {
     super.initState();
@@ -420,8 +423,19 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
   void dispose() {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
+    _saveDebounceTimer?.cancel();
     _adService.dispose(); // 광고 리소스 정리
     super.dispose();
+  }
+
+  void _debouncedSave() {
+    if (_saveDebounceTimer?.isActive ?? false) _saveDebounceTimer!.cancel();
+    _saveDebounceTimer = Timer(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        widget.repo.put(_session);
+        debugPrint('💾 [ActiveWorkoutPage] Auto-saved via debounce');
+      }
+    });
   }
 
   @override
@@ -1000,9 +1014,16 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
                     setState(() {
                       _session.exercises.removeAt(index);
                     });
+                    _debouncedSave(); // Delete also triggers save
                   },
-                  onUpdate: () => setState(() {}),
-                  onSetCompleted: _onSetChecked,
+                  onUpdate: () {
+                    setState(() {});
+                    _debouncedSave(); // Edit triggers save
+                  },
+                  onSetCompleted: (val) {
+                    _onSetChecked(val);
+                    _debouncedSave(); // Check triggers save
+                  },
                   isWorkoutStarted: true,
                   isEditingEnabled: true,
                   forceExpanded: _allCardsExpanded,
