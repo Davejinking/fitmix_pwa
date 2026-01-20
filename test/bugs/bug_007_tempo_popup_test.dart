@@ -45,12 +45,14 @@ void main() {
       final minimizeIcon = find.byIcon(Icons.keyboard_arrow_down);
       final hideText = find.text('Hide');
       final minimizeText = find.text('Minimize');
+      final hideTextKorean = find.text('숨기기');
 
       // Correcting the invalid `find.anyOf` usage.
       // We check if ANY of these widgets exist.
       bool foundOption = minimizeIcon.evaluate().isNotEmpty ||
                          hideText.evaluate().isNotEmpty ||
-                         minimizeText.evaluate().isNotEmpty;
+                         minimizeText.evaluate().isNotEmpty ||
+                         hideTextKorean.evaluate().isNotEmpty;
 
       expect(foundOption, isTrue, reason: "BUG-007: Should provide an option to minimize or hide the tempo popup");
     });
