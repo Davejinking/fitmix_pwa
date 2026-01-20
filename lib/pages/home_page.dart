@@ -145,9 +145,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildMainActionCard(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               
-              // 🎯 Performance Widgets (Side by Side)
+              // 🎯 Performance Widgets (Side by Side) - Tactical HUD Style
               SlideTransition(
                 position: _slideAnimations[2],
                 child: FadeTransition(
@@ -387,18 +387,19 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         // Generate current week dates (Mon-Sun)
         final weekDays = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
         
-        return GestureDetector(
-          onTap: () {
-            // 🎯 Navigate to Analysis Screen
-            Navigator.pushNamed(context, '/analysis');
-          },
-          child: Container(
-            color: Colors.transparent, // Ensure tap area is visible
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title - Monospace (영어 고정 - Design Element) with Chevron
-                Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 🎯 Clickable Title Row
+            GestureDetector(
+              onTap: () {
+                print('🎯 Navigating to Analysis');
+                Navigator.pushNamed(context, '/analysis');
+              },
+              child: Container(
+                color: Colors.transparent,
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Row(
                   children: [
                     const Text(
                       'WEEKLY STATUS',
@@ -419,77 +420,76 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                // Day Labels + Dots - Dynamic
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: weekDays.map((date) {
-                    // Check if this is TODAY
-                    final isToday = date.year == now.year && 
-                                    date.month == now.month && 
-                                    date.day == now.day;
-                    
-                    // Check workout status
-                    final dateYmd = sessionRepo.ymd(date);
-                    final hasWorkout = workoutDates.contains(dateYmd);
-                    
-                    // Day label - Localized
-                    final dayLabels = [
-                      context.l10n.weekdayMonShort,
-                      context.l10n.weekdayTueShort,
-                      context.l10n.weekdayWedShort,
-                      context.l10n.weekdayThuShort,
-                      context.l10n.weekdayFriShort,
-                      context.l10n.weekdaySatShort,
-                      context.l10n.weekdaySunShort,
-                    ];
-                    final dayLabel = dayLabels[date.weekday - 1];
-                    
-                    return Column(
-                      children: [
-                        // A. Day Label (Highlight TODAY)
-                        SizedBox(
-                          width: 12,
-                          child: Text(
-                            dayLabel,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: isToday ? FontWeight.w900 : FontWeight.w700,
-                              color: isToday ? Colors.white : Colors.grey[700],
-                              fontFamily: 'Courier',
-                              letterSpacing: 0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // B. Status Chip (Rounded Square)
-                        Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            // Solid white for workout, hollow for inactive
-                            color: hasWorkout ? Colors.white : Colors.transparent,
-                            // Border for hollow look (inactive days)
-                            border: hasWorkout ? null : Border.all(
-                              color: Colors.white.withValues(alpha: 0.3), 
-                              width: 1.0,
-                            ),
-                            // Tactical rounded square (matching Calendar)
-                            borderRadius: BorderRadius.circular(2.0),
-                            shape: BoxShape.rectangle,
-                          ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 32),
-                Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
-                const SizedBox(height: 32),
-              ],
+              ),
             ),
-          ),
+            // Day Labels + Dots - Dynamic
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: weekDays.map((date) {
+                // Check if this is TODAY
+                final isToday = date.year == now.year && 
+                                date.month == now.month && 
+                                date.day == now.day;
+                
+                // Check workout status
+                final dateYmd = sessionRepo.ymd(date);
+                final hasWorkout = workoutDates.contains(dateYmd);
+                
+                // Day label - Localized
+                final dayLabels = [
+                  context.l10n.weekdayMonShort,
+                  context.l10n.weekdayTueShort,
+                  context.l10n.weekdayWedShort,
+                  context.l10n.weekdayThuShort,
+                  context.l10n.weekdayFriShort,
+                  context.l10n.weekdaySatShort,
+                  context.l10n.weekdaySunShort,
+                ];
+                final dayLabel = dayLabels[date.weekday - 1];
+                
+                return Column(
+                  children: [
+                    // A. Day Label (Highlight TODAY)
+                    SizedBox(
+                      width: 12,
+                      child: Text(
+                        dayLabel,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: isToday ? FontWeight.w900 : FontWeight.w700,
+                          color: isToday ? Colors.white : Colors.grey[700],
+                          fontFamily: 'Courier',
+                          letterSpacing: 0,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // B. Status Chip (Rounded Square)
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        // Solid white for workout, hollow for inactive
+                        color: hasWorkout ? Colors.white : Colors.transparent,
+                        // Border for hollow look (inactive days)
+                        border: hasWorkout ? null : Border.all(
+                          color: Colors.white.withValues(alpha: 0.3), 
+                          width: 1.0,
+                        ),
+                        // Tactical rounded square (matching Calendar)
+                        borderRadius: BorderRadius.circular(2.0),
+                        shape: BoxShape.rectangle,
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 32),
+            Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
+            const SizedBox(height: 32),
+          ],
         );
       },
     );
@@ -607,7 +607,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   }
 }
 
-// 🎯 Big Three Widget - Strength Gauge
+// 🎯 Big Three Widget - Tactical HUD Style
 class _HomeBigThreeWidget extends StatelessWidget {
   final SessionRepo sessionRepo;
   
@@ -658,75 +658,81 @@ class _HomeBigThreeWidget extends StatelessWidget {
         
         return GestureDetector(
           onTap: () {
-            // 🎯 Navigate to Analysis Screen (PR Section)
+            print('🎯 Big Three tapped - Navigating to Analysis');
             Navigator.pushNamed(context, '/analysis');
           },
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A), // Dark Grey Card
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white.withValues(alpha: 0.03), // Subtle glow
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(4), // Sharp corners
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Label
-                const Text(
-                  'BIG 3 TOTAL',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF616161),
-                    fontFamily: 'Courier',
-                    letterSpacing: 1.5,
-                  ),
+                // Label with arrow
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'BIG 3 TOTAL',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF616161),
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 10,
+                      color: Colors.grey[700],
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                // Value
+                const SizedBox(height: 12),
+                // Value - Tactical Display
                 if (hasData)
                   Text(
-                    '${total.toInt()} kg',
+                    '${total.toInt()}',
                     style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 32,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF69F0AE), // Neon Green Accent
+                      color: Color(0xFF69F0AE), // Neon Green
                       fontFamily: 'Courier',
-                      letterSpacing: 1.0,
+                      letterSpacing: 0,
+                      height: 1.0,
                     ),
                   )
                 else
                   const Text(
-                    '-- kg',
+                    '--',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 32,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF616161),
                       fontFamily: 'Courier',
-                      letterSpacing: 1.0,
+                      letterSpacing: 0,
+                      height: 1.0,
                     ),
                   ),
-                const SizedBox(height: 8),
-                // Hint
-                Row(
-                  children: [
-                    Text(
-                      hasData ? 'VIEW PRs' : 'NO DATA',
-                      style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF616161),
-                        fontFamily: 'Courier',
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    if (hasData)
-                      Icon(
-                        Icons.chevron_right,
-                        size: 12,
-                        color: Colors.grey[700],
-                      ),
-                  ],
+                const SizedBox(height: 4),
+                // Unit
+                Text(
+                  hasData ? 'KG' : 'NO DATA',
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF616161),
+                    fontFamily: 'Courier',
+                    letterSpacing: 1.0,
+                  ),
                 ),
               ],
             ),
@@ -737,7 +743,7 @@ class _HomeBigThreeWidget extends StatelessWidget {
   }
 }
 
-// 🎯 Volume Widget - Workload Gauge
+// 🎯 Volume Widget - Tactical HUD Style
 class _HomeVolumeWidget extends StatelessWidget {
   final SessionRepo sessionRepo;
   
@@ -766,82 +772,87 @@ class _HomeVolumeWidget extends StatelessWidget {
         final volume = snapshot.data ?? 0;
         final hasData = volume > 0;
         
-        // Convert to tons if > 1000 kg
-        final displayValue = volume >= 1000 
-            ? '${(volume / 1000).toStringAsFixed(1)} t'
-            : '${volume.toInt()} kg';
+        // Display logic
+        String displayValue;
+        String displayUnit;
+        
+        if (!hasData) {
+          displayValue = '--';
+          displayUnit = 'NO DATA';
+        } else if (volume >= 1000) {
+          displayValue = (volume / 1000).toStringAsFixed(1);
+          displayUnit = 'TONS';
+        } else {
+          displayValue = volume.toInt().toString();
+          displayUnit = 'KG';
+        }
         
         return GestureDetector(
           onTap: () {
-            // 🎯 Navigate to Analysis Screen (Volume Section)
+            print('🎯 Volume tapped - Navigating to Analysis');
             Navigator.pushNamed(context, '/analysis');
           },
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A), // Dark Grey Card
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white.withValues(alpha: 0.03), // Subtle glow
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(4), // Sharp corners
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Label
-                const Text(
-                  'WEEKLY VOL',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF616161),
-                    fontFamily: 'Courier',
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Value
-                if (hasData)
-                  Text(
-                    displayValue,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF448AFF), // Electric Blue Accent
-                      fontFamily: 'Courier',
-                      letterSpacing: 1.0,
-                    ),
-                  )
-                else
-                  const Text(
-                    '-- kg',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF616161),
-                      fontFamily: 'Courier',
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                // Hint
+                // Label with arrow
                 Row(
                   children: [
-                    Text(
-                      hasData ? 'VIEW STATS' : 'NO DATA',
-                      style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF616161),
-                        fontFamily: 'Courier',
-                        letterSpacing: 1.0,
+                    const Expanded(
+                      child: Text(
+                        'WEEKLY VOL',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF616161),
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.5,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    if (hasData)
-                      Icon(
-                        Icons.chevron_right,
-                        size: 12,
-                        color: Colors.grey[700],
-                      ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 10,
+                      color: Colors.grey[700],
+                    ),
                   ],
+                ),
+                const SizedBox(height: 12),
+                // Value - Tactical Display
+                Text(
+                  displayValue,
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: hasData 
+                        ? const Color(0xFF448AFF) // Electric Blue
+                        : const Color(0xFF616161),
+                    fontFamily: 'Courier',
+                    letterSpacing: 0,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // Unit
+                Text(
+                  displayUnit,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF616161),
+                    fontFamily: 'Courier',
+                    letterSpacing: 1.0,
+                  ),
                 ),
               ],
             ),
