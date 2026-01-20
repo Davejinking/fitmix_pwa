@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../core/iron_theme.dart';
+import '../services/pro_service.dart';
 
 /// Iron Log PRO Paywall 페이지
 /// 고급스러운 프리미엄 업그레이드 유도 화면
@@ -524,16 +525,52 @@ class _PaywallPageState extends State<PaywallPage>
     HapticFeedback.lightImpact();
     print('🔄 구매 복원 시작');
     
-    // TODO: RevenueCat 연동
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('구매 복원 기능 준비 중'),
-        backgroundColor: IronTheme.surface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    setState(() => _isLoading = true);
+
+    try {
+      final isRestored = await proService.restorePurchases();
+
+      if (!mounted) return;
+
+      if (isRestored) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('구매 내역이 복원되었습니다.'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('복원할 구매 내역이 없습니다.'),
+            backgroundColor: IronTheme.surface,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('복원 중 오류가 발생했습니다.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }
