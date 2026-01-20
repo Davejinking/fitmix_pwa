@@ -66,25 +66,31 @@ class ExerciseSeedingService {
 
     int insertCount = 0;
     int updateCount = 0;
+    final Map<dynamic, ExerciseLibraryItem> batchOperations = {};
 
     for (final jsonExercise in jsonExercises) {
       if (existingIds.contains(jsonExercise.id)) {
         // 기존 운동: 업데이트 필요한지 확인
         final existingExercise = _box.get(jsonExercise.id);
         if (existingExercise != null && _needsUpdate(existingExercise, jsonExercise)) {
-          await _box.put(jsonExercise.id, jsonExercise.copyWith(
+          final updatedExercise = jsonExercise.copyWith(
             createdAt: existingExercise.createdAt, // 생성일은 유지
             updatedAt: DateTime.now(),
-          ));
+          );
+          batchOperations[jsonExercise.id] = updatedExercise;
           updateCount++;
           print('🔄 업데이트: ${jsonExercise.nameKr} (${jsonExercise.id})');
         }
       } else {
         // 신규 운동: 추가
-        await _box.put(jsonExercise.id, jsonExercise);
+        batchOperations[jsonExercise.id] = jsonExercise;
         insertCount++;
         print('➕ 신규 추가: ${jsonExercise.nameKr} (${jsonExercise.id})');
       }
+    }
+
+    if (batchOperations.isNotEmpty) {
+      await _box.putAll(batchOperations);
     }
 
     // 삭제된 운동 처리 (JSON에 없지만 DB에 있는 경우)
