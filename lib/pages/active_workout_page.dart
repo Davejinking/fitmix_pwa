@@ -449,6 +449,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
 
     setState(() => _isSaving = true);
     
+    setState(() => _isSaving = true);
+
     try {
       // 현재 상태 저장 (미완료)
       await widget.repo.put(_session);

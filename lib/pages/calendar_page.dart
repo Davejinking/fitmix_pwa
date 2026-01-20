@@ -40,8 +40,7 @@ class _CalendarPageState extends State<CalendarPage> {
     repo = getIt<SessionRepo>();
     exerciseRepo = getIt<ExerciseLibraryRepo>();
     _loadSession();
-    _loadWorkoutDates();
-    _loadRestDates();
+    _loadAllSessionDates();
   }
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
@@ -76,27 +75,14 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  Future<void> _loadWorkoutDates() async {
+  Future<void> _loadAllSessionDates() async {
     try {
-      // 최적화된 메서드 사용
-      final dates = await repo.getAllWorkoutDates();
+      // 최적화된 메서드 사용 (한 번의 순회로 두 데이터 모두 로드)
+      final result = await repo.getAllSessionDates();
       if (mounted) {
         setState(() {
-          _workoutDates = dates;
-        });
-      }
-    } catch (e) {
-      // 무시
-    }
-  }
-
-  Future<void> _loadRestDates() async {
-    try {
-      // 최적화된 메서드 사용
-      final dates = await repo.getAllRestDates();
-      if (mounted) {
-        setState(() {
-          _restDates = dates;
+          _workoutDates = result.workoutDates;
+          _restDates = result.restDates;
         });
       }
     } catch (e) {
@@ -107,7 +93,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _saveRestDay() async {
     try {
       await repo.markRest(repo.ymd(_selectedDay), rest: true);
-      await _loadRestDates();
+      await _loadAllSessionDates();
       if (mounted) {
         setState(() {});
         ErrorHandler.showSuccessSnackBar(context, context.l10n.restDaySet);
@@ -122,7 +108,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _cancelRestDay() async {
     try {
       await repo.markRest(repo.ymd(_selectedDay), rest: false);
-      await _loadRestDates();
+      await _loadAllSessionDates();
       if (mounted) {
         setState(() {});
         ErrorHandler.showSuccessSnackBar(context, context.l10n.restDayUnset);
@@ -149,8 +135,7 @@ class _CalendarPageState extends State<CalendarPage> {
     if (session != null) {
       try {
         await repo.put(session);
-        await _loadWorkoutDates();
-        await _loadRestDates();
+        await _loadAllSessionDates();
       } catch (e) {
         if (mounted) {
           ErrorHandler.showErrorSnackBar(context, '저장 실패: $e');
@@ -199,7 +184,7 @@ class _CalendarPageState extends State<CalendarPage> {
       // 운동 완료 후 데이터 새로고침
       if (mounted) {
         await _loadSession();
-        await _loadWorkoutDates();
+        await _loadAllSessionDates();
       }
     }
   }

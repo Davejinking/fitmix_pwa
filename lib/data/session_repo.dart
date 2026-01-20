@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/session.dart';
 import '../models/exercise_set.dart';
@@ -81,6 +82,9 @@ abstract class SessionRepo {
 
   /// 휴식일로 지정된 모든 날짜 조회 (최적화)
   Future<Set<String>> getAllRestDates();
+
+  /// 운동 날짜와 휴식 날짜를 한 번에 조회 (최적화)
+  Future<({Set<String> workoutDates, Set<String> restDates})> getAllSessionDates();
   
   /// 특정 운동의 최근 기록들을 조회 (최대 5개)
   Future<List<ExerciseHistoryRecord>> getRecentExerciseHistory(String exerciseName, {int limit = 5});
@@ -288,7 +292,7 @@ class HiveSessionRepo implements SessionRepo {
         try {
           return session.isWorkoutDay;
         } catch (e) {
-          print('⚠️ 세션 확인 중 오류: ${session.ymd}, $e');
+          debugPrint('⚠️ 세션 확인 중 오류: ${session.ymd}, $e');
           return false;
         }
       }).toList();
@@ -296,7 +300,7 @@ class HiveSessionRepo implements SessionRepo {
       workoutSessions.sort((a, b) => a.ymd.compareTo(b.ymd));
       return workoutSessions;
     } catch (e) {
-      print('❌ 운동 세션 조회 중 오류: $e');
+      debugPrint('❌ 운동 세션 조회 중 오류: $e');
       return [];
     }
   }
@@ -310,7 +314,7 @@ class HiveSessionRepo implements SessionRepo {
           .map((session) => session.ymd)
           .toSet();
     } catch (e) {
-      print('❌ 운동 날짜 조회 중 오류: $e');
+      debugPrint('❌ 운동 날짜 조회 중 오류: $e');
       return {};
     }
   }
@@ -323,8 +327,28 @@ class HiveSessionRepo implements SessionRepo {
           .map((session) => session.ymd)
           .toSet();
     } catch (e) {
-      print('❌ 휴식 날짜 조회 중 오류: $e');
+      debugPrint('❌ 휴식 날짜 조회 중 오류: $e');
       return {};
+    }
+  }
+
+  @override
+  Future<({Set<String> workoutDates, Set<String> restDates})> getAllSessionDates() async {
+    try {
+      final workoutDates = <String>{};
+      final restDates = <String>{};
+
+      for (final session in _box.values) {
+        if (session.isWorkoutDay) {
+          workoutDates.add(session.ymd);
+        } else if (session.isRest) {
+          restDates.add(session.ymd);
+        }
+      }
+      return (workoutDates: workoutDates, restDates: restDates);
+    } catch (e) {
+      debugPrint('❌ 세션 날짜 전체 조회 중 오류: $e');
+      return (workoutDates: <String>{}, restDates: <String>{});
     }
   }
 
@@ -351,6 +375,7 @@ class HiveSessionRepo implements SessionRepo {
       for (final date in sortedDates) {
         if (records.length >= limit) break;
 
+        final session = _box.get(key);
         final session = await _box.get(date);
         if (session == null) continue;
         
@@ -359,6 +384,11 @@ class HiveSessionRepo implements SessionRepo {
         final exercise = matches.isEmpty ? null : matches.first;
 
         if (exercise != null && exercise.sets.isNotEmpty) {
+          debugPrint('✅ 매칭된 운동 발견: ${exercise.name}, 세트 수: ${exercise.sets.length}');
+          
+          // 완료된 세트만 필터링
+          final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
+          debugPrint('  - 완료된 세트 수: ${completedSets.length}');
           // 완료된 세트만 필터링
           final completedSets = exercise.sets.where((set) => set.isCompleted).toList();
           
@@ -368,13 +398,19 @@ class HiveSessionRepo implements SessionRepo {
               sets: completedSets,
               memo: exercise.memo, // 메모 추가
             ));
+            debugPrint('  - 기록 추가됨: ${session.ymd}, 메모: ${exercise.memo ?? "없음"}');
+          }
+        }
+      }
+      
+      debugPrint('🔍 최종 기록 수: ${records.length}');
           }
         }
       }
       
       return records;
     } catch (e) {
-      print('❌ 운동 기록 조회 중 오류: $e');
+      debugPrint('❌ 운동 기록 조회 중 오류: $e');
       return [];
     }
   }
@@ -556,9 +592,9 @@ class HiveSessionRepo implements SessionRepo {
       // 더미 데이터 저장
       await Future.wait(dummySessions.map((session) => put(session)));
       
-      print('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (영어 원본명)');
+      debugPrint('✅ 더미 운동 데이터 생성 완료: ${dummySessions.length}개 세션 (영어 원본명)');
     } catch (e) {
-      print('❌ 더미 데이터 생성 중 오류: $e');
+      debugPrint('❌ 더미 데이터 생성 중 오류: $e');
     }
   }
 }
