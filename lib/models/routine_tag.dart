@@ -121,8 +121,9 @@ class RoutineTag {
       return const Color(0xFFFFFFFF);
     }
     
-    // Default for custom tags
-    return Colors.white;
+    // 🔥 FIX: Default for custom tags - use Neon Green instead of white
+    // This makes custom tags more visible and distinct
+    return const Color(0xFF69F0AE); // Neon Green
   }
 }
 

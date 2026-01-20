@@ -392,14 +392,21 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             return bTime.compareTo(aTime);
           });
 
-        // 🔥 동적 태그 수집: System Tags + User Tags
+        // 🔥 FIX: Build unique tag list without duplicates
+        // Get all localized system tag labels
+        final systemTagLabels = _systemRoutineFilterKeys
+            .map((key) => _getRoutineFilterLabel(l10n, key))
+            .toSet();
+        
+        // Get user tags from routines, excluding system tags (by localized label)
         final userTags = routines
             .expand((r) => r.tags)
+            .where((tag) => !systemTagLabels.contains(tag))
             .toSet()
-            .where((t) => !_systemRoutineFilterKeys.contains(t.toLowerCase()))
             .toList()
           ..sort();
         
+        // Combine system keys with user tags (no duplicates)
         _allRoutineFilterKeys = [..._systemRoutineFilterKeys, ...userTags];
 
         // 🔥 검색 필터 적용
@@ -410,11 +417,30 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           }).toList();
         }
 
-        // 🔥 태그 필터 적용
+        // 🔥 FIX: 태그 필터 적용 with bounds checking
         if (_selectedRoutineFilterKey != 'all') {
+          // Get the localized label for the selected key
+          final selectedLabel = _systemRoutineFilterKeys.contains(_selectedRoutineFilterKey)
+              ? _getRoutineFilterLabel(l10n, _selectedRoutineFilterKey)
+              : _selectedRoutineFilterKey;
+          
           routines = routines.where((routine) {
-            return routine.tags.any((tag) => tag.toLowerCase() == _selectedRoutineFilterKey.toLowerCase());
+            return routine.tags.contains(selectedLabel);
           }).toList();
+          
+          // 🔥 FIX: Reset filter if no routines match (prevents RangeError)
+          if (routines.isEmpty && _selectedRoutineFilterKey != 'all') {
+            // Check if the selected filter key still exists in available tags
+            if (!_allRoutineFilterKeys.contains(_selectedRoutineFilterKey)) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  setState(() {
+                    _selectedRoutineFilterKey = 'all';
+                  });
+                }
+              });
+            }
+          }
         }
 
         return Column(
