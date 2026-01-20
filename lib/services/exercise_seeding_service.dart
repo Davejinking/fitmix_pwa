@@ -60,8 +60,8 @@ class ExerciseSeedingService {
       return;
     }
 
-    // 현재 DB의 운동 ID 목록
-    final existingIds = _box.keys.cast<String>().toSet();
+    // 현재 DB의 운동 ID 목록 (최적화: Set 생성 제거)
+    // final existingIds = _box.keys.cast<String>().toSet(); // 메모리 낭비 제거
     final jsonIds = jsonExercises.map((e) => e.id).toSet();
 
     int insertCount = 0;
@@ -69,7 +69,7 @@ class ExerciseSeedingService {
     final Map<dynamic, ExerciseLibraryItem> batchOperations = {};
 
     for (final jsonExercise in jsonExercises) {
-      if (existingIds.contains(jsonExercise.id)) {
+      if (_box.containsKey(jsonExercise.id)) {
         // 기존 운동: 업데이트 필요한지 확인
         final existingExercise = _box.get(jsonExercise.id);
         if (existingExercise != null && _needsUpdate(existingExercise, jsonExercise)) {
@@ -94,12 +94,14 @@ class ExerciseSeedingService {
     }
 
     // 삭제된 운동 처리 (JSON에 없지만 DB에 있는 경우)
-    final deletedIds = existingIds.difference(jsonIds);
-    for (final deletedId in deletedIds) {
-      final deletedExercise = _box.get(deletedId);
-      if (deletedExercise != null) {
-        print('⚠️ JSON에서 제거된 운동 발견: ${deletedExercise.nameKr} (${deletedId})');
-        // 실제 삭제는 하지 않고 로그만 남김 (사용자 데이터 보호)
+    // 최적화: existingIds Set을 만들지 않고 keys를 순회하며 확인
+    for (final key in _box.keys) {
+      if (!jsonIds.contains(key)) {
+        final deletedExercise = _box.get(key);
+        if (deletedExercise != null) {
+          print('⚠️ JSON에서 제거된 운동 발견: ${deletedExercise.nameKr} (${key})');
+          // 실제 삭제는 하지 않고 로그만 남김 (사용자 데이터 보호)
+        }
       }
     }
 
