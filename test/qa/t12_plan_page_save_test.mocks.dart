@@ -200,6 +200,20 @@ class MockSessionRepo extends _i1.Mock implements _i2.SessionRepo {
       ) as _i3.Future<Set<String>>);
 
   @override
+  _i3.Future<({Set<String> restDates, Set<String> workoutDates})>
+      getAllSessionDates() => (super.noSuchMethod(
+            Invocation.method(
+              #getAllSessionDates,
+              [],
+            ),
+            returnValue: _i3.Future<
+                ({
+                  Set<String> restDates,
+                  Set<String> workoutDates
+                })>.value((restDates: <String>{}, workoutDates: <String>{})),
+          ) as _i3.Future<({Set<String> restDates, Set<String> workoutDates})>);
+
+  @override
   _i3.Future<List<_i2.ExerciseHistoryRecord>> getRecentExerciseHistory(
     String? exerciseName, {
     int? limit = 5,

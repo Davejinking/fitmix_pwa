@@ -33,6 +33,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   final List<String> _systemRoutineFilterKeys = ['all', 'push', 'pull', 'legs', 'upper', 'lower', 'fullBody'];
   String _selectedRoutineFilterKey = 'all';
   List<String> _allRoutineFilterKeys = [];
+  Map<String, int> _userTagColors = {}; // 🎨 Store user-defined tag colors
   
   String _routineSearchQuery = '';
   final TextEditingController _routineSearchController = TextEditingController();
@@ -321,8 +322,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           final label = _getRoutineFilterLabel(l10n, key);
           
           // Resolve color for this tag (skip for 'all')
+          // 🔥 FIX: Pass user-defined colors to respect manual color selection
           final color = (key != 'all') 
-              ? RoutineTag.getColorForLocalizedName(label)
+              ? RoutineTag.getColorForLocalizedName(label, userTagColors: _userTagColors)
               : Colors.white;
           
           return Padding(
@@ -392,6 +394,12 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             return bTime.compareTo(aTime);
           });
 
+        // 🎨 FIX: Build map of user-defined tag colors from all routines
+        _userTagColors.clear();
+        for (final routine in routines) {
+          _userTagColors.addAll(routine.tagColors);
+        }
+
         // 🔥 FIX: Build unique tag list without duplicates
         // Get all localized system tag labels
         final systemTagLabels = _systemRoutineFilterKeys
@@ -409,6 +417,19 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         // Combine system keys with user tags (no duplicates)
         _allRoutineFilterKeys = [..._systemRoutineFilterKeys, ...userTags];
 
+        // 🔥 FIX: Validate current filter selection
+        // If the selected filter no longer exists, reset to 'all'
+        if (!_allRoutineFilterKeys.contains(_selectedRoutineFilterKey)) {
+          // Use post-frame callback to avoid setState during build
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _selectedRoutineFilterKey = 'all';
+              });
+            }
+          });
+        }
+
         // 🔥 검색 필터 적용
         if (_routineSearchQuery.isNotEmpty) {
           routines = routines.where((routine) {
@@ -417,7 +438,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           }).toList();
         }
 
-        // 🔥 FIX: 태그 필터 적용 with bounds checking
+        // 🔥 태그 필터 적용
         if (_selectedRoutineFilterKey != 'all') {
           // Get the localized label for the selected key
           final selectedLabel = _systemRoutineFilterKeys.contains(_selectedRoutineFilterKey)
@@ -427,20 +448,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           routines = routines.where((routine) {
             return routine.tags.contains(selectedLabel);
           }).toList();
-          
-          // 🔥 FIX: Reset filter if no routines match (prevents RangeError)
-          if (routines.isEmpty && _selectedRoutineFilterKey != 'all') {
-            // Check if the selected filter key still exists in available tags
-            if (!_allRoutineFilterKeys.contains(_selectedRoutineFilterKey)) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  setState(() {
-                    _selectedRoutineFilterKey = 'all';
-                  });
-                }
-              });
-            }
-          }
         }
 
         return Column(
@@ -655,10 +662,29 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     
     if (confirmed == true && mounted) {
       try {
+        // 🔥 FIX: Capture current filter BEFORE deletion
+        final currentFilterKey = _selectedRoutineFilterKey;
+        final currentFilterLabel = _systemRoutineFilterKeys.contains(currentFilterKey)
+            ? _getRoutineFilterLabel(l10n, currentFilterKey)
+            : currentFilterKey;
+        
         final routineRepo = getIt<RoutineRepo>();
         await routineRepo.delete(routine.id);
         
         if (mounted) {
+          // 🔥 FIX: Check if the current filter still exists after deletion
+          // This prevents RangeError when the last routine with a custom tag is deleted
+          final remainingRoutines = await routineRepo.listAll();
+          final allTags = remainingRoutines.expand((r) => r.tags).toSet();
+          
+          // If current filter was a custom tag and no longer exists, reset to 'all'
+          if (!_systemRoutineFilterKeys.contains(currentFilterKey) && 
+              !allTags.contains(currentFilterLabel)) {
+            setState(() {
+              _selectedRoutineFilterKey = 'all';
+            });
+          }
+          
           ErrorHandler.showSuccessSnackBar(context, l10n.routineDeleted);
         }
       } catch (e) {
@@ -713,11 +739,13 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     
     final routineName = result['name'] as String;
     final selectedTags = result['tags'] as List<String>;
+    final tagColors = result['tagColors'] as Map<String, int>; // 🎨 Get user-selected colors
 
     if (routineName.isNotEmpty && mounted) {
       try {
         print('🔍 [CREATE] Selected exercises count: ${selected.length}');
         print('🔍 [CREATE] Selected tags: $selectedTags');
+        print('🎨 [CREATE] Tag colors: $tagColors');
         for (var i = 0; i < selected.length; i++) {
           print('  [$i] ${selected[i].name}');
         }
@@ -727,6 +755,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           name: routineName,
           exercises: selected.map((e) => e.copyWith()).toList(),
           tags: selectedTags,
+          tagColors: tagColors, // 🎨 Store user-selected colors
         );
         
         print('🔍 [CREATE] Routine created with ${routine.exercises.length} exercises and ${routine.tags.length} tags');
@@ -746,6 +775,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         }
         
         if (mounted) {
+          // 🔥 FIX: Force UI refresh immediately after creation
+          setState(() {
+            // This will trigger rebuild and update the filter bar
+          });
+          
           ErrorHandler.showSuccessSnackBar(context, AppLocalizations.of(context).routineSaved);
         }
       } catch (e) {
@@ -882,7 +916,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _customTagController = TextEditingController();
   final Set<String> _selectedTags = {};
-  final Map<String, Color> _tagColors = {}; // Store colors for custom tags
+  final Map<String, int> _tagColors = {}; // 🎨 Store color values (ARGB int) for custom tags
 
   @override
   void dispose() {
@@ -1019,7 +1053,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                 if (tag.isNotEmpty) {
                   setState(() {
                     _selectedTags.add(tag);
-                    _tagColors[tag] = selectedColor;
+                    _tagColors[tag] = selectedColor.value; // 🎨 Store as int (ARGB)
                   });
                   Navigator.pop(context);
                 }
@@ -1034,7 +1068,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
   Color _getTagColor(String tag) {
     // Check if it's a custom tag with stored color
     if (_tagColors.containsKey(tag)) {
-      return _tagColors[tag]!;
+      return Color(_tagColors[tag]!); // Convert int to Color
     }
     // Check if it's a system preset
     return RoutineTag.getColorForKey(tag, defaultColor: const Color(0xFF69F0AE));
@@ -1243,6 +1277,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
               Navigator.pop(context, {
                 'name': name,
                 'tags': _selectedTags.toList(),
+                'tagColors': _tagColors, // 🎨 Return user-selected colors
               });
             }
           },

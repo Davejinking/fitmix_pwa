@@ -139,15 +139,6 @@ class MockSessionRepo extends _i1.Mock implements _i3.SessionRepo {
       ) as _i4.Future<void>);
 
   @override
-  _i4.Future<List<_i6.Session>> listAll() => (super.noSuchMethod(
-        Invocation.method(
-          #listAll,
-          [],
-        ),
-        returnValue: _i4.Future<List<_i6.Session>>.value(<_i6.Session>[]),
-      ) as _i4.Future<List<_i6.Session>>);
-
-  @override
   _i4.Future<void> markRest(
     String? ymd, {
     required bool? rest,
@@ -206,6 +197,38 @@ class MockSessionRepo extends _i1.Mock implements _i3.SessionRepo {
         ),
         returnValue: _i4.Future<List<_i6.Session>>.value(<_i6.Session>[]),
       ) as _i4.Future<List<_i6.Session>>);
+
+  @override
+  _i4.Future<Set<String>> getAllWorkoutDates() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllWorkoutDates,
+          [],
+        ),
+        returnValue: _i4.Future<Set<String>>.value(<String>{}),
+      ) as _i4.Future<Set<String>>);
+
+  @override
+  _i4.Future<Set<String>> getAllRestDates() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllRestDates,
+          [],
+        ),
+        returnValue: _i4.Future<Set<String>>.value(<String>{}),
+      ) as _i4.Future<Set<String>>);
+
+  @override
+  _i4.Future<({Set<String> restDates, Set<String> workoutDates})>
+      getAllSessionDates() => (super.noSuchMethod(
+            Invocation.method(
+              #getAllSessionDates,
+              [],
+            ),
+            returnValue: _i4.Future<
+                ({
+                  Set<String> restDates,
+                  Set<String> workoutDates
+                })>.value((restDates: <String>{}, workoutDates: <String>{})),
+          ) as _i4.Future<({Set<String> restDates, Set<String> workoutDates})>);
 
   @override
   _i4.Future<List<_i3.ExerciseHistoryRecord>> getRecentExerciseHistory(

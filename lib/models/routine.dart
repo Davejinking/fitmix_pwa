@@ -25,6 +25,9 @@ class Routine extends HiveObject {
   @HiveField(5)
   List<String> tags; // 🔥 Dynamic tags: ["CHEST", "PUSH", "#MORNING"]
 
+  @HiveField(6)
+  Map<String, int> tagColors; // 🎨 Tag name -> Color value (ARGB int)
+
   Routine({
     required this.id,
     required this.name,
@@ -32,8 +35,10 @@ class Routine extends HiveObject {
     DateTime? createdAt,
     this.lastUsedAt,
     List<String>? tags,
+    Map<String, int>? tagColors,
   }) : createdAt = createdAt ?? DateTime.now(),
-       tags = tags ?? [];
+       tags = tags ?? [],
+       tagColors = tagColors ?? {};
 
   /// Routine 객체를 복사하여 새로운 인스턴스를 생성합니다.
   Routine copyWith({
@@ -43,6 +48,7 @@ class Routine extends HiveObject {
     DateTime? createdAt,
     DateTime? lastUsedAt,
     List<String>? tags,
+    Map<String, int>? tagColors,
   }) {
     return Routine(
       id: id ?? this.id,
@@ -51,6 +57,7 @@ class Routine extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
       tags: tags ?? List.from(this.tags),
+      tagColors: tagColors ?? Map.from(this.tagColors),
     );
   }
 

@@ -88,9 +88,15 @@ class RoutineTag {
   
   /// Get color for a localized tag name (supports multilingual)
   /// This is useful for filter bars where tags are displayed in user's locale
-  static Color getColorForLocalizedName(String tagName) {
+  /// 
+  /// Priority:
+  /// 1. System preset tags (hardcoded colors)
+  /// 2. User-defined colors (from routine.tagColors map)
+  /// 3. Auto-generated hash-based color (fallback)
+  static Color getColorForLocalizedName(String tagName, {Map<String, int>? userTagColors}) {
     final name = tagName.trim();
     
+    // PRIORITY 1: System Preset Tags (Hardcoded Neon Colors)
     // PUSH (Red)
     if (['PUSH', 'プッシュ', '미는 운동'].contains(name)) {
       return const Color(0xFFFF5252);
@@ -121,9 +127,16 @@ class RoutineTag {
       return const Color(0xFFFFFFFF);
     }
     
-    // 🔥 FIX: Default for custom tags - use Neon Green instead of white
-    // This makes custom tags more visible and distinct
-    return const Color(0xFF69F0AE); // Neon Green
+    // PRIORITY 2: User-Defined Color (Respect User's Choice!)
+    // 🔥 FIX: Check if user manually selected a color for this tag
+    if (userTagColors != null && userTagColors.containsKey(name)) {
+      return Color(userTagColors[name]!);
+    }
+    
+    // PRIORITY 3: Auto-Neon (Hash-Based Fallback)
+    // 🎨 Generate deterministic color for custom tags without user-defined color
+    final hash = name.codeUnits.fold(0, (prev, element) => prev + element);
+    return neonPalette[hash % neonPalette.length];
   }
 }
 
