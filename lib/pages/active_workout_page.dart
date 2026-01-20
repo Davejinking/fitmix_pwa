@@ -355,12 +355,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
-    // Always mark as completed (both in active and edit mode)
-    _session.isCompleted = true;
-    _session.durationInSeconds = _elapsedSeconds;
-    
-    try {
-      await widget.repo.put(_session);
     setState(() => _isSaving = true);
     
     try {
@@ -370,19 +364,6 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
 
       await widget.repo.put(_session);
 
-      HapticFeedback.heavyImpact();
-    } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
-    }
-    
-    if (mounted) {
-      ErrorHandler.showSuccessSnackBar(
-        context, 
-        widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
-      );
-      
       HapticFeedback.heavyImpact();
 
       if (mounted) {
@@ -394,6 +375,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         // Skip ads in edit mode or debug mode
         if (widget.isEditing || kDebugMode) {
           if (kDebugMode) {
+            debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
             print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
           }
           Navigator.of(context).pop(true);
@@ -440,6 +422,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         );
         // 타이머 재개 등 복구 로직이 필요할 수 있음
       }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
     // 성공 시에는 화면이 닫히거나 이동하므로 setState(false)는 에러 상황에서만 처리
   }
@@ -460,6 +446,8 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
 
     _workoutTimer?.cancel();
     _restTimer?.cancel();
+
+    setState(() => _isSaving = true);
     
     try {
       // 현재 상태 저장 (미완료)
@@ -481,19 +469,10 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         // 여기서는 사용자 경험을 위해 에러 표시 후 종료 허용
         Navigator.of(context).pop(false);
       }
-    setState(() => _isSaving = true);
-
-    try {
-      // 현재 상태 저장 (미완료)
-      await widget.repo.put(_session);
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
       }
-    }
-    
-    if (mounted) {
-      Navigator.of(context).pop(false); // false = 중도 종료
     }
   }
   
