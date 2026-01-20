@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class IronAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool automaticallyImplyLeading;
+  final String? title;
 
   const IronAppBar({
     super.key,
     this.actions,
     this.automaticallyImplyLeading = true,
+    this.title,
   });
 
   @override
@@ -19,10 +21,10 @@ class IronAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0, // No shadow
       centerTitle: false, // Left aligned
       automaticallyImplyLeading: automaticallyImplyLeading,
-      title: const Text(
-        'IRON LOG',
+      title: Text(
+        title ?? 'IRON LOG',
         style: TextStyle(
-          fontSize: 30,
+          fontSize: title != null ? 18 : 30,
           letterSpacing: 2.0,
           color: Colors.white,
           fontWeight: FontWeight.w900,

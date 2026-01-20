@@ -469,15 +469,29 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title - Monospace (영어 고정 - Design Element)
-            const Text(
-              'MONTHLY GOAL',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF616161), // Colors.grey[700]
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
-              ),
+            Row(
+              children: [
+                const Text(
+                  'MONTHLY GOAL',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF616161), // Colors.grey[700]
+                    fontFamily: 'Courier',
+                    letterSpacing: 2.0,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 14, color: Color(0xFF616161)),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/goal_settings');
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  splashRadius: 16,
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             // Progress number - big
