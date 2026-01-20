@@ -607,7 +607,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   }
 }
 
-// 🎯 Big Three Widget - Tactical HUD Style
+// 🎯 Big Three Widget - Tactical HUD Style (FORCED)
 class _HomeBigThreeWidget extends StatelessWidget {
   final SessionRepo sessionRepo;
   
@@ -656,83 +656,63 @@ class _HomeBigThreeWidget extends StatelessWidget {
         final total = snapshot.data ?? 0;
         final hasData = total > 0;
         
+        // Display value
+        final displayValue = hasData ? '${total.toInt()} KG' : '-- KG';
+        
         return GestureDetector(
           onTap: () {
             print('🎯 Big Three tapped - Navigating to Analysis');
             Navigator.pushNamed(context, '/analysis');
           },
           child: Container(
-            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.03), // Subtle glow
+              color: Colors.transparent, // FORCE TRANSPARENT
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.15),
-                width: 1,
+                color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
+                width: 1.0,
               ),
-              borderRadius: BorderRadius.circular(4), // Sharp corners
+              borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Label with arrow
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
+                // Left Side: Label & Value
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
                         'BIG 3 TOTAL',
                         style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF616161),
-                          fontFamily: 'Courier',
+                          color: Colors.grey,
+                          fontSize: 10,
                           letterSpacing: 1.5,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Courier',
                         ),
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 10,
-                      color: Colors.grey[700],
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        displayValue,
+                        style: TextStyle(
+                          color: hasData 
+                              ? const Color(0xFF69F0AE) // Neon Green
+                              : Colors.grey[700],
+                          fontSize: 24,
+                          fontFamily: 'Courier',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
-                // Value - Tactical Display
-                if (hasData)
-                  Text(
-                    '${total.toInt()}',
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF69F0AE), // Neon Green
-                      fontFamily: 'Courier',
-                      letterSpacing: 0,
-                      height: 1.0,
-                    ),
-                  )
-                else
-                  const Text(
-                    '--',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF616161),
-                      fontFamily: 'Courier',
-                      letterSpacing: 0,
-                      height: 1.0,
-                    ),
-                  ),
-                const SizedBox(height: 4),
-                // Unit
-                Text(
-                  hasData ? 'KG' : 'NO DATA',
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF616161),
-                    fontFamily: 'Courier',
-                    letterSpacing: 1.0,
-                  ),
+                // Right Side: Arrow Icon
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: Colors.grey[700],
                 ),
               ],
             ),
@@ -743,7 +723,7 @@ class _HomeBigThreeWidget extends StatelessWidget {
   }
 }
 
-// 🎯 Volume Widget - Tactical HUD Style
+// 🎯 Volume Widget - Tactical HUD Style (FORCED)
 class _HomeVolumeWidget extends StatelessWidget {
   final SessionRepo sessionRepo;
   
@@ -772,19 +752,14 @@ class _HomeVolumeWidget extends StatelessWidget {
         final volume = snapshot.data ?? 0;
         final hasData = volume > 0;
         
-        // Display logic
+        // Display value with unit
         String displayValue;
-        String displayUnit;
-        
         if (!hasData) {
-          displayValue = '--';
-          displayUnit = 'NO DATA';
+          displayValue = '-- KG';
         } else if (volume >= 1000) {
-          displayValue = (volume / 1000).toStringAsFixed(1);
-          displayUnit = 'TONS';
+          displayValue = '${(volume / 1000).toStringAsFixed(1)} TON';
         } else {
-          displayValue = volume.toInt().toString();
-          displayUnit = 'KG';
+          displayValue = '${volume.toInt()} KG';
         }
         
         return GestureDetector(
@@ -793,66 +768,54 @@ class _HomeVolumeWidget extends StatelessWidget {
             Navigator.pushNamed(context, '/analysis');
           },
           child: Container(
-            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.03), // Subtle glow
+              color: Colors.transparent, // FORCE TRANSPARENT
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.15),
-                width: 1,
+                color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
+                width: 1.0,
               ),
-              borderRadius: BorderRadius.circular(4), // Sharp corners
+              borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Label with arrow
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
+                // Left Side: Label & Value
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
                         'WEEKLY VOL',
                         style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF616161),
-                          fontFamily: 'Courier',
+                          color: Colors.grey,
+                          fontSize: 10,
                           letterSpacing: 1.5,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Courier',
                         ),
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 10,
-                      color: Colors.grey[700],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // Value - Tactical Display
-                Text(
-                  displayValue,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    color: hasData 
-                        ? const Color(0xFF448AFF) // Electric Blue
-                        : const Color(0xFF616161),
-                    fontFamily: 'Courier',
-                    letterSpacing: 0,
-                    height: 1.0,
+                      const SizedBox(height: 8),
+                      Text(
+                        displayValue,
+                        style: TextStyle(
+                          color: hasData 
+                              ? const Color(0xFF448AFF) // Electric Blue
+                              : Colors.grey[700],
+                          fontSize: 24,
+                          fontFamily: 'Courier',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                // Unit
-                Text(
-                  displayUnit,
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF616161),
-                    fontFamily: 'Courier',
-                    letterSpacing: 1.0,
-                  ),
+                // Right Side: Arrow Icon
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: Colors.grey[700],
                 ),
               ],
             ),
