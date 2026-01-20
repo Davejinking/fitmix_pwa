@@ -9,6 +9,7 @@ class ExerciseSeedingService {
   static const String _versionKey = 'seeding_version';
   
   late Box<ExerciseLibraryItem> _box;
+  List<_CachedExercise>? _searchCache;
 
   /// Hive Box 열기 (초기화)
   Future<void> _openBox() async {
@@ -17,6 +18,20 @@ class ExerciseSeedingService {
     } else {
       _box = await Hive.openBox<ExerciseLibraryItem>(_boxName);
     }
+  }
+
+  /// 검색 캐시 초기화
+  void _invalidateCache() {
+    _searchCache = null;
+  }
+
+  /// 캐시가 없으면 생성
+  Future<void> _ensureCache() async {
+    if (_searchCache != null) return;
+    if (!_box.isOpen) await _openBox();
+
+    // Box values를 List로 복사하면서 검색 최적화된 형태로 변환
+    _searchCache = _box.values.map((e) => _CachedExercise(e)).toList();
   }
 
   /// 초기화 및 시딩 실행
@@ -28,9 +43,12 @@ class ExerciseSeedingService {
       // JSON 파일에서 운동 데이터 로드
       final jsonData = await _loadExercisesFromJson();
       
-      // 스마트 시딩 실행
+      // 스마트 시딩 실행 (내부에서 box.put 호출)
       await _performSmartSeeding(jsonData);
       
+      // 시딩 후 캐시 무효화 (변경된 데이터 반영 위해)
+      _invalidateCache();
+
       print('✅ 운동 라이브러리 시딩 완료: ${_box.length}개 운동');
     } catch (e) {
       print('❌ 운동 라이브러리 시딩 실패: $e');
@@ -111,7 +129,8 @@ class ExerciseSeedingService {
 
   /// 모든 운동 데이터 조회
   Future<List<ExerciseLibraryItem>> getAllExercises() async {
-    return _box.values.toList();
+    await _ensureCache();
+    return _searchCache!.map((e) => e.item).toList();
   }
 
   /// 커스텀 운동 추가
@@ -138,33 +157,41 @@ class ExerciseSeedingService {
     );
     
     await _box.put(id, customExercise);
+    _invalidateCache(); // 캐시 업데이트 필요
     print('✅ 커스텀 운동 추가: $name ($id)');
   }
 
   /// 부위별 운동 조회
   Future<List<ExerciseLibraryItem>> getExercisesByBodyPart(String bodyPart) async {
-    return _box.values
-        .where((exercise) => exercise.targetPart.toLowerCase() == bodyPart.toLowerCase())
+    await _ensureCache();
+    final lowerPart = bodyPart.toLowerCase();
+
+    return _searchCache!
+        .where((e) => e.targetPartLower == lowerPart)
+        .map((e) => e.item)
         .toList();
   }
 
   /// 장비별 운동 조회
   Future<List<ExerciseLibraryItem>> getExercisesByEquipment(String equipment) async {
-    return _box.values
-        .where((exercise) => exercise.equipmentType.toLowerCase() == equipment.toLowerCase())
+    await _ensureCache();
+    final lowerEq = equipment.toLowerCase();
+
+    return _searchCache!
+        .where((e) => e.equipmentTypeLower == lowerEq)
+        .map((e) => e.item)
         .toList();
   }
 
   /// 운동 검색 (다국어 지원)
   Future<List<ExerciseLibraryItem>> searchExercises(String query) async {
-    if (query.isEmpty) return getAllExercises();
+    await _ensureCache();
+    if (query.isEmpty) return _searchCache!.map((e) => e.item).toList();
     
     final lowerQuery = query.toLowerCase();
-    return _box.values
-        .where((exercise) =>
-            exercise.nameKr.toLowerCase().contains(lowerQuery) ||
-            exercise.nameEn.toLowerCase().contains(lowerQuery) ||
-            exercise.nameJp.toLowerCase().contains(lowerQuery))
+    return _searchCache!
+        .where((cached) => cached.matches(lowerQuery))
+        .map((e) => e.item)
         .toList();
   }
 
@@ -194,5 +221,28 @@ class ExerciseSeedingService {
     if (_box.isOpen) {
       await _box.close();
     }
+  }
+}
+
+/// 검색 최적화를 위한 래퍼 클래스
+class _CachedExercise {
+  final ExerciseLibraryItem item;
+  final String nameKrLower;
+  final String nameEnLower;
+  final String nameJpLower;
+  final String targetPartLower;
+  final String equipmentTypeLower;
+
+  _CachedExercise(this.item)
+      : nameKrLower = item.nameKr.toLowerCase(),
+        nameEnLower = item.nameEn.toLowerCase(),
+        nameJpLower = item.nameJp.toLowerCase(),
+        targetPartLower = item.targetPart.toLowerCase(),
+        equipmentTypeLower = item.equipmentType.toLowerCase();
+
+  bool matches(String lowerQuery) {
+    return nameKrLower.contains(lowerQuery) ||
+           nameEnLower.contains(lowerQuery) ||
+           nameJpLower.contains(lowerQuery);
   }
 }
