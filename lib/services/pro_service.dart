@@ -38,7 +38,20 @@ class ProService extends ChangeNotifier {
     if (kDebugMode) {
       print('🔄 구매 복원 시도...');
     }
-    // TODO: RevenueCat 연동 시 구현
+
+    // RevenueCat 연동 전 Mock 구현
+    // 실제 네트워크 지연 시뮬레이션
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Mock 복원 성공 처리 (테스트를 위해 성공으로 간주)
+    // 안전장치: 디버그 모드에서만 Mock 복원 허용
+    if (kDebugMode) {
+      await setProStatus(true);
+      print('✅ 구매 복원 성공 (Mock)');
+      return true;
+    }
+
+    // 릴리즈 모드에서는 복원 실패 처리
     return false;
   }
   

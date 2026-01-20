@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../core/iron_theme.dart';
+import '../services/pro_service.dart';
 
 /// Iron Log PRO Paywall 페이지
 /// 고급스러운 프리미엄 업그레이드 유도 화면
@@ -523,17 +524,59 @@ class _PaywallPageState extends State<PaywallPage>
   Future<void> _handleRestore() async {
     HapticFeedback.lightImpact();
     print('🔄 구매 복원 시작');
-    
-    // TODO: RevenueCat 연동
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('구매 복원 기능 준비 중'),
-        backgroundColor: IronTheme.surface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+
+    // 로딩 표시
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: Colors.amber),
       ),
     );
+
+    try {
+      final success = await proService.restorePurchases();
+
+      if (!mounted) return;
+      Navigator.of(context).pop(); // 로딩 닫기
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              '구매가 성공적으로 복원되었습니다.',
+              style: TextStyle(color: IronTheme.textHigh),
+            ),
+            backgroundColor: IronTheme.surfaceHighlight,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Colors.green, width: 1),
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Restore failed');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      if (Navigator.canPop(context)) Navigator.of(context).pop(); // 에러 시 로딩 닫기 안전장치
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            '구매 복원에 실패했습니다. 다시 시도해주세요.',
+            style: TextStyle(color: IronTheme.textHigh),
+          ),
+          backgroundColor: IronTheme.surface,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: IronTheme.danger, width: 1),
+          ),
+        ),
+      );
+    }
   }
 }
