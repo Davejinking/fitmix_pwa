@@ -89,7 +89,7 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
       _adService.loadInterstitialAd();
     } else {
       if (kDebugMode) {
-        print('🚀 개발 모드라 광고 로드를 스킵했습니다.');
+        debugPrint('🚀 개발 모드라 광고 로드를 스킵했습니다.');
       }
     }
   }
@@ -341,6 +341,12 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
+    // Always mark as completed (both in active and edit mode)
+    _session.isCompleted = true;
+    _session.durationInSeconds = _elapsedSeconds;
+    
+    try {
+      await widget.repo.put(_session);
     setState(() => _isSaving = true);
     
     try {
@@ -363,21 +369,39 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
       );
       
-      // Skip ads in edit mode or debug mode
-      if (widget.isEditing || kDebugMode) {
-        if (kDebugMode) {
-          print('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
-        }
-        Navigator.of(context).pop(true);
-      } else {
-        // 출시 모드: 광고 표시 후 홈으로 이동
-        await _adService.showInterstitialAd(
-          onAdClosed: () {
-            if (mounted) {
-              Navigator.of(context).pop(true);
-            }
-          },
+      HapticFeedback.heavyImpact();
+
+      if (mounted) {
+        ErrorHandler.showSuccessSnackBar(
+          context,
+          widget.isEditing ? '수정 완료' : context.l10n.workoutCompleted,
         );
+
+        // Skip ads in edit mode or debug mode
+        if (widget.isEditing || kDebugMode) {
+          if (kDebugMode) {
+          debugPrint('🚀 개발 모드 또는 수정 모드라 광고를 스킵했습니다.');
+          }
+          Navigator.of(context).pop(true);
+        } else {
+          // 출시 모드: 광고 표시 후 홈으로 이동
+          await _adService.showInterstitialAd(
+            onAdClosed: () {
+              if (mounted) {
+                Navigator.of(context).pop(true);
+              }
+            },
+          );
+        }
+      }
+    } catch (e) {
+      // 저장 실패 처리
+      if (mounted) {
+        ErrorHandler.showErrorSnackBar(
+          context,
+          '저장 중 오류가 발생했습니다: $e',
+        );
+        // 타이머 재개 등 복구 로직이 필요할 수 있음
       }
     }
   }
@@ -393,6 +417,23 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
     _workoutTimer?.cancel();
     _restTimer?.cancel();
     
+    try {
+      // 현재 상태 저장 (미완료)
+      await widget.repo.put(_session);
+
+      if (mounted) {
+        Navigator.of(context).pop(false); // false = 중도 종료
+      }
+    } catch (e) {
+      if (mounted) {
+        ErrorHandler.showErrorSnackBar(
+          context,
+          '자동 저장 실패: $e',
+        );
+        // 실패하더라도 뒤로가기는 허용할지, 아니면 막을지 결정 필요
+        // 여기서는 사용자 경험을 위해 에러 표시 후 종료 허용
+        Navigator.of(context).pop(false);
+      }
     setState(() => _isSaving = true);
 
     try {
@@ -431,14 +472,23 @@ class _ActiveWorkoutPageState extends State<ActiveWorkoutPage> {
         }
       });
       
-      // 자동 저장
-      await widget.repo.put(_session);
-      
-      if (mounted) {
-        ErrorHandler.showSuccessSnackBar(
-          context, 
-          AppLocalizations.of(context).exerciseAdded,
-        );
+      try {
+        // 자동 저장
+        await widget.repo.put(_session);
+
+        if (mounted) {
+          ErrorHandler.showSuccessSnackBar(
+            context,
+            AppLocalizations.of(context).exerciseAdded,
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ErrorHandler.showErrorSnackBar(
+            context,
+            '운동 추가 후 저장 실패: $e',
+          );
+        }
       }
     }
   }
