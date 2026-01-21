@@ -71,6 +71,9 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   
   // Bookmarks
   final Set<String> _bookmarkedIds = {};
+
+  // Cache
+  List<String>? _cachedAvailableEquipmentKeys;
   
   // Search
   String _searchQuery = '';
@@ -99,7 +102,11 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
       final exercises = await _seedingService.getAllExercises();
       
       if (mounted) {
-        setState(() { _allExercises = exercises; _isLoading = false; });
+        setState(() {
+          _allExercises = exercises;
+          _cachedAvailableEquipmentKeys = null; // Invalidate cache
+          _isLoading = false;
+        });
         _applyFilter();
       }
     } catch (e) {
@@ -107,38 +114,56 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
     }
   }
 
+  List<ExerciseLibraryItem> get _bodyPartFilteredExercises {
+    if (_selectedBodyPart == 'all') {
+      return List.from(_allExercises);
+    } else if (_selectedBodyPart == 'favorites') {
+      return _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
+    } else {
+      return _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
+    }
+  }
+  
+  List<String> get _availableEquipmentKeys {
+    if (_cachedAvailableEquipmentKeys != null) {
+      return _cachedAvailableEquipmentKeys!;
+    }
+    _cachedAvailableEquipmentKeys = _bodyPartFilteredExercises
+        .map((ex) => ex.equipmentType.toLowerCase())
+        .toSet()
+        .toList()
+      ..sort();
+    return _cachedAvailableEquipmentKeys!;
+  }
+
   void _applyFilter() {
+    final searchLower = _searchQuery.toLowerCase();
+    final equipmentLower = _selectedEquipmentKey?.toLowerCase();
+    final bodyPartLower = _selectedBodyPart.toLowerCase();
+    final isAllBodyParts = _selectedBodyPart == 'all';
+    final isFavorites = _selectedBodyPart == 'favorites';
+
     setState(() {
-      // Step 1: Body Part Filter
-      List<ExerciseLibraryItem> bodyPartFiltered;
-      if (_selectedBodyPart == 'all') {
-        bodyPartFiltered = List.from(_allExercises);
-      } else if (_selectedBodyPart == 'favorites') {
-        bodyPartFiltered = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
-      } else {
-        bodyPartFiltered = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
-      }
+      _filteredExercises = _allExercises.where((ex) {
+        // Step 1: Body Part Filter
+        if (isFavorites) {
+          if (!_bookmarkedIds.contains(ex.id)) return false;
+        } else if (!isAllBodyParts) {
+          if (ex.targetPart.toLowerCase() != bodyPartLower) return false;
+        }
 
-      // Update cached available equipment keys based on current body part filter
-      _availableEquipmentKeys = bodyPartFiltered
-          .map((ex) => ex.equipmentType.toLowerCase())
-          .toSet()
-          .toList()
-        ..sort();
-      
-      // Step 2: Equipment Filter
-      // Start filtering from the result of body part filter
-      List<ExerciseLibraryItem> tempFiltered = bodyPartFiltered;
-      if (_selectedEquipmentKey != null) {
-        tempFiltered = tempFiltered.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey!.toLowerCase()).toList();
-      }
-      
-      // Step 3: Search Query Filter
-      if (_searchQuery.isNotEmpty) {
-        tempFiltered = tempFiltered.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
-      }
+        // Step 2: Equipment Filter
+        if (equipmentLower != null) {
+          if (ex.equipmentType.toLowerCase() != equipmentLower) return false;
+        }
 
-      _filteredExercises = tempFiltered;
+        // Step 3: Search Query Filter
+        if (searchLower.isNotEmpty) {
+          if (!ex.getLocalizedName(context).toLowerCase().contains(searchLower)) return false;
+        }
+
+        return true;
+      }).toList();
     });
   }
 
@@ -190,7 +215,10 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
       } else {
         _bookmarkedIds.add(id);
       }
-      if (_selectedBodyPart == 'favorites') _applyFilter();
+      if (_selectedBodyPart == 'favorites') {
+        _cachedAvailableEquipmentKeys = null; // Invalidate cache
+        _applyFilter();
+      }
     });
   }
 
@@ -357,6 +385,7 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
               onSelected: (_) {
                 setState(() {
                   _selectedBodyPart = key;
+                  _cachedAvailableEquipmentKeys = null; // Invalidate cache
                   _selectedEquipmentKey = null;
                   _applyFilter();
                 });

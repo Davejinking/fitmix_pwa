@@ -101,58 +101,53 @@ extension MuscleGroupExtension on MuscleGroup {
 
 /// Helper methods for parsing strings to MuscleGroup
 extension MuscleGroupParsing on MuscleGroup {
+
+  // Optimization: Static sets for O(1) lookup and avoiding list allocation
+  static const Set<String> _chestKeywords = {'Chest', 'chest', 'CHEST', '가슴', '胸'};
+  static const Set<String> _backKeywords = {'Back', 'back', 'BACK', '등', '背中'};
+  static const Set<String> _legsKeywords = {'Legs', 'legs', 'LEGS', 'Leg', 'leg', '하체', '下半身', '脚', '다리'};
+  static const Set<String> _shouldersKeywords = {'Shoulders', 'shoulders', 'SHOULDERS', 'Shoulder', 'shoulder', '어깨', '肩'};
+  static const Set<String> _armsKeywords = {'Arms', 'arms', 'ARMS', 'Arm', 'arm', '팔', '腕'};
+  static const Set<String> _absKeywords = {'Abs', 'abs', 'ABS', 'Core', 'core', 'CORE', '복근', '腹筋', '코어'};
+  static const Set<String> _cardioKeywords = {'Cardio', 'cardio', 'CARDIO', '유산소', '有酸素', 'カーディオ'};
+  static const Set<String> _stretchingKeywords = {'Stretching', 'stretching', 'STRETCHING', 'Stretch', 'stretch', '스트레칭', 'ストレッチ'};
+  static const Set<String> _fullBodyKeywords = {
+    'Full Body', 'full body', 'FULL BODY', 'FullBody', 'fullbody', 'FULLBODY',
+    'Full-Body', 'full-body', 'Fullbody',
+    '전신', '全身', '全身運動'
+  };
+
   /// Parse a string to MuscleGroup (supports English, Korean, Japanese)
   /// Returns null if no match is found
   static MuscleGroup? fromString(String value) {
     final input = value.trim();
     
     // CHEST (Red) - English, Korean, Japanese
-    if (['Chest', 'chest', 'CHEST', '가슴', '胸'].contains(input)) {
-      return MuscleGroup.chest;
-    }
+    if (_chestKeywords.contains(input)) return MuscleGroup.chest;
     
     // BACK (Blue) - English, Korean, Japanese
-    if (['Back', 'back', 'BACK', '등', '背中'].contains(input)) {
-      return MuscleGroup.back;
-    }
+    if (_backKeywords.contains(input)) return MuscleGroup.back;
     
     // LEGS (Yellow) - English, Korean, Japanese
-    if (['Legs', 'legs', 'LEGS', 'Leg', 'leg', '하체', '下半身', '脚', '다리'].contains(input)) {
-      return MuscleGroup.legs;
-    }
+    if (_legsKeywords.contains(input)) return MuscleGroup.legs;
     
     // SHOULDERS (Purple) - English, Korean, Japanese
-    if (['Shoulders', 'shoulders', 'SHOULDERS', 'Shoulder', 'shoulder', '어깨', '肩'].contains(input)) {
-      return MuscleGroup.shoulders;
-    }
+    if (_shouldersKeywords.contains(input)) return MuscleGroup.shoulders;
     
     // ARMS (Cyan) - English, Korean, Japanese
-    if (['Arms', 'arms', 'ARMS', 'Arm', 'arm', '팔', '腕'].contains(input)) {
-      return MuscleGroup.arms;
-    }
+    if (_armsKeywords.contains(input)) return MuscleGroup.arms;
     
     // ABS (Green) - English, Korean, Japanese
-    if (['Abs', 'abs', 'ABS', 'Core', 'core', 'CORE', '복근', '腹筋', '코어'].contains(input)) {
-      return MuscleGroup.abs;
-    }
+    if (_absKeywords.contains(input)) return MuscleGroup.abs;
     
     // CARDIO (Orange) - English, Korean, Japanese
-    if (['Cardio', 'cardio', 'CARDIO', '유산소', '有酸素', 'カーディオ'].contains(input)) {
-      return MuscleGroup.cardio;
-    }
+    if (_cardioKeywords.contains(input)) return MuscleGroup.cardio;
     
     // STRETCHING (Teal) - English, Korean, Japanese
-    if (['Stretching', 'stretching', 'STRETCHING', 'Stretch', 'stretch', '스트레칭', 'ストレッチ'].contains(input)) {
-      return MuscleGroup.stretching;
-    }
+    if (_stretchingKeywords.contains(input)) return MuscleGroup.stretching;
     
     // FULL BODY (White) - English, Korean, Japanese
-    // Note: Also check for common variations and typos
-    if (['Full Body', 'full body', 'FULL BODY', 'FullBody', 'fullbody', 'FULLBODY', 
-         'Full-Body', 'full-body', 'Fullbody', 
-         '전신', '全身', '全身運動'].contains(input)) {
-      return MuscleGroup.fullBody;
-    }
+    if (_fullBodyKeywords.contains(input)) return MuscleGroup.fullBody;
     
     // Case-insensitive fallback check for "full" and "body" keywords
     final lowerInput = input.toLowerCase();
