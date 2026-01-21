@@ -1,7 +1,15 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import '../models/exercise_library.dart';
+
+List<ExerciseLibraryItem> _parseExercises(String jsonString) {
+  final List<dynamic> jsonList = json.decode(jsonString);
+  return jsonList
+      .map((json) => ExerciseLibraryItem.fromJson(json as Map<String, dynamic>))
+      .toList();
+}
 
 class ExerciseSeedingService {
   static const String _boxName = 'exercise_library_v2';
@@ -48,11 +56,7 @@ class ExerciseSeedingService {
   Future<List<ExerciseLibraryItem>> _loadExercisesFromJson() async {
     try {
       final jsonString = await rootBundle.loadString(_jsonPath);
-      final List<dynamic> jsonList = json.decode(jsonString);
-      
-      return jsonList
-          .map((json) => ExerciseLibraryItem.fromJson(json as Map<String, dynamic>))
-          .toList();
+      return await compute(_parseExercises, jsonString);
     } catch (e) {
       print('❌ JSON 파일 로드 실패: $e');
       return [];
