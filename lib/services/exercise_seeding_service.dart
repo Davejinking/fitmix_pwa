@@ -149,8 +149,9 @@ class ExerciseSeedingService {
 
   /// 부위별 운동 조회
   Future<List<ExerciseLibraryItem>> getExercisesByBodyPart(String bodyPart) async {
+    final lowerBodyPart = bodyPart.toLowerCase();
     return _box.values
-        .where((exercise) => exercise.targetPart.toLowerCase() == bodyPart.toLowerCase())
+        .where((exercise) => exercise.targetPart.toLowerCase() == lowerBodyPart)
         .toList();
   }
 
