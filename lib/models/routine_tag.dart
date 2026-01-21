@@ -86,14 +86,14 @@ class RoutineTag {
     return preset?.color ?? defaultColor;
   }
 
-  // Pre-allocated static lists to avoid garbage collection on every call
+  // Pre-allocated constant lists for performance
   static const _pushTags = ['PUSH', 'プッシュ', '미는 운동'];
   static const _pullTags = ['PULL', 'プル', '당기는 운동'];
   static const _legsTags = ['LEGS', '脚', '하체'];
   static const _upperTags = ['UPPER', '上半身', '상체'];
   static const _lowerTags = ['LOWER', '下半身', '하체'];
   static const _fullBodyTags = ['FULL BODY', '全身', '전신'];
-  
+
   /// Get color for a localized tag name (supports multilingual)
   /// This is useful for filter bars where tags are displayed in user's locale
   /// 

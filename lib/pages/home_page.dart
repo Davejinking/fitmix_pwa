@@ -124,9 +124,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start, // Force top alignment
             children: [
-              // DELETED: Level/XP/Streak section (gamification removed)
-              
               // Weekly Status Module (Wireframe HUD)
               SlideTransition(
                 position: _slideAnimations[0],
@@ -135,7 +135,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildWeeklyCalendar(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16), // 🎯 DRASTICALLY REDUCED - Law of Proximity
               
               // Today's Plan Module (Wireframe HUD)
               SlideTransition(
@@ -145,17 +145,37 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   child: _buildMainActionCard(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32), // Gap after button
+              
+              // 🎯 Performance Widgets (Side by Side) - Tactical HUD Style
+              SlideTransition(
+                position: _slideAnimations[2],
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _HomeBigThreeWidget(sessionRepo: sessionRepo),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _HomeVolumeWidget(sessionRepo: sessionRepo),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
               
               // Monthly Goal Module (Wireframe HUD)
               SlideTransition(
-                position: _slideAnimations[2],
+                position: _slideAnimations[3],
                 child: FadeTransition(
                   opacity: _animationController,
                   child: _buildGoalProgress(),
                 ),
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 20), // Bottom padding
             ],
           ),
         ),
@@ -177,11 +197,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         final isCompleted = todaySession?.isCompleted ?? false;
 
         if (isRest) {
-          return Column(
+          return const Column(
             children: [
-              const SizedBox(height: 60),
               // Status (영어 고정 - Design Element)
-              const Text(
+              Text(
                 'STATUS: RESTING',
                 style: TextStyle(
                   fontSize: 12,
@@ -191,7 +210,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   letterSpacing: 2.0,
                 ),
               ),
-              const SizedBox(height: 60),
             ],
           );
         }
@@ -199,7 +217,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         if (!hasPlan) {
           return Column(
             children: [
-              const SizedBox(height: 60),
               // Status text - minimalist (영어 고정 - Design Element)
               const Text(
                 'NO ACTIVE SESSION',
@@ -211,7 +228,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   letterSpacing: 2.0,
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 24),
               // Ghost button - transparent
               SizedBox(
                 width: double.infinity,
@@ -242,7 +259,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                   ),
                 ),
               ),
-              const SizedBox(height: 60),
             ],
           );
         }
@@ -263,7 +279,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 60),
             // Status (영어 고정 - Design Element)
             Text(
               isCompleted ? 'SESSION COMPLETE' : 'SESSION READY',
@@ -319,7 +334,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 ),
               ],
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 24),
             // Ghost button
             SizedBox(
               width: double.infinity,
@@ -348,7 +363,6 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 ),
               ),
             ),
-            const SizedBox(height: 60),
           ],
         );
       },
@@ -370,18 +384,38 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title - Monospace (영어 고정 - Design Element)
-            const Text(
-              'WEEKLY STATUS',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF616161), // Colors.grey[700]
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
+            // 🎯 Clickable Title Row
+            GestureDetector(
+              onTap: () {
+                print('🎯 Navigating to Analysis');
+                Navigator.pushNamed(context, '/analysis');
+              },
+              child: Container(
+                color: Colors.transparent,
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Row(
+                  children: [
+                    const Text(
+                      'WEEKLY STATUS',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF616161), // Colors.grey[700]
+                        fontFamily: 'Courier',
+                        letterSpacing: 2.0,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // 🎯 Chevron hint for clickability
+                    Icon(
+                      Icons.chevron_right,
+                      size: 14,
+                      color: Colors.grey[700],
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 24),
             // Day Labels + Dots - Dynamic
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -446,9 +480,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                 );
               }).toList(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16), // Reduced from 32
             Divider(color: const Color(0xFF0A0A0A), thickness: 1, height: 1), // Stealth divider
-            const SizedBox(height: 32),
           ],
         );
       },
@@ -564,6 +597,225 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       'completed': workoutDays,
       'total': monthlyGoal,
     };
+  }
+}
+
+// 🎯 Big Three Widget - Tactical HUD Style (FORCED)
+class _HomeBigThreeWidget extends StatelessWidget {
+  final SessionRepo sessionRepo;
+  
+  const _HomeBigThreeWidget({required this.sessionRepo});
+
+  Future<double> _calculateBigThreeTotal() async {
+    // Get all workout sessions
+    final sessions = await sessionRepo.getWorkoutSessions();
+    
+    // Track max weights for each of the Big 3
+    double maxBench = 0;
+    double maxSquat = 0;
+    double maxDeadlift = 0;
+    
+    for (final session in sessions) {
+      for (final exercise in session.exercises) {
+        final name = exercise.name.toLowerCase();
+        
+        // Find max weight for this exercise
+        double maxWeight = 0;
+        for (final set in exercise.sets) {
+          if (set.weight > maxWeight) {
+            maxWeight = set.weight;
+          }
+        }
+        
+        // Categorize into Big 3
+        if (name.contains('bench') || name.contains('벤치') || name.contains('ベンチ')) {
+          if (maxWeight > maxBench) maxBench = maxWeight;
+        } else if (name.contains('squat') || name.contains('스쿼트') || name.contains('スクワット')) {
+          if (maxWeight > maxSquat) maxSquat = maxWeight;
+        } else if (name.contains('deadlift') || name.contains('데드리프트') || name.contains('デッドリフト')) {
+          if (maxWeight > maxDeadlift) maxDeadlift = maxWeight;
+        }
+      }
+    }
+    
+    return maxBench + maxSquat + maxDeadlift;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<double>(
+      future: _calculateBigThreeTotal(),
+      builder: (context, snapshot) {
+        final total = snapshot.data ?? 0;
+        final hasData = total > 0;
+        
+        // Display value
+        final displayValue = hasData ? '${total.toInt()} KG' : '-- KG';
+        
+        return GestureDetector(
+          onTap: () {
+            print('🎯 Big Three tapped - Navigating to Analysis');
+            Navigator.pushNamed(context, '/analysis');
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent, // FORCE TRANSPARENT
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
+                width: 1.0,
+              ),
+              borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Left Side: Label & Value
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'BIG 3 TOTAL',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        displayValue,
+                        style: TextStyle(
+                          color: hasData 
+                              ? const Color(0xFF69F0AE) // Neon Green
+                              : Colors.grey[700],
+                          fontSize: 24,
+                          fontFamily: 'Courier',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Right Side: Arrow Icon
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: Colors.grey[700],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// 🎯 Volume Widget - Tactical HUD Style (FORCED)
+class _HomeVolumeWidget extends StatelessWidget {
+  final SessionRepo sessionRepo;
+  
+  const _HomeVolumeWidget({required this.sessionRepo});
+
+  Future<double> _calculateWeeklyVolume() async {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    
+    final sessions = await sessionRepo.getSessionsInRange(startOfWeek, endOfWeek);
+    
+    double totalVolume = 0;
+    for (final session in sessions) {
+      totalVolume += session.totalVolume;
+    }
+    
+    return totalVolume;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<double>(
+      future: _calculateWeeklyVolume(),
+      builder: (context, snapshot) {
+        final volume = snapshot.data ?? 0;
+        final hasData = volume > 0;
+        
+        // Display value with unit
+        String displayValue;
+        if (!hasData) {
+          displayValue = '-- KG';
+        } else if (volume >= 1000) {
+          displayValue = '${(volume / 1000).toStringAsFixed(1)} TON';
+        } else {
+          displayValue = '${volume.toInt()} KG';
+        }
+        
+        return GestureDetector(
+          onTap: () {
+            print('🎯 Volume tapped - Navigating to Analysis');
+            Navigator.pushNamed(context, '/analysis');
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent, // FORCE TRANSPARENT
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
+                width: 1.0,
+              ),
+              borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Left Side: Label & Value
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'WEEKLY VOL',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        displayValue,
+                        style: TextStyle(
+                          color: hasData 
+                              ? const Color(0xFF448AFF) // Electric Blue
+                              : Colors.grey[700],
+                          fontSize: 24,
+                          fontFamily: 'Courier',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Right Side: Arrow Icon
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: Colors.grey[700],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

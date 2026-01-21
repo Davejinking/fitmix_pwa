@@ -7,9 +7,15 @@ import 'pro_service.dart';
 /// RevenueCat 구독 서비스
 /// 인앱 결제 및 구독 관리
 class SubscriptionService {
-  // TODO: 실제 RevenueCat API 키로 교체 필요
-  static const String _googleApiKey = 'goog_placeholder_api_key';
-  static const String _appleApiKey = 'appl_placeholder_api_key';
+  // TODO: 실제 RevenueCat API 키로 교체 필요 (또는 --dart-define 사용)
+  static const String _googleApiKey = String.fromEnvironment(
+    'REVENUECAT_GOOGLE_KEY',
+    defaultValue: 'goog_placeholder_api_key',
+  );
+  static const String _appleApiKey = String.fromEnvironment(
+    'REVENUECAT_APPLE_KEY',
+    defaultValue: 'appl_placeholder_api_key',
+  );
 
   // Entitlement ID (RevenueCat 대시보드에서 설정한 값)
   static const String _entitlementId = 'pro';
@@ -25,21 +31,28 @@ class SubscriptionService {
       kDebugMode ? LogLevel.debug : LogLevel.error
     );
 
-    PurchasesConfiguration? configuration;
-
+    String apiKey = '';
     if (Platform.isAndroid) {
-      configuration = PurchasesConfiguration(_googleApiKey);
+      apiKey = _googleApiKey;
     } else if (Platform.isIOS) {
-      configuration = PurchasesConfiguration(_appleApiKey);
+      apiKey = _appleApiKey;
     }
 
-    if (configuration != null) {
-      await Purchases.configure(configuration);
-      _isInitialized = true;
-
-      // 앱 시작 시 구독 상태 확인
-      await checkSubscriptionStatus();
+    // API 키가 플레이스홀더이거나 비어있으면 초기화 중단
+    if (apiKey.isEmpty || apiKey.contains('placeholder_api_key')) {
+      if (kDebugMode) {
+        print('⚠️ RevenueCat API Key is missing or invalid. Skipping initialization.');
+        print('👉 Use --dart-define=REVENUECAT_GOOGLE_KEY=... to set the key.');
+      }
+      return;
     }
+
+    final configuration = PurchasesConfiguration(apiKey);
+    await Purchases.configure(configuration);
+    _isInitialized = true;
+
+    // 앱 시작 시 구독 상태 확인
+    await checkSubscriptionStatus();
   }
 
   /// 구독 상태 확인 및 ProService 업데이트
