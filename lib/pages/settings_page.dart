@@ -253,7 +253,7 @@ class _SettingsPageState extends State<SettingsPage> {
   // 개인정보 처리방침 실행
   Future<void> _launchPrivacyPolicy() async {
     // TODO: 여기에 노션 링크 넣기
-    final Uri privacyPolicyUri = Uri.parse('https://www.notion.so/ironlog-privacy-policy'); // 임시 URL
+    final Uri privacyPolicyUri = Uri.parse('https://ironlog.fly.dev/privacy');
     
     try {
       if (await canLaunchUrl(privacyPolicyUri)) {
