@@ -85,8 +85,8 @@ class RoutineTag {
     final preset = findPreset(key);
     return preset?.color ?? defaultColor;
   }
-  
-  // Tag name constants to avoid list allocation
+
+  // Pre-allocated constant lists for performance
   static const _pushTags = ['PUSH', 'プッシュ', '미는 운동'];
   static const _pullTags = ['PULL', 'プル', '당기는 운동'];
   static const _legsTags = ['LEGS', '脚', '하체'];
