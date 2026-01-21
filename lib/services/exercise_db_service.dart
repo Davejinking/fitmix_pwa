@@ -21,8 +21,8 @@ class ExerciseDBService {
     
     try {
       final jsonString = await rootBundle.loadString('assets/data/exercises.json');
-      // Use compute to run parsing in a background isolate
-      _cachedExercises = await compute(parseExercises, jsonString);
+      // 백그라운드 아이솔레이트에서 JSON 파싱 수행
+      _cachedExercises = await compute(_parseExercises, jsonString);
       return _cachedExercises!;
     } catch (e) {
       throw Exception('로컬 운동 데이터 로드 실패: $e');
@@ -93,4 +93,10 @@ class ExerciseDBService {
     'weighted',
     'wheel roller',
   ];
+}
+
+/// JSON 파싱을 수행하는 탑레벨 함수 (compute용)
+List<ExerciseDB> _parseExercises(String jsonString) {
+  final List<dynamic> jsonData = json.decode(jsonString);
+  return jsonData.map((json) => ExerciseDB.fromJson(json)).toList();
 }
