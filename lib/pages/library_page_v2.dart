@@ -432,9 +432,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
 
         // 🔥 검색 필터 적용
         if (_routineSearchQuery.isNotEmpty) {
+          final lowerQuery = _routineSearchQuery.toLowerCase();
           routines = routines.where((routine) {
-            return routine.name.toLowerCase().contains(_routineSearchQuery.toLowerCase()) ||
-                   routine.exercises.any((ex) => ex.name.toLowerCase().contains(_routineSearchQuery.toLowerCase()));
+            return routine.name.toLowerCase().contains(lowerQuery) ||
+                   routine.exercises.any((ex) => ex.name.toLowerCase().contains(lowerQuery));
           }).toList();
         }
 

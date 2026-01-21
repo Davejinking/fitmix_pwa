@@ -167,7 +167,7 @@ class HiveSessionRepo implements SessionRepo {
   @override
   Future<void> put(Session s) async {
     // 인덱스 업데이트
-    final oldSession = await _box.get(s.ymd);
+    final oldSession = _box.get(s.ymd);
 
     // 1. 이전 세션의 운동들을 인덱스에서 제거 (혹은 업데이트)
     // 간단하게 구현하기 위해: 일단 이전 세션의 운동들에서 해당 날짜 제거
@@ -379,7 +379,8 @@ class HiveSessionRepo implements SessionRepo {
         if (session == null) continue;
         
         // 해당 운동이 있는지 확인 (다국어 매칭 지원)
-        final matches = session.exercises.where((ex) => _isExerciseNameMatch(ex.name, exerciseName));
+        // Optimization: Use pre-calculated searchAliases directly instead of recalculating in _isExerciseNameMatch
+        final matches = session.exercises.where((ex) => searchAliases.contains(ex.name));
         final exercise = matches.isEmpty ? null : matches.first;
 
         if (exercise != null && exercise.sets.isNotEmpty) {

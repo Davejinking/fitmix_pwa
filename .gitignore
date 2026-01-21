@@ -58,3 +58,8 @@ setup_log.txt
 flutter_sdk/
 assets/sounds/
 assets/audio/
+
+# Android signing keys
+key.properties
+*.jks
+*.keystore
