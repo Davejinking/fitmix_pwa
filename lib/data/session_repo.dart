@@ -379,7 +379,8 @@ class HiveSessionRepo implements SessionRepo {
         if (session == null) continue;
         
         // 해당 운동이 있는지 확인 (다국어 매칭 지원)
-        final matches = session.exercises.where((ex) => _isExerciseNameMatch(ex.name, exerciseName));
+        // Optimization: Use pre-calculated searchAliases directly instead of recalculating in _isExerciseNameMatch
+        final matches = session.exercises.where((ex) => searchAliases.contains(ex.name));
         final exercise = matches.isEmpty ? null : matches.first;
 
         if (exercise != null && exercise.sets.isNotEmpty) {
