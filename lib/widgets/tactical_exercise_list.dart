@@ -60,6 +60,9 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   // Data State
   List<ExerciseLibraryItem> _allExercises = [];
   List<ExerciseLibraryItem> _filteredExercises = [];
+  // Cache available equipment keys based on body part filter to avoid re-calculation on every build
+  List<String> _availableEquipmentKeys = [];
+
   bool _isLoading = false;
   String? _error;
   
@@ -68,6 +71,9 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   
   // Bookmarks
   final Set<String> _bookmarkedIds = {};
+
+  // Cache
+  List<String>? _cachedAvailableEquipmentKeys;
   
   // Search
   String _searchQuery = '';
@@ -96,7 +102,11 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
       final exercises = await _seedingService.getAllExercises();
       
       if (mounted) {
-        setState(() { _allExercises = exercises; _isLoading = false; });
+        setState(() {
+          _allExercises = exercises;
+          _cachedAvailableEquipmentKeys = null; // Invalidate cache
+          _isLoading = false;
+        });
         _applyFilter();
       }
     } catch (e) {
@@ -115,33 +125,45 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   }
   
   List<String> get _availableEquipmentKeys {
-    return _bodyPartFilteredExercises
+    if (_cachedAvailableEquipmentKeys != null) {
+      return _cachedAvailableEquipmentKeys!;
+    }
+    _cachedAvailableEquipmentKeys = _bodyPartFilteredExercises
         .map((ex) => ex.equipmentType.toLowerCase())
         .toSet()
         .toList()
       ..sort();
+    return _cachedAvailableEquipmentKeys!;
   }
 
   void _applyFilter() {
+    final searchLower = _searchQuery.toLowerCase();
+    final equipmentLower = _selectedEquipmentKey?.toLowerCase();
+    final bodyPartLower = _selectedBodyPart.toLowerCase();
+    final isAllBodyParts = _selectedBodyPart == 'all';
+    final isFavorites = _selectedBodyPart == 'favorites';
+
     setState(() {
-      // Step 1: Body Part Filter
-      if (_selectedBodyPart == 'all') {
-        _filteredExercises = List.from(_allExercises);
-      } else if (_selectedBodyPart == 'favorites') {
-        _filteredExercises = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
-      } else {
-        _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
-      }
-      
-      // Step 2: Equipment Filter
-      if (_selectedEquipmentKey != null) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey!.toLowerCase()).toList();
-      }
-      
-      // Step 3: Search Query Filter
-      if (_searchQuery.isNotEmpty) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
-      }
+      _filteredExercises = _allExercises.where((ex) {
+        // Step 1: Body Part Filter
+        if (isFavorites) {
+          if (!_bookmarkedIds.contains(ex.id)) return false;
+        } else if (!isAllBodyParts) {
+          if (ex.targetPart.toLowerCase() != bodyPartLower) return false;
+        }
+
+        // Step 2: Equipment Filter
+        if (equipmentLower != null) {
+          if (ex.equipmentType.toLowerCase() != equipmentLower) return false;
+        }
+
+        // Step 3: Search Query Filter
+        if (searchLower.isNotEmpty) {
+          if (!ex.getLocalizedName(context).toLowerCase().contains(searchLower)) return false;
+        }
+
+        return true;
+      }).toList();
     });
   }
 
@@ -193,7 +215,10 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
       } else {
         _bookmarkedIds.add(id);
       }
-      if (_selectedBodyPart == 'favorites') _applyFilter();
+      if (_selectedBodyPart == 'favorites') {
+        _cachedAvailableEquipmentKeys = null; // Invalidate cache
+        _applyFilter();
+      }
     });
   }
 
@@ -360,6 +385,7 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
               onSelected: (_) {
                 setState(() {
                   _selectedBodyPart = key;
+                  _cachedAvailableEquipmentKeys = null; // Invalidate cache
                   _selectedEquipmentKey = null;
                   _applyFilter();
                 });

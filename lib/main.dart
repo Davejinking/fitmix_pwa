@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'l10n/app_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -28,6 +29,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
   
+  // .env 파일 로드 (없어도 앱 실행은 계속)
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    if (kDebugMode) {
+      print('⚠️ .env file not found, using default placeholders.');
+    }
+  }
+
   // 🎯 Google AdMob 초기화
   await MobileAds.instance.initialize();
   if (kDebugMode) {
