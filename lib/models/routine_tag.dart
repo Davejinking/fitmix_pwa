@@ -85,7 +85,15 @@ class RoutineTag {
     final preset = findPreset(key);
     return preset?.color ?? defaultColor;
   }
-  
+
+  // Pre-allocated constant lists for performance
+  static const _pushTags = ['PUSH', 'プッシュ', '미는 운동'];
+  static const _pullTags = ['PULL', 'プル', '당기는 운동'];
+  static const _legsTags = ['LEGS', '脚', '하체'];
+  static const _upperTags = ['UPPER', '上半身', '상체'];
+  static const _lowerTags = ['LOWER', '下半身', '하체'];
+  static const _fullBodyTags = ['FULL BODY', '全身', '전신'];
+
   /// Get color for a localized tag name (supports multilingual)
   /// This is useful for filter bars where tags are displayed in user's locale
   /// 
@@ -98,32 +106,32 @@ class RoutineTag {
     
     // PRIORITY 1: System Preset Tags (Hardcoded Neon Colors)
     // PUSH (Red)
-    if (['PUSH', 'プッシュ', '미는 운동'].contains(name)) {
+    if (_pushTags.contains(name)) {
       return const Color(0xFFFF5252);
     }
     
     // PULL (Blue)
-    if (['PULL', 'プル', '당기는 운동'].contains(name)) {
+    if (_pullTags.contains(name)) {
       return const Color(0xFF448AFF);
     }
     
     // LEGS (Yellow)
-    if (['LEGS', '脚', '하체'].contains(name)) {
+    if (_legsTags.contains(name)) {
       return const Color(0xFFFFD740);
     }
     
     // UPPER (Purple)
-    if (['UPPER', '上半身', '상체'].contains(name)) {
+    if (_upperTags.contains(name)) {
       return const Color(0xFFE040FB);
     }
     
     // LOWER (Orange)
-    if (['LOWER', '下半身', '하체'].contains(name)) {
+    if (_lowerTags.contains(name)) {
       return const Color(0xFFFFAB40);
     }
     
     // FULL BODY (White)
-    if (['FULL BODY', '全身', '전신'].contains(name)) {
+    if (_fullBodyTags.contains(name)) {
       return const Color(0xFFFFFFFF);
     }
     
