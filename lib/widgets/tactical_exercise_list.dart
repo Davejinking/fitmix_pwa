@@ -134,25 +134,33 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   }
 
   void _applyFilter() {
+    final searchLower = _searchQuery.toLowerCase();
+    final equipmentLower = _selectedEquipmentKey?.toLowerCase();
+    final bodyPartLower = _selectedBodyPart.toLowerCase();
+    final isAllBodyParts = _selectedBodyPart == 'all';
+    final isFavorites = _selectedBodyPart == 'favorites';
+
     setState(() {
-      // Step 1: Body Part Filter
-      if (_selectedBodyPart == 'all') {
-        _filteredExercises = List.from(_allExercises);
-      } else if (_selectedBodyPart == 'favorites') {
-        _filteredExercises = _allExercises.where((ex) => _bookmarkedIds.contains(ex.id)).toList();
-      } else {
-        _filteredExercises = _allExercises.where((ex) => ex.targetPart.toLowerCase() == _selectedBodyPart.toLowerCase()).toList();
-      }
-      
-      // Step 2: Equipment Filter
-      if (_selectedEquipmentKey != null) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.equipmentType.toLowerCase() == _selectedEquipmentKey!.toLowerCase()).toList();
-      }
-      
-      // Step 3: Search Query Filter
-      if (_searchQuery.isNotEmpty) {
-        _filteredExercises = _filteredExercises.where((ex) => ex.getLocalizedName(context).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
-      }
+      _filteredExercises = _allExercises.where((ex) {
+        // Step 1: Body Part Filter
+        if (isFavorites) {
+          if (!_bookmarkedIds.contains(ex.id)) return false;
+        } else if (!isAllBodyParts) {
+          if (ex.targetPart.toLowerCase() != bodyPartLower) return false;
+        }
+
+        // Step 2: Equipment Filter
+        if (equipmentLower != null) {
+          if (ex.equipmentType.toLowerCase() != equipmentLower) return false;
+        }
+
+        // Step 3: Search Query Filter
+        if (searchLower.isNotEmpty) {
+          if (!ex.getLocalizedName(context).toLowerCase().contains(searchLower)) return false;
+        }
+
+        return true;
+      }).toList();
     });
   }
 
