@@ -135,16 +135,39 @@ class StatsCalculator {
     return stats;
   }
 
-  /// 3대 운동 전투력 계산
+  /// 3대 운동 전투력 계산 (최적화)
   static BigThreeStats calculateBigThree(List<Session> sessions) {
-    final bench = findBest1RM(sessions, 'Bench Press');
-    final squat = findBest1RM(sessions, 'Squat');
-    final deadlift = findBest1RM(sessions, 'Deadlift');
-    
+    double bestBenchRM = 0;
+    double bestSquatRM = 0;
+    double bestDeadliftRM = 0;
+
+    for (final session in sessions) {
+      for (final exercise in session.exercises) {
+        final isBench = _matchExerciseName(exercise.name, 'Bench Press');
+        final isSquat = !isBench && _matchExerciseName(exercise.name, 'Squat');
+        final isDeadlift = !isBench && !isSquat && _matchExerciseName(exercise.name, 'Deadlift');
+
+        if (isBench || isSquat || isDeadlift) {
+          for (final set in exercise.sets) {
+            if (set.isCompleted && set.weight > 0 && set.reps > 0) {
+              final estimated1RM = calculate1RM(set.weight, set.reps);
+              if (isBench && estimated1RM > bestBenchRM) {
+                bestBenchRM = estimated1RM;
+              } else if (isSquat && estimated1RM > bestSquatRM) {
+                bestSquatRM = estimated1RM;
+              } else if (isDeadlift && estimated1RM > bestDeadliftRM) {
+                bestDeadliftRM = estimated1RM;
+              }
+            }
+          }
+        }
+      }
+    }
+
     return BigThreeStats(
-      benchPress: bench,
-      squat: squat,
-      deadlift: deadlift,
+      benchPress: bestBenchRM,
+      squat: bestSquatRM,
+      deadlift: bestDeadliftRM,
     );
   }
 
