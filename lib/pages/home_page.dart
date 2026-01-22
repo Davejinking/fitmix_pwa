@@ -657,57 +657,60 @@ class _HomeBigThreeWidget extends StatelessWidget {
             print('🎯 Big Three tapped - Navigating to Analysis');
             Navigator.pushNamed(context, '/analysis');
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent, // FORCE TRANSPARENT
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
-                width: 1.0,
+          child: SizedBox(
+            height: 100, // 🎯 FIXED HEIGHT for consistent box size
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent, // FORCE TRANSPARENT
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
+                  width: 1.0,
+                ),
+                borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
               ),
-              borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Left Side: Label & Value
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'BIG 3 TOTAL',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'Courier',
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Left Side: Label & Value
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'BIG 3 TOTAL',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 10,
+                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.w900,
+                            fontFamily: 'Courier',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        displayValue,
-                        style: TextStyle(
-                          color: hasData 
-                              ? const Color(0xFF69F0AE) // Neon Green
-                              : Colors.grey[700],
-                          fontSize: 24,
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
+                        const SizedBox(height: 8),
+                        Text(
+                          displayValue,
+                          style: TextStyle(
+                            color: hasData 
+                                ? const Color(0xFF69F0AE) // Neon Green
+                                : Colors.grey[700],
+                            fontSize: 24,
+                            fontFamily: 'Courier',
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // Right Side: Arrow Icon
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: Colors.grey[700],
-                ),
-              ],
+                  // Right Side: Arrow Icon
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 14,
+                    color: Colors.grey[700],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -760,57 +763,60 @@ class _HomeVolumeWidget extends StatelessWidget {
             print('🎯 Volume tapped - Navigating to Analysis');
             Navigator.pushNamed(context, '/analysis');
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent, // FORCE TRANSPARENT
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
-                width: 1.0,
+          child: SizedBox(
+            height: 100, // 🎯 FIXED HEIGHT for consistent box size
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent, // FORCE TRANSPARENT
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2), // Thin subtle border
+                  width: 1.0,
+                ),
+                borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
               ),
-              borderRadius: BorderRadius.zero, // FORCE SHARP CORNERS
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Left Side: Label & Value
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'WEEKLY VOL',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'Courier',
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Left Side: Label & Value
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'WEEKLY VOL',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 10,
+                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.w900,
+                            fontFamily: 'Courier',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        displayValue,
-                        style: TextStyle(
-                          color: hasData 
-                              ? const Color(0xFF448AFF) // Electric Blue
-                              : Colors.grey[700],
-                          fontSize: 24,
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
+                        const SizedBox(height: 8),
+                        Text(
+                          displayValue,
+                          style: TextStyle(
+                            color: hasData 
+                                ? const Color(0xFF448AFF) // Electric Blue
+                                : Colors.grey[700],
+                            fontSize: 24,
+                            fontFamily: 'Courier',
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // Right Side: Arrow Icon
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: Colors.grey[700],
-                ),
-              ],
+                  // Right Side: Arrow Icon
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 14,
+                    color: Colors.grey[700],
+                  ),
+                ],
+              ),
             ),
           ),
         );

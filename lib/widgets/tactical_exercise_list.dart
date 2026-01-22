@@ -60,8 +60,6 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   // Data State
   List<ExerciseLibraryItem> _allExercises = [];
   List<ExerciseLibraryItem> _filteredExercises = [];
-  // Cache available equipment keys based on body part filter to avoid re-calculation on every build
-  List<String> _availableEquipmentKeys = [];
 
   bool _isLoading = false;
   String? _error;
@@ -72,7 +70,7 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
   // Bookmarks
   final Set<String> _bookmarkedIds = {};
 
-  // Cache
+  // Cache available equipment keys based on body part filter to avoid re-calculation on every build
   List<String>? _cachedAvailableEquipmentKeys;
   
   // Search
