@@ -15,6 +15,9 @@ import 'data/user_repo.dart';
 import 'pages/login_page.dart';
 import 'pages/splash_page.dart';
 import 'pages/library_page_v2.dart';
+import 'pages/analysis_page.dart';
+import 'pages/big_three_detail_page.dart';
+import 'pages/calendar_page.dart';
 import 'widgets/exercise_log_card_demo.dart';
 import 'widgets/workout_heatmap_demo.dart';
 import 'pages/demo_calendar_screen.dart';
@@ -183,6 +186,9 @@ class _IronLogAppState extends State<IronLogApp> {
       ],
       routes: {
         '/library': (context) => const LibraryPageV2(),
+        '/analysis': (context) => const AnalysisPage(),
+        '/big-three-detail': (context) => const BigThreeDetailPage(),
+        '/calendar': (context) => const CalendarPage(),
         '/demo/exercise-log-card': (context) => const ExerciseLogCardDemo(),
         '/demo/workout-heatmap': (context) => const WorkoutHeatmapDemo(),
         '/demo/calendar': (context) => const DemoCalendarScreen(),

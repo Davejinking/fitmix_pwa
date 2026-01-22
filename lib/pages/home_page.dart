@@ -387,8 +387,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             // 🎯 Clickable Title Row
             GestureDetector(
               onTap: () {
-                print('🎯 Navigating to Analysis');
-                Navigator.pushNamed(context, '/analysis');
+                print('🎯 Navigating to Calendar');
+                Navigator.pushNamed(context, '/calendar');
               },
               child: Container(
                 color: Colors.transparent,
@@ -654,11 +654,11 @@ class _HomeBigThreeWidget extends StatelessWidget {
         
         return GestureDetector(
           onTap: () {
-            print('🎯 Big Three tapped - Navigating to Analysis');
-            Navigator.pushNamed(context, '/analysis');
+            print('🎯 Big Three tapped - Navigating to Big Three Detail');
+            Navigator.pushNamed(context, '/big-three-detail');
           },
           child: SizedBox(
-            height: 100, // 🎯 FIXED HEIGHT for consistent box size
+            height: 120, // 🎯 INCREASED to accommodate content
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.transparent, // FORCE TRANSPARENT
@@ -676,6 +676,7 @@ class _HomeBigThreeWidget extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text(
                           'BIG 3 TOTAL',
@@ -687,17 +688,21 @@ class _HomeBigThreeWidget extends StatelessWidget {
                             fontFamily: 'Courier',
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          displayValue,
-                          style: TextStyle(
-                            color: hasData 
-                                ? const Color(0xFF69F0AE) // Neon Green
-                                : Colors.grey[700],
-                            fontSize: 24,
-                            fontFamily: 'Courier',
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.0,
+                        const SizedBox(height: 4),
+                        Flexible(
+                          child: Text(
+                            displayValue,
+                            style: TextStyle(
+                              color: hasData 
+                                  ? const Color(0xFF69F0AE) // Neon Green
+                                  : Colors.grey[700],
+                              fontSize: 22,
+                              fontFamily: 'Courier',
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.0,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -764,7 +769,7 @@ class _HomeVolumeWidget extends StatelessWidget {
             Navigator.pushNamed(context, '/analysis');
           },
           child: SizedBox(
-            height: 100, // 🎯 FIXED HEIGHT for consistent box size
+            height: 120, // 🎯 FIXED HEIGHT for consistent box size
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.transparent, // FORCE TRANSPARENT
@@ -782,6 +787,7 @@ class _HomeVolumeWidget extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text(
                           'WEEKLY VOL',
@@ -793,17 +799,21 @@ class _HomeVolumeWidget extends StatelessWidget {
                             fontFamily: 'Courier',
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          displayValue,
-                          style: TextStyle(
-                            color: hasData 
-                                ? const Color(0xFF448AFF) // Electric Blue
-                                : Colors.grey[700],
-                            fontSize: 24,
-                            fontFamily: 'Courier',
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.0,
+                        const SizedBox(height: 4),
+                        Flexible(
+                          child: Text(
+                            displayValue,
+                            style: TextStyle(
+                              color: hasData 
+                                  ? const Color(0xFF448AFF) // Electric Blue
+                                  : Colors.grey[700],
+                              fontSize: 22,
+                              fontFamily: 'Courier',
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.0,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

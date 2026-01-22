@@ -6,12 +6,14 @@ class IronAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool automaticallyImplyLeading;
   final String? title;
+  final TextStyle? titleStyle;
 
   const IronAppBar({
     super.key,
     this.actions,
     this.automaticallyImplyLeading = true,
     this.title,
+    this.titleStyle,
   });
 
   @override
@@ -23,7 +25,7 @@ class IronAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: automaticallyImplyLeading,
       title: Text(
         title ?? 'IRON LOG',
-        style: TextStyle(
+        style: titleStyle ?? TextStyle(
           fontSize: title != null ? 18 : 30,
           letterSpacing: 2.0,
           color: Colors.white,
