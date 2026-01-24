@@ -60,16 +60,41 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _loadSession() async {
     setState(() => _isLoading = true);
     try {
-      final session = await repo.get(repo.ymd(_selectedDay));
+      final selectedYmd = repo.ymd(_selectedDay);
+      final session = await repo.get(selectedYmd);
+      
       if (mounted) {
         setState(() {
-          _currentSession = session;
+          if (session != null) {
+            // 기존 세션이 있는 경우 - Edit Mode
+            _currentSession = session;
+            debugPrint('✅ [State Isolation] 기존 세션 로드: $selectedYmd (운동 ${session.exercises.length}개)');
+          } else {
+            // 세션이 없는 경우 - Create Mode
+            // CRITICAL: 완전히 새로운 빈 세션 생성 (이전 세션 참조 제거)
+            _currentSession = Session(
+              ymd: selectedYmd,
+              exercises: [], // 빈 리스트
+              isRest: false,
+              durationInSeconds: 0,
+              isCompleted: false,
+            );
+            debugPrint('✅ [State Isolation] 새 세션 생성: $selectedYmd (빈 상태)');
+          }
           _isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          // 에러 발생 시에도 빈 세션 생성 (안전장치)
+          _currentSession = Session(
+            ymd: repo.ymd(_selectedDay),
+            exercises: [],
+            isRest: false,
+          );
+          _isLoading = false;
+        });
         ErrorHandler.showErrorSnackBar(context, '세션 로드 실패: $e');
       }
     }
@@ -120,11 +145,15 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
+  /// 날짜 선택 시 호출 - State Pollution 방지를 위한 엄격한 상태 격리
   void _onDaySelected(DateTime selectedDay) {
     if (mounted) {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = selectedDay;
+        // CRITICAL: 날짜 변경 시 즉시 현재 세션을 null로 초기화
+        // 이전 날짜의 세션 데이터가 새 날짜로 오염되는 것을 방지
+        _currentSession = null;
       });
       _loadSession();
     }
@@ -425,6 +454,41 @@ class _CalendarPageState extends State<CalendarPage> {
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
+        // 📅 선택된 날짜 표시 (State Pollution 방지 - 사용자에게 명확한 피드백)
+        SliverToBoxAdapter(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 16,
+                  color: const Color(0xFF3B82F6),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Recording for: ${_formatSelectedDate()}',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    fontFamily: 'Courier',
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         // 액션 바 (섹션 헤더 스타일)
         SliverToBoxAdapter(
           child: Padding(
@@ -528,6 +592,12 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
       ],
     );
+  }
+  
+  /// 선택된 날짜를 포맷팅 (예: Jan 20, 2026)
+  String _formatSelectedDate() {
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${months[_selectedDay.month - 1]} ${_selectedDay.day}, ${_selectedDay.year}';
   }
   
   /// 순서 변경 모달
@@ -822,14 +892,36 @@ class _CalendarPageState extends State<CalendarPage> {
 
     if (selected != null && selected.isNotEmpty && mounted) {
       setState(() {
+        // CRITICAL: _currentSession이 null이거나 휴식일인 경우
+        // 현재 선택된 날짜(_selectedDay)로 새 세션 생성
         if (_currentSession == null || _currentSession!.isRest) {
+          final selectedYmd = repo.ymd(_selectedDay);
           _currentSession = Session(
-            ymd: repo.ymd(_selectedDay),
+            ymd: selectedYmd, // 반드시 현재 선택된 날짜 사용
             exercises: selected,
             isRest: false,
+            durationInSeconds: 0,
+            isCompleted: false,
           );
+          debugPrint('✅ [State Isolation] 운동 추가 시 새 세션 생성: $selectedYmd');
         } else {
-          _currentSession!.exercises.addAll(selected);
+          // 기존 세션에 운동 추가
+          // ymd가 현재 선택된 날짜와 일치하는지 검증 (안전장치)
+          final expectedYmd = repo.ymd(_selectedDay);
+          if (_currentSession!.ymd != expectedYmd) {
+            debugPrint('⚠️ [State Pollution Detected] 세션 날짜 불일치! 세션: ${_currentSession!.ymd}, 선택: $expectedYmd');
+            // 날짜 불일치 시 새 세션 생성 (State Pollution 방지)
+            _currentSession = Session(
+              ymd: expectedYmd,
+              exercises: selected,
+              isRest: false,
+              durationInSeconds: 0,
+              isCompleted: false,
+            );
+          } else {
+            _currentSession!.exercises.addAll(selected);
+            debugPrint('✅ [State Isolation] 기존 세션에 운동 추가: $expectedYmd (총 ${_currentSession!.exercises.length}개)');
+          }
         }
       });
       await _saveSession();
@@ -1931,8 +2023,21 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           ),
                         ),
                       ),
-                      // Action column
-                      const SizedBox(width: 40), // 48 → 40
+                      // Done column (50px - matches new checkbox width)
+                      const SizedBox(
+                        width: 50,
+                        child: Text(
+                          'DONE',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            fontFamily: 'Courier',
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -2093,10 +2198,12 @@ class _SetRowGridState extends State<_SetRowGrid> {
 
   @override
   Widget build(BuildContext context) {
+    final set = widget.exercise.sets[widget.setIndex];
+    
     return SizedBox(
-      height: 28.0, // EXTREME COMPACT - 32 → 28
+      height: 36.0, // 28 → 36 (체크박스 터치 영역 확보)
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -2108,7 +2215,7 @@ class _SetRowGridState extends State<_SetRowGrid> {
                 child: Text(
                   '#${widget.setIndex + 1}',
                   style: TextStyle(
-                    fontSize: 11, // 12 → 11
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[600],
                     fontFamily: 'Courier',
@@ -2118,44 +2225,65 @@ class _SetRowGridState extends State<_SetRowGrid> {
               ),
             ),
             
-            const SizedBox(width: 6), // 8 → 6
+            const SizedBox(width: 6),
             
             // KG column (Expanded flex: 3 - matches header)
             Expanded(
               flex: 3,
-              child: Center(
-                child: _buildGridInput(
-                  controller: _weightController,
-                  textAlign: TextAlign.center,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                ),
+              child: _buildGridInput(
+                controller: _weightController,
+                textAlign: TextAlign.center,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
               ),
             ),
             
             // REPS column (Expanded flex: 3 - matches header)
             Expanded(
               flex: 3,
-              child: Center(
-                child: _buildGridInput(
-                  controller: _repsController,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                ),
+              child: _buildGridInput(
+                controller: _repsController,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
               ),
             ),
             
-            // Action column (40px fixed - reduced from 48)
+            // Done Checkbox column (50px fixed - 1.5배 확대)
             SizedBox(
-              width: 40, // 48 → 40
-              child: IconButton(
-                icon: Icon(
-                  Icons.close,
-                  size: 13, // 14 → 13
-                  color: Colors.grey[700],
+              width: 50,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    set.isCompleted = !set.isCompleted;
+                  });
+                  widget.onUpdate();
+                  HapticFeedback.mediumImpact();
+                },
+                behavior: HitTestBehavior.opaque, // 전체 영역 클릭 가능
+                child: Center(
+                  child: Container(
+                    width: 24, // 16 → 24 (1.5배)
+                    height: 24, // 16 → 24 (1.5배)
+                    decoration: BoxDecoration(
+                      color: set.isCompleted 
+                        ? const Color(0xFF2196F3) 
+                        : Colors.transparent,
+                      border: Border.all(
+                        color: set.isCompleted 
+                          ? const Color(0xFF2196F3) 
+                          : Colors.grey[700]!,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: set.isCompleted
+                      ? const Icon(
+                          Icons.check,
+                          size: 16, // 체크 아이콘도 크게
+                          color: Colors.white,
+                        )
+                      : null,
+                  ),
                 ),
-                onPressed: widget.onDelete,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 28),
               ),
             ),
           ],
@@ -2178,32 +2306,49 @@ class _SetRowGridState extends State<_SetRowGrid> {
           final hasFocus = Focus.of(context).hasFocus;
           final isEmpty = controller.text.isEmpty;
           
-          return TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            textAlign: textAlign,
-            style: TextStyle(
-              fontSize: 15, // 16 → 15 for extreme compact
-              fontWeight: FontWeight.w900,
-              color: hasFocus 
-                ? const Color(0xFF2196F3) // Electric Blue when focused
-                : (isEmpty ? Colors.grey[800] : Colors.white),
-              fontFamily: 'Courier',
-              height: 1.0, // TIGHT!
+          return Container(
+            height: 32, // 명확한 입력 영역 높이
+            decoration: BoxDecoration(
+              // ① 어두운 회색 배경 추가 - "여기를 누르세요" 시각적 신호
+              color: const Color(0xFF2C2C2C),
+              borderRadius: BorderRadius.circular(4),
+              // 포커스 시 파란색 테두리
+              border: Border.all(
+                color: hasFocus 
+                  ? const Color(0xFF2196F3) 
+                  : Colors.transparent,
+                width: 2,
+              ),
             ),
-            decoration: InputDecoration(
-              isDense: true,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              filled: false,
-              contentPadding: EdgeInsets.zero, // ZERO PADDING
-              hintText: '0',
-              hintStyle: TextStyle(
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w900,
-                fontFamily: 'Courier',
-                height: 1.0,
+            child: Center(
+              child: TextField(
+                controller: controller,
+                keyboardType: keyboardType,
+                textAlign: textAlign,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: hasFocus 
+                    ? const Color(0xFF2196F3) // Electric Blue when focused
+                    : (isEmpty ? Colors.grey[600] : Colors.white),
+                  fontFamily: 'Courier',
+                  height: 1.0,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  filled: false,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  hintText: '0',
+                  hintStyle: TextStyle(
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'Courier',
+                    height: 1.0,
+                  ),
+                ),
               ),
             ),
           );

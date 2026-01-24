@@ -181,7 +181,7 @@ abstract class AppLocalizations {
   /// No description provided for @volume.
   ///
   /// In en, this message translates to:
-  /// **'Volume'**
+  /// **'VOLUME'**
   String get volume;
 
   /// No description provided for @density.
@@ -315,6 +315,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown Page'**
   String get unknownPage;
+
+  /// No description provided for @operationalStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'OPERATIONAL STATUS'**
+  String get operationalStatus;
+
+  /// No description provided for @weekLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'WEEK'**
+  String get weekLabel;
+
+  /// No description provided for @totalLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL LOAD'**
+  String get totalLoad;
+
+  /// No description provided for @vsLast.
+  ///
+  /// In en, this message translates to:
+  /// **'VS PREV'**
+  String get vsLast;
+
+  /// No description provided for @sessionAvg.
+  ///
+  /// In en, this message translates to:
+  /// **'SESSION AVG'**
+  String get sessionAvg;
+
+  /// No description provided for @heartRate.
+  ///
+  /// In en, this message translates to:
+  /// **'HR'**
+  String get heartRate;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'DURATION'**
+  String get duration;
+
+  /// No description provided for @restTime.
+  ///
+  /// In en, this message translates to:
+  /// **'REST TIME'**
+  String get restTime;
+
+  /// No description provided for @latestLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'LATEST LOGS'**
+  String get latestLogs;
+
+  /// No description provided for @noRecentWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'NO RECENT WORKOUTS'**
+  String get noRecentWorkouts;
+
+  /// No description provided for @startSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Session'**
+  String get startSession;
+
+  /// No description provided for @systemReady.
+  ///
+  /// In en, this message translates to:
+  /// **'SYSTEM READY'**
+  String get systemReady;
+
+  /// No description provided for @buildVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'BUILD'**
+  String get buildVersion;
+
+  /// No description provided for @calendarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NEURAL CALENDAR'**
+  String get calendarTitle;
+
+  /// No description provided for @weekdayMonAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'MON'**
+  String get weekdayMonAbbr;
+
+  /// No description provided for @weekdayTueAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'TUE'**
+  String get weekdayTueAbbr;
+
+  /// No description provided for @weekdayWedAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'WED'**
+  String get weekdayWedAbbr;
+
+  /// No description provided for @weekdayThuAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'THU'**
+  String get weekdayThuAbbr;
+
+  /// No description provided for @weekdayFriAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'FRI'**
+  String get weekdayFriAbbr;
+
+  /// No description provided for @weekdaySatAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'SAT'**
+  String get weekdaySatAbbr;
+
+  /// No description provided for @weekdaySunAbbr.
+  ///
+  /// In en, this message translates to:
+  /// **'SUN'**
+  String get weekdaySunAbbr;
+
+  /// No description provided for @quickActionRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'ROUTINE'**
+  String get quickActionRoutine;
+
+  /// No description provided for @quickActionProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'PROGRAM'**
+  String get quickActionProgram;
+
+  /// No description provided for @quickActionPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'PLAN'**
+  String get quickActionPlan;
+
+  /// No description provided for @quickActionRest.
+  ///
+  /// In en, this message translates to:
+  /// **'REST'**
+  String get quickActionRest;
+
+  /// No description provided for @quickActionLog.
+  ///
+  /// In en, this message translates to:
+  /// **'LOG'**
+  String get quickActionLog;
 
   /// No description provided for @fitMix.
   ///
@@ -1042,12 +1198,6 @@ abstract class AppLocalizations {
   /// **'Start Workout'**
   String get initiateWorkout;
 
-  /// No description provided for @startSession.
-  ///
-  /// In en, this message translates to:
-  /// **'Start Session'**
-  String get startSession;
-
   /// No description provided for @editSession.
   ///
   /// In en, this message translates to:
@@ -1114,11 +1264,83 @@ abstract class AppLocalizations {
   /// **'Band'**
   String get band;
 
+  /// No description provided for @kettlebell.
+  ///
+  /// In en, this message translates to:
+  /// **'Kettlebell'**
+  String get kettlebell;
+
   /// No description provided for @searchExercise.
   ///
   /// In en, this message translates to:
   /// **'Search for exercises'**
   String get searchExercise;
+
+  /// No description provided for @exerciseSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'EXERCISE SELECT'**
+  String get exerciseSelect;
+
+  /// No description provided for @searchDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'SEARCH WORKOUT...'**
+  String get searchDatabase;
+
+  /// No description provided for @selectWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'SELECT WORKOUT'**
+  String get selectWorkout;
+
+  /// No description provided for @filterParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'FILTER PARAMETERS'**
+  String get filterParameters;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'APPLY FILTERS'**
+  String get applyFilters;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'RESET'**
+  String get reset;
+
+  /// No description provided for @targetMuscle.
+  ///
+  /// In en, this message translates to:
+  /// **'TARGET MUSCLE'**
+  String get targetMuscle;
+
+  /// No description provided for @equipmentType.
+  ///
+  /// In en, this message translates to:
+  /// **'EQUIPMENT TYPE'**
+  String get equipmentType;
+
+  /// No description provided for @indexStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'INDEX STATUS'**
+  String get indexStatus;
+
+  /// No description provided for @statusReady.
+  ///
+  /// In en, this message translates to:
+  /// **'READY'**
+  String get statusReady;
+
+  /// No description provided for @availableUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'AVAIL'**
+  String get availableUnits;
 
   /// No description provided for @searchRoutine.
   ///

@@ -20,49 +20,98 @@ class FMBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black, // Pure black void
-        border: Border(
-          top: BorderSide(
-            color: Colors.white24, // 🔥 Tactical border
-            width: 1.0,
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: backgroundColor ?? const Color(0xFF0A0A0A),
+          border: Border(
+            top: BorderSide(
+              color: Colors.white.withValues(alpha: 0.1),
+              width: 0.5,
+            ),
           ),
         ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: items.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            return _buildNavItem(
+              index,
+              item.activeIcon,
+              item.icon,
+              item.label,
+            );
+          }).toList(),
+        ),
       ),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onTap,
-        selectedItemColor: selectedItemColor ?? Colors.white, // 🔥 Active: Bright White
-        unselectedItemColor: unselectedItemColor ?? Colors.grey[600], // 🔥 Inactive: Dark Grey
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        elevation: 0, // No shadow
-        backgroundColor: Colors.black, // Pure black
-        selectedFontSize: 11, // 🔥 Tactical font size
-        unselectedFontSize: 10, // 🔥 Smaller when inactive
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w700, // 🔥 Bold when active
-          fontFamily: 'Courier',
-          letterSpacing: 0.5,
+    );
+  }
+
+  Widget _buildNavItem(
+    int index,
+    IconData activeIcon,
+    IconData inactiveIcon,
+    String label,
+  ) {
+    final bool isSelected = currentIndex == index;
+    final Color activeColor = selectedItemColor ?? const Color(0xFF3B82F6);
+    final Color inactiveColor = unselectedItemColor ?? const Color(0xFF52525B);
+
+    // Detect if label contains non-ASCII characters (Japanese/Korean)
+    final bool isAsianLanguage = label.runes.any((rune) => rune > 127);
+    final double letterSpacing = isAsianLanguage ? 0.0 : 0.8;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onTap(index),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon with Neon Glow if selected
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: isSelected
+                    ? BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: activeColor.withValues(alpha: 0.6),
+                            blurRadius: 15,
+                            spreadRadius: -2,
+                          ),
+                        ],
+                      )
+                    : null,
+                child: Icon(
+                  isSelected ? activeIcon : inactiveIcon,
+                  color: isSelected ? Colors.white : inactiveColor,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 4),
+              // Label text
+              Text(
+                isAsianLanguage ? label : label.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected ? activeColor : inactiveColor,
+                  letterSpacing: letterSpacing,
+                  fontFamily: 'Courier',
+                  height: 1.0,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w400,
-          fontFamily: 'Courier',
-          letterSpacing: 0.5,
-        ),
-        items: items.map((item) {
-          final index = items.indexOf(item);
-          final isSelected = currentIndex == index;
-          
-          return BottomNavigationBarItem(
-            icon: Icon(
-              isSelected ? item.activeIcon : item.icon,
-              size: 24,
-            ),
-            label: item.label,
-          );
-        }).toList(),
       ),
     );
   }

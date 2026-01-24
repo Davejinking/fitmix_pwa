@@ -127,6 +127,84 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unknownPage => '不明なページ';
 
   @override
+  String get operationalStatus => '運用状況';
+
+  @override
+  String get weekLabel => '週';
+
+  @override
+  String get totalLoad => '総負荷';
+
+  @override
+  String get vsLast => '前回比';
+
+  @override
+  String get sessionAvg => 'セッション平均';
+
+  @override
+  String get heartRate => '心拍数';
+
+  @override
+  String get duration => '時間';
+
+  @override
+  String get restTime => '休憩時間';
+
+  @override
+  String get latestLogs => '最新の記録';
+
+  @override
+  String get noRecentWorkouts => '最近のトレーニングなし';
+
+  @override
+  String get startSession => 'セッション開始';
+
+  @override
+  String get systemReady => 'システム準備完了';
+
+  @override
+  String get buildVersion => 'ビルド';
+
+  @override
+  String get calendarTitle => '月間カレンダー';
+
+  @override
+  String get weekdayMonAbbr => '月';
+
+  @override
+  String get weekdayTueAbbr => '火';
+
+  @override
+  String get weekdayWedAbbr => '水';
+
+  @override
+  String get weekdayThuAbbr => '木';
+
+  @override
+  String get weekdayFriAbbr => '金';
+
+  @override
+  String get weekdaySatAbbr => '土';
+
+  @override
+  String get weekdaySunAbbr => '日';
+
+  @override
+  String get quickActionRoutine => 'ルーティン';
+
+  @override
+  String get quickActionProgram => 'プログラム';
+
+  @override
+  String get quickActionPlan => '計画';
+
+  @override
+  String get quickActionRest => '休息';
+
+  @override
+  String get quickActionLog => '記録';
+
+  @override
   String get fitMix => 'アイアンログ';
 
   @override
@@ -516,9 +594,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get initiateWorkout => 'ワークアウト開始';
 
   @override
-  String get startSession => 'セッション開始';
-
-  @override
   String get editSession => 'セッション編集';
 
   @override
@@ -552,7 +627,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String get band => 'バンド';
 
   @override
+  String get kettlebell => 'ケトルベル';
+
+  @override
   String get searchExercise => '運動を検索';
+
+  @override
+  String get exerciseSelect => '種目選択';
+
+  @override
+  String get searchDatabase => 'ワークアウトを検索...';
+
+  @override
+  String get selectWorkout => 'ワークアウト選択';
+
+  @override
+  String get filterParameters => '絞り込み設定';
+
+  @override
+  String get applyFilters => '適用する';
+
+  @override
+  String get reset => 'リセット';
+
+  @override
+  String get targetMuscle => '対象筋肉';
+
+  @override
+  String get equipmentType => '器具タイプ';
+
+  @override
+  String get indexStatus => 'インデックス状態';
+
+  @override
+  String get statusReady => '準備完了';
+
+  @override
+  String get availableUnits => '利用可能';
 
   @override
   String get searchRoutine => 'ルーティン検索';

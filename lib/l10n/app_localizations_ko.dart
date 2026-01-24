@@ -127,6 +127,84 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unknownPage => '알 수 없는 페이지';
 
   @override
+  String get operationalStatus => '운영 상태';
+
+  @override
+  String get weekLabel => '주차';
+
+  @override
+  String get totalLoad => '총 중량';
+
+  @override
+  String get vsLast => '이전 대비';
+
+  @override
+  String get sessionAvg => '세션 평균';
+
+  @override
+  String get heartRate => '심박수';
+
+  @override
+  String get duration => '시간';
+
+  @override
+  String get restTime => '휴식 시간';
+
+  @override
+  String get latestLogs => '최근 기록';
+
+  @override
+  String get noRecentWorkouts => '최근 운동 없음';
+
+  @override
+  String get startSession => '세션 시작';
+
+  @override
+  String get systemReady => '시스템 준비됨';
+
+  @override
+  String get buildVersion => '빌드';
+
+  @override
+  String get calendarTitle => '월간 캘린더';
+
+  @override
+  String get weekdayMonAbbr => '월';
+
+  @override
+  String get weekdayTueAbbr => '화';
+
+  @override
+  String get weekdayWedAbbr => '수';
+
+  @override
+  String get weekdayThuAbbr => '목';
+
+  @override
+  String get weekdayFriAbbr => '금';
+
+  @override
+  String get weekdaySatAbbr => '토';
+
+  @override
+  String get weekdaySunAbbr => '일';
+
+  @override
+  String get quickActionRoutine => '루틴';
+
+  @override
+  String get quickActionProgram => '프로그램';
+
+  @override
+  String get quickActionPlan => '계획';
+
+  @override
+  String get quickActionRest => '휴식';
+
+  @override
+  String get quickActionLog => '기록';
+
+  @override
   String get fitMix => '아이언 로그';
 
   @override
@@ -516,9 +594,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get initiateWorkout => '운동 시작';
 
   @override
-  String get startSession => '세션 시작';
-
-  @override
   String get editSession => '세션 편집';
 
   @override
@@ -552,7 +627,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get band => '밴드';
 
   @override
+  String get kettlebell => '케틀벨';
+
+  @override
   String get searchExercise => '찾으시는 운동을 검색해보세요.';
+
+  @override
+  String get exerciseSelect => '운동 종목 선택';
+
+  @override
+  String get searchDatabase => '워크아웃 검색...';
+
+  @override
+  String get selectWorkout => '워크아웃 선택';
+
+  @override
+  String get filterParameters => '필터 설정';
+
+  @override
+  String get applyFilters => '필터 적용';
+
+  @override
+  String get reset => '초기화';
+
+  @override
+  String get targetMuscle => '목표 근육';
+
+  @override
+  String get equipmentType => '운동 기구';
+
+  @override
+  String get indexStatus => '인덱스 상태';
+
+  @override
+  String get statusReady => '준비됨';
+
+  @override
+  String get availableUnits => '사용 가능';
 
   @override
   String get searchRoutine => '루틴 검색';

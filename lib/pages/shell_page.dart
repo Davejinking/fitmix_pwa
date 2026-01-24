@@ -3,7 +3,7 @@ import '../core/l10n_extensions.dart';
 import '../core/iron_theme.dart';
 import '../widgets/common/iron_app_bar.dart';
 import '../widgets/common/fm_bottom_nav.dart';
-import 'calendar_page.dart';
+import 'calendar_page_new.dart';
 import 'home_page.dart';
 import 'library_page_v2.dart';
 import 'character_page.dart';
@@ -47,7 +47,7 @@ class ShellPageState extends State<ShellPage> {
     super.initState();
     _pages = [
       HomePage(key: _homePageKey), // 🔥 Key 추가
-      const CalendarPage(),
+      const CalendarPageNew(),
       const Scaffold(
         appBar: IronAppBar(),
         backgroundColor: IronTheme.background,

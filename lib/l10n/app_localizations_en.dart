@@ -54,7 +54,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get time => 'Time';
 
   @override
-  String get volume => 'Volume';
+  String get volume => 'VOLUME';
 
   @override
   String get density => 'Density';
@@ -125,6 +125,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unknownPage => 'Unknown Page';
+
+  @override
+  String get operationalStatus => 'OPERATIONAL STATUS';
+
+  @override
+  String get weekLabel => 'WEEK';
+
+  @override
+  String get totalLoad => 'TOTAL LOAD';
+
+  @override
+  String get vsLast => 'VS PREV';
+
+  @override
+  String get sessionAvg => 'SESSION AVG';
+
+  @override
+  String get heartRate => 'HR';
+
+  @override
+  String get duration => 'DURATION';
+
+  @override
+  String get restTime => 'REST TIME';
+
+  @override
+  String get latestLogs => 'LATEST LOGS';
+
+  @override
+  String get noRecentWorkouts => 'NO RECENT WORKOUTS';
+
+  @override
+  String get startSession => 'Start Session';
+
+  @override
+  String get systemReady => 'SYSTEM READY';
+
+  @override
+  String get buildVersion => 'BUILD';
+
+  @override
+  String get calendarTitle => 'NEURAL CALENDAR';
+
+  @override
+  String get weekdayMonAbbr => 'MON';
+
+  @override
+  String get weekdayTueAbbr => 'TUE';
+
+  @override
+  String get weekdayWedAbbr => 'WED';
+
+  @override
+  String get weekdayThuAbbr => 'THU';
+
+  @override
+  String get weekdayFriAbbr => 'FRI';
+
+  @override
+  String get weekdaySatAbbr => 'SAT';
+
+  @override
+  String get weekdaySunAbbr => 'SUN';
+
+  @override
+  String get quickActionRoutine => 'ROUTINE';
+
+  @override
+  String get quickActionProgram => 'PROGRAM';
+
+  @override
+  String get quickActionPlan => 'PLAN';
+
+  @override
+  String get quickActionRest => 'REST';
+
+  @override
+  String get quickActionLog => 'LOG';
 
   @override
   String get fitMix => 'Iron Log';
@@ -519,9 +597,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get initiateWorkout => 'Start Workout';
 
   @override
-  String get startSession => 'Start Session';
-
-  @override
   String get editSession => 'Edit Session';
 
   @override
@@ -555,7 +630,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get band => 'Band';
 
   @override
+  String get kettlebell => 'Kettlebell';
+
+  @override
   String get searchExercise => 'Search for exercises';
+
+  @override
+  String get exerciseSelect => 'EXERCISE SELECT';
+
+  @override
+  String get searchDatabase => 'SEARCH WORKOUT...';
+
+  @override
+  String get selectWorkout => 'SELECT WORKOUT';
+
+  @override
+  String get filterParameters => 'FILTER PARAMETERS';
+
+  @override
+  String get applyFilters => 'APPLY FILTERS';
+
+  @override
+  String get reset => 'RESET';
+
+  @override
+  String get targetMuscle => 'TARGET MUSCLE';
+
+  @override
+  String get equipmentType => 'EQUIPMENT TYPE';
+
+  @override
+  String get indexStatus => 'INDEX STATUS';
+
+  @override
+  String get statusReady => 'READY';
+
+  @override
+  String get availableUnits => 'AVAIL';
 
   @override
   String get searchRoutine => 'Search Routine';
