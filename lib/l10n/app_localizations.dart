@@ -1294,6 +1294,12 @@ abstract class AppLocalizations {
   /// **'SELECT WORKOUT'**
   String get selectWorkout;
 
+  /// No description provided for @addExercisesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'ADD {count} ITEMS'**
+  String addExercisesCount(int count);
+
   /// No description provided for @filterParameters.
   ///
   /// In en, this message translates to:

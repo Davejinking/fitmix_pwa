@@ -507,6 +507,10 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> {
   }
 
   Widget _buildConfirmButton() {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
+    final isEnglish = locale.languageCode == 'en';
+    
     return Container(
       padding: const EdgeInsets.all(16),
       child: GestureDetector(
@@ -536,13 +540,13 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> {
               ),
               const SizedBox(width: 12),
               Text(
-                'CONFIRM_INITIATIVE (${_selectedExercises.length})',
-                style: const TextStyle(
+                l10n.addExercisesCount(_selectedExercises.length),
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
-                  letterSpacing: 2.0,
-                  fontFamily: 'Courier',
+                  letterSpacing: isEnglish ? 2.0 : 0.5,
+                  fontFamily: isEnglish ? 'Courier' : null,
                 ),
               ),
             ],

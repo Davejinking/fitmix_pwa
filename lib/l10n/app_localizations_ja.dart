@@ -642,6 +642,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectWorkout => 'ワークアウト選択';
 
   @override
+  String addExercisesCount(int count) {
+    return '$count件を追加';
+  }
+
+  @override
   String get filterParameters => '絞り込み設定';
 
   @override

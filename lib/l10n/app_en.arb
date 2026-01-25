@@ -202,6 +202,15 @@
   "exerciseSelect": "EXERCISE SELECT",
   "searchDatabase": "SEARCH WORKOUT...",
   "selectWorkout": "SELECT WORKOUT",
+  "addExercisesCount": "ADD {count} ITEMS",
+  "@addExercisesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
   "filterParameters": "FILTER PARAMETERS",
   "applyFilters": "APPLY FILTERS",
   "reset": "RESET",

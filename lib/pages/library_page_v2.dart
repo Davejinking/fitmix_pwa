@@ -178,128 +178,158 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     );
   }
   
-  // 🔥 TACTICAL TOGGLE SWITCH
+  // 🔥 TACTICAL TOGGLE SWITCH (3-way: Exercises / Routines / Programs)
   Widget _buildTacticalSwitch(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Container(
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          border: Border.all(color: Colors.white24, width: 1.0),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          children: [
-            // Left: ROUTINES
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _isRoutineMode = true),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: _isRoutineMode ? Colors.white : Colors.transparent,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    l10n.routines.toUpperCase(),
-                    style: TextStyle(
-                      color: _isRoutineMode ? Colors.black : Colors.grey,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 13,
-                      fontFamily: 'Courier',
-                      letterSpacing: 1.5,
-                    ),
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      height: 48,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A0A0A),
+        border: Border.all(color: const Color(0xFF27272A), width: 1.0),
+      ),
+      child: Row(
+        children: [
+          // EXERCISES
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _isRoutineMode = false),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: !_isRoutineMode ? const Color(0xFF0D59F2).withValues(alpha: 0.1) : Colors.transparent,
+                  border: !_isRoutineMode 
+                      ? const Border(bottom: BorderSide(color: Color(0xFF0D59F2), width: 2))
+                      : null,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'EXERCISES',
+                  style: TextStyle(
+                    color: !_isRoutineMode ? Colors.white : const Color(0xFF71717A),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 10,
+                    fontFamily: 'Courier',
+                    letterSpacing: 2.0,
                   ),
                 ),
               ),
             ),
-            // Right: EXERCISES
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _isRoutineMode = false),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: !_isRoutineMode ? Colors.white : Colors.transparent,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    l10n.exercise.toUpperCase(),
-                    style: TextStyle(
-                      color: !_isRoutineMode ? Colors.black : Colors.grey,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 13,
-                      fontFamily: 'Courier',
-                      letterSpacing: 1.5,
-                    ),
+          ),
+          // ROUTINES
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _isRoutineMode = true),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _isRoutineMode ? const Color(0xFF0D59F2).withValues(alpha: 0.1) : Colors.transparent,
+                  border: _isRoutineMode 
+                      ? const Border(bottom: BorderSide(color: Color(0xFF0D59F2), width: 2))
+                      : null,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'ROUTINES',
+                  style: TextStyle(
+                    color: _isRoutineMode ? Colors.white : const Color(0xFF71717A),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 10,
+                    fontFamily: 'Courier',
+                    letterSpacing: 2.0,
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          // PROGRAMS (Coming Soon)
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                // TODO: Implement programs
+              },
+              child: Container(
+                alignment: Alignment.center,
+                child: const Text(
+                  'PROGRAMS',
+                  style: TextStyle(
+                    color: Color(0xFF71717A),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 10,
+                    fontFamily: 'Courier',
+                    letterSpacing: 2.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildRoutineSearchBar(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), // 🔥 Reduced vertical padding
-      child: TextField(
-        controller: _routineSearchController,
-        cursorColor: Colors.white,
-        decoration: InputDecoration(
-          hintText: l10n.searchRoutine,
-          hintStyle: const TextStyle(
-            color: Colors.grey,
-            fontSize: 14.0, // 🔥 IRON STANDARD
-            fontFamily: 'Courier',
-            letterSpacing: 1.0,
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF18181B).withValues(alpha: 0.8),
+        border: Border.all(color: const Color(0xFF27272A), width: 1.0),
+      ),
+      child: Row(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Icon(
+              Icons.search,
+              color: Color(0xFF71717A),
+              size: 20,
+            ),
           ),
-          prefixIcon: const Icon(
-            Icons.search,
-            color: Colors.grey,
-            size: 20.0, // 🔥 IRON STANDARD
+          Expanded(
+            child: TextField(
+              controller: _routineSearchController,
+              cursorColor: const Color(0xFF0D59F2),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontFamily: 'Courier',
+              ),
+              decoration: InputDecoration(
+                hintText: 'SEARCH_EXERCISE_ID...',
+                hintStyle: const TextStyle(
+                  color: Color(0xFF3F3F46),
+                  fontSize: 14,
+                  fontFamily: 'Courier',
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                suffixIcon: _routineSearchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.clear,
+                          color: Color(0xFF71717A),
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          _routineSearchController.clear();
+                          setState(() {
+                            _routineSearchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (query) {
+                setState(() {
+                  _routineSearchQuery = query;
+                });
+              },
+            ),
           ),
-          suffixIcon: _routineSearchQuery.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(
-                    Icons.clear,
-                    color: Colors.grey,
-                    size: 20.0, // 🔥 IRON STANDARD
-                  ),
-                  onPressed: () {
-                    _routineSearchController.clear();
-                    setState(() {
-                      _routineSearchQuery = '';
-                    });
-                  },
-                )
-              : null,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0),
-            borderSide: const BorderSide(color: Colors.white24, width: 1.0),
+          Container(
+            width: 1,
+            height: 24,
+            color: const Color(0xFF27272A),
+            margin: const EdgeInsets.only(right: 8),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0),
-            borderSide: const BorderSide(color: Colors.white, width: 1.5),
-          ),
-          filled: true,
-          fillColor: Colors.black,
-          isDense: true,
-        ),
-        style: const TextStyle(
-          fontSize: 14.0, // 🔥 IRON STANDARD
-          color: Colors.white,
-          fontFamily: 'Courier',
-        ),
-        onChanged: (query) {
-          setState(() {
-            _routineSearchQuery = query;
-          });
-        },
+        ],
       ),
     );
   }

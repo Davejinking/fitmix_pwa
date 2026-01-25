@@ -202,6 +202,15 @@
   "exerciseSelect": "種目選択",
   "searchDatabase": "ワークアウトを検索...",
   "selectWorkout": "ワークアウト選択",
+  "addExercisesCount": "{count}件を追加",
+  "@addExercisesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
   "filterParameters": "絞り込み設定",
   "applyFilters": "適用する",
   "reset": "リセット",

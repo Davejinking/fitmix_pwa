@@ -645,6 +645,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectWorkout => 'SELECT WORKOUT';
 
   @override
+  String addExercisesCount(int count) {
+    return 'ADD $count ITEMS';
+  }
+
+  @override
   String get filterParameters => 'FILTER PARAMETERS';
 
   @override

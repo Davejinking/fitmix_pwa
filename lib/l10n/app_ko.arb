@@ -202,6 +202,15 @@
   "exerciseSelect": "운동 종목 선택",
   "searchDatabase": "워크아웃 검색...",
   "selectWorkout": "워크아웃 선택",
+  "addExercisesCount": "{count}건 추가",
+  "@addExercisesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
   "filterParameters": "필터 설정",
   "applyFilters": "필터 적용",
   "reset": "초기화",

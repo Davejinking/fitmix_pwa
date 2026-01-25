@@ -642,6 +642,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectWorkout => '워크아웃 선택';
 
   @override
+  String addExercisesCount(int count) {
+    return '$count건 추가';
+  }
+
+  @override
   String get filterParameters => '필터 설정';
 
   @override
