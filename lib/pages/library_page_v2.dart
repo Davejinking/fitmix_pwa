@@ -176,7 +176,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         
         // Content based on mode
         if (_isRoutineMode) ...[
-          _buildRoutineFilter(l10n), // Keep filter for routines
+          // Routine Mode (no horizontal filter, uses modal)
           Expanded(child: _buildRoutinesList(l10n)),
         ] else ...[
           // 🔥 Exercise Mode (no horizontal filter, uses modal)
@@ -349,32 +349,31 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           
           const SizedBox(width: 12),
           
-          // Filter Button (only show in Exercise mode)
-          if (!_isRoutineMode)
-            Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(
-                  color: const Color(0xFF27272A),
-                  width: 1,
-                ),
+          // Filter Button (show in both modes)
+          Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                color: const Color(0xFF27272A),
+                width: 1,
               ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _showFilterModal,
-                  child: const Center(
-                    child: Icon(
-                      Icons.tune,
-                      color: Color(0xFF0D59F2),
-                      size: 24,
-                    ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _isRoutineMode ? _showRoutineFilterModal : _showFilterModal,
+                child: const Center(
+                  child: Icon(
+                    Icons.tune,
+                    color: Color(0xFF0D59F2),
+                    size: 24,
                   ),
                 ),
               ),
             ),
+          ),
         ],
       ),
     );
@@ -398,69 +397,23 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     );
   }
 
-  // 🔥 루틴 필터 (Dynamic Tags)
-  Widget _buildRoutineFilter(AppLocalizations l10n) {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      color: IronTheme.background,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _allRoutineFilterKeys.length,
-        itemBuilder: (context, index) {
-          final key = _allRoutineFilterKeys[index];
-          final isSelected = key == _selectedRoutineFilterKey;
-          
-          // Get the localized label
-          final label = _getRoutineFilterLabel(l10n, key);
-          
-          // Resolve color for this tag (skip for 'all')
-          // 🔥 FIX: Pass user-defined colors to respect manual color selection
-          final color = (key != 'all') 
-              ? RoutineTag.getColorForLocalizedName(label, userTagColors: _userTagColors)
-              : Colors.white;
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(label),
-              selected: isSelected,
-              // 1. Text Style
-              labelStyle: TextStyle(
-                color: isSelected ? color : Colors.grey,
-                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                fontSize: 11,
-                fontFamily: 'Courier',
-                letterSpacing: 0.5,
-              ),
-              // 2. Background Color
-              selectedColor: color.withValues(alpha: 0.15), // Subtle glow background
-              backgroundColor: Colors.black, // Dark background when inactive
-              // 3. Border
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(
-                  // Glow border when selected, subtle grey when not
-                  color: isSelected ? color : Colors.grey[800]!,
-                  width: isSelected ? 1.5 : 1.0,
-                ),
-              ),
-              showCheckmark: false,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              onSelected: (_) {
-                setState(() {
-                  _selectedRoutineFilterKey = key;
-                });
-              },
-            ),
-          );
+  // 🔥 Show Routine Filter Modal (Center Dialog)
+  void _showRoutineFilterModal() {
+    showDialog(
+      context: context,
+      builder: (context) => _RoutineFilterDialog(
+        selectedTag: _selectedRoutineFilterKey,
+        availableTags: _allRoutineFilterKeys,
+        onApply: (selectedTag) {
+          setState(() {
+            _selectedRoutineFilterKey = selectedTag;
+          });
         },
       ),
     );
   }
 
-  // 🔥 루틴 필터 라벨
+  // Helper to get localized routine filter label
   String _getRoutineFilterLabel(AppLocalizations l10n, String key) {
     switch (key) {
       case 'all': return l10n.all;
@@ -1609,6 +1562,256 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+
+// 🔥 Routine Filter Dialog
+class _RoutineFilterDialog extends StatefulWidget {
+  final String selectedTag;
+  final List<String> availableTags;
+  final Function(String) onApply;
+
+  const _RoutineFilterDialog({
+    required this.selectedTag,
+    required this.availableTags,
+    required this.onApply,
+  });
+
+  @override
+  State<_RoutineFilterDialog> createState() => _RoutineFilterDialogState();
+}
+
+class _RoutineFilterDialogState extends State<_RoutineFilterDialog> {
+  late String _selectedTag;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTag = widget.selectedTag;
+  }
+
+  void _reset() {
+    setState(() {
+      _selectedTag = 'all';
+    });
+  }
+
+  void _apply() {
+    widget.onApply(_selectedTag);
+    Navigator.pop(context);
+  }
+
+  // Helper to get localized tag label
+  String _getLocalizedTag(String key, AppLocalizations l10n) {
+    switch (key) {
+      case 'all': return l10n.all;
+      case 'push': return l10n.push.toUpperCase();
+      case 'pull': return l10n.pull.toUpperCase();
+      case 'legs': return l10n.legs.toUpperCase();
+      case 'upper': return l10n.upper.toUpperCase();
+      case 'lower': return l10n.lower.toUpperCase();
+      case 'fullBody': return l10n.fullBody.toUpperCase();
+      default: return key.toUpperCase();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0A0A0A),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: const Color(0xFF27272A), width: 1),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Color(0xFF71717A), size: 20),
+                    onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.filterParameters.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Courier',
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _reset,
+                    child: Text(
+                      l10n.reset.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0D59F2),
+                        letterSpacing: 1.5,
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Section Header
+                  Text(
+                    l10n.selectExercise.toUpperCase(), // Using as "SELECT TAG"
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'Courier',
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Tag Chips
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: widget.availableTags.map((tag) {
+                      final isSelected = tag == _selectedTag;
+                      final localizedLabel = _getLocalizedTag(tag, l10n);
+                      
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedTag = tag),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected 
+                                ? const Color(0xFF0D59F2).withValues(alpha: 0.2) 
+                                : const Color(0xFF1A1A1A),
+                            border: Border.all(
+                              color: isSelected 
+                                  ? const Color(0xFF0D59F2) 
+                                  : const Color(0xFF27272A),
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: const Color(0xFF0D59F2).withValues(alpha: 0.4),
+                                      blurRadius: 6,
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: Text(
+                            localizedLabel,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : const Color(0xFF71717A),
+                              fontSize: 11,
+                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                              fontFamily: 'Courier',
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+
+            // Bottom Action Buttons
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        l10n.cancel.toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xFF71717A),
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: InkWell(
+                      onTap: _apply,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF2962FF).withValues(alpha: 0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          l10n.applyFilters.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            fontFamily: 'Courier',
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
