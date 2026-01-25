@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../core/service_locator.dart';
 import '../data/session_repo.dart';
@@ -33,32 +34,113 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF000000), // Pure Black
       body: SafeArea(
         child: Column(
           children: [
             _buildAppBar(),
             Expanded(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildOperationalStatus(),
-                      const SizedBox(height: 24),
-                      _buildWeeklyCalendar(),
-                      const SizedBox(height: 24),
-                      _buildStatsCards(),
-                      const SizedBox(height: 16),
-                      _buildMetricsRow(),
-                      const SizedBox(height: 32),
-                      _buildLatestLogs(),
-                      const SizedBox(height: 24),
-                      _buildStartWorkoutButton(),
-                      const SizedBox(height: 100), // Space for bottom nav
-                    ],
-                  ),
+                padding: const EdgeInsets.symmetric(horizontal: 20), // Consistent horizontal padding
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    
+                    // --- [ 1. DASHBOARD AREA - Grouped Surface ] ---
+                    Container(
+                      padding: const EdgeInsets.all(16), // Reduced from 20 for tighter feel
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1A1A1A), // Slightly lighter background
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.1), // Subtle border
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'OPERATOR STATUS',
+                            style: TextStyle(
+                              color: Color(0xFF666666),
+                              fontSize: 10,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildOperationalStatus(),
+                          const SizedBox(height: 12),
+                          _buildWeeklyCalendar(),
+                          const SizedBox(height: 16),
+                          _buildStatsCards(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32), // Reduced from 52 (40% reduction)
+                    
+                    // --- [ 2. ACTION AREA ] ---
+                    _buildQuickActions(),
+                    const SizedBox(height: 32), // Reduced from 52 (40% reduction)
+                    
+                    // --- [ 3. QUICK DEPLOY ] ---
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'QUICK DEPLOY',
+                          style: TextStyle(
+                            color: Color(0xFF666666),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward, color: Colors.grey[800], size: 16),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // 가로 슬라이더
+                    SizedBox(
+                      height: 120, // Increased from 110 for more substantial feel
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(right: 40),
+                        clipBehavior: Clip.none,
+                        children: [
+                          _buildAddRoutineCard(),
+                          const SizedBox(width: 12),
+                          _buildRoutineQuickCard('PUSH A', 'CHEST/TRI', true),
+                          const SizedBox(width: 12),
+                          _buildRoutineQuickCard('PULL B', 'BACK/BI', false),
+                          const SizedBox(width: 12),
+                          _buildRoutineQuickCard('LEGS', 'SQUAT FOCUS', false),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // --- [ 4. SESSION START ] ---
+                    _buildInitiateSessionButton(),
+                    const SizedBox(height: 32),
+                    
+                    // --- [ 5. RECENT LOGS ] ---
+                    const Text(
+                      'RECENT LOGS',
+                      style: TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 10,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildLatestLogs(),
+                    const SizedBox(height: 40),
+                  ],
                 ),
               ),
             ),
@@ -206,14 +288,13 @@ class HomePageState extends State<HomePage> {
         final weekDays = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
 
         return Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF27272A), width: 1),
-            color: const Color(0xFF18181B).withValues(alpha: 0.5),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          decoration: const BoxDecoration(
+            color: Color(0xFF121212), // Subtle surface, no border
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: weekDays.asMap().entries.map((entry) {
-              final index = entry.key;
               final date = entry.value;
               final isToday = date.year == now.year && 
                              date.month == now.month && 
@@ -222,19 +303,7 @@ class HomePageState extends State<HomePage> {
               final hasWorkout = workoutDates.contains(dateYmd);
               final dayLabel = dayLabels[date.weekday - 1];
 
-              return Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isToday ? const Color(0xFF27272A).withValues(alpha: 0.8) : Colors.transparent,
-                    border: Border(
-                      right: index < 6 
-                          ? const BorderSide(color: Color(0xFF27272A), width: 1)
-                          : BorderSide.none,
-                    ),
-                  ),
-                  child: _buildDayColumn(dayLabel, hasWorkout, isToday, locale),
-                ),
-              );
+              return _buildDayIndicator(dayLabel, hasWorkout, isToday, locale);
             }).toList(),
           ),
         );
@@ -242,49 +311,35 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDayColumn(String label, bool completed, bool isToday, String locale) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 8,
-              fontWeight: FontWeight.w700,
-              color: isToday ? const Color(0xFF2563EB) : const Color(0xFF71717A),
-              fontFamily: 'Courier',
-              letterSpacing: locale == 'en' ? 0.5 : 0.0,
-            ),
+  Widget _buildDayIndicator(String label, bool completed, bool isToday, String locale) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: isToday ? const Color(0xFF007AFF) : const Color(0xFF666666),
+            letterSpacing: locale == 'en' ? 0.5 : 0.0,
           ),
-          const SizedBox(height: 8),
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: completed ? const Color(0xFF2563EB) : Colors.transparent,
-              border: Border.all(
-                color: isToday ? const Color(0xFF2563EB) : const Color(0xFF3F3F46),
-                width: isToday ? 2 : 1,
-              ),
-            ),
-            child: completed
-                ? const Icon(Icons.check, color: Colors.white, size: 14)
-                : (isToday
-                    ? Center(
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF2563EB),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      )
-                    : null),
+        ),
+        const SizedBox(height: 8),
+        // Centered minimal indicator
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: completed 
+                ? const Color(0xFF007AFF) 
+                : (isToday ? const Color(0xFF007AFF).withValues(alpha: 0.3) : Colors.transparent),
+            shape: BoxShape.circle,
+            border: isToday && !completed
+                ? Border.all(color: const Color(0xFF007AFF), width: 1.5)
+                : null,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -337,35 +392,39 @@ class HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF18181B),
-        border: Border.all(color: const Color(0xFF27272A), width: 1),
+        color: const Color(0xFF121212),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1,
+        ),
       ),
       child: Stack(
         children: [
-          // Icon in top right
+          // Watermark icon in background with very low opacity
           Positioned(
-            top: 0,
+            bottom: 0,
             right: 0,
             child: Icon(
               icon,
-              color: const Color(0xFF3F3F46),
-              size: 32,
+              color: Colors.white.withValues(alpha: 0.05),
+              size: 60,
             ),
           ),
+          // All content aligned to left
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF71717A),
-                  fontFamily: 'Courier',
+                  color: const Color(0xFF888888),
                   letterSpacing: letterSpacing,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 12),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
@@ -373,132 +432,34 @@ class HomePageState extends State<HomePage> {
                   Text(
                     value,
                     style: const TextStyle(
-                      fontSize: 36,
+                      fontSize: 32,
                       fontWeight: FontWeight.w900,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.white,
-                      fontFamily: 'Courier',
+                      color: Color(0xFFFFFFFF),
                       height: 1.0,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   Text(
                     unit,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF2563EB),
-                      fontFamily: 'Courier',
+                      color: Color(0xFFFFFFFF),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 subtitle,
                 style: TextStyle(
                   fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: isPercentage ? const Color(0xFF2563EB) : const Color(0xFF52525B),
-                  fontFamily: 'Courier',
+                  fontWeight: FontWeight.w600,
+                  color: isPercentage ? const Color(0xFF007AFF) : const Color(0xFF555555),
                   letterSpacing: 0.5,
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMetricsRow() {
-    final l10n = AppLocalizations.of(context);
-    
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _getSessionMetrics(),
-      builder: (context, snapshot) {
-        final metrics = snapshot.data ?? {
-          'hr': 142,
-          'duration': '01:12',
-          'restTime': 90,
-        };
-
-        return Row(
-          children: [
-            Expanded(
-              child: _buildSmallMetricCard('${l10n.heartRate} / BPM', '${metrics['hr']}', '~'),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSmallMetricCard(l10n.duration, metrics['duration'] ?? '00:00', ''),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildSmallMetricCard(l10n.restTime, '${metrics['restTime']}', 'SEC'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildSmallMetricCard(String label, String value, String suffix) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF18181B),
-        border: Border.all(color: const Color(0xFF27272A), width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 8,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF71717A),
-              fontFamily: 'Courier',
-              letterSpacing: 1.0,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.white,
-                  fontFamily: 'Courier',
-                  height: 1.0,
-                ),
-              ),
-              if (suffix.isNotEmpty) ...[
-                const SizedBox(width: 4),
-                Text(
-                  suffix,
-                  style: const TextStyle(
-                    fontSize: 8,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF71717A),
-                    fontFamily: 'Courier',
-                  ),
-                ),
-              ],
-              if (label.contains('HR'))
-                const Padding(
-                  padding: EdgeInsets.only(left: 4),
-                  child: Icon(
-                    Icons.show_chart,
-                    color: Color(0xFF2563EB),
-                    size: 12,
-                  ),
-                ),
             ],
           ),
         ],
@@ -641,83 +602,253 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildStartWorkoutButton() {
+  // 퀵 액션 버튼들 (심플하고 작게)
+  Widget _buildQuickActions() {
     final l10n = AppLocalizations.of(context);
-    final isAsianLanguage = l10n.localeName != 'en';
-    final letterSpacing = isAsianLanguage ? 1.0 : 3.0;
     
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Perfect spacing across width
       children: [
-        SizedBox(
-          width: double.infinity,
-          height: 64,
-          child: ElevatedButton(
-            onPressed: () {
-              final shellState = context.findAncestorStateOfType<ShellPageState>();
-              shellState?.navigateToCalendar();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2563EB),
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shadowColor: const Color(0xFF2563EB).withValues(alpha: 0.3),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
+        _buildQuickActionIcon(Icons.fitness_center, l10n.quickActionRoutine, () {}),
+        _buildQuickActionIcon(Icons.code, l10n.quickActionProgram, () {}),
+        _buildQuickActionIcon(Icons.edit_calendar, l10n.quickActionPlan, () {}),
+        _buildQuickActionIcon(Icons.timer, l10n.quickActionRest, () {}),
+        _buildQuickActionIcon(Icons.edit_note, l10n.quickActionLog, () {}),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionIcon(IconData icon, String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFF1A1A1A), // Higher contrast
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.25), // More visible
+                width: 1,
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Icon(icon, color: Colors.white, size: 22),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFF888888), // Higher contrast
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              height: 1.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🔥 [1] TRIGGER: INITIATE SESSION - Critical action with electric blue
+  Widget _buildInitiateSessionButton() {
+    final l10n = AppLocalizations.of(context);
+    
+    return InkWell(
+      onTap: () {
+        // 빈 세션 시작 (Free Workout)
+        final shellState = context.findAncestorStateOfType<ShellPageState>();
+        shellState?.navigateToCalendar();
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        height: 56,
+        decoration: BoxDecoration(
+          color: const Color(0xFF007AFF), // Solid electric blue for critical action
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.play_arrow, color: Colors.white, size: 24),
+            const SizedBox(width: 12),
+            Text(
+              l10n.startSession.toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Routine Quick Card with haptic feedback and scale transition
+  Widget _buildRoutineQuickCard(String title, String subtitle, bool isFavorite) {
+    return Material(
+      color: const Color(0xFF121212),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: () {
+          // Haptic feedback
+          HapticFeedback.lightImpact();
+          // Load routine
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedScale(
+          scale: 1.0,
+          duration: const Duration(milliseconds: 100),
+          child: Container(
+            width: 160,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isFavorite 
+                    ? const Color(0xFF007AFF) 
+                    : Colors.white.withValues(alpha: 0.1),
+                width: 1,
+              ),
+              boxShadow: isFavorite ? [
+                BoxShadow(
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.4),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ] : null,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.play_arrow, size: 28),
-                const SizedBox(width: 16),
-                Text(
-                  l10n.startSession,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    letterSpacing: letterSpacing,
-                    fontFamily: 'Courier',
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15,
+                              letterSpacing: 0.3,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle,
+                            style: const TextStyle(
+                              color: Color(0xFFB3B3B3),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              height: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isFavorite)
+                      const Icon(Icons.star, color: Color(0xFF007AFF), size: 14),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1A1A1A),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        '6 exercises',
+                        style: TextStyle(
+                          color: Color(0xFF007AFF),
+                          fontSize: 8,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '2d ago',
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 8,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '${l10n.systemReady}',
-              style: const TextStyle(
-                fontSize: 8,
-                color: Color(0xFF3F3F46),
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
+      ),
+    );
+  }
+
+  // Add Routine Card with haptic feedback and scale transition
+  Widget _buildAddRoutineCard() {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: () {
+          // Haptic feedback
+          HapticFeedback.lightImpact();
+          // Navigate to create routine
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedScale(
+          scale: 1.0,
+          duration: const Duration(milliseconds: 100),
+          child: CustomPaint(
+            painter: DashedBorderPainter(
+              color: Colors.grey.withValues(alpha: 0.4),
+              strokeWidth: 2,
+              dashWidth: 6,
+              dashSpace: 4,
+              borderRadius: 16,
+            ),
+            child: Container(
+              width: 160,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_circle_outline, color: Colors.grey[500], size: 36),
+                  const SizedBox(height: 8),
+                  Text(
+                    'ADD\nROUTINE',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const Text(
-              'SYS_TEMP: 34°C',
-              style: TextStyle(
-                fontSize: 8,
-                color: Color(0xFF3F3F46),
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
-              ),
-            ),
-            const Text(
-              'LON: 74.0060 W',
-              style: TextStyle(
-                fontSize: 8,
-                color: Color(0xFF3F3F46),
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
-              ),
-            ),
-          ],
+          ),
         ),
-      ],
+      ),
     );
   }
 
@@ -787,28 +918,70 @@ class HomePageState extends State<HomePage> {
     };
   }
 
-  Future<Map<String, dynamic>> _getSessionMetrics() async {
-    final sessions = await sessionRepo.getWorkoutSessions();
-    if (sessions.isEmpty) {
-      return {
-        'hr': 142,
-        'duration': '00:00',
-        'restTime': 90,
-      };
-    }
-    
-    final latestSession = sessions.reduce((a, b) => 
-      a.ymd.compareTo(b.ymd) > 0 ? a : b
-    );
-    
-    final durationMinutes = latestSession.durationInSeconds ~/ 60;
-    final hours = durationMinutes ~/ 60;
-    final minutes = durationMinutes % 60;
-    
-    return {
-      'hr': 142, // Placeholder - would need heart rate data
-      'duration': '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}',
-      'restTime': 90, // Placeholder - would need rest time tracking
-    };
+}
+
+// Custom painter for dashed border
+class DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dashWidth;
+  final double dashSpace;
+  final double borderRadius;
+
+  DashedBorderPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.dashWidth,
+    required this.dashSpace,
+    required this.borderRadius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Radius.circular(borderRadius),
+      ));
+
+    final dashPath = _createDashedPath(path, dashWidth, dashSpace);
+    canvas.drawPath(dashPath, paint);
   }
+
+  Path _createDashedPath(Path source, double dashWidth, double dashSpace) {
+    final dashedPath = Path();
+    for (final metric in source.computeMetrics()) {
+      double distance = 0.0;
+      bool draw = true;
+      while (distance < metric.length) {
+        final double length = draw ? dashWidth : dashSpace;
+        if (distance + length > metric.length) {
+          if (draw) {
+            dashedPath.addPath(
+              metric.extractPath(distance, metric.length),
+              Offset.zero,
+            );
+          }
+          break;
+        }
+        if (draw) {
+          dashedPath.addPath(
+            metric.extractPath(distance, distance + length),
+            Offset.zero,
+          );
+        }
+        distance += length;
+        draw = !draw;
+      }
+    }
+    return dashedPath;
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

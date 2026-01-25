@@ -529,7 +529,7 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
     );
   }
 
-  // 🔥 Premium Exercise Card (matching Exercise Selection Page)
+  // 🔥 Tactical Spec Card - Progress Overload Style
   Widget _buildPremiumExerciseCard(
     ExerciseLibraryItem exercise,
     bool isSelected,
@@ -541,59 +541,42 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
     final engName = exercise.nameEn.replaceAll('_', ' ');
     final localName = exercise.getLocalizedName(context);
     
-    // Determine main title and subtitle
+    // Determine main title
     final String mainTitle;
-    final String? subTitle;
-    
     if (isEnglish) {
       mainTitle = engName;
-      subTitle = null;
     } else {
       mainTitle = (localName.isNotEmpty && localName != exercise.nameEn) 
           ? localName 
           : engName;
-      subTitle = (localName.isNotEmpty && localName != exercise.nameEn) 
-          ? engName 
-          : null;
     }
     
     // Get localized muscle and equipment
     final localizedMuscle = _getLocalizedBodyPart(exercise.targetPart);
     final localizedEquipment = _getLocalizedEquipment(exercise.equipmentType);
     
+    // TODO: Fetch real data from SessionRepo
+    // For now, using placeholder data
+    final bool hasData = false; // Will be true when we have real data
+    final bool isPr = false; // Will be true when we have real PR data
+    final String lastWeight = '100KG'; // Placeholder
+    final String lastReps = '5 REPS'; // Placeholder
+    
+    // Display logic: show "READY TO LOG" if no data
+    final displayWeight = hasData ? lastWeight : "READY";
+    final displaySub = hasData ? lastReps : "TO LOG";
+    
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        // Premium matte black gradient
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF2A2A2A), // Lighter top-left
-            Color(0xFF151515), // Darker bottom-right
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        // Subtle shadow for depth
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-          // Selected state: add blue glow
-          if (isSelected)
-            BoxShadow(
-              color: const Color(0xFF0D59F2).withValues(alpha: 0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 0),
-            ),
-        ],
+        color: const Color(0xFF101010), // Deep Black Card
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           onTap: () {
             if (widget.isSelectionMode) {
               _toggleExerciseSelection(exercise);
@@ -608,180 +591,168 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(
               children: [
-                // Left glowing indicator pill (shorter)
-                Container(
-                  width: 3,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: isSelected 
-                        ? const Color(0xFF0D59F2)
-                        : const Color(0xFF0D59F2).withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(1.5),
-                    // Glow effect for selected state
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFF0D59F2).withValues(alpha: 0.6),
-                              blurRadius: 6,
-                            ),
-                          ]
-                        : null,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                
-                // Content Area (Dense)
+                // --- LEFT: IDENTITY (Name & Info) ---
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Row: Title + Metadata (inline)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Main Title
-                          Flexible(
-                            child: Text(
-                              mainTitle.toUpperCase(),
-                              style: TextStyle(
-                                color: isSelected ? const Color(0xFF0D59F2) : Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                                height: 1.2,
-                                shadows: isSelected
-                                    ? [
-                                        Shadow(
-                                          color: const Color(0xFF0D59F2).withValues(alpha: 0.4),
-                                          blurRadius: 5,
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Metadata (inline with title)
-                          Text(
-                            isEnglish 
-                                ? '$localizedMuscle • $localizedEquipment'.toUpperCase()
-                                : '$localizedMuscle • $localizedEquipment',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 10,
-                              fontFamily: isEnglish ? 'Courier' : null,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: isEnglish ? 0.5 : 0.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      // SUBTITLE (English name for non-English users)
-                      if (subTitle != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          subTitle.toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Courier',
-                            letterSpacing: 0.5,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      // Exercise Name (Bold)
+                      Text(
+                        mainTitle.toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
                         ),
-                      ],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      
+                      // Body Part & Equipment (Grey)
+                      Text(
+                        '$localizedMuscle • $localizedEquipment'.toUpperCase(),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 11,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 
-                // Right side actions
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Bookmark button (if enabled and not in selection mode)
-                    if (widget.showBookmarks && !widget.isSelectionMode) ...[
-                      GestureDetector(
-                        onTap: () => _toggleBookmark(exercise.id),
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          alignment: Alignment.center,
-                          child: Icon(
-                            isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                            color: isBookmarked ? const Color(0xFF0D59F2) : Colors.grey[600],
-                            size: 18,
-                          ),
+                // --- RIGHT: INTELLIGENCE BOX ---
+                Container(
+                  width: 110, // 너비 약간 확보
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E1E1E), // 배경을 조금 더 밝게 (Contrast)
+                    borderRadius: BorderRadius.circular(6),
+                    // Left Border Accent (핵심 포인트!)
+                    border: Border(
+                      left: BorderSide(
+                        color: isPr 
+                            ? const Color(0xFF2979FF) 
+                            : (hasData ? Colors.white24 : Colors.transparent),
+                        width: 3,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Label
+                      Text(
+                        'LAST SESSION',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Courier',
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(height: 4),
+                      
+                      // Value with PR indicator
+                      Row(
+                        children: [
+                          Text(
+                            displayWeight,
+                            style: TextStyle(
+                              color: hasData ? Colors.white : Colors.grey[500], // 데이터 없으면 어둡게
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                          if (isPr) ...[
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.arrow_drop_up,
+                              color: Color(0xFF2979FF),
+                              size: 16,
+                            ),
+                          ],
+                        ],
+                      ),
+                      
+                      // Sub-value (Reps)
+                      Text(
+                        displaySub,
+                        style: TextStyle(
+                          color: isPr 
+                              ? const Color(0xFF2979FF) 
+                              : Colors.grey[600],
+                          fontSize: 11,
+                          fontFamily: 'Courier',
+                        ),
+                      ),
                     ],
-                    
-                    // Selection checkbox or info button
-                    if (widget.isSelectionMode)
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: isSelected 
-                              ? const Color(0xFF0D59F2)
-                              : const Color(0xFF222222),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: isSelected
-                                ? const Color(0xFF0D59F2)
-                                : const Color(0xFF0D59F2).withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: const Color(0xFF0D59F2).withValues(alpha: 0.5),
-                                    blurRadius: 10,
-                                    spreadRadius: 0,
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Icon(
-                          isSelected ? Icons.check : Icons.add,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      )
-                    else
-                      GestureDetector(
-                        onTap: () {
-                          showExerciseDetailModal(
-                            context,
-                            exerciseName: exercise.nameEn,
-                            sessionRepo: getIt<SessionRepo>(),
-                            exerciseRepo: getIt<ExerciseLibraryRepo>(),
-                          );
-                        },
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          alignment: Alignment.center,
-                          child: Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
+                
+                // Bookmark/Info button (small, right edge)
+                const SizedBox(width: 8),
+                if (widget.showBookmarks && !widget.isSelectionMode)
+                  GestureDetector(
+                    onTap: () => _toggleBookmark(exercise.id),
+                    child: Icon(
+                      isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                      color: isBookmarked 
+                          ? const Color(0xFF2979FF) 
+                          : Colors.grey[600],
+                      size: 18,
+                    ),
+                  )
+                else if (!widget.isSelectionMode)
+                  GestureDetector(
+                    onTap: () {
+                      showExerciseDetailModal(
+                        context,
+                        exerciseName: exercise.nameEn,
+                        sessionRepo: getIt<SessionRepo>(),
+                        exerciseRepo: getIt<ExerciseLibraryRepo>(),
+                      );
+                    },
+                    child: Icon(
+                      Icons.info_outline,
+                      size: 18,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                
+                // Selection checkbox (if in selection mode)
+                if (widget.isSelectionMode) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: isSelected 
+                          ? const Color(0xFF2979FF)
+                          : const Color(0xFF222222),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFF2979FF)
+                            : const Color(0xFF2979FF).withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      isSelected ? Icons.check : Icons.add,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

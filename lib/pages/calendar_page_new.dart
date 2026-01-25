@@ -451,16 +451,39 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
             
             const SizedBox(height: 12),
             
-            // Quick Actions Container (Structured)
+            // 🔥 QUICK ACCESS Label (Tactical Style)
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 12),
+              child: Text(
+                'QUICK ACCESS',
+                style: TextStyle(
+                  color: const Color(0xFF3B82F6).withValues(alpha: 0.7),
+                  fontSize: 10,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Courier',
+                ),
+              ),
+            ),
+            
+            // Quick Actions Container (Tactical Noir Style)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 0),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: const Color(0xFF101010), // Darker background
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildQuickActionItem(
                     icon: Icons.fitness_center,
@@ -787,52 +810,74 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
     bool isAsianLanguage = false,
   }) {
     // Dynamic font size based on label length
-    // Japanese katakana words like "プログラム" (5 chars) need smaller font
     final fontSize = label.length > 5 ? 9.0 : 10.0;
     
     return SizedBox(
-      width: 56, // Reduced from 64 to fix overflow (saves 40px total for 5 items)
+      width: 56,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
+          borderRadius: BorderRadius.circular(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon Container (Tactical Button Style)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E1E1E), // Button background
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isActive 
+                        ? const Color(0xFF3B82F6) 
+                        : Colors.white.withValues(alpha: 0.1),
+                    width: isActive ? 1.5 : 1.0,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                    if (isActive)
+                      BoxShadow(
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 0),
+                      ),
+                  ],
+                ),
+                child: Icon(
                   icon,
-                  // Bright white for inactive (metallic), blue for active
                   color: isActive 
                       ? const Color(0xFF3B82F6) 
-                      : Colors.white.withValues(alpha: 0.9),
-                  size: 24,
+                      : Colors.white,
+                  size: 22,
                 ),
-                const SizedBox(height: 8),
-                // FittedBox: Safety net for long text - scales down if needed
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.w500,
-                      // Lighter grey for better contrast
-                      color: isActive 
-                          ? const Color(0xFF3B82F6) 
-                          : const Color(0xFF9CA3AF), // grey[400] equivalent
-                      fontFamily: 'Courier',
-                      letterSpacing: 0.0,
-                      height: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
+              ),
+              const SizedBox(height: 8),
+              
+              // Label
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: isActive 
+                        ? const Color(0xFF3B82F6) 
+                        : Colors.grey,
+                    fontFamily: 'Courier',
+                    letterSpacing: 0.0,
+                    height: 1.2,
                   ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

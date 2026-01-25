@@ -21,16 +21,15 @@ class IronAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.black, // Pure black void
       elevation: 0, // No shadow
-      centerTitle: false, // Left aligned
+      centerTitle: true, // 🔥 Center aligned for Tactical Library style
       automaticallyImplyLeading: automaticallyImplyLeading,
       title: Text(
         title ?? 'IRON LOG',
         style: titleStyle ?? TextStyle(
-          fontSize: title != null ? 18 : 30,
-          letterSpacing: 2.0,
+          fontSize: title != null ? 18 : 20,
+          letterSpacing: 3.0, // 🔥 Wider spacing
           color: Colors.white,
           fontWeight: FontWeight.w900,
-          fontFamily: 'Courier', // Monospace tactical font
         ),
       ),
       actions: actions,

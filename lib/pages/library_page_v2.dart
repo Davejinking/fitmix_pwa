@@ -108,58 +108,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
       selectedMuscles: _selectedMuscles, // 🔥 Pass filter state
       selectedEquipment: _selectedEquipment, // 🔥 Pass filter state
       hideInternalFilters: true, // 🔥 Hide internal filters, use modal instead
-      // 🔥 Header Widget: Create Button (PIXEL PERFECT - Matching Routine Tab)
-      headerWidget: Container(
-        padding: const EdgeInsets.all(16), // 🎯 EXACT MATCH with Routine Tab
-        child: SizedBox(
-          width: double.infinity,
-          height: 50, // 🎯 EXACT MATCH with Routine Tab
-          child: OutlinedButton(
-            onPressed: _showAddExerciseDialog,
-            style: ButtonStyle(
-              // Border: Always White
-              side: WidgetStateProperty.all(
-                const BorderSide(color: Colors.white, width: 1.5),
-              ),
-              // Shape: Sharp corners
-              shape: WidgetStateProperty.all(
-                const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                ),
-              ),
-              // BACKGROUND: Transparent → White when pressed
-              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                if (states.contains(WidgetState.pressed)) {
-                  return Colors.white;
-                }
-                return Colors.transparent;
-              }),
-              // TEXT COLOR: White → Black when pressed
-              foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                if (states.contains(WidgetState.pressed)) {
-                  return Colors.black;
-                }
-                return Colors.white;
-              }),
-              // Remove default overlay
-              overlayColor: WidgetStateProperty.all(Colors.transparent),
-              padding: WidgetStateProperty.all(
-                const EdgeInsets.symmetric(vertical: 14),
-              ),
-            ),
-            // 🔥 ONLY TEXT - NO ICON
-            child: Text(
-              '+ ${l10n.addCustomExercise}',
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
-                fontFamily: 'Courier',
-              ),
-            ),
-          ),
-        ),
-      ),
+      // 🔥 No header widget - using top-level ADD NEW ENTITY button instead
     );
   }
 
@@ -169,55 +118,237 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     
     return Column(
       children: [
-        // 🔥 TACTICAL TOGGLE SWITCH
+        // 🔥 TACTICAL TOGGLE SWITCH (Moved to top, under header)
         _buildTacticalSwitch(l10n),
         
-        // Search Bar (with filter button for exercises)
-        _buildRoutineSearchBar(l10n),
+        // Search Bar + Filter (only for exercises)
+        if (!_isRoutineMode) _buildExerciseSearchBar(l10n),
+        
+        // Add Button (only for exercises)
+        if (!_isRoutineMode) _buildAddButton(l10n),
         
         // Content based on mode
-        if (_isRoutineMode) ...[
-          // Routine Mode (no horizontal filter, uses modal)
-          Expanded(child: _buildRoutinesList(l10n)),
-        ] else ...[
-          // 🔥 Exercise Mode (no horizontal filter, uses modal)
-          Expanded(child: _buildExercisesTab(l10n)),
-        ],
+        Expanded(
+          child: _isRoutineMode 
+              ? _buildRoutinesList(l10n)
+              : _buildExercisesTab(l10n),
+        ),
+        
+        // 🔥 INITIATE SESSION Button (Only in Routine Mode)
+        if (_isRoutineMode)
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              border: Border(
+                top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+              ),
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: _createNewRoutine,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'INITIATE SESSION',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2.5,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF2979FF),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward, size: 20),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
       ],
+    );
+  }
+  
+  // 🔥 Exercise Search Bar
+  Widget _buildExerciseSearchBar(AppLocalizations l10n) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Row(
+        children: [
+          // Search Field
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF111111),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Icon(
+                      Icons.search,
+                      color: Colors.white.withValues(alpha: 0.3),
+                      size: 20,
+                    ),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        letterSpacing: 1.0,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'SEARCH ENTITIES...',
+                        hintStyle: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          fontSize: 14,
+                          letterSpacing: 1.0,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(width: 12),
+          
+          // Filter Button
+          Container(
+            width: 48,
+            height: 42,
+            decoration: BoxDecoration(
+              color: const Color(0xFF111111),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              borderRadius: BorderRadius.circular(2),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _showFilterModal,
+                child: Center(
+                  child: Icon(
+                    Icons.filter_list,
+                    color: Colors.white.withValues(alpha: 0.7),
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  // 🔥 Add Button
+  Widget _buildAddButton(AppLocalizations l10n) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      height: 44,
+      child: OutlinedButton(
+        onPressed: _showAddExerciseDialog,
+        style: ButtonStyle(
+          side: WidgetStateProperty.all(
+            BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+          ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return Colors.white;
+            }
+            return Colors.transparent;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return Colors.black;
+            }
+            return Colors.white;
+          }),
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.add, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              'ADD NEW ENTITY',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
   
   // 🔥 TACTICAL TOGGLE SWITCH (3-way: Exercises / Routines / Programs)
   Widget _buildTacticalSwitch(AppLocalizations l10n) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      height: 48,
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A0A0A),
-        border: Border.all(color: const Color(0xFF27272A), width: 1.0),
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 1),
+        ),
       ),
       child: Row(
         children: [
-          // EXERCISES
+          // SPECIES (Exercises)
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => _isRoutineMode = false),
               child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: !_isRoutineMode ? const Color(0xFF0D59F2).withValues(alpha: 0.1) : Colors.transparent,
                   border: !_isRoutineMode 
-                      ? const Border(bottom: BorderSide(color: Color(0xFF0D59F2), width: 2))
+                      ? const Border(bottom: BorderSide(color: Color(0xFF387FFA), width: 2))
                       : null,
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  l10n.tabExercises.toUpperCase(),
+                  'SPECIES',
                   style: TextStyle(
-                    color: !_isRoutineMode ? Colors.white : const Color(0xFF71717A),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                    fontFamily: 'Courier',
-                    letterSpacing: 2.0,
+                    color: !_isRoutineMode ? Colors.white : Colors.white.withValues(alpha: 0.4),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ),
@@ -228,21 +359,20 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             child: GestureDetector(
               onTap: () => setState(() => _isRoutineMode = true),
               child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: _isRoutineMode ? const Color(0xFF0D59F2).withValues(alpha: 0.1) : Colors.transparent,
                   border: _isRoutineMode 
-                      ? const Border(bottom: BorderSide(color: Color(0xFF0D59F2), width: 2))
+                      ? const Border(bottom: BorderSide(color: Color(0xFF387FFA), width: 2))
                       : null,
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  l10n.tabRoutines.toUpperCase(),
+                  'ROUTINES',
                   style: TextStyle(
-                    color: _isRoutineMode ? Colors.white : const Color(0xFF71717A),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                    fontFamily: 'Courier',
-                    letterSpacing: 2.0,
+                    color: _isRoutineMode ? Colors.white : Colors.white.withValues(alpha: 0.4),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ),
@@ -255,15 +385,15 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                 // TODO: Implement programs
               },
               child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 alignment: Alignment.center,
                 child: Text(
-                  l10n.tabPrograms.toUpperCase(),
-                  style: const TextStyle(
-                    color: Color(0xFF71717A),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                    fontFamily: 'Courier',
-                    letterSpacing: 2.0,
+                  'PROGRAMS',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.4),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ),
@@ -444,6 +574,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             return bTime.compareTo(aTime);
           });
 
+        // 🔥 DEBUG: Print routine count
+        print('🔍 [ROUTINE LIST] Total routines: ${routines.length}');
+
         // 🎨 FIX: Build map of user-defined tag colors from all routines
         _userTagColors.clear();
         for (final routine in routines) {
@@ -451,12 +584,10 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         }
 
         // 🔥 FIX: Build unique tag list without duplicates
-        // Get all localized system tag labels
         final systemTagLabels = _systemRoutineFilterKeys
             .map((key) => _getRoutineFilterLabel(l10n, key))
             .toSet();
         
-        // Get user tags from routines, excluding system tags (by localized label)
         final userTags = routines
             .expand((r) => r.tags)
             .where((tag) => !systemTagLabels.contains(tag))
@@ -464,13 +595,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             .toList()
           ..sort();
         
-        // Combine system keys with user tags (no duplicates)
         _allRoutineFilterKeys = [..._systemRoutineFilterKeys, ...userTags];
 
-        // 🔥 FIX: Validate current filter selection
-        // If the selected filter no longer exists, reset to 'all'
         if (!_allRoutineFilterKeys.contains(_selectedRoutineFilterKey)) {
-          // Use post-frame callback to avoid setState during build
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               setState(() {
@@ -491,7 +618,6 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
 
         // 🔥 태그 필터 적용
         if (_selectedRoutineFilterKey != 'all') {
-          // Get the localized label for the selected key
           final selectedLabel = _systemRoutineFilterKeys.contains(_selectedRoutineFilterKey)
               ? _getRoutineFilterLabel(l10n, _selectedRoutineFilterKey)
               : _selectedRoutineFilterKey;
@@ -501,68 +627,89 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           }).toList();
         }
 
+        // 🔥 DEBUG: Print filtered routine count
+        print('🔍 [ROUTINE LIST] Filtered routines: ${routines.length}');
+
         return Column(
           children: [
-            // "새 루틴 만들기" 버튼 (Tactical Invert)
+            // 🔥 TACTICAL HEADER: "Routine Manifest"
             Container(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: OutlinedButton.icon(
-                  onPressed: _createNewRoutine,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: Text(
-                    l10n.createRoutine.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                      fontFamily: 'Courier',
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Small label
+                        Row(
+                          children: [
+                            Container(
+                              width: 16,
+                              height: 1,
+                              color: const Color(0xFF2979FF),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'OPERATIONAL PHASE',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                fontSize: 10,
+                                fontFamily: 'Courier',
+                                letterSpacing: 3.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        // Big title
+                        const Text(
+                          'ROUTINE\nMANIFEST',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            height: 0.9,
+                            letterSpacing: -1.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  style: ButtonStyle(
-                    // Border: Always White
-                    side: WidgetStateProperty.all(
-                      const BorderSide(color: Colors.white, width: 1.5),
-                    ),
-                    // Shape: Sharp corners
-                    shape: WidgetStateProperty.all(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                  // Right side indicator
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'GRID_02',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          fontSize: 10,
+                          fontFamily: 'Courier',
+                          letterSpacing: 2.0,
+                        ),
                       ),
-                    ),
-                    // BACKGROUND: Transparent → White when pressed
-                    backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                      if (states.contains(WidgetState.pressed)) {
-                        return Colors.white;
-                      }
-                      return Colors.transparent;
-                    }),
-                    // TEXT COLOR: White → Black when pressed
-                    foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                      if (states.contains(WidgetState.pressed)) {
-                        return Colors.black;
-                      }
-                      return Colors.white;
-                    }),
-                    // Remove default overlay
-                    overlayColor: WidgetStateProperty.all(Colors.transparent),
-                    padding: WidgetStateProperty.all(
-                      const EdgeInsets.symmetric(vertical: 14),
-                    ),
+                      const SizedBox(height: 4),
+                      const Icon(
+                        Icons.filter_center_focus,
+                        color: Color(0xFF2979FF),
+                        size: 20,
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
             ),
             
             // 루틴 목록
             if (routines.isEmpty)
-                      Expanded(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Icon(Icons.bookmark_border, size: 64, color: IronTheme.textLow),
                       const SizedBox(height: 16),
                       Text(
@@ -582,14 +729,14 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             else
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.zero,
                   itemCount: routines.length,
                   itemBuilder: (context, index) {
                     final routine = routines[index];
                     
-                    // 🎯 TACTICAL ACCORDION CARD
                     return _RoutineAccordionCard(
                       routine: routine,
+                      index: index,
                       onEdit: () => _editRoutine(routine),
                       onDelete: () => _deleteRoutine(routine, l10n),
                       onLoad: () => _loadRoutine(routine, l10n),
@@ -1493,15 +1640,17 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
 }
 
 
-// 🔥 Routine Tactical Card (Expandable Accordion Style)
+// 🔥 Routine Tactical Card (Minimalist HUD Style)
 class _RoutineAccordionCard extends StatefulWidget {
   final Routine routine;
+  final int index;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onLoad;
 
   const _RoutineAccordionCard({
     required this.routine,
+    required this.index,
     required this.onEdit,
     required this.onDelete,
     required this.onLoad,
@@ -1591,269 +1740,127 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
     );
   }
 
+  String _getLastPerformedText() {
+    final lastUsed = widget.routine.lastUsedAt;
+    if (lastUsed == null) return 'NO DATA';
+    
+    final now = DateTime.now();
+    final diff = now.difference(lastUsed);
+    
+    if (diff.inDays == 0) return 'TODAY';
+    if (diff.inDays == 1) return '1 DAY AGO';
+    if (diff.inDays < 7) return '${diff.inDays}D AGO';
+    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}W AGO';
+    return '${(diff.inDays / 30).floor()}M AGO';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF2A2A2A), Color(0xFF151515)],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    final exerciseCount = widget.routine.exercises.length;
+    final estimatedMin = _getEstimatedDuration();
+    
+    return InkWell(
+      onTap: widget.onLoad,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.white.withValues(alpha: 0.1),
+              width: 1,
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // HEADER (Clickable to expand/collapse)
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => setState(() => _isExpanded = !_isExpanded),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    // Blue Neon Indicator
-                    Container(
-                      width: 3,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0D59F2),
-                        borderRadius: BorderRadius.circular(1.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF0D59F2).withValues(alpha: 0.6),
-                            blurRadius: 6,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    
-                    // Content
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Title
-                          Text(
-                            widget.routine.name.toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
-                              fontFamily: 'Courier',
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          
-                          // Subtitle with tags
-                          Row(
-                            children: [
-                              Text(
-                                '${widget.routine.exercises.length} EXERCISES',
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 1.0,
-                                  fontFamily: 'Courier',
-                                ),
-                              ),
-                              
-                              // Tags
-                              if (widget.routine.tags.isNotEmpty) ...[
-                                const SizedBox(width: 8),
-                                Text(
-                                  '• ${widget.routine.tags.first.toUpperCase()}',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'Courier',
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    // More Icon
-                    InkWell(
-                      onTap: () => _showOptionsMenu(context),
-                      borderRadius: BorderRadius.circular(20),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.more_horiz,
-                          color: Colors.grey[600],
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                    
-                    const SizedBox(width: 8),
-                    
-                    // Expand/Collapse Icon
-                    Icon(
-                      _isExpanded ? Icons.expand_less : Icons.expand_more,
-                      color: Colors.grey[600],
-                      size: 24,
-                    ),
-                  ],
-                ),
+        ),
+        child: Row(
+          children: [
+            // Index Number
+            Text(
+              '${widget.index + 1}'.padLeft(2, '0'),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.2),
+                fontFamily: 'Courier',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                letterSpacing: -0.5,
               ),
             ),
-          ),
-          
-          // EXPANDED CONTENT
-          if (_isExpanded) ...[
-            const Divider(
-              color: Color(0xFF27272A),
-              height: 1,
-              thickness: 1,
-            ),
             
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const SizedBox(width: 24),
+            
+            // Content
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Exercise List
-                  ...widget.routine.exercises.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final exercise = entry.value;
-                    
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Row(
-                        children: [
-                          // Exercise Number
-                          Container(
-                            width: 28,
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              '${index + 1}'.padLeft(2, '0'),
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Courier',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          
-                          // Exercise Name
-                          Expanded(
-                            child: Text(
-                              exercise.name.toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Courier',
-                                letterSpacing: 0.5,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          
-                          const SizedBox(width: 12),
-                          
-                          // Sets x Reps
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${exercise.targetSets} SETS • ${exercise.targetReps} REPS',
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'Courier',
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                  
-                  const SizedBox(height: 8),
-                  
-                  // START ROUTINE Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: InkWell(
-                      onTap: widget.onLoad,
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF2962FF).withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'START ROUTINE',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Courier',
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                      ),
+                  // Title
+                  Text(
+                    widget.routine.name.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.0,
+                      height: 1.2,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  
+                  const SizedBox(height: 4),
+                  
+                  // "6 UNITS | 45M DURATION"
+                  Row(
+                    children: [
+                      Text(
+                        '$exerciseCount UNITS',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          fontSize: 10,
+                          fontFamily: 'Courier',
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          '|',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${estimatedMin}M DURATION',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          fontSize: 10,
+                          fontFamily: 'Courier',
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
+            
+            // Right Indicator
+            Container(
+              width: 4,
+              height: 16,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2979FF).withValues(alpha: 0.2),
+              ),
+            ),
           ],
-        ],
+        ),
       ),
     );
+  }
+
+  int _getEstimatedDuration() {
+    return widget.routine.exercises.length * 5;
   }
 }
 

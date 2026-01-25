@@ -72,6 +72,7 @@ class ShellPageState extends State<ShellPage> {
       bottomNavigationBar: FMBottomNav(
         currentIndex: _currentIndex,
         onTap: onItemTapped,
+        unselectedItemColor: Colors.white24, // Make active icon pop more
         items: [
           FMBottomNavItem(
             label: context.l10n.home,

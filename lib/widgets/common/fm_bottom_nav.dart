@@ -28,7 +28,7 @@ class FMBottomNav extends StatelessWidget {
           color: backgroundColor ?? const Color(0xFF0A0A0A),
           border: Border(
             top: BorderSide(
-              color: Colors.white.withValues(alpha: 0.1),
+              color: Colors.white.withValues(alpha: 0.1), // Subtle top border
               width: 0.5,
             ),
           ),

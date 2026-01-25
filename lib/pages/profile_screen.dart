@@ -26,6 +26,16 @@ class ProfileScreen extends StatelessWidget {
             child: _buildHeader(context),
           ),
           
+          // 🔥 NEW: INITIATE SESSION Button
+          SliverToBoxAdapter(
+            child: _buildInitiateSessionButton(context),
+          ),
+          
+          // 🔥 NEW: QUICK ACCESS Actions
+          SliverToBoxAdapter(
+            child: _buildQuickAccessActions(context),
+          ),
+          
           // Pro Stat Board (Radar Chart)
           SliverToBoxAdapter(
             child: _buildRadarSection(context),
@@ -132,6 +142,127 @@ class ProfileScreen extends StatelessWidget {
               Icons.settings_outlined,
               color: Color(0xFFFFFFFF),
               size: 24,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🔥 NEW: Initiate Session Button (from Calendar)
+  Widget _buildInitiateSessionButton(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: InkWell(
+        onTap: () {
+          // TODO: Navigate to exercise selection
+          // Navigator.push(context, MaterialPageRoute(builder: (_) => ExerciseSelectionPageV2()));
+        },
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF1565C0), Color(0xFF0D47A1)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: const Color(0xFF3D5AFE).withValues(alpha: 0.5),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF3D5AFE).withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.play_arrow, color: Colors.white, size: 24),
+              SizedBox(width: 8),
+              Text(
+                'INITIATE SESSION',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 🔥 NEW: Quick Access Actions (from Calendar)
+  Widget _buildQuickAccessActions(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF101010),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildActionItem(Icons.fitness_center, 'ROUTINE', () {}),
+          _buildActionItem(Icons.code, 'PROGRAM', () {}),
+          _buildActionItem(Icons.edit_calendar, 'PLAN', () {}),
+          _buildActionItem(Icons.timer, 'REST', () {}),
+          _buildActionItem(Icons.history_edu, 'LOG', () {}),
+        ],
+      ),
+    );
+  }
+
+  // 🔥 Action Item Builder (Tactical Style)
+  Widget _buildActionItem(IconData icon, String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.grey[400], size: 20),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Courier',
             ),
           ),
         ],
