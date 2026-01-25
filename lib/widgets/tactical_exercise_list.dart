@@ -37,6 +37,9 @@ class TacticalExerciseList extends StatefulWidget {
   
   /// Optional: External equipment filter (from modal)
   final Set<String>? selectedEquipment;
+  
+  /// Optional: Hide internal filters (when using external filter modal)
+  final bool hideInternalFilters;
 
   const TacticalExerciseList({
     super.key,
@@ -47,6 +50,7 @@ class TacticalExerciseList extends StatefulWidget {
     this.headerWidget,
     this.selectedMuscles,
     this.selectedEquipment,
+    this.hideInternalFilters = false,
   });
 
   @override
@@ -284,10 +288,13 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
     
     return Column(
       children: [
-        _buildSearchBar(l10n),
-        _buildBodyPartTabs(l10n),
-        if (_selectedBodyPart != 'all' && _selectedBodyPart != 'favorites')
-          _buildEquipmentFilter(l10n),
+        // 🔥 Only show internal filters if not hidden
+        if (!widget.hideInternalFilters) ...[
+          _buildSearchBar(l10n),
+          _buildBodyPartTabs(l10n),
+          if (_selectedBodyPart != 'all' && _selectedBodyPart != 'favorites')
+            _buildEquipmentFilter(l10n),
+        ],
         // 🔥 Header Widget (e.g., Create Button)
         if (widget.headerWidget != null) widget.headerWidget!,
         Expanded(child: _buildExerciseList(l10n)),

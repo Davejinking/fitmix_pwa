@@ -106,6 +106,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
       showBookmarks: true,
       selectedMuscles: _selectedMuscles, // 🔥 Pass filter state
       selectedEquipment: _selectedEquipment, // 🔥 Pass filter state
+      hideInternalFilters: true, // 🔥 Hide internal filters, use modal instead
       // 🔥 Header Widget: Create Button (PIXEL PERFECT - Matching Routine Tab)
       headerWidget: Container(
         padding: const EdgeInsets.all(16), // 🎯 EXACT MATCH with Routine Tab
