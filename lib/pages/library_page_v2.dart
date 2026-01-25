@@ -61,6 +61,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   Future<void> _showAddExerciseDialog() async {
     final result = await showDialog<Map<String, String>>(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => const _AddExerciseDialog(),
     );
 
@@ -383,6 +384,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   void _showFilterModal() {
     showDialog(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => ExerciseFilterModal(
         selectedMuscles: _selectedMuscles,
         selectedEquipment: _selectedEquipment,
@@ -401,6 +403,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   void _showRoutineFilterModal() {
     showDialog(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => _RoutineFilterDialog(
         selectedTag: _selectedRoutineFilterKey,
         availableTags: _allRoutineFilterKeys,
@@ -604,6 +607,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   Future<void> _loadRoutine(Routine routine, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => AlertDialog(
         backgroundColor: IronTheme.surface,
         title: Text(
@@ -679,6 +683,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   Future<void> _deleteRoutine(Routine routine, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => AlertDialog(
         backgroundColor: IronTheme.surface,
         title: Text(
@@ -777,6 +782,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     // Step 2: Enter routine name and select tags
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => _SaveRoutineDialog(
         exerciseCount: selected.length,
         existingTags: _allRoutineFilterKeys.where((t) => t != 'all').toList(),
@@ -853,6 +859,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     String routineName = routine.name;
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) {
         final l10n = AppLocalizations.of(context);
         return AlertDialog(
@@ -983,6 +990,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
     
     showDialog(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),

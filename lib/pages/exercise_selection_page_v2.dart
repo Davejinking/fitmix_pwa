@@ -90,6 +90,7 @@ class _ExerciseSelectionPageV2State extends State<ExerciseSelectionPageV2> {
   void _showFilterModal() {
     showDialog(
       context: context,
+      barrierDismissible: false, // Prevent accidental close
       builder: (context) => ExerciseFilterModal(
         selectedMuscles: _selectedMuscles,
         selectedEquipment: _selectedEquipment,
