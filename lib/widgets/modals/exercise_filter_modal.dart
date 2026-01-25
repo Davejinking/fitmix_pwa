@@ -91,161 +91,174 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            const Color(0xFF101622).withValues(alpha: 0.95),
-            const Color(0xFF0A0E16),
-          ],
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0A0A0A), // Black background (matching Add Exercise)
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: const Color(0xFF27272A), width: 1),
         ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-        border: Border(
-          top: BorderSide(
-            color: const Color(0xFF0D59F2).withValues(alpha: 0.5),
-            width: 2,
-          ),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle
-          Container(
-            height: 24,
-            alignment: Alignment.center,
-            child: Container(
-              width: 48,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D59F2).withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-
-          // Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.close, color: Color(0xFF0D59F2)),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                Expanded(
-                  child: Text(
-                    l10n.filterParameters,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: 2.0,
-                      fontFamily: 'Courier',
-                      shadows: [
-                        Shadow(
-                          color: const Color(0xFF0D59F2).withValues(alpha: 0.3),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: _reset,
-                  child: Text(
-                    l10n.reset,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0D59F2),
-                      letterSpacing: 1.5,
-                      fontFamily: 'Courier',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header with Close and Reset
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
                 children: [
-                  // Target Muscle Section
-                  _buildSection(
-                    l10n.targetMuscle,
-                    _muscleKeys,
-                    _selectedMuscles,
-                    (muscle) {
-                      setState(() {
-                        if (_selectedMuscles.contains(muscle)) {
-                          _selectedMuscles.remove(muscle);
-                        } else {
-                          _selectedMuscles.add(muscle);
-                        }
-                      });
-                    },
-                    l10n,
-                    true, // isMuscle
+                  // Close Button
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Color(0xFF71717A), size: 20),
+                    onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  // Equipment Type Section
-                  _buildSection(
-                    l10n.equipmentType,
-                    _equipmentKeys,
-                    _selectedEquipment,
-                    (equipment) {
-                      setState(() {
-                        if (_selectedEquipment.contains(equipment)) {
-                          _selectedEquipment.remove(equipment);
-                        } else {
-                          _selectedEquipment.add(equipment);
-                        }
-                      });
-                    },
-                    l10n,
-                    false, // isEquipment
+                  const SizedBox(width: 8),
+                  // Title
+                  Expanded(
+                    child: Text(
+                      l10n.filterParameters.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Courier',
+                        letterSpacing: 1.5,
+                      ),
+                    ),
                   ),
-
-                  const SizedBox(height: 32),
-
-                  // Tactical Control Bar
-                  _buildTacticalControlBar(l10n),
-
-                  const SizedBox(height: 20),
+                  // Reset Button
+                  TextButton(
+                    onPressed: _reset,
+                    child: Text(
+                      l10n.reset.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0D59F2),
+                        letterSpacing: 1.5,
+                        fontFamily: 'Courier',
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
 
-          // Bottom Accent
-          Container(
-            height: 4,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D59F2).withValues(alpha: 0.2),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: const Color(0xFF0D59F2),
-                  ),
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Target Muscle Section
+                    _buildSection(
+                      l10n.targetMuscle,
+                      _muscleKeys,
+                      _selectedMuscles,
+                      (muscle) {
+                        setState(() {
+                          if (_selectedMuscles.contains(muscle)) {
+                            _selectedMuscles.remove(muscle);
+                          } else {
+                            _selectedMuscles.add(muscle);
+                          }
+                        });
+                      },
+                      l10n,
+                      true, // isMuscle
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Equipment Type Section
+                    _buildSection(
+                      l10n.equipmentType,
+                      _equipmentKeys,
+                      _selectedEquipment,
+                      (equipment) {
+                        setState(() {
+                          if (_selectedEquipment.contains(equipment)) {
+                            _selectedEquipment.remove(equipment);
+                          } else {
+                            _selectedEquipment.add(equipment);
+                          }
+                        });
+                      },
+                      l10n,
+                      false, // isEquipment
+                    ),
+                  ],
                 ),
-                Expanded(flex: 2, child: Container()),
-              ],
+              ),
             ),
-          ),
-        ],
+
+            // Bottom Action Buttons
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  // Cancel Button
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        l10n.cancel.toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xFF71717A),
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Apply Button (Blue Gradient)
+                  Expanded(
+                    flex: 2,
+                    child: InkWell(
+                      onTap: _apply,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF2962FF).withValues(alpha: 0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          l10n.applyFilters.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            fontFamily: 'Courier',
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -261,35 +274,16 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section Header - Tactical style with glowing indicator
-        Row(
-          children: [
-            Container(
-              width: 3,
-              height: 14,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D59F2),
-                borderRadius: BorderRadius.circular(1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF0D59F2).withValues(alpha: 0.6),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                letterSpacing: 0.5,
-                fontFamily: 'Courier',
-              ),
-            ),
-          ],
+        // Section Header
+        Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Courier',
+            letterSpacing: 1.5,
+          ),
         ),
         const SizedBox(height: 12),
 
@@ -347,56 +341,6 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
           }).toList(),
         ),
       ],
-    );
-  }
-
-  Widget _buildTacticalControlBar(AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0A0A0A),
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: InkWell(
-          onTap: _apply,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            height: 56,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              // Premium Blue Gradient
-              gradient: const LinearGradient(
-                colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              // Glowing Effect
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF2962FF).withValues(alpha: 0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              l10n.applyFilters,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.0,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

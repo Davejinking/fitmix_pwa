@@ -380,27 +380,20 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     );
   }
 
-  // 🔥 Show Filter Modal (reusing from Exercise Selection)
+  // 🔥 Show Filter Modal (Center Dialog)
   void _showFilterModal() {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        builder: (context, scrollController) => ExerciseFilterModal(
-          selectedMuscles: _selectedMuscles,
-          selectedEquipment: _selectedEquipment,
-          onApply: (muscles, equipment) {
-            setState(() {
-              _selectedMuscles = muscles;
-              _selectedEquipment = equipment;
-              _exerciseListKey++; // Force rebuild
-            });
-          },
-        ),
+      builder: (context) => ExerciseFilterModal(
+        selectedMuscles: _selectedMuscles,
+        selectedEquipment: _selectedEquipment,
+        onApply: (muscles, equipment) {
+          setState(() {
+            _selectedMuscles = muscles;
+            _selectedEquipment = equipment;
+            _exerciseListKey++; // Force rebuild
+          });
+        },
       ),
     );
   }
