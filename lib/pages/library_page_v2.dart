@@ -787,13 +787,11 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     
     final routineName = result['name'] as String;
     final selectedTags = result['tags'] as List<String>;
-    final tagColors = result['tagColors'] as Map<String, int>; // 🎨 Get user-selected colors
 
     if (routineName.isNotEmpty && mounted) {
       try {
         print('🔍 [CREATE] Selected exercises count: ${selected.length}');
         print('🔍 [CREATE] Selected tags: $selectedTags');
-        print('🎨 [CREATE] Tag colors: $tagColors');
         for (var i = 0; i < selected.length; i++) {
           print('  [$i] ${selected[i].name}');
         }
@@ -803,7 +801,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
           name: routineName,
           exercises: selected.map((e) => e.copyWith()).toList(),
           tags: selectedTags,
-          tagColors: tagColors, // 🎨 Store user-selected colors
+          tagColors: {}, // Empty map - no custom colors
         );
         
         print('🔍 [CREATE] Routine created with ${routine.exercises.length} exercises and ${routine.tags.length} tags');
@@ -962,14 +960,11 @@ class _SaveRoutineDialog extends StatefulWidget {
 
 class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _customTagController = TextEditingController();
   final Set<String> _selectedTags = {};
-  final Map<String, int> _tagColors = {}; // 🎨 Store color values (ARGB int) for custom tags
 
   @override
   void dispose() {
     _nameController.dispose();
-    _customTagController.dispose();
     super.dispose();
   }
 
@@ -984,232 +979,175 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
   }
 
   void _showCustomTagDialog() {
-    Color selectedColor = RoutineTag.neonPalette[4]; // Default to Cyan
     final customTagController = TextEditingController();
     
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 400),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0A0A0A),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: const Color(0xFF27272A), width: 1),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Color(0xFF71717A), size: 20),
-                        onPressed: () => Navigator.pop(context),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                      ),
-                      const SizedBox(width: 8),
-                      const Expanded(
-                        child: Text(
-                          'CUSTOM TAG',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'Courier',
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Content
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Tag name label
-                      const Text(
-                        'NAME',
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0A0A0A),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: const Color(0xFF27272A), width: 1),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFF71717A), size: 20),
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'CUSTOM TAG',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 11,
+                          fontSize: 18,
                           fontWeight: FontWeight.w900,
                           fontFamily: 'Courier',
                           letterSpacing: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      
-                      // Tag name input
-                      TextField(
-                        controller: customTagController,
-                        style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
-                        decoration: const InputDecoration(
-                          hintText: 'TAG NAME',
-                          hintStyle: TextStyle(
+                    ),
+                  ],
+                ),
+              ),
+
+              // Content
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Tag name label
+                    const Text(
+                      'NAME',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Courier',
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    // Tag name input
+                    TextField(
+                      controller: customTagController,
+                      style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
+                      decoration: const InputDecoration(
+                        hintText: 'TAG NAME',
+                        hintStyle: TextStyle(
+                          color: Color(0xFF71717A),
+                          fontFamily: 'Courier',
+                          fontSize: 12,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFF1A1A1A),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                          borderSide: BorderSide(color: Color(0xFF27272A), width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                          borderSide: BorderSide(color: Color(0xFF0D59F2), width: 1.5),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                      autofocus: true,
+                      textCapitalization: TextCapitalization.characters,
+                    ),
+
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+
+              // Bottom Action Buttons
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'CANCEL',
+                          style: TextStyle(
                             color: Color(0xFF71717A),
                             fontFamily: 'Courier',
-                            fontSize: 12,
+                            letterSpacing: 1.0,
                           ),
-                          filled: true,
-                          fillColor: Color(0xFF1A1A1A),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
-                            borderSide: BorderSide(color: Color(0xFF27272A), width: 1),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
-                            borderSide: BorderSide(color: Color(0xFF0D59F2), width: 1.5),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                        ),
-                        autofocus: true,
-                        textCapitalization: TextCapitalization.characters,
-                      ),
-                      const SizedBox(height: 24),
-                      
-                      // Color selection label
-                      const Text(
-                        'COLOR',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'Courier',
-                          letterSpacing: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      
-                      // Color picker (Neon Palette)
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: RoutineTag.neonPalette.map((color) {
-                          final isSelected = color == selectedColor;
-                          return GestureDetector(
-                            onTap: () {
-                              setDialogState(() {
-                                selectedColor = color;
-                              });
-                            },
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: color.withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: isSelected ? color : color.withValues(alpha: 0.3),
-                                  width: isSelected ? 3 : 1.5,
-                                ),
-                              ),
-                              child: isSelected
-                                  ? Icon(Icons.check, color: color, size: 20)
-                                  : null,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: InkWell(
+                        onTap: () {
+                          final tag = customTagController.text.trim().toUpperCase();
+                          if (tag.isNotEmpty) {
+                            setState(() {
+                              _selectedTags.add(tag);
+                              // No color stored - will use default blue neon style
+                            });
+                            Navigator.pop(context);
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          );
-                        }).toList(),
-                      ),
-
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-
-                // Bottom Action Buttons
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () => Navigator.pop(context),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF2962FF).withValues(alpha: 0.4),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          alignment: Alignment.center,
                           child: const Text(
-                            'CANCEL',
+                            'ADD',
                             style: TextStyle(
-                              color: Color(0xFF71717A),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
                               fontFamily: 'Courier',
                               letterSpacing: 1.0,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        flex: 2,
-                        child: InkWell(
-                          onTap: () {
-                            final tag = customTagController.text.trim().toUpperCase();
-                            if (tag.isNotEmpty) {
-                              setState(() {
-                                _selectedTags.add(tag);
-                                _tagColors[tag] = selectedColor.value;
-                              });
-                              Navigator.pop(context);
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF2962FF).withValues(alpha: 0.4),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'ADD',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                                fontFamily: 'Courier',
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
-  }
-
-  Color _getTagColor(String tag) {
-    // Check if it's a custom tag with stored color
-    if (_tagColors.containsKey(tag)) {
-      return Color(_tagColors[tag]!); // Convert int to Color
-    }
-    // Check if it's a system preset
-    return RoutineTag.getColorForKey(tag, defaultColor: const Color(0xFF69F0AE));
   }
 
   @override
@@ -1421,7 +1359,8 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                         spacing: 6,
                         runSpacing: 6,
                         children: _selectedTags.map((tag) {
-                          final color = _getTagColor(tag);
+                          // All custom tags use blue neon style
+                          const color = Color(0xFF0D59F2);
                           return Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
@@ -1489,7 +1428,6 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                           Navigator.pop(context, {
                             'name': name,
                             'tags': _selectedTags.toList(),
-                            'tagColors': _tagColors,
                           });
                         }
                       },
