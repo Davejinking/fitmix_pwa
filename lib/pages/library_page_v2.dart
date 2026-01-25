@@ -990,124 +990,214 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-            side: const BorderSide(color: Colors.white24, width: 1),
-          ),
-          title: const Text(
-            'CUSTOM TAG',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Courier',
-              letterSpacing: 1.5,
+        builder: (context, setDialogState) => Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 400),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0A0A0A),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: const Color(0xFF27272A), width: 1),
             ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Tag name input
-              TextField(
-                controller: customTagController,
-                style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
-                decoration: const InputDecoration(
-                  hintText: 'TAG NAME',
-                  hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Courier', fontSize: 12),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white24),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
-                  ),
-                ),
-                autofocus: true,
-                textCapitalization: TextCapitalization.characters,
-              ),
-              const SizedBox(height: 24),
-              
-              // Color selection label
-              const Text(
-                'COLOR',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w900,
-                  fontFamily: 'Courier',
-                  letterSpacing: 1.5,
-                ),
-              ),
-              const SizedBox(height: 12),
-              
-              // Color picker (Neon Palette)
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: RoutineTag.neonPalette.map((color) {
-                  final isSelected = color == selectedColor;
-                  return GestureDetector(
-                    onTap: () {
-                      setDialogState(() {
-                        selectedColor = color;
-                      });
-                    },
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected ? color : color.withValues(alpha: 0.3),
-                          width: isSelected ? 3 : 1.5,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF71717A), size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      ),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'CUSTOM TAG',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            fontFamily: 'Courier',
+                            letterSpacing: 1.5,
+                          ),
                         ),
                       ),
-                      child: isSelected
-                          ? Icon(Icons.check, color: color, size: 20)
-                          : null,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
+                    ],
+                  ),
+                ),
+
+                // Content
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Tag name label
+                      const Text(
+                        'NAME',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      
+                      // Tag name input
+                      TextField(
+                        controller: customTagController,
+                        style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
+                        decoration: const InputDecoration(
+                          hintText: 'TAG NAME',
+                          hintStyle: TextStyle(
+                            color: Color(0xFF71717A),
+                            fontFamily: 'Courier',
+                            fontSize: 12,
+                          ),
+                          filled: true,
+                          fillColor: Color(0xFF1A1A1A),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderSide: BorderSide(color: Color(0xFF27272A), width: 1),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderSide: BorderSide(color: Color(0xFF0D59F2), width: 1.5),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        ),
+                        autofocus: true,
+                        textCapitalization: TextCapitalization.characters,
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      // Color selection label
+                      const Text(
+                        'COLOR',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      // Color picker (Neon Palette)
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: RoutineTag.neonPalette.map((color) {
+                          final isSelected = color == selectedColor;
+                          return GestureDetector(
+                            onTap: () {
+                              setDialogState(() {
+                                selectedColor = color;
+                              });
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.2),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: isSelected ? color : color.withValues(alpha: 0.3),
+                                  width: isSelected ? 3 : 1.5,
+                                ),
+                              ),
+                              child: isSelected
+                                  ? Icon(Icons.check, color: color, size: 20)
+                                  : null,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+
+                // Bottom Action Buttons
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'CANCEL',
+                            style: TextStyle(
+                              color: Color(0xFF71717A),
+                              fontFamily: 'Courier',
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: InkWell(
+                          onTap: () {
+                            final tag = customTagController.text.trim().toUpperCase();
+                            if (tag.isNotEmpty) {
+                              setState(() {
+                                _selectedTags.add(tag);
+                                _tagColors[tag] = selectedColor.value;
+                              });
+                              Navigator.pop(context);
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF2962FF).withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'ADD',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                fontFamily: 'Courier',
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              child: const Text(
-                'CANCEL',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontFamily: 'Courier',
-                  letterSpacing: 1.0,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            TextButton(
-              child: const Text(
-                'ADD',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  fontFamily: 'Courier',
-                  letterSpacing: 1.5,
-                ),
-              ),
-              onPressed: () {
-                final tag = customTagController.text.trim().toUpperCase();
-                if (tag.isNotEmpty) {
-                  setState(() {
-                    _selectedTags.add(tag);
-                    _tagColors[tag] = selectedColor.value; // 🎨 Store as int (ARGB)
-                  });
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
         ),
       ),
     );
@@ -1126,211 +1216,321 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
-    return AlertDialog(
-      backgroundColor: Colors.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-        side: const BorderSide(color: Colors.white24, width: 1),
-      ),
-      title: Text(
-        l10n.createRoutine.toUpperCase(),
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w900,
-          fontFamily: 'Courier',
-          letterSpacing: 1.5,
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0A0A0A), // Black background (matching tactical style)
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: const Color(0xFF27272A), width: 1),
         ),
-      ),
-      content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Exercise count
-            Text(
-              '${widget.exerciseCount} EXERCISES',
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 11,
-                fontFamily: 'Courier',
-                letterSpacing: 1.0,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Routine name input
-            TextField(
-              controller: _nameController,
-              style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
-              decoration: InputDecoration(
-                hintText: l10n.enterRoutineName,
-                hintStyle: const TextStyle(color: Colors.grey, fontFamily: 'Courier'),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white, width: 1.5),
-                ),
-              ),
-              autofocus: true,
-            ),
-            const SizedBox(height: 24),
-            
-            // Tags section
-            const Text(
-              'TAGS',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                fontFamily: 'Courier',
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            
-            // System preset tags (localized with colors)
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: RoutineTag.systemPresets.map((routineTag) {
-                final tag = routineTag.getLabel(context);
-                final isSelected = _selectedTags.contains(tag);
-                final color = routineTag.color;
-                
-                return GestureDetector(
-                  onTap: () => _toggleTag(tag),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
-                      border: Border.all(
-                        color: isSelected ? color : Colors.white24,
-                        width: isSelected ? 1.5 : 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              child: Row(
+                children: [
+                  // Close Button
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Color(0xFF71717A), size: 20),
+                    onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  ),
+                  const SizedBox(width: 8),
+                  // Title
+                  Expanded(
                     child: Text(
-                      tag,
-                      style: TextStyle(
-                        color: isSelected ? color : Colors.grey,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
+                      l10n.createRoutine.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                         fontFamily: 'Courier',
-                        letterSpacing: 0.5,
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ),
-                );
-              }).toList(),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
-            
-            // Custom tag button
-            GestureDetector(
-              onTap: _showCustomTagDialog,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white24, width: 1.0),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Row(
+
+            // Content
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 500),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add, color: Colors.white, size: 16),
-                    SizedBox(width: 6),
+                    // Exercise count
                     Text(
-                      'CUSTOM TAG',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
+                      '${widget.exerciseCount} EXERCISES',
+                      style: const TextStyle(
+                        color: Color(0xFF71717A),
+                        fontSize: 11,
                         fontFamily: 'Courier',
-                        letterSpacing: 0.5,
+                        letterSpacing: 1.0,
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    
+                    // Routine name label
+                    const Text(
+                      'NAME',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Courier',
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    // Routine name input
+                    TextField(
+                      controller: _nameController,
+                      style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
+                      decoration: InputDecoration(
+                        hintText: l10n.enterRoutineName,
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF71717A),
+                          fontFamily: 'Courier',
+                          fontSize: 12,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF1A1A1A),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: const BorderSide(color: Color(0xFF27272A), width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: const BorderSide(color: Color(0xFF0D59F2), width: 1.5),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                      ),
+                      autofocus: true,
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Tags section
+                    const Text(
+                      'TAGS',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Courier',
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // System preset tags (Blue Neon Style)
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: RoutineTag.systemPresets.map((routineTag) {
+                        final tag = routineTag.getLabel(context);
+                        final isSelected = _selectedTags.contains(tag);
+                        
+                        return GestureDetector(
+                          onTap: () => _toggleTag(tag),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected 
+                                  ? const Color(0xFF0D59F2).withValues(alpha: 0.2) 
+                                  : const Color(0xFF1A1A1A),
+                              border: Border.all(
+                                color: isSelected 
+                                    ? const Color(0xFF0D59F2) 
+                                    : const Color(0xFF27272A),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color(0xFF0D59F2).withValues(alpha: 0.4),
+                                        blurRadius: 6,
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                            child: Text(
+                              tag.toUpperCase(),
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : const Color(0xFF71717A),
+                                fontSize: 11,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                fontFamily: 'Courier',
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // Custom tag button
+                    GestureDetector(
+                      onTap: _showCustomTagDialog,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: const Color(0xFF27272A), width: 1.0),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add, color: Color(0xFF71717A), size: 16),
+                            SizedBox(width: 6),
+                            Text(
+                              'CUSTOM TAG',
+                              style: TextStyle(
+                                color: Color(0xFF71717A),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Courier',
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+                    // Selected tags display (with colors)
+                    if (_selectedTags.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: _selectedTags.map((tag) {
+                          final color = _getTagColor(tag);
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  tag,
+                                  style: TextStyle(
+                                    color: color,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Courier',
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                GestureDetector(
+                                  onTap: () => _toggleTag(tag),
+                                  child: Icon(Icons.close, size: 14, color: color),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
             ),
-            
-            // Selected tags display (with colors)
-            if (_selectedTags.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: _selectedTags.map((tag) {
-                  final color = _getTagColor(tag);
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
+
+            // Bottom Action Buttons
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  // Cancel Button
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        l10n.cancel.toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xFF71717A),
+                          fontFamily: 'Courier',
+                          letterSpacing: 1.0,
+                        ),
+                      ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          tag,
-                          style: TextStyle(
-                            color: color,
-                            fontSize: 10,
+                  ),
+                  const SizedBox(width: 12),
+                  // Save Button (Blue Gradient)
+                  Expanded(
+                    flex: 2,
+                    child: InkWell(
+                      onTap: () {
+                        final name = _nameController.text.trim();
+                        if (name.isNotEmpty) {
+                          Navigator.pop(context, {
+                            'name': name,
+                            'tags': _selectedTags.toList(),
+                            'tagColors': _tagColors,
+                          });
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF2962FF).withValues(alpha: 0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          l10n.save.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontWeight: FontWeight.w700,
+                            fontSize: 13,
                             fontFamily: 'Courier',
+                            letterSpacing: 1.0,
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: () => _toggleTag(tag),
-                          child: Icon(Icons.close, size: 14, color: color),
-                        ),
-                      ],
+                      ),
                     ),
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          child: Text(
-            l10n.cancel.toUpperCase(),
-            style: const TextStyle(
-              color: Colors.grey,
-              fontFamily: 'Courier',
-              letterSpacing: 1.0,
-            ),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        TextButton(
-          child: Text(
-            l10n.save.toUpperCase(),
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-              fontFamily: 'Courier',
-              letterSpacing: 1.5,
-            ),
-          ),
-          onPressed: () {
-            final name = _nameController.text.trim();
-            if (name.isNotEmpty) {
-              Navigator.pop(context, {
-                'name': name,
-                'tags': _selectedTags.toList(),
-                'tagColors': _tagColors, // 🎨 Return user-selected colors
-              });
-            }
-          },
-        ),
-      ],
     );
   }
 }
