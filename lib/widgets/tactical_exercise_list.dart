@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/exercise_library.dart';
 import '../models/exercise.dart';
-import '../models/muscle_group.dart';
 import '../services/exercise_seeding_service.dart';
 import '../l10n/app_localizations.dart';
 import '../core/iron_theme.dart';
@@ -518,132 +517,269 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
         final isBookmarked = _bookmarkedIds.contains(exercise.id);
         final isSelected = _isExerciseSelected(exercise);
         
-        // 🎯 CRITICAL FIX: Convert string to MuscleGroup enum
-        final muscleGroup = MuscleGroupParsing.fromString(exercise.targetPart);
-        final avatarColor = muscleGroup?.color ?? Colors.grey;
-        final avatarText = muscleGroup?.abbreviation ?? '??';
-        
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          decoration: BoxDecoration(
-            color: isSelected 
-                ? Colors.white.withValues(alpha: 0.1)  // 🎯 선택 시 미묘한 하이라이트
-                : IronTheme.surface,
-            borderRadius: BorderRadius.circular(10),
-            border: isSelected ? Border.all(color: IronTheme.primary, width: 2) : null,
+        return _buildPremiumExerciseCard(exercise, isSelected, isBookmarked, l10n);
+      },
+    );
+  }
+
+  // 🔥 Premium Exercise Card (matching Exercise Selection Page)
+  Widget _buildPremiumExerciseCard(
+    ExerciseLibraryItem exercise,
+    bool isSelected,
+    bool isBookmarked,
+    AppLocalizations l10n,
+  ) {
+    final locale = Localizations.localeOf(context);
+    final isEnglish = locale.languageCode == 'en';
+    final engName = exercise.nameEn.replaceAll('_', ' ');
+    final localName = exercise.getLocalizedName(context);
+    
+    // Determine main title and subtitle
+    final String mainTitle;
+    final String? subTitle;
+    
+    if (isEnglish) {
+      mainTitle = engName;
+      subTitle = null;
+    } else {
+      mainTitle = (localName.isNotEmpty && localName != exercise.nameEn) 
+          ? localName 
+          : engName;
+      subTitle = (localName.isNotEmpty && localName != exercise.nameEn) 
+          ? engName 
+          : null;
+    }
+    
+    // Get localized muscle and equipment
+    final localizedMuscle = _getLocalizedBodyPart(exercise.targetPart);
+    final localizedEquipment = _getLocalizedEquipment(exercise.equipmentType);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        // Premium matte black gradient
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF2A2A2A), // Lighter top-left
+            Color(0xFF151515), // Darker bottom-right
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        // Subtle shadow for depth
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-          child: InkWell(
-            onTap: () {
-              if (widget.isSelectionMode) {
-                _toggleExerciseSelection(exercise);
-              } else {
-                // View mode: Show detail modal
-                showExerciseDetailModal(
-                  context,
-                  exerciseName: exercise.nameEn,
-                  sessionRepo: getIt<SessionRepo>(),
-                  exerciseRepo: getIt<ExerciseLibraryRepo>(),
-                );
-              }
-            },
-            borderRadius: BorderRadius.circular(10),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                children: [
-                  // 🎯 선택 모드일 때 원형 타겟 락온 아이콘
-                  if (widget.isSelectionMode) ...[
-                    Icon(
-                      isSelected ? Icons.check_circle : Icons.circle_outlined,
-                      color: isSelected ? Colors.white : Colors.grey,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  // 🎨 Color-Coded Avatar with Abbreviation
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: avatarColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: avatarColor.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      avatarText,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        color: avatarColor,
-                        fontFamily: 'Courier',
-                        letterSpacing: -0.5,
-                      ),
-                    ),
+          // Selected state: add blue glow
+          if (isSelected)
+            BoxShadow(
+              color: const Color(0xFF0D59F2).withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 0),
+            ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            if (widget.isSelectionMode) {
+              _toggleExerciseSelection(exercise);
+            } else {
+              // View mode: Show detail modal
+              showExerciseDetailModal(
+                context,
+                exerciseName: exercise.nameEn,
+                sessionRepo: getIt<SessionRepo>(),
+                exerciseRepo: getIt<ExerciseLibraryRepo>(),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                // Left glowing indicator pill (shorter)
+                Container(
+                  width: 3,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: isSelected 
+                        ? const Color(0xFF0D59F2)
+                        : const Color(0xFF0D59F2).withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(1.5),
+                    // Glow effect for selected state
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: const Color(0xFF0D59F2).withValues(alpha: 0.6),
+                              blurRadius: 6,
+                            ),
+                          ]
+                        : null,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          exercise.getLocalizedName(context), 
-                          style: TextStyle(
-                            fontSize: 14, 
-                            fontWeight: FontWeight.w600, 
-                            color: isSelected ? IronTheme.primary : IronTheme.textHigh,
-                          )
-                        ),
+                ),
+                const SizedBox(width: 12),
+                
+                // Content Area (Dense)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Row: Title + Metadata (inline)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Main Title
+                          Flexible(
+                            child: Text(
+                              mainTitle.toUpperCase(),
+                              style: TextStyle(
+                                color: isSelected ? const Color(0xFF0D59F2) : Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                height: 1.2,
+                                shadows: isSelected
+                                    ? [
+                                        Shadow(
+                                          color: const Color(0xFF0D59F2).withValues(alpha: 0.4),
+                                          blurRadius: 5,
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Metadata (inline with title)
+                          Text(
+                            isEnglish 
+                                ? '$localizedMuscle • $localizedEquipment'.toUpperCase()
+                                : '$localizedMuscle • $localizedEquipment',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 10,
+                              fontFamily: isEnglish ? 'Courier' : null,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: isEnglish ? 0.5 : 0.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      // SUBTITLE (English name for non-English users)
+                      if (subTitle != null) ...[
                         const SizedBox(height: 2),
                         Text(
-                          '${_getLocalizedBodyPart(exercise.targetPart)} • ${_getLocalizedEquipment(exercise.equipmentType)}', 
-                          style: TextStyle(fontSize: 12, color: IronTheme.textMedium)
+                          subTitle.toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Courier',
+                            letterSpacing: 0.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
-                    ),
+                    ],
                   ),
-                  if (!widget.isSelectionMode) ...[
-                    GestureDetector(
-                      onTap: () {
-                        showExerciseDetailModal(
-                          context,
-                          exerciseName: exercise.nameEn,
-                          sessionRepo: getIt<SessionRepo>(),
-                          exerciseRepo: getIt<ExerciseLibraryRepo>(),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.info_outline,
-                          size: 16,
-                          color: IronTheme.textMedium,
+                ),
+                
+                const SizedBox(width: 12),
+                
+                // Right side actions
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Bookmark button (if enabled and not in selection mode)
+                    if (widget.showBookmarks && !widget.isSelectionMode) ...[
+                      GestureDetector(
+                        onTap: () => _toggleBookmark(exercise.id),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          alignment: Alignment.center,
+                          child: Icon(
+                            isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                            color: isBookmarked ? const Color(0xFF0D59F2) : Colors.grey[600],
+                            size: 18,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
+                      const SizedBox(width: 4),
+                    ],
+                    
+                    // Selection checkbox or info button
+                    if (widget.isSelectionMode)
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: isSelected 
+                              ? const Color(0xFF0D59F2)
+                              : const Color(0xFF222222),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFF0D59F2)
+                                : const Color(0xFF0D59F2).withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: const Color(0xFF0D59F2).withValues(alpha: 0.5),
+                                    blurRadius: 10,
+                                    spreadRadius: 0,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Icon(
+                          isSelected ? Icons.check : Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () {
+                          showExerciseDetailModal(
+                            context,
+                            exerciseName: exercise.nameEn,
+                            sessionRepo: getIt<SessionRepo>(),
+                            exerciseRepo: getIt<ExerciseLibraryRepo>(),
+                          );
+                        },
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
                   ],
-                  if (widget.showBookmarks && !widget.isSelectionMode)
-                    GestureDetector(
-                      onTap: () => _toggleBookmark(exercise.id),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(
-                          isBookmarked ? Icons.bookmark : Icons.bookmark_border, 
-                          color: isBookmarked ? IronTheme.primary : IronTheme.textLow, 
-                          size: 20
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
