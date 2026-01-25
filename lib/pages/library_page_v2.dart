@@ -305,7 +305,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                         fontFamily: 'Courier',
                       ),
                       decoration: InputDecoration(
-                        hintText: 'SEARCH_EXERCISE_ID...',
+                        hintText: l10n.searchDatabase,
                         hintStyle: const TextStyle(
                           color: Color(0xFF3F3F46),
                           fontSize: 14,
@@ -1656,10 +1656,10 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
     final l10n = AppLocalizations.of(context);
     
     return AlertDialog(
-      backgroundColor: const Color(0xFF1C1C1E), // 🎯 Dark Surface
+      backgroundColor: const Color(0xFF0A0A0A), // 🎯 Darker background
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4),
-        side: const BorderSide(color: Colors.white24, width: 1),
+        side: const BorderSide(color: Color(0xFF27272A), width: 1),
       ),
       title: const Text(
         'NEW EXERCISE',
@@ -1690,7 +1690,7 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _nameController,
-              maxLength: 40, // 🎯 40-character limit (optimal for English workout names)
+              maxLength: 40,
               style: const TextStyle(
                 color: Colors.white,
                 fontFamily: 'Courier',
@@ -1698,26 +1698,26 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
               decoration: InputDecoration(
                 hintText: 'e.g., Triceps Pushdown (Rope Attachment)',
                 hintStyle: const TextStyle(
-                  color: Colors.grey,
+                  color: Color(0xFF71717A),
                   fontFamily: 'Courier',
                   fontSize: 12,
                 ),
                 filled: true,
-                fillColor: Colors.grey[800],
+                fillColor: const Color(0xFF1A1A1A), // 🎯 Dark grey fill
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
-                  borderSide: const BorderSide(color: Colors.white24),
+                  borderSide: const BorderSide(color: Color(0xFF27272A), width: 1),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
-                  borderSide: const BorderSide(color: Colors.white, width: 1.5),
+                  borderSide: const BorderSide(color: Color(0xFF0D59F2), width: 1.5), // 🎯 Blue focus
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 12,
                 ),
                 counterStyle: const TextStyle(
-                  color: Colors.grey,
+                  color: Color(0xFF71717A),
                   fontSize: 11,
                   fontFamily: 'Courier',
                 ),
@@ -1739,7 +1739,7 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
             ),
             const SizedBox(height: 12),
             
-            // Choice Chips
+            // Choice Chips - Tactical Blue Style
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -1747,25 +1747,38 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
                 final isSelected = bodyPart == _selectedBodyPart;
                 return GestureDetector(
                   onTap: () => setState(() => _selectedBodyPart = bodyPart),
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : Colors.transparent,
+                      color: isSelected 
+                          ? const Color(0xFF0D59F2).withValues(alpha: 0.2) 
+                          : const Color(0xFF1A1A1A),
                       border: Border.all(
-                        color: isSelected ? Colors.white : Colors.white24,
-                        width: 1.0,
+                        color: isSelected 
+                            ? const Color(0xFF0D59F2) 
+                            : const Color(0xFF27272A),
+                        width: 1.5,
                       ),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: const Color(0xFF0D59F2).withValues(alpha: 0.4),
+                                blurRadius: 6,
+                              ),
+                            ]
+                          : [],
                     ),
                     child: Text(
                       bodyPart.toUpperCase(),
                       style: TextStyle(
-                        color: isSelected ? Colors.black : Colors.grey,
+                        color: isSelected ? Colors.white : const Color(0xFF71717A),
                         fontSize: 11,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                         fontFamily: 'Courier',
                         letterSpacing: 0.5,
                       ),
@@ -1778,37 +1791,22 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
         ),
       ),
       actions: [
-        // Cancel Button
+        // Cancel Button (Subtle)
         TextButton(
           child: Text(
             l10n.cancel.toUpperCase(),
             style: const TextStyle(
-              color: Colors.grey,
+              color: Color(0xFF71717A),
               fontFamily: 'Courier',
               letterSpacing: 1.0,
             ),
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        // Save Button
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          child: Text(
-            l10n.save.toUpperCase(),
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Courier',
-              letterSpacing: 1.5,
-            ),
-          ),
-          onPressed: () {
+        const SizedBox(width: 8),
+        // Save Button (Blue Gradient Glow)
+        InkWell(
+          onTap: () {
             final name = _nameController.text.trim();
             if (name.isNotEmpty) {
               Navigator.pop(context, {
@@ -1817,6 +1815,35 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
               });
             }
           },
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2962FF), Color(0xFF0039CB)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF2962FF).withValues(alpha: 0.4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              l10n.save.toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                fontFamily: 'Courier',
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
         ),
       ],
     );
