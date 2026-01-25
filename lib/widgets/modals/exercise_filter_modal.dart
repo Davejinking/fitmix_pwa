@@ -93,20 +93,20 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
     
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
+        constraints: const BoxConstraints(maxWidth: 500), // Only max width, no height constraint
         decoration: BoxDecoration(
           color: const Color(0xFF0A0A0A), // Black background (matching Add Exercise)
           borderRadius: BorderRadius.circular(4),
           border: Border.all(color: const Color(0xFF27272A), width: 1),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min, // CRITICAL: Shrink to fit content
           children: [
             // Header with Close and Reset
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12), // Tighter bottom padding
               child: Row(
                 children: [
                   // Close Button
@@ -148,12 +148,14 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
               ),
             ),
 
-            // Content
-            Expanded(
+            // Content (Scrollable if needed, but compact)
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 500), // Max height for scrolling
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16), // Tighter padding
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Target Muscle Section
                     _buildSection(
@@ -173,7 +175,7 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
                       true, // isMuscle
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20), // Reduced from 24
 
                     // Equipment Type Section
                     _buildSection(
@@ -192,6 +194,8 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
                       l10n,
                       false, // isEquipment
                     ),
+
+                    const SizedBox(height: 16), // Reduced spacing before buttons
                   ],
                 ),
               ),
