@@ -1132,6 +1132,12 @@ abstract class AppLocalizations {
   /// **'Cardio'**
   String get cardio;
 
+  /// No description provided for @etc.
+  ///
+  /// In en, this message translates to:
+  /// **'Etc'**
+  String get etc;
+
   /// No description provided for @stretching.
   ///
   /// In en, this message translates to:
@@ -1419,6 +1425,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter exercise name.'**
   String get pleaseEnterExerciseName;
+
+  /// No description provided for @newExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW EXERCISE'**
+  String get newExercise;
+
+  /// No description provided for @exerciseNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NAME'**
+  String get exerciseNameLabel;
+
+  /// No description provided for @exerciseNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Triceps Pushdown (Rope Attachment)'**
+  String get exerciseNameHint;
+
+  /// No description provided for @muscleGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MUSCLE GROUP'**
+  String get muscleGroupLabel;
 
   /// No description provided for @workoutPlan.
   ///

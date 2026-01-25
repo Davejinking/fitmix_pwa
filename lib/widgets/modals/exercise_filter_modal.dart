@@ -293,11 +293,11 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
         ),
         const SizedBox(height: 12),
 
-        // Chips - Tactical switches with sharp corners
+        // Chips - Blue Neon Style (matching Add Exercise Modal)
         Wrap(
           spacing: 8,
-          runSpacing: 10,
-          alignment: WrapAlignment.start, // Left align for tactical look
+          runSpacing: 8,
+          alignment: WrapAlignment.start,
           children: items.map((item) {
             final isSelected = selectedItems.contains(item);
             final localizedLabel = isMuscle 
@@ -308,37 +308,38 @@ class _ExerciseFilterModalState extends State<ExerciseFilterModal> {
               onTap: () => onTap(item),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  // Tactical switch style
-                  color: isSelected
-                      ? const Color(0xFF0D59F2).withValues(alpha: 0.15)
-                      : Colors.transparent,
+                  color: isSelected 
+                      ? const Color(0xFF0D59F2).withValues(alpha: 0.2) 
+                      : const Color(0xFF1A1A1A),
                   border: Border.all(
-                    color: isSelected
-                        ? const Color(0xFF0D59F2)
-                        : Colors.white.withValues(alpha: 0.15),
+                    color: isSelected 
+                        ? const Color(0xFF0D59F2) 
+                        : const Color(0xFF27272A),
                     width: 1.5,
                   ),
-                  borderRadius: BorderRadius.circular(6), // Sharp corners
+                  borderRadius: BorderRadius.circular(8),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: const Color(0xFF0D59F2).withValues(alpha: 0.2),
+                            color: const Color(0xFF0D59F2).withValues(alpha: 0.4),
                             blurRadius: 6,
-                            spreadRadius: 1,
                           ),
                         ]
-                      : null,
+                      : [],
                 ),
                 child: Text(
                   localizedLabel.toUpperCase(),
                   style: TextStyle(
-                    fontSize: 12,
+                    color: isSelected ? Colors.white : const Color(0xFF71717A),
+                    fontSize: 11,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? Colors.white : Colors.grey.shade500,
-                    letterSpacing: 0.5,
                     fontFamily: 'Courier',
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),

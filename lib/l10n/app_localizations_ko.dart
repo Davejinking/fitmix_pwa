@@ -561,6 +561,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get cardio => '유산소';
 
   @override
+  String get etc => '기타';
+
+  @override
   String get stretching => '스트레칭';
 
   @override
@@ -705,6 +708,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pleaseEnterExerciseName => '운동 이름을 입력해주세요.';
+
+  @override
+  String get newExercise => '새 운동 추가';
+
+  @override
+  String get exerciseNameLabel => '이름';
+
+  @override
+  String get exerciseNameHint => '예: 트라이셉스 푸시다운';
+
+  @override
+  String get muscleGroupLabel => '타겟 부위';
 
   @override
   String get workoutPlan => '운동 계획';

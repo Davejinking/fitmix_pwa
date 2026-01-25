@@ -561,6 +561,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get cardio => '有酸素';
 
   @override
+  String get etc => 'その他';
+
+  @override
   String get stretching => 'ストレッチ';
 
   @override
@@ -705,6 +708,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pleaseEnterExerciseName => '運動名を入力してください。';
+
+  @override
+  String get newExercise => '新しい運動';
+
+  @override
+  String get exerciseNameLabel => '名前';
+
+  @override
+  String get exerciseNameHint => '例: トライセプス プッシュダウン';
+
+  @override
+  String get muscleGroupLabel => '対象筋肉';
 
   @override
   String get workoutPlan => 'ワークアウト計画';

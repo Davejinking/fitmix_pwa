@@ -1651,6 +1651,21 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
     super.dispose();
   }
 
+  // Helper to get localized body part name
+  String _getLocalizedBodyPart(String key, AppLocalizations l10n) {
+    switch (key) {
+      case 'Chest': return l10n.chest;
+      case 'Back': return l10n.back;
+      case 'Legs': return l10n.legs;
+      case 'Shoulders': return l10n.shoulders;
+      case 'Arms': return l10n.arms;
+      case 'Abs': return l10n.abs;
+      case 'Cardio': return l10n.cardio;
+      case 'Etc': return l10n.etc;
+      default: return key;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1661,9 +1676,9 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
         borderRadius: BorderRadius.circular(4),
         side: const BorderSide(color: Color(0xFF27272A), width: 1),
       ),
-      title: const Text(
-        'NEW EXERCISE',
-        style: TextStyle(
+      title: Text(
+        l10n.newExercise.toUpperCase(),
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.w900,
@@ -1677,9 +1692,9 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Exercise Name Input
-            const Text(
-              'NAME',
-              style: TextStyle(
+            Text(
+              l10n.exerciseNameLabel.toUpperCase(),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
@@ -1696,7 +1711,7 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
                 fontFamily: 'Courier',
               ),
               decoration: InputDecoration(
-                hintText: 'e.g., Triceps Pushdown (Rope Attachment)',
+                hintText: l10n.exerciseNameHint,
                 hintStyle: const TextStyle(
                   color: Color(0xFF71717A),
                   fontFamily: 'Courier',
@@ -1727,9 +1742,9 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
             const SizedBox(height: 24),
             
             // Muscle Group Selection
-            const Text(
-              'MUSCLE GROUP',
-              style: TextStyle(
+            Text(
+              l10n.muscleGroupLabel.toUpperCase(),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
@@ -1745,6 +1760,7 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
               runSpacing: 8,
               children: _bodyParts.map((bodyPart) {
                 final isSelected = bodyPart == _selectedBodyPart;
+                final localizedLabel = _getLocalizedBodyPart(bodyPart, l10n);
                 return GestureDetector(
                   onTap: () => setState(() => _selectedBodyPart = bodyPart),
                   child: AnimatedContainer(
@@ -1774,7 +1790,7 @@ class _AddExerciseDialogState extends State<_AddExerciseDialog> {
                           : [],
                     ),
                     child: Text(
-                      bodyPart.toUpperCase(),
+                      localizedLabel.toUpperCase(),
                       style: TextStyle(
                         color: isSelected ? Colors.white : const Color(0xFF71717A),
                         fontSize: 11,

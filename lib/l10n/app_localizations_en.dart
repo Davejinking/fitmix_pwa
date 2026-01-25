@@ -564,6 +564,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardio => 'Cardio';
 
   @override
+  String get etc => 'Etc';
+
+  @override
   String get stretching => 'Stretching';
 
   @override
@@ -708,6 +711,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseEnterExerciseName => 'Please enter exercise name.';
+
+  @override
+  String get newExercise => 'NEW EXERCISE';
+
+  @override
+  String get exerciseNameLabel => 'NAME';
+
+  @override
+  String get exerciseNameHint => 'e.g., Triceps Pushdown (Rope Attachment)';
+
+  @override
+  String get muscleGroupLabel => 'MUSCLE GROUP';
 
   @override
   String get workoutPlan => 'Workout Plan';
