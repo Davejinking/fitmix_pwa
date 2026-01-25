@@ -1493,8 +1493,8 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
 }
 
 
-// 🔥 Routine Accordion Card (Collapsible)
-class _RoutineAccordionCard extends StatefulWidget {
+// 🔥 Routine Tactical Card (Matching Exercise List Style)
+class _RoutineAccordionCard extends StatelessWidget {
   final Routine routine;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -1507,221 +1507,229 @@ class _RoutineAccordionCard extends StatefulWidget {
     required this.onLoad,
   });
 
-  @override
-  State<_RoutineAccordionCard> createState() => _RoutineAccordionCardState();
-}
-
-class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
-  bool _isExpanded = false; // Default: Collapsed
+  void _showOptionsMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF0A0A0A),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          border: Border(
+            top: BorderSide(
+              color: const Color(0xFF0D59F2).withValues(alpha: 0.5),
+              width: 2,
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              height: 24,
+              alignment: Alignment.center,
+              child: Container(
+                width: 48,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D59F2).withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            
+            // Load Option
+            ListTile(
+              leading: const Icon(Icons.play_arrow, color: Color(0xFF0D59F2)),
+              title: Text(
+                l10n.loadRoutine.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Courier',
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                onLoad();
+              },
+            ),
+            
+            // Edit Option
+            ListTile(
+              leading: const Icon(Icons.edit_outlined, color: Colors.white70),
+              title: Text(
+                l10n.edit.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontFamily: 'Courier',
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                onEdit();
+              },
+            ),
+            
+            // Delete Option
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.red),
+              title: Text(
+                l10n.delete.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontFamily: 'Courier',
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                onDelete();
+              },
+            ),
+            
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.black,
-        border: Border.all(
-          color: _isExpanded ? Colors.white : Colors.white24, // 🔥 Highlight when open
-          width: 1.0,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2A2A2A), Color(0xFF151515)],
         ),
-        borderRadius: BorderRadius.circular(4.0),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Column(
-        children: [
-          // HEADER (Clickable)
-          InkWell(
-            onTap: () => setState(() => _isExpanded = !_isExpanded),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                children: [
-                  // Title & Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.routine.name.toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 16,
-                            fontFamily: 'Courier',
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              '${widget.routine.exercises.length} EXERCISES',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Courier',
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            // Tags
-                            if (widget.routine.tags.isNotEmpty) ...[
-                              const SizedBox(width: 8),
-                              ...widget.routine.tags.take(2).map((tag) => Container(
-                                constraints: const BoxConstraints(maxWidth: 80), // Prevent overflow
-                                margin: const EdgeInsets.only(right: 4),
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: Colors.white12,
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                                child: Text(
-                                  tag,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 9,
-                                    fontFamily: 'Courier',
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              )),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Edit/Delete Icons
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.grey),
-                        onPressed: widget.onEdit,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 16, color: Colors.grey),
-                        onPressed: widget.onDelete,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                      ),
-                      const SizedBox(width: 4),
-                      // Chevron Icon
-                      Icon(
-                        _isExpanded ? Icons.expand_less : Icons.expand_more,
-                        color: Colors.grey,
-                        size: 20,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onLoad, // Tap to load routine
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              children: [
+                // 1. Neon Indicator (Blue Pill)
+                Container(
+                  width: 3,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0D59F2),
+                    borderRadius: BorderRadius.circular(1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0D59F2).withValues(alpha: 0.6),
+                        blurRadius: 6,
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ),
-          
-          // BODY (Expandable)
-          if (_isExpanded) ...[
-            const Divider(color: Colors.white24, height: 1),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Exercise List with Sets x Reps
-                  ...widget.routine.exercises.map((exercise) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Exercise Name
-                        Expanded(
-                          child: Row(
-                            children: [
-                              const Text(
-                                '•',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  exercise.name,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    fontFamily: 'Courier',
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Target Sets x Reps
-                        Text(
-                          '${exercise.targetSets} × ${exercise.targetReps}',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 11,
-                            fontFamily: 'Courier',
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-                  const SizedBox(height: 12),
-                  // Load Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 40,
-                    child: OutlinedButton(
-                      onPressed: widget.onLoad,
-                      style: ButtonStyle(
-                        side: WidgetStateProperty.all(
-                          const BorderSide(color: Colors.white, width: 1.5),
-                        ),
-                        shape: WidgetStateProperty.all(
-                          const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
-                          ),
-                        ),
-                        backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                          if (states.contains(WidgetState.pressed)) {
-                            return Colors.white;
-                          }
-                          return Colors.transparent;
-                        }),
-                        foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-                          if (states.contains(WidgetState.pressed)) {
-                            return Colors.black;
-                          }
-                          return Colors.white;
-                        }),
-                        overlayColor: WidgetStateProperty.all(Colors.transparent),
-                      ),
-                      child: Text(
-                        l10n.loadRoutine.toUpperCase(),
+                ),
+                const SizedBox(width: 16),
+                
+                // 2. Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        routine.name,
                         style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.5,
-                          fontFamily: 'Courier',
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
+                      const SizedBox(height: 4),
+                      
+                      // Subtitle with tags
+                      Row(
+                        children: [
+                          Text(
+                            '${routine.exercises.length} EXERCISES',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 1.0,
+                              fontFamily: 'Courier',
+                            ),
+                          ),
+                          
+                          // Tags (if any)
+                          if (routine.tags.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 60),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0D59F2).withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: const Color(0xFF0D59F2).withValues(alpha: 0.5),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                routine.tags.first,
+                                style: const TextStyle(
+                                  color: Color(0xFF0D59F2),
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Courier',
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // 3. More Icon
+                InkWell(
+                  onTap: () => _showOptionsMenu(context),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.more_horiz,
+                      color: Colors.grey[600],
+                      size: 20,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }
