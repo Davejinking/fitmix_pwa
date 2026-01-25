@@ -211,6 +211,9 @@
       }
     }
   },
+  "tabExercises": "EXERCISES",
+  "tabRoutines": "ROUTINES",
+  "tabPrograms": "PROGRAMS",
   "filterParameters": "FILTER PARAMETERS",
   "applyFilters": "APPLY FILTERS",
   "reset": "RESET",

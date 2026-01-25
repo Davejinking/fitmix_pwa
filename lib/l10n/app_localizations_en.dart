@@ -650,6 +650,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get tabExercises => 'EXERCISES';
+
+  @override
+  String get tabRoutines => 'ROUTINES';
+
+  @override
+  String get tabPrograms => 'PROGRAMS';
+
+  @override
   String get filterParameters => 'FILTER PARAMETERS';
 
   @override

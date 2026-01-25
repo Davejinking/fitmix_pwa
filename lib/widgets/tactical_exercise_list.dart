@@ -32,6 +32,12 @@ class TacticalExerciseList extends StatefulWidget {
   
   /// Optional: Header widget to display between filters and list
   final Widget? headerWidget;
+  
+  /// Optional: External muscle filter (from modal)
+  final Set<String>? selectedMuscles;
+  
+  /// Optional: External equipment filter (from modal)
+  final Set<String>? selectedEquipment;
 
   const TacticalExerciseList({
     super.key,
@@ -40,6 +46,8 @@ class TacticalExerciseList extends StatefulWidget {
     this.initialBodyPart,
     this.showBookmarks = true,
     this.headerWidget,
+    this.selectedMuscles,
+    this.selectedEquipment,
   });
 
   @override
@@ -140,18 +148,36 @@ class _TacticalExerciseListState extends State<TacticalExerciseList> {
     final bodyPartLower = _selectedBodyPart.toLowerCase();
     final isAllBodyParts = _selectedBodyPart == 'all';
     final isFavorites = _selectedBodyPart == 'favorites';
+    
+    // 🔥 External filters from modal (Library page)
+    final hasExternalMuscleFilter = widget.selectedMuscles != null && widget.selectedMuscles!.isNotEmpty;
+    final hasExternalEquipmentFilter = widget.selectedEquipment != null && widget.selectedEquipment!.isNotEmpty;
 
     setState(() {
       _filteredExercises = _allExercises.where((ex) {
-        // Step 1: Body Part Filter
-        if (isFavorites) {
-          if (!_bookmarkedIds.contains(ex.id)) return false;
-        } else if (!isAllBodyParts) {
-          if (ex.targetPart.toLowerCase() != bodyPartLower) return false;
+        // Step 1: Body Part Filter (internal or external)
+        if (hasExternalMuscleFilter) {
+          // Use external muscle filter from modal
+          final matchesMuscle = widget.selectedMuscles!.any((muscle) =>
+              ex.targetPart.toLowerCase() == muscle.toLowerCase());
+          if (!matchesMuscle) return false;
+        } else {
+          // Use internal body part filter
+          if (isFavorites) {
+            if (!_bookmarkedIds.contains(ex.id)) return false;
+          } else if (!isAllBodyParts) {
+            if (ex.targetPart.toLowerCase() != bodyPartLower) return false;
+          }
         }
 
-        // Step 2: Equipment Filter
-        if (equipmentLower != null) {
+        // Step 2: Equipment Filter (internal or external)
+        if (hasExternalEquipmentFilter) {
+          // Use external equipment filter from modal
+          final matchesEquipment = widget.selectedEquipment!.any((equipment) =>
+              ex.equipmentType.toLowerCase() == equipment.toLowerCase());
+          if (!matchesEquipment) return false;
+        } else if (equipmentLower != null) {
+          // Use internal equipment filter
           if (ex.equipmentType.toLowerCase() != equipmentLower) return false;
         }
 

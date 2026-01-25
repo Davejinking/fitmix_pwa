@@ -211,6 +211,9 @@
       }
     }
   },
+  "tabExercises": "種目",
+  "tabRoutines": "ルーティン",
+  "tabPrograms": "プログラム",
   "filterParameters": "絞り込み設定",
   "applyFilters": "適用する",
   "reset": "リセット",

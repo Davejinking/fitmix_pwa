@@ -647,6 +647,15 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get tabExercises => '종목';
+
+  @override
+  String get tabRoutines => '루틴';
+
+  @override
+  String get tabPrograms => '프로그램';
+
+  @override
   String get filterParameters => '필터 설정';
 
   @override

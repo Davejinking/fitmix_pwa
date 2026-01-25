@@ -647,6 +647,15 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get tabExercises => '種目';
+
+  @override
+  String get tabRoutines => 'ルーティン';
+
+  @override
+  String get tabPrograms => 'プログラム';
+
+  @override
   String get filterParameters => '絞り込み設定';
 
   @override

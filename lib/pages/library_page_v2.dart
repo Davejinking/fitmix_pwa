@@ -7,6 +7,7 @@ import '../models/session.dart';
 import '../models/exercise.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/tactical_exercise_list.dart';
+import '../widgets/modals/exercise_filter_modal.dart';
 import '../data/session_repo.dart';
 import '../data/routine_repo.dart';
 import '../data/user_repo.dart';
@@ -40,6 +41,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   
   // Exercise Tab State
   int _exerciseListKey = 0;
+  Set<String> _selectedMuscles = {}; // 🔥 Filter state for exercises
+  Set<String> _selectedEquipment = {}; // 🔥 Filter state for exercises
   
   @override
   void initState() {
@@ -101,6 +104,8 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
       key: ValueKey(_exerciseListKey), // 🔥 Key for forcing rebuild
       isSelectionMode: false,
       showBookmarks: true,
+      selectedMuscles: _selectedMuscles, // 🔥 Pass filter state
+      selectedEquipment: _selectedEquipment, // 🔥 Pass filter state
       // 🔥 Header Widget: Create Button (PIXEL PERFECT - Matching Routine Tab)
       headerWidget: Container(
         padding: const EdgeInsets.all(16), // 🎯 EXACT MATCH with Routine Tab
@@ -165,13 +170,15 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
         // 🔥 TACTICAL TOGGLE SWITCH
         _buildTacticalSwitch(l10n),
         
+        // Search Bar (with filter button for exercises)
+        _buildRoutineSearchBar(l10n),
+        
         // Content based on mode
         if (_isRoutineMode) ...[
-          _buildRoutineSearchBar(l10n),
-          _buildRoutineFilter(l10n),
+          _buildRoutineFilter(l10n), // Keep filter for routines
           Expanded(child: _buildRoutinesList(l10n)),
         ] else ...[
-          // 🔥 Exercise Mode
+          // 🔥 Exercise Mode (no horizontal filter, uses modal)
           Expanded(child: _buildExercisesTab(l10n)),
         ],
       ],
@@ -202,7 +209,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'EXERCISES',
+                  l10n.tabExercises.toUpperCase(),
                   style: TextStyle(
                     color: !_isRoutineMode ? Colors.white : const Color(0xFF71717A),
                     fontWeight: FontWeight.w700,
@@ -227,7 +234,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'ROUTINES',
+                  l10n.tabRoutines.toUpperCase(),
                   style: TextStyle(
                     color: _isRoutineMode ? Colors.white : const Color(0xFF71717A),
                     fontWeight: FontWeight.w700,
@@ -247,9 +254,9 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
               },
               child: Container(
                 alignment: Alignment.center,
-                child: const Text(
-                  'PROGRAMS',
-                  style: TextStyle(
+                child: Text(
+                  l10n.tabPrograms.toUpperCase(),
+                  style: const TextStyle(
                     color: Color(0xFF71717A),
                     fontWeight: FontWeight.w700,
                     fontSize: 10,
@@ -268,68 +275,131 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   Widget _buildRoutineSearchBar(AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF18181B).withValues(alpha: 0.8),
-        border: Border.all(color: const Color(0xFF27272A), width: 1.0),
-      ),
       child: Row(
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Icon(
-              Icons.search,
-              color: Color(0xFF71717A),
-              size: 20,
-            ),
-          ),
+          // Search Field
           Expanded(
-            child: TextField(
-              controller: _routineSearchController,
-              cursorColor: const Color(0xFF0D59F2),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontFamily: 'Courier',
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF18181B).withValues(alpha: 0.8),
+                border: Border.all(color: const Color(0xFF27272A), width: 1.0),
               ),
-              decoration: InputDecoration(
-                hintText: 'SEARCH_EXERCISE_ID...',
-                hintStyle: const TextStyle(
-                  color: Color(0xFF3F3F46),
-                  fontSize: 14,
-                  fontFamily: 'Courier',
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                suffixIcon: _routineSearchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.clear,
-                          color: Color(0xFF71717A),
-                          size: 18,
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Icon(
+                      Icons.search,
+                      color: Color(0xFF71717A),
+                      size: 20,
+                    ),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _routineSearchController,
+                      cursorColor: const Color(0xFF0D59F2),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontFamily: 'Courier',
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'SEARCH_EXERCISE_ID...',
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF3F3F46),
+                          fontSize: 14,
+                          fontFamily: 'Courier',
                         ),
-                        onPressed: () {
-                          _routineSearchController.clear();
-                          setState(() {
-                            _routineSearchQuery = '';
-                          });
-                        },
-                      )
-                    : null,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                        suffixIcon: _routineSearchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(
+                                  Icons.clear,
+                                  color: Color(0xFF71717A),
+                                  size: 18,
+                                ),
+                                onPressed: () {
+                                  _routineSearchController.clear();
+                                  setState(() {
+                                    _routineSearchQuery = '';
+                                  });
+                                },
+                              )
+                            : null,
+                      ),
+                      onChanged: (query) {
+                        setState(() {
+                          _routineSearchQuery = query;
+                        });
+                      },
+                    ),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 24,
+                    color: const Color(0xFF27272A),
+                    margin: const EdgeInsets.only(right: 8),
+                  ),
+                ],
               ),
-              onChanged: (query) {
-                setState(() {
-                  _routineSearchQuery = query;
-                });
-              },
             ),
           ),
-          Container(
-            width: 1,
-            height: 24,
-            color: const Color(0xFF27272A),
-            margin: const EdgeInsets.only(right: 8),
-          ),
+          
+          const SizedBox(width: 12),
+          
+          // Filter Button (only show in Exercise mode)
+          if (!_isRoutineMode)
+            Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                  color: const Color(0xFF27272A),
+                  width: 1,
+                ),
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _showFilterModal,
+                  child: const Center(
+                    child: Icon(
+                      Icons.tune,
+                      color: Color(0xFF0D59F2),
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+
+  // 🔥 Show Filter Modal (reusing from Exercise Selection)
+  void _showFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => ExerciseFilterModal(
+          selectedMuscles: _selectedMuscles,
+          selectedEquipment: _selectedEquipment,
+          onApply: (muscles, equipment) {
+            setState(() {
+              _selectedMuscles = muscles;
+              _selectedEquipment = equipment;
+              _exerciseListKey++; // Force rebuild
+            });
+          },
+        ),
       ),
     );
   }

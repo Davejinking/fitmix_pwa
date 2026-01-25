@@ -1300,6 +1300,24 @@ abstract class AppLocalizations {
   /// **'ADD {count} ITEMS'**
   String addExercisesCount(int count);
 
+  /// No description provided for @tabExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'EXERCISES'**
+  String get tabExercises;
+
+  /// No description provided for @tabRoutines.
+  ///
+  /// In en, this message translates to:
+  /// **'ROUTINES'**
+  String get tabRoutines;
+
+  /// No description provided for @tabPrograms.
+  ///
+  /// In en, this message translates to:
+  /// **'PROGRAMS'**
+  String get tabPrograms;
+
   /// No description provided for @filterParameters.
   ///
   /// In en, this message translates to:
