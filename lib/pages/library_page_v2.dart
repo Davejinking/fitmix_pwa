@@ -1047,6 +1047,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                     // Tag name input
                     TextField(
                       controller: customTagController,
+                      maxLength: 12, // Hard limit for tactical style
                       style: const TextStyle(color: Colors.white, fontFamily: 'Courier'),
                       decoration: const InputDecoration(
                         hintText: 'TAG NAME',
@@ -1066,6 +1067,11 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                           borderSide: BorderSide(color: Color(0xFF0D59F2), width: 1.5),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        counterStyle: TextStyle(
+                          color: Color(0xFF71717A),
+                          fontSize: 10,
+                          fontFamily: 'Courier',
+                        ),
                       ),
                       autofocus: true,
                       textCapitalization: TextCapitalization.characters,
@@ -1362,6 +1368,7 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                           // All custom tags use blue neon style
                           const color = Color(0xFF0D59F2);
                           return Container(
+                            constraints: const BoxConstraints(maxWidth: 150), // Prevent overflow
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: color.withValues(alpha: 0.2),
@@ -1371,13 +1378,17 @@ class _SaveRoutineDialogState extends State<_SaveRoutineDialog> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  tag,
-                                  style: TextStyle(
-                                    color: color,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: 'Courier',
+                                Flexible(
+                                  child: Text(
+                                    tag,
+                                    style: TextStyle(
+                                      color: color,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'Courier',
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
                                 ),
                                 const SizedBox(width: 4),
@@ -1550,6 +1561,7 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
                             if (widget.routine.tags.isNotEmpty) ...[
                               const SizedBox(width: 8),
                               ...widget.routine.tags.take(2).map((tag) => Container(
+                                constraints: const BoxConstraints(maxWidth: 80), // Prevent overflow
                                 margin: const EdgeInsets.only(right: 4),
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
@@ -1563,6 +1575,8 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
                                     fontSize: 9,
                                     fontFamily: 'Courier',
                                   ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               )),
                             ],
