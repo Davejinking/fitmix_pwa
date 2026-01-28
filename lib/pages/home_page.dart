@@ -367,43 +367,59 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildQuickActions() {
+    final l10n = AppLocalizations.of(context);
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildQuickActionButton(Icons.timer, false),
-        _buildQuickActionButton(Icons.calculate, false),
-        _buildQuickActionButton(Icons.history, true),
-        _buildQuickActionButton(Icons.settings, false),
-        _buildQuickActionButton(Icons.accessibility_new, false),
+        _buildQuickActionButton(Icons.fitness_center, l10n.quickActionRoutine, false),
+        _buildQuickActionButton(Icons.code, l10n.quickActionProgram, false),
+        _buildQuickActionButton(Icons.history, l10n.quickActionPlan, true),
+        _buildQuickActionButton(Icons.timer, l10n.quickActionRest, false),
+        _buildQuickActionButton(Icons.edit_note, l10n.quickActionLog, false),
       ],
     );
   }
 
-  Widget _buildQuickActionButton(IconData icon, bool isActive) {
+  Widget _buildQuickActionButton(IconData icon, String label, bool isActive) {
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
       },
-      child: ClipPath(
-        clipper: CornerClipClipper(),
-        child: Container(
-          width: 68,
-          height: 48,
-          decoration: BoxDecoration(
-            color: const Color(0xFF0f0f0f),
-            border: Border.all(
-              color: isActive 
-                  ? const Color(0xFF0088FF).withValues(alpha: 0.5)
-                  : Colors.white.withValues(alpha: 0.1),
-              width: 1,
+      child: Column(
+        children: [
+          ClipPath(
+            clipper: CornerClipClipper(),
+            child: Container(
+              width: 68,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xFF0f0f0f),
+                border: Border.all(
+                  color: isActive 
+                      ? const Color(0xFF0088FF).withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.1),
+                  width: 1,
+                ),
+              ),
+              child: Icon(
+                icon,
+                color: isActive ? Colors.white : const Color(0xFF666666),
+                size: 20,
+              ),
             ),
           ),
-          child: Icon(
-            icon,
-            color: isActive ? Colors.white : const Color(0xFF666666),
-            size: 20,
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              color: isActive ? Colors.white : const Color(0xFF666666),
+              letterSpacing: 0.5,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
