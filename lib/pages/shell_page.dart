@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animations/animations.dart';
-import '../core/l10n_extensions.dart';
 import '../core/iron_theme.dart';
 import '../widgets/common/iron_app_bar.dart';
 import 'calendar_page_new.dart';
@@ -58,165 +57,100 @@ class ShellPageState extends State<ShellPage> {
     ];
   }
 
-  void onItemTapped(int index) {
-    // FAB 위치(index 2)는 건너뛰기
-    if (index == 2) return;
-    
-    // index 3, 4는 실제로는 2, 3으로 매핑
-    final actualIndex = index > 2 ? index - 1 : index;
-    setState(() => _currentIndex = actualIndex);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
       extendBody: true,
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF5F7F8),
+      backgroundColor: const Color(0xFF121212),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: OpenContainer(
         transitionType: ContainerTransitionType.fadeThrough,
         transitionDuration: const Duration(milliseconds: 500),
         openBuilder: (context, action) => const CalendarPageNew(),
-        closedElevation: 6.0,
+        closedElevation: 0,
         closedShape: const CircleBorder(),
         closedColor: const Color(0xFF007AFF),
-        openColor: isDark ? const Color(0xFF121212) : const Color(0xFFF5F7F8),
+        openColor: const Color(0xFF121212),
         middleColor: const Color(0xFF007AFF),
         closedBuilder: (context, action) {
-          return Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF007AFF),
-                  Color(0xFF0051D5),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF007AFF).withValues(alpha: 0.5),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  action();
-                },
-                customBorder: const CircleBorder(),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 32,
-                ),
-              ),
+          return FloatingActionButton(
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              action();
+            },
+            backgroundColor: const Color(0xFF007AFF),
+            elevation: 0,
+            child: const Icon(
+              Icons.add,
+              size: 28,
+              color: Colors.white,
             ),
           );
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        color: isDark 
-            ? const Color(0xFF1E1E1E).withValues(alpha: 0.9)
-            : Colors.white.withValues(alpha: 0.95),
-        elevation: 8,
-        notchMargin: 8.0,
         shape: const CircularNotchedRectangle(),
-        child: SizedBox(
+        notchMargin: 8.0,
+        color: const Color(0xFF1E1E1E).withValues(alpha: 0.95),
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        child: Container(
           height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: context.l10n.home,
-                index: 0,
-                isDark: isDark,
+              // Home
+              IconButton(
+                icon: Icon(
+                  _currentIndex == 0 ? Icons.home : Icons.home_outlined,
+                  color: _currentIndex == 0 
+                      ? const Color(0xFF007AFF) 
+                      : const Color(0xFF8E8E93),
+                  size: 28,
+                ),
+                onPressed: () => setState(() => _currentIndex = 0),
               ),
-              _buildNavItem(
-                icon: Icons.search,
-                activeIcon: Icons.search,
-                label: 'Search',
-                index: 1,
-                isDark: isDark,
+              // Search
+              IconButton(
+                icon: Icon(
+                  Icons.search,
+                  color: _currentIndex == 1 
+                      ? const Color(0xFF007AFF) 
+                      : const Color(0xFF8E8E93),
+                  size: 28,
+                ),
+                onPressed: () => setState(() => _currentIndex = 1),
               ),
-              const SizedBox(width: 40), // FAB 공간 (40px as specified)
-              _buildNavItem(
-                icon: Icons.fitness_center,
-                activeIcon: Icons.fitness_center,
-                label: 'Activity',
-                index: 3,
-                isDark: isDark,
+              // SPACER (Crucial for the center FAB)
+              const SizedBox(width: 48),
+              // Activity
+              IconButton(
+                icon: Icon(
+                  Icons.fitness_center,
+                  color: _currentIndex == 2 
+                      ? const Color(0xFF007AFF) 
+                      : const Color(0xFF8E8E93),
+                  size: 28,
+                ),
+                onPressed: () => setState(() => _currentIndex = 2),
               ),
-              _buildNavItem(
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: 'Profile',
-                index: 4,
-                isDark: isDark,
+              // Profile
+              IconButton(
+                icon: Icon(
+                  _currentIndex == 3 ? Icons.person : Icons.person_outline,
+                  color: _currentIndex == 3 
+                      ? const Color(0xFF007AFF) 
+                      : const Color(0xFF8E8E93),
+                  size: 28,
+                ),
+                onPressed: () => setState(() => _currentIndex = 3),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required IconData activeIcon,
-    required String label,
-    required int index,
-    required bool isDark,
-  }) {
-    // index 3, 4는 실제로는 2, 3으로 매핑
-    final actualIndex = index > 2 ? index - 1 : index;
-    final isActive = _currentIndex == actualIndex;
-    
-    return Expanded(
-      child: InkWell(
-        onTap: () => onItemTapped(index),
-        splashColor: const Color(0xFF007AFF).withValues(alpha: 0.1),
-        highlightColor: const Color(0xFF007AFF).withValues(alpha: 0.05),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive 
-                  ? const Color(0xFF007AFF)
-                  : (isDark ? const Color(0xFF8E8E93) : const Color(0xFF8E8E93)),
-              size: 26,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                color: isActive 
-                    ? const Color(0xFF007AFF)
-                    : (isDark ? const Color(0xFF8E8E93) : const Color(0xFF8E8E93)),
-                letterSpacing: -0.1,
-              ),
-            ),
-          ],
         ),
       ),
     );
