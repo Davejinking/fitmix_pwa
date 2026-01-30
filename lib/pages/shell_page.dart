@@ -103,54 +103,42 @@ class ShellPageState extends State<ShellPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // Home
-              IconButton(
-                icon: Icon(
-                  _currentIndex == 0 ? Icons.home : Icons.home_outlined,
-                  color: _currentIndex == 0 
-                      ? const Color(0xFF007AFF) 
-                      : const Color(0xFF8E8E93),
-                  size: 28,
-                ),
-                onPressed: () => setState(() => _currentIndex = 0),
-              ),
-              // Search
-              IconButton(
-                icon: Icon(
-                  Icons.search,
-                  color: _currentIndex == 1 
-                      ? const Color(0xFF007AFF) 
-                      : const Color(0xFF8E8E93),
-                  size: 28,
-                ),
-                onPressed: () => setState(() => _currentIndex = 1),
-              ),
-              // SPACER (Crucial for the center FAB)
-              const SizedBox(width: 48),
-              // Activity
-              IconButton(
-                icon: Icon(
-                  Icons.fitness_center,
-                  color: _currentIndex == 2 
-                      ? const Color(0xFF007AFF) 
-                      : const Color(0xFF8E8E93),
-                  size: 28,
-                ),
-                onPressed: () => setState(() => _currentIndex = 2),
-              ),
-              // Profile
-              IconButton(
-                icon: Icon(
-                  _currentIndex == 3 ? Icons.person : Icons.person_outline,
-                  color: _currentIndex == 3 
-                      ? const Color(0xFF007AFF) 
-                      : const Color(0xFF8E8E93),
-                  size: 28,
-                ),
-                onPressed: () => setState(() => _currentIndex = 3),
-              ),
+              _buildNavItem(Icons.home, 'Home', 0),
+              _buildNavItem(Icons.search, 'Search', 1),
+              const SizedBox(width: 48), // SPACER for FAB
+              _buildNavItem(Icons.fitness_center, 'Activity', 2),
+              _buildNavItem(Icons.person, 'Profile', 3),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index) {
+    bool isSelected = _currentIndex == index;
+    return Expanded(
+      child: InkWell(
+        onTap: () => setState(() => _currentIndex = index),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? const Color(0xFF007AFF) : const Color(0xFF8E8E93),
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? const Color(0xFF007AFF) : const Color(0xFF8E8E93),
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
       ),
     );
