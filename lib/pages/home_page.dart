@@ -602,26 +602,26 @@ class HomePageState extends State<HomePage> {
           ),
           // Content
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: isDark ? Colors.white : const Color(0xFF0F172A),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Row(
                   children: [
                     Icon(
                       Icons.group,
-                      size: 12,
+                      size: 11,
                       color: isDark 
                           ? const Color(0xFF94A3B8)
                           : const Color(0xFF64748B),
@@ -630,27 +630,27 @@ class HomePageState extends State<HomePage> {
                     Text(
                       participants,
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 9,
                         color: isDark 
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Text(
                       '•',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 9,
                         color: isDark 
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Text(
                       duration,
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 9,
                         color: isDark 
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
@@ -661,7 +661,7 @@ class HomePageState extends State<HomePage> {
                 const SizedBox(height: 6),
                 Container(
                   width: double.infinity,
-                  height: 28,
+                  height: 26,
                   decoration: BoxDecoration(
                     color: const Color(0xFF0D7FF2).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -670,7 +670,7 @@ class HomePageState extends State<HomePage> {
                     child: Text(
                       'Book • \$15',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0D7FF2),
                       ),
