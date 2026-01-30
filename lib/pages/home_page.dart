@@ -473,7 +473,7 @@ class HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 8),
         SizedBox(
-          height: 200,
+          height: 210,
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -517,7 +517,7 @@ class HomePageState extends State<HomePage> {
           Stack(
             children: [
               Container(
-                height: 110,
+                height: 120,
                 decoration: BoxDecoration(
                   color: isDark 
                       ? const Color(0xFF223649)
@@ -728,7 +728,7 @@ class HomePageState extends State<HomePage> {
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio: 0.8,
+            childAspectRatio: 0.85,
             children: [
               _buildQuickPickCard('15-Min Abs', 'No Equipment', '15 min', isDark),
               _buildQuickPickCard('Lunch Run', 'Audio Guide', '12 min', isDark),
