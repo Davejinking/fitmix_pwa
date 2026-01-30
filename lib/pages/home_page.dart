@@ -340,11 +340,16 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildDealCard(String title, String subtitle, String badge, Color badgeColor, bool isDark) {
+    // 타이틀에 따라 다른 배경 이미지 사용
+    String imageUrl = title.contains('Yoga')
+        ? 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=400&fit=crop'
+        : 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=400&fit=crop';
+    
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF182634) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -355,16 +360,55 @@ class HomePageState extends State<HomePage> {
       ),
       child: Stack(
         children: [
-          // Background gradient
+          // Background image
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          badgeColor.withValues(alpha: 0.2),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          badgeColor.withValues(alpha: 0.2),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          // Dark overlay for text readability
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                   colors: [
-                    badgeColor.withValues(alpha: 0.2),
-                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.3),
+                    Colors.black.withValues(alpha: 0.7),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(12),
@@ -431,7 +475,7 @@ class HomePageState extends State<HomePage> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -527,13 +571,42 @@ class HomePageState extends State<HomePage> {
                     topRight: Radius.circular(16),
                   ),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.fitness_center,
-                    size: 36,
-                    color: isDark 
-                        ? Colors.white.withValues(alpha: 0.2)
-                        : const Color(0xFFCBD5E1),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: Image.network(
+                    isTrending 
+                        ? 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop'
+                        : (title.contains('Yoga')
+                            ? 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop'
+                            : 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop'),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: Icon(
+                          Icons.fitness_center,
+                          size: 36,
+                          color: isDark 
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(
+                          Icons.fitness_center,
+                          size: 36,
+                          color: isDark 
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -742,6 +815,18 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildQuickPickCard(String title, String subtitle, String duration, bool isDark) {
+    // 타이틀에 따라 다른 이미지 URL 사용
+    String imageUrl;
+    if (title.contains('Abs')) {
+      imageUrl = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop';
+    } else if (title.contains('Run')) {
+      imageUrl = 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=400&h=300&fit=crop';
+    } else if (title.contains('Stretch')) {
+      imageUrl = 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400&h=300&fit=crop';
+    } else {
+      imageUrl = 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop';
+    }
+    
     return Container(
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF182634) : Colors.white,
@@ -777,13 +862,38 @@ class HomePageState extends State<HomePage> {
                     topRight: Radius.circular(16),
                   ),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.play_circle_outline,
-                    size: 36,
-                    color: isDark 
-                        ? Colors.white.withValues(alpha: 0.2)
-                        : const Color(0xFFCBD5E1),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: Icon(
+                          Icons.play_circle_outline,
+                          size: 36,
+                          color: isDark 
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(
+                          Icons.play_circle_outline,
+                          size: 36,
+                          color: isDark 
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
