@@ -72,6 +72,7 @@ class ShellPageState extends State<ShellPage> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
+      extendBody: true,
       backgroundColor: isDark ? const Color(0xFF101922) : const Color(0xFFF5F7F8),
       body: IndexedStack(
         index: _currentIndex,
