@@ -94,51 +94,53 @@ class ShellPageState extends State<ShellPage> {
       ),
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
+        notchMargin: 6.0,
         color: const Color(0xFF1E1E1E).withValues(alpha: 0.95),
         elevation: 0,
+        padding: EdgeInsets.zero,
+        height: 65,
         clipBehavior: Clip.antiAlias,
-        child: Container(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home, 'Home', 0),
-              _buildNavItem(Icons.search, 'Search', 1),
-              const SizedBox(width: 48), // SPACER for FAB
-              _buildNavItem(Icons.fitness_center, 'Activity', 2),
-              _buildNavItem(Icons.person, 'Profile', 3),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildCompactNavItem(Icons.home, 'Home', 0),
+            _buildCompactNavItem(Icons.search, 'Search', 1),
+            const SizedBox(width: 48), // Spacer for FAB
+            _buildCompactNavItem(Icons.fitness_center, 'Activity', 2),
+            _buildCompactNavItem(Icons.person, 'Profile', 3),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, int index) {
+  Widget _buildCompactNavItem(IconData icon, String label, int index) {
     bool isSelected = _currentIndex == index;
     return Expanded(
       child: InkWell(
         onTap: () => setState(() => _currentIndex = index),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? const Color(0xFF007AFF) : const Color(0xFF8E8E93),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
                 color: isSelected ? const Color(0xFF007AFF) : const Color(0xFF8E8E93),
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                size: 24,
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? const Color(0xFF007AFF) : const Color(0xFF8E8E93),
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
