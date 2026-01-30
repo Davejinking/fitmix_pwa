@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../core/l10n_extensions.dart';
 import '../core/iron_theme.dart';
 import '../widgets/common/iron_app_bar.dart';
-import '../widgets/common/fm_bottom_nav.dart';
 import 'calendar_page_new.dart';
 import 'home_page.dart';
 import 'library_page_v2.dart';
@@ -58,43 +58,153 @@ class ShellPageState extends State<ShellPage> {
   }
 
   void onItemTapped(int index) {
-    setState(() => _currentIndex = index);
+    // FAB 위치(index 2)는 건너뛰기
+    if (index == 2) return;
+    
+    // index 3, 4는 실제로는 2, 3으로 매핑
+    final actualIndex = index > 2 ? index - 1 : index;
+    setState(() => _currentIndex = actualIndex);
+  }
+
+  void _onFabPressed() {
+    HapticFeedback.mediumImpact();
+    // 즉시 캘린더/운동 시작 화면으로 이동
+    navigateToCalendar();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: IronTheme.background, // 다크 모드 배경 고정
+      backgroundColor: isDark ? const Color(0xFF101922) : const Color(0xFFF5F7F8),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
-      bottomNavigationBar: FMBottomNav(
-        currentIndex: _currentIndex,
-        onTap: onItemTapped,
-        unselectedItemColor: Colors.white24, // Make active icon pop more
-        items: [
-          FMBottomNavItem(
-            label: context.l10n.home,
-            icon: Icons.home_outlined,
-            activeIcon: Icons.home,
+      floatingActionButton: Hero(
+        tag: 'start_workout_fab',
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF0D7FF2),
+                Color(0xFF0A5FBF),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF0D7FF2).withValues(alpha: 0.4),
+                blurRadius: 20,
+                spreadRadius: 2,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          FMBottomNavItem(
-            label: context.l10n.calendar,
-            icon: Icons.calendar_month_outlined,
-            activeIcon: Icons.calendar_month,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: _onFabPressed,
+              customBorder: const CircleBorder(),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
           ),
-          FMBottomNavItem(
-            label: context.l10n.library,
-            icon: Icons.list_alt_outlined,
-            activeIcon: Icons.list_alt,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        color: isDark ? const Color(0xFF0F1419) : Colors.white,
+        elevation: 8,
+        notchMargin: 8,
+        shape: const CircularNotchedRectangle(),
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(
+                icon: Icons.home_outlined,
+                activeIcon: Icons.home,
+                label: context.l10n.home,
+                index: 0,
+                isDark: isDark,
+              ),
+              _buildNavItem(
+                icon: Icons.search,
+                activeIcon: Icons.search,
+                label: 'Search',
+                index: 1,
+                isDark: isDark,
+              ),
+              const SizedBox(width: 56), // FAB 공간
+              _buildNavItem(
+                icon: Icons.fitness_center,
+                activeIcon: Icons.fitness_center,
+                label: 'Activity',
+                index: 3,
+                isDark: isDark,
+              ),
+              _buildNavItem(
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profile',
+                index: 4,
+                isDark: isDark,
+              ),
+            ],
           ),
-          FMBottomNavItem(
-            label: '프로필', // Professional Profile instead of Character
-            icon: Icons.person_outline,
-            activeIcon: Icons.person,
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required int index,
+    required bool isDark,
+  }) {
+    // index 3, 4는 실제로는 2, 3으로 매핑
+    final actualIndex = index > 2 ? index - 1 : index;
+    final isActive = _currentIndex == actualIndex;
+    
+    return Expanded(
+      child: InkWell(
+        onTap: () => onItemTapped(index),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isActive ? activeIcon : icon,
+              color: isActive 
+                  ? const Color(0xFF0D7FF2)
+                  : (isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                color: isActive 
+                    ? const Color(0xFF0D7FF2)
+                    : (isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
