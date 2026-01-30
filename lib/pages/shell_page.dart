@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:animations/animations.dart';
 import '../core/l10n_extensions.dart';
 import '../core/iron_theme.dart';
 import '../widgets/common/iron_app_bar.dart';
@@ -66,12 +67,6 @@ class ShellPageState extends State<ShellPage> {
     setState(() => _currentIndex = actualIndex);
   }
 
-  void _onFabPressed() {
-    HapticFeedback.mediumImpact();
-    // 즉시 캘린더/운동 시작 화면으로 이동
-    navigateToCalendar();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -82,34 +77,43 @@ class ShellPageState extends State<ShellPage> {
         index: _currentIndex,
         children: _pages,
       ),
-      floatingActionButton: Hero(
-        tag: 'start_workout_fab',
-        child: Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF0D7FF2),
-                Color(0xFF0A5FBF),
+      floatingActionButton: OpenContainer(
+        transitionType: ContainerTransitionType.fade,
+        transitionDuration: const Duration(milliseconds: 500),
+        openBuilder: (context, action) => const CalendarPageNew(),
+        closedElevation: 0,
+        closedShape: const CircleBorder(),
+        closedColor: const Color(0xFF0D7FF2),
+        openColor: isDark ? const Color(0xFF101922) : const Color(0xFFF5F7F8),
+        middleColor: const Color(0xFF0D7FF2),
+        closedBuilder: (context, action) {
+          return Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF0D7FF2),
+                  Color(0xFF0A5FBF),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0D7FF2).withValues(alpha: 0.4),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF0D7FF2).withValues(alpha: 0.4),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
             child: InkWell(
-              onTap: _onFabPressed,
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                action();
+              },
               customBorder: const CircleBorder(),
               child: const Icon(
                 Icons.add,
@@ -117,8 +121,8 @@ class ShellPageState extends State<ShellPage> {
                 size: 28,
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
