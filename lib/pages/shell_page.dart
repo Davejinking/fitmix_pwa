@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:animations/animations.dart';
 import '../core/iron_theme.dart';
 import '../widgets/common/iron_app_bar.dart';
 import 'calendar_page_new.dart';
@@ -60,55 +59,70 @@ class ShellPageState extends State<ShellPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       backgroundColor: const Color(0xFF121212),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: OpenContainer(
-        transitionType: ContainerTransitionType.fadeThrough,
-        transitionDuration: const Duration(milliseconds: 500),
-        openBuilder: (context, action) => const CalendarPageNew(),
-        closedElevation: 0,
-        closedShape: const CircleBorder(),
-        closedColor: const Color(0xFF007AFF),
-        openColor: const Color(0xFF121212),
-        middleColor: const Color(0xFF007AFF),
-        closedBuilder: (context, action) {
-          return FloatingActionButton(
-            onPressed: () {
-              HapticFeedback.mediumImpact();
-              action();
-            },
-            backgroundColor: const Color(0xFF007AFF),
-            elevation: 0,
-            child: const Icon(
-              Icons.add,
-              size: 28,
-              color: Colors.white,
-            ),
-          );
-        },
-      ),
       bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6.0,
         color: const Color(0xFF1E1E1E).withValues(alpha: 0.95),
         elevation: 0,
         padding: EdgeInsets.zero,
         height: 65,
-        clipBehavior: Clip.antiAlias,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildCompactNavItem(Icons.home, 'Home', 0),
             _buildCompactNavItem(Icons.search, 'Search', 1),
-            const SizedBox(width: 48), // Spacer for FAB
+            _buildCenterInlineButton(),
             _buildCompactNavItem(Icons.fitness_center, 'Activity', 2),
             _buildCompactNavItem(Icons.person, 'Profile', 3),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterInlineButton() {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.mediumImpact();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CalendarPageNew()),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF007AFF),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                'Start',
+                style: TextStyle(
+                  color: Color(0xFF007AFF),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
