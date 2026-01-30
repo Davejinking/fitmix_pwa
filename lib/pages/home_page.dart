@@ -173,9 +173,15 @@ class HomePageState extends State<HomePage> {
                     height: 36,
                     decoration: BoxDecoration(
                       color: isDark 
-                          ? const Color(0xFF223649)
-                          : const Color(0xFFF1F5F9),
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFFFFFFF),
                       borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0),
+                        width: 1,
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -183,28 +189,28 @@ class HomePageState extends State<HomePage> {
                         Icon(
                           Icons.search,
                           color: isDark 
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                          size: 16,
+                              ? const Color(0xFF64748B)
+                              : const Color(0xFF94A3B8),
+                          size: 18,
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: TextField(
                             decoration: InputDecoration(
                               hintText: 'Instructors, workouts...',
                               hintStyle: TextStyle(
-                                fontSize: 12,
+                                fontSize: 13,
                                 color: isDark 
-                                    ? const Color(0xFF64748B)
+                                    ? const Color(0xFF475569)
                                     : const Color(0xFF94A3B8),
                               ),
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
                               isDense: true,
                             ),
                             style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.white : const Color(0xFF0F172A),
+                              fontSize: 13,
+                              color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0F172A),
                             ),
                           ),
                         ),
@@ -218,14 +224,20 @@ class HomePageState extends State<HomePage> {
                   height: 36,
                   decoration: BoxDecoration(
                     color: isDark 
-                        ? const Color(0xFF223649)
-                        : const Color(0xFFF1F5F9),
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFFFFFFF),
                     borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFE2E8F0),
+                      width: 1,
+                    ),
                   ),
                   child: Icon(
                     Icons.tune,
-                    color: isDark ? Colors.white : const Color(0xFF475569),
-                    size: 16,
+                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                    size: 18,
                   ),
                 ),
               ],
