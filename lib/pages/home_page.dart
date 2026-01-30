@@ -46,11 +46,11 @@ class HomePageState extends State<HomePage> {
                   children: [
                     const SizedBox(height: 16),
                     _buildHeroCarousel(isDark),
-                    const SizedBox(height: 24),
-                    _buildTopRatedSection(isDark),
                     const SizedBox(height: 8),
+                    _buildTopRatedSection(isDark),
+                    const SizedBox(height: 6),
                     _buildQuickPicksSection(isDark),
-                    const SizedBox(height: 100), // Bottom nav space
+                    const SizedBox(height: 80), // Bottom nav space
                   ],
                 ),
               ),
@@ -76,9 +76,9 @@ class HomePageState extends State<HomePage> {
       ),
       child: Column(
         children: [
-          // Top Bar
+          // Top Bar - Compact
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -88,38 +88,36 @@ class HomePageState extends State<HomePage> {
                     Text(
                       'Working out at',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 9,
                         color: isDark 
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 2),
                     Row(
                       children: [
                         const Icon(
                           Icons.location_on,
                           color: Color(0xFF0D7FF2),
-                          size: 20,
+                          size: 14,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 2),
                         Text(
                           'Downtown Gym',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: isDark ? Colors.white : const Color(0xFF0F172A),
-                            letterSpacing: -0.3,
+                            letterSpacing: -0.2,
                           ),
                         ),
-                        const SizedBox(width: 4),
                         Icon(
                           Icons.expand_more,
                           color: isDark 
                               ? const Color(0xFF94A3B8)
                               : const Color(0xFF64748B),
-                          size: 20,
+                          size: 14,
                         ),
                       ],
                     ),
@@ -128,26 +126,26 @@ class HomePageState extends State<HomePage> {
                 Stack(
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 32,
+                      height: 32,
                       decoration: BoxDecoration(
                         color: isDark 
                             ? const Color(0xFF182634)
                             : const Color(0xFFE2E8F0),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
                         Icons.notifications_outlined,
                         color: isDark ? Colors.white : const Color(0xFF475569),
-                        size: 20,
+                        size: 16,
                       ),
                     ),
                     Positioned(
-                      top: 8,
-                      right: 8,
+                      top: 6,
+                      right: 6,
                       child: Container(
-                        width: 8,
-                        height: 8,
+                        width: 6,
+                        height: 6,
                         decoration: BoxDecoration(
                           color: const Color(0xFFEF4444),
                           shape: BoxShape.circle,
@@ -155,7 +153,7 @@ class HomePageState extends State<HomePage> {
                             color: isDark 
                                 ? const Color(0xFF182634)
                                 : const Color(0xFFE2E8F0),
-                            width: 2,
+                            width: 1.5,
                           ),
                         ),
                       ),
@@ -165,46 +163,47 @@ class HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          // Search Bar
+          // Search Bar - Compact
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    height: 44,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: isDark 
                           ? const Color(0xFF223649)
                           : const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
                       children: [
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Icon(
                           Icons.search,
                           color: isDark 
                               ? const Color(0xFF94A3B8)
                               : const Color(0xFF64748B),
-                          size: 20,
+                          size: 16,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         Expanded(
                           child: TextField(
                             decoration: InputDecoration(
-                              hintText: 'Instructors, workouts, studios...',
+                              hintText: 'Instructors, workouts...',
                               hintStyle: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 color: isDark 
                                     ? const Color(0xFF64748B)
                                     : const Color(0xFF94A3B8),
                               ),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.zero,
+                              isDense: true,
                             ),
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 12,
                               color: isDark ? Colors.white : const Color(0xFF0F172A),
                             ),
                           ),
@@ -213,40 +212,40 @@ class HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: isDark 
                         ? const Color(0xFF223649)
                         : const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     Icons.tune,
                     color: isDark ? Colors.white : const Color(0xFF475569),
-                    size: 20,
+                    size: 16,
                   ),
                 ),
               ],
             ),
           ),
-          // Filter Chips
+          // Filter Chips - Compact
           SizedBox(
-            height: 40,
+            height: 32,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               children: [
                 _buildFilterChip('Deals', 0, isDark),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 _buildFilterChip('Cardio', 1, isDark),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 _buildFilterChip('Strength', 2, isDark),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 _buildFilterChip('Yoga', 3, isDark),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 _buildFilterChip('Pilates', 4, isDark),
               ],
             ),
@@ -267,19 +266,19 @@ class HomePageState extends State<HomePage> {
         HapticFeedback.lightImpact();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           color: isSelected 
               ? const Color(0xFF0D7FF2)
               : (isDark 
                   ? const Color(0xFF223649)
                   : const Color(0xFFE2E8F0)),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: isSelected ? [
             BoxShadow(
               color: const Color(0xFF0D7FF2).withValues(alpha: 0.25),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              blurRadius: 6,
+              offset: const Offset(0, 1),
             ),
           ] : null,
         ),
@@ -287,7 +286,7 @@ class HomePageState extends State<HomePage> {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               color: isSelected 
                   ? Colors.white
@@ -303,7 +302,7 @@ class HomePageState extends State<HomePage> {
 
   Widget _buildHeroCarousel(bool isDark) {
     return SizedBox(
-      height: 200,
+      height: 140,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -356,59 +355,59 @@ class HomePageState extends State<HomePage> {
                     Colors.transparent,
                   ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),
           // Content
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                   decoration: BoxDecoration(
                     color: badgeColor,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: Text(
                     badge,
                     style: const TextStyle(
-                      fontSize: 10,
+                      fontSize: 8,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                       letterSpacing: 0.5,
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: isDark ? Colors.white : const Color(0xFF0F172A),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 11,
                     color: isDark 
                         ? const Color(0xFFCBD5E1)
                         : const Color(0xFF64748B),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Container(
                   width: double.infinity,
-                  height: 40,
+                  height: 32,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.2),
                       width: 1,
@@ -418,7 +417,7 @@ class HomePageState extends State<HomePage> {
                     child: Text(
                       'Claim Offer',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: isDark ? Colors.white : const Color(0xFF0F172A),
                       ),
@@ -437,14 +436,14 @@ class HomePageState extends State<HomePage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Top Rated Near You',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: isDark ? Colors.white : const Color(0xFF0F172A),
                 ),
@@ -452,7 +451,7 @@ class HomePageState extends State<HomePage> {
               Text(
                 'See all',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF0D7FF2),
                 ),
@@ -460,17 +459,17 @@ class HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         SizedBox(
-          height: 240,
+          height: 200,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             children: [
               _buildTopRatedCard('HIIT with Sarah', '1.2k joined', '45 min', 4.9, true, isDark),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               _buildTopRatedCard('Power Yoga Flow', '850 joined', '60 min', 4.8, false, isDark),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               _buildTopRatedCard('Crossfit Masters', '2.1k joined', '50 min', 4.9, false, isDark),
             ],
           ),
@@ -481,7 +480,7 @@ class HomePageState extends State<HomePage> {
 
   Widget _buildTopRatedCard(String title, String participants, String duration, double rating, bool isTrending, bool isDark) {
     return Container(
-      width: 256,
+      width: 200,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF182634) : Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -506,7 +505,7 @@ class HomePageState extends State<HomePage> {
           Stack(
             children: [
               Container(
-                height: 144,
+                height: 110,
                 decoration: BoxDecoration(
                   color: isDark 
                       ? const Color(0xFF223649)
@@ -519,7 +518,7 @@ class HomePageState extends State<HomePage> {
                 child: Center(
                   child: Icon(
                     Icons.fitness_center,
-                    size: 48,
+                    size: 36,
                     color: isDark 
                         ? Colors.white.withValues(alpha: 0.2)
                         : const Color(0xFFCBD5E1),
@@ -591,55 +590,55 @@ class HomePageState extends State<HomePage> {
           ),
           // Content
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: isDark ? Colors.white : const Color(0xFF0F172A),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Row(
                   children: [
                     Icon(
                       Icons.group,
-                      size: 14,
+                      size: 12,
                       color: isDark 
                           ? const Color(0xFF94A3B8)
                           : const Color(0xFF64748B),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 3),
                     Text(
                       participants,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 10,
                         color: isDark 
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Text(
                       '•',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 10,
                         color: isDark 
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Text(
                       duration,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 10,
                         color: isDark 
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
@@ -647,19 +646,19 @@ class HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Container(
                   width: double.infinity,
-                  height: 32,
+                  height: 28,
                   decoration: BoxDecoration(
                     color: const Color(0xFF0D7FF2).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Center(
                     child: Text(
                       'Book • \$15',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0D7FF2),
                       ),
@@ -676,7 +675,7 @@ class HomePageState extends State<HomePage> {
 
   Widget _buildQuickPicksSection(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -685,22 +684,22 @@ class HomePageState extends State<HomePage> {
               Text(
                 'Quick Picks',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: isDark ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                 decoration: BoxDecoration(
                   color: const Color(0xFF10B981).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(3),
                 ),
                 child: Text(
                   'UNDER 20 MIN',
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 8,
                     fontWeight: FontWeight.w700,
                     color: isDark 
                         ? const Color(0xFF34D399)
@@ -710,14 +709,14 @@ class HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 0.75,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.8,
             children: [
               _buildQuickPickCard('15-Min Abs', 'No Equipment', '15 min', isDark),
               _buildQuickPickCard('Lunch Run', 'Audio Guide', '12 min', isDark),
@@ -734,7 +733,7 @@ class HomePageState extends State<HomePage> {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF182634) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isDark 
               ? Colors.white.withValues(alpha: 0.05)
@@ -744,8 +743,8 @@ class HomePageState extends State<HomePage> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -756,7 +755,7 @@ class HomePageState extends State<HomePage> {
           Stack(
             children: [
               Container(
-                height: 140,
+                height: 100,
                 decoration: BoxDecoration(
                   color: isDark 
                       ? const Color(0xFF223649)
@@ -769,7 +768,7 @@ class HomePageState extends State<HomePage> {
                 child: Center(
                   child: Icon(
                     Icons.play_circle_outline,
-                    size: 48,
+                    size: 36,
                     color: isDark 
                         ? Colors.white.withValues(alpha: 0.2)
                         : const Color(0xFFCBD5E1),
@@ -777,18 +776,18 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
               Positioned(
-                top: 8,
-                left: 8,
+                top: 6,
+                left: 6,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     duration,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
@@ -799,40 +798,40 @@ class HomePageState extends State<HomePage> {
           ),
           // Content
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: isDark ? Colors.white : const Color(0xFF0F172A),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
                     color: isDark 
                         ? const Color(0xFF94A3B8)
                         : const Color(0xFF64748B),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Container(
                   width: double.infinity,
-                  height: 32,
+                  height: 28,
                   decoration: BoxDecoration(
                     color: const Color(0xFF0D7FF2),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF0D7FF2).withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: 6,
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),
@@ -840,7 +839,7 @@ class HomePageState extends State<HomePage> {
                     child: Text(
                       'Start Now',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),

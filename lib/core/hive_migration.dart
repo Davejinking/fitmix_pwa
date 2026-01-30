@@ -13,10 +13,11 @@ class HiveMigration {
       // 열려있는 모든 박스 닫기
       await Hive.close();
       
-      // Hive 디렉토리 삭제
-      final dir = Directory(Hive.box.path ?? '');
-      if (await dir.exists()) {
-        await dir.delete(recursive: true);
+      // Hive 디렉토리 삭제 (Hive의 기본 경로 사용)
+      final appDocDir = Directory.current.path;
+      final hiveDir = Directory('$appDocDir/hive');
+      if (await hiveDir.exists()) {
+        await hiveDir.delete(recursive: true);
       }
       
       print('✅ Hive 데이터베이스 초기화 완료');
