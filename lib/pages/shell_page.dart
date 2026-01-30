@@ -73,20 +73,20 @@ class ShellPageState extends State<ShellPage> {
     
     return Scaffold(
       extendBody: true,
-      backgroundColor: isDark ? const Color(0xFF101922) : const Color(0xFFF5F7F8),
+      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF5F7F8),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
       floatingActionButton: OpenContainer(
-        transitionType: ContainerTransitionType.fade,
+        transitionType: ContainerTransitionType.fadeThrough,
         transitionDuration: const Duration(milliseconds: 500),
         openBuilder: (context, action) => const CalendarPageNew(),
-        closedElevation: 0,
+        closedElevation: 6.0,
         closedShape: const CircleBorder(),
-        closedColor: const Color(0xFF0D7FF2),
-        openColor: isDark ? const Color(0xFF101922) : const Color(0xFFF5F7F8),
-        middleColor: const Color(0xFF0D7FF2),
+        closedColor: const Color(0xFF007AFF),
+        openColor: isDark ? const Color(0xFF121212) : const Color(0xFFF5F7F8),
+        middleColor: const Color(0xFF007AFF),
         closedBuilder: (context, action) {
           return Container(
             width: 56,
@@ -97,29 +97,32 @@ class ShellPageState extends State<ShellPage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFF0D7FF2),
-                  Color(0xFF0A5FBF),
+                  Color(0xFF007AFF),
+                  Color(0xFF0051D5),
                 ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0D7FF2).withValues(alpha: 0.4),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.5),
                   blurRadius: 20,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.mediumImpact();
-                action();
-              },
-              customBorder: const CircleBorder(),
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 28,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  action();
+                },
+                customBorder: const CircleBorder(),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
             ),
           );
@@ -127,9 +130,11 @@ class ShellPageState extends State<ShellPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        color: isDark ? const Color(0xFF0F1419) : Colors.white,
+        color: isDark 
+            ? const Color(0xFF1E1E1E).withValues(alpha: 0.9)
+            : Colors.white.withValues(alpha: 0.95),
         elevation: 8,
-        notchMargin: 8,
+        notchMargin: 8.0,
         shape: const CircularNotchedRectangle(),
         child: SizedBox(
           height: 60,
@@ -150,7 +155,7 @@ class ShellPageState extends State<ShellPage> {
                 index: 1,
                 isDark: isDark,
               ),
-              const SizedBox(width: 56), // FAB 공간
+              const SizedBox(width: 40), // FAB 공간 (40px as specified)
               _buildNavItem(
                 icon: Icons.fitness_center,
                 activeIcon: Icons.fitness_center,
@@ -186,6 +191,8 @@ class ShellPageState extends State<ShellPage> {
     return Expanded(
       child: InkWell(
         onTap: () => onItemTapped(index),
+        splashColor: const Color(0xFF007AFF).withValues(alpha: 0.1),
+        highlightColor: const Color(0xFF007AFF).withValues(alpha: 0.05),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -193,9 +200,9 @@ class ShellPageState extends State<ShellPage> {
             Icon(
               isActive ? activeIcon : icon,
               color: isActive 
-                  ? const Color(0xFF0D7FF2)
-                  : (isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
-              size: 24,
+                  ? const Color(0xFF007AFF)
+                  : (isDark ? const Color(0xFF8E8E93) : const Color(0xFF8E8E93)),
+              size: 26,
             ),
             const SizedBox(height: 4),
             Text(
@@ -204,8 +211,9 @@ class ShellPageState extends State<ShellPage> {
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                 color: isActive 
-                    ? const Color(0xFF0D7FF2)
-                    : (isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
+                    ? const Color(0xFF007AFF)
+                    : (isDark ? const Color(0xFF8E8E93) : const Color(0xFF8E8E93)),
+                letterSpacing: -0.1,
               ),
             ),
           ],
