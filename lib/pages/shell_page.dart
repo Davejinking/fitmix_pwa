@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../core/iron_theme.dart';
-import '../widgets/common/iron_app_bar.dart';
 import 'calendar_page_new.dart';
 import 'home_page.dart';
-import 'library_page_v2.dart';
+import 'search_screen.dart';
 import 'character_page.dart';
 
 class ShellPage extends StatefulWidget {
@@ -25,18 +23,12 @@ class ShellPageState extends State<ShellPage> {
 
   // 라이브러리 탭으로 이동하는 메서드
   void navigateToLibrary({String? bodyPart}) {
-    setState(() => _currentIndex = 2); // 라이브러리는 인덱스 2
-    
-    // 특정 부위가 지정된 경우, 해당 탭으로 이동
-    if (bodyPart != null) {
-      // LibraryPageV2에 부위 정보를 전달하는 로직은 나중에 구현
-      // 현재는 라이브러리 탭으로만 이동
-    }
+    setState(() => _currentIndex = 3); // 프로필은 인덱스 3
   }
 
   // 캘린더 탭으로 이동하는 메서드
   void navigateToCalendar() {
-    setState(() => _currentIndex = 1); // 캘린더는 인덱스 1
+    setState(() => _currentIndex = 2); // 캘린더는 인덱스 2
     // 🔥 홈 화면 새로고침 (루틴 불러오기 후 홈으로 돌아올 때)
     _homePageKey.currentState?.refresh();
   }
@@ -45,14 +37,10 @@ class ShellPageState extends State<ShellPage> {
   void initState() {
     super.initState();
     _pages = [
-      HomePage(key: _homePageKey), // 🔥 Key 추가
-      const CalendarPageNew(),
-      const Scaffold(
-        appBar: IronAppBar(),
-        backgroundColor: IronTheme.background,
-        body: LibraryPageV2(),
-      ),
-      const CharacterPage(), // Professional Profile Dashboard
+      HomePage(key: _homePageKey), // 0: Home
+      const SearchScreen(),        // 1: Search
+      const CalendarPageNew(),     // 2: Log (Calendar)
+      const CharacterPage(),       // 3: Profile
     ];
   }
 
@@ -75,7 +63,7 @@ class ShellPageState extends State<ShellPage> {
             _buildCompactNavItem(Icons.home, 'Home', 0),
             _buildCompactNavItem(Icons.search, 'Search', 1),
             _buildCenterInlineButton(),
-            _buildCompactNavItem(Icons.fitness_center, 'Activity', 2),
+            _buildCompactNavItem(Icons.calendar_today, 'Log', 2),
             _buildCompactNavItem(Icons.person, 'Profile', 3),
           ],
         ),
