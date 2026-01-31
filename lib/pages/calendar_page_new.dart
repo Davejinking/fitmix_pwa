@@ -8,6 +8,13 @@ import '../models/exercise_set.dart';
 import '../l10n/app_localizations.dart';
 import 'exercise_selection_page_v2.dart';
 
+// 🎨 Theme Colors (matching HomePage)
+const Color kPrimaryBlue = Color(0xFF0D7FF2); // Main accent color
+const Color kDarkBg = Color(0xFF101922); // Dark background
+const Color kDarkCard = Color(0xFF1E293B); // Card background
+const Color kDarkBorder = Color(0xFF334155); // Border color
+const Color kTextMuted = Color(0xFF64748B); // Muted text
+
 class CalendarPageNew extends StatefulWidget {
   const CalendarPageNew({super.key});
 
@@ -42,9 +49,8 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
         _restDates = result.restDates;
         _currentSession = session;
         
-        // Auto-collapse logic: if has logs, show 2 weeks; if empty, show month
-        final hasLogs = session != null && session.exercises.isNotEmpty;
-        _calendarFormat = hasLogs ? CalendarFormat.twoWeeks : CalendarFormat.month;
+        // Always show full month
+        _calendarFormat = CalendarFormat.month;
       });
     }
   }
@@ -63,13 +69,15 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: isDark ? kDarkBg : const Color(0xFFF5F7F8),
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(),
-            _buildCalendar(),
+            _buildAppBar(isDark),
+            _buildCalendar(isDark),
             Expanded(
               child: _hasLogs ? _buildLogDetailView() : _buildOperationalMenu(),
             ),
@@ -79,7 +87,7 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(bool isDark) {
     final l10n = AppLocalizations.of(context);
     final locale = l10n.localeName;
     
@@ -96,23 +104,38 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
+      decoration: BoxDecoration(
+        color: isDark ? kDarkBg : Colors.white,
         border: Border(
-          bottom: BorderSide(color: Color(0xFF27272A), width: 1),
+          bottom: BorderSide(
+            color: isDark 
+                ? Colors.white.withValues(alpha: 0.05)
+                : const Color(0xFFE5E7EB),
+            width: 1,
+          ),
         ),
       ),
       child: Row(
         children: [
-          // Menu button with border
+          // Menu button
           Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFF3F3F46), width: 1),
+              color: isDark ? kDarkCard : const Color(0xFFF5F7F8),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isDark ? kDarkBorder : const Color(0xFFE2E8F0),
+                width: 1,
+              ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white, size: 20),
+              icon: Icon(
+                Icons.menu,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                size: 18,
+              ),
               onPressed: () {},
               padding: EdgeInsets.zero,
             ),
@@ -127,36 +150,43 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
                   l10n.calendarTitle,
                   style: TextStyle(
                     fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF71717A),
-                    letterSpacing: locale == 'en' ? 3.0 : 1.0,
-                    fontFamily: 'Courier',
+                    fontWeight: FontWeight.w600,
+                    color: kTextMuted,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   monthYear,
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: locale == 'en' ? 2.0 : 0.5,
-                    fontFamily: 'Courier',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    letterSpacing: -0.5,
                   ),
                 ),
               ],
             ),
           ),
           
-          // Search button with border
+          // Search button
           Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFF3F3F46), width: 1),
+              color: isDark ? kDarkCard : const Color(0xFFF5F7F8),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isDark ? kDarkBorder : const Color(0xFFE2E8F0),
+                width: 1,
+              ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.search, color: Colors.white, size: 20),
+              icon: Icon(
+                Icons.search,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                size: 18,
+              ),
               onPressed: () {
                 // TODO: Show full month calendar modal
               },
@@ -168,7 +198,7 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
     );
   }
 
-  Widget _buildCalendar() {
+  Widget _buildCalendar(bool isDark) {
     final l10n = AppLocalizations.of(context);
     final locale = l10n.localeName;
     
@@ -184,22 +214,21 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
     ];
     
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-      padding: const EdgeInsets.all(1),
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF27272A), width: 1),
-        color: const Color(0xFF0A0A0A).withValues(alpha: 0.5),
+        color: isDark ? kDarkCard : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? kDarkBorder : const Color(0xFFE2E8F0),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
           // Days of week header
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Color(0xFF27272A), width: 1),
-              ),
-            ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
             child: Row(
               children: weekdays
                   .map((day) => Expanded(
@@ -207,11 +236,10 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
                           day,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF52525B),
-                            fontFamily: 'Courier',
-                            letterSpacing: locale == 'en' ? 0.5 : 0.0,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: kTextMuted,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ))
@@ -219,36 +247,33 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
             ),
           ),
           // Calendar grid
-          _buildCalendarGrid(),
+          _buildCalendarGrid(isDark),
         ],
       ),
     );
   }
 
-  Widget _buildCalendarGrid() {
-    // Calculate visible range based on calendar format
-    int totalDays;
-    DateTime startDate;
+  Widget _buildCalendarGrid(bool isDark) {
+    // Show full month calendar
+    final firstDayOfMonth = DateTime(_focusedDay.year, _focusedDay.month, 1);
+    final lastDayOfMonth = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
     
-    if (_calendarFormat == CalendarFormat.twoWeeks) {
-      // Show 2 weeks (14 days)
-      final selectedWeekStart = _selectedDay.subtract(Duration(days: _selectedDay.weekday - 1));
-      startDate = selectedWeekStart;
-      totalDays = 14;
-    } else {
-      // Show 3 weeks (21 days) - previous week, current week, next week
-      final selectedWeekStart = _selectedDay.subtract(Duration(days: _selectedDay.weekday - 1));
-      startDate = selectedWeekStart.subtract(const Duration(days: 7));
-      totalDays = 21;
-    }
+    // Calculate the start date (Monday of the week containing the 1st)
+    final startDate = firstDayOfMonth.subtract(Duration(days: firstDayOfMonth.weekday - 1));
+    
+    // Calculate the end date (Sunday of the week containing the last day)
+    final endDate = lastDayOfMonth.add(Duration(days: 7 - lastDayOfMonth.weekday));
+    
+    // Calculate total days to display
+    final totalDays = endDate.difference(startDate).inDays + 1;
     
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        mainAxisSpacing: 2,
-        crossAxisSpacing: 2,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
         childAspectRatio: 1.0,
       ),
       itemCount: totalDays,
@@ -258,69 +283,57 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
         final isSelected = isSameDay(cellDate, _selectedDay);
         final isToday = isSameDay(cellDate, DateTime.now());
         
-        return _buildDayCell(cellDate, isSelected: isSelected, isToday: isToday, isOutside: isOutside);
+        return _buildDayCell(cellDate, isDark, isSelected: isSelected, isToday: isToday, isOutside: isOutside);
       },
     );
   }
 
-  Widget _buildDayCell(DateTime day, {bool isSelected = false, bool isToday = false, bool isOutside = false}) {
+  Widget _buildDayCell(DateTime day, bool isDark, {bool isSelected = false, bool isToday = false, bool isOutside = false}) {
     final dayYmd = repo.ymd(day);
     final hasWorkout = _workoutDates.contains(dayYmd);
     final isRest = _restDates.contains(dayYmd);
 
-    // Decoration Logic: Neon box ONLY for selected date
-    BoxDecoration? boxDecoration;
+    // Decoration Logic
+    BoxDecoration boxDecoration;
     if (isSelected) {
       boxDecoration = BoxDecoration(
-        color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
-        border: Border.all(color: const Color(0xFF3B82F6), width: 1.5),
+        color: kPrimaryBlue,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF3B82F6).withValues(alpha: 0.5),
-            blurRadius: 10,
-            spreadRadius: 1,
-            offset: const Offset(0, 0),
-          ),
-        ],
+      );
+    } else if (isToday) {
+      boxDecoration = BoxDecoration(
+        color: isDark 
+            ? kPrimaryBlue.withValues(alpha: 0.1)
+            : kPrimaryBlue.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: kPrimaryBlue.withValues(alpha: 0.3),
+          width: 1,
+        ),
       );
     } else {
-      // No box decoration for today or normal days
-      boxDecoration = const BoxDecoration(
-        color: Color(0xFF0A0A0A),
+      boxDecoration = BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
       );
     }
 
     // Text Style Logic
     Color textColor;
     FontWeight textWeight;
-    List<Shadow>? textShadows;
 
     if (isOutside) {
-      // Previous/next month dates
-      textColor = Colors.white.withValues(alpha: 0.2);
+      textColor = kTextMuted.withValues(alpha: 0.3);
       textWeight = FontWeight.w400;
-      textShadows = null;
-    } else if (isToday && !isSelected) {
-      // Today (not selected): Blue text, bold, no box
-      textColor = const Color(0xFF3B82F6);
-      textWeight = FontWeight.w900;
-      textShadows = null;
     } else if (isSelected) {
-      // Selected date: White text inside neon box
       textColor = Colors.white;
       textWeight = FontWeight.w700;
-      textShadows = [
-        const Shadow(
-          color: Color(0xFF3B82F6),
-          blurRadius: 12,
-        ),
-      ];
+    } else if (isToday) {
+      textColor = kPrimaryBlue;
+      textWeight = FontWeight.w700;
     } else {
-      // Normal days
-      textColor = Colors.white;
-      textWeight = FontWeight.w400;
-      textShadows = null;
+      textColor = isDark ? Colors.white : const Color(0xFF0F172A);
+      textWeight = FontWeight.w500;
     }
 
     return GestureDetector(
@@ -334,33 +347,17 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
               '${day.day}',
               style: TextStyle(
                 color: textColor,
-                fontFamily: 'Courier',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: textWeight,
-                shadows: textShadows,
               ),
             ),
             const SizedBox(height: 4),
-            if (isSelected)
-              Container(
-                width: 16,
-                height: 2,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.6),
-                      blurRadius: 5,
-                    ),
-                  ],
-                ),
-              )
-            else if (hasWorkout && !isOutside)
+            if (hasWorkout && !isOutside)
               Container(
                 width: 4,
                 height: 4,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF3B82F6),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : kPrimaryBlue,
                   shape: BoxShape.circle,
                 ),
               )
@@ -369,12 +366,15 @@ class _CalendarPageNewState extends State<CalendarPageNew> {
                 width: 4,
                 height: 4,
                 decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xFF52525B), width: 1),
+                  border: Border.all(
+                    color: isSelected ? Colors.white : kTextMuted,
+                    width: 1,
+                  ),
                   shape: BoxShape.circle,
                 ),
               )
             else
-              const SizedBox(height: 4), // 빈 공간 유지
+              const SizedBox(height: 4),
           ],
         ),
       ),

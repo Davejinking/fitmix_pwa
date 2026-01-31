@@ -19,6 +19,13 @@ import 'shell_page.dart';
 import 'exercise_selection_page_v2.dart';
 import 'paywall_page.dart';
 
+// 🎨 Theme Colors (matching HomePage)
+const Color kPrimaryBlue = Color(0xFF0D7FF2); // Main accent color
+const Color kDarkBg = Color(0xFF101922); // Dark background
+const Color kDarkCard = Color(0xFF1E293B); // Card background
+const Color kDarkBorder = Color(0xFF334155); // Border color
+const Color kTextMuted = Color(0xFF64748B); // Muted text
+
 class LibraryPageV2 extends StatefulWidget {
   const LibraryPageV2({super.key});
 
@@ -115,125 +122,121 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    return Column(
-      children: [
-        // 🔥 TACTICAL TOGGLE SWITCH (Moved to top, under header)
-        _buildTacticalSwitch(l10n),
-        
-        // Search Bar + Filter (only for exercises)
-        if (!_isRoutineMode) _buildExerciseSearchBar(l10n),
-        
-        // Add Button (only for exercises)
-        if (!_isRoutineMode) _buildAddButton(l10n),
-        
-        // Content based on mode
-        Expanded(
-          child: _isRoutineMode 
-              ? _buildRoutinesList(l10n)
-              : _buildExercisesTab(l10n),
-        ),
-        
-        // 🔥 INITIATE SESSION Button (Only in Routine Mode)
-        if (_isRoutineMode)
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              border: Border(
-                top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
-              ),
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _createNewRoutine,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
+    return Container(
+      color: isDark ? kDarkBg : const Color(0xFFF5F7F8),
+      child: Column(
+        children: [
+          // 🔥 TACTICAL TOGGLE SWITCH (Moved to top, under header)
+          _buildTacticalSwitch(l10n, isDark),
+          
+          // Search Bar + Filter (only for exercises)
+          if (!_isRoutineMode) _buildExerciseSearchBar(l10n, isDark),
+          
+          // Add Button (only for exercises)
+          if (!_isRoutineMode) _buildAddButton(l10n, isDark),
+          
+          // Content based on mode
+          Expanded(
+            child: _isRoutineMode 
+                ? _buildRoutinesList(l10n, isDark)
+                : _buildExercisesTab(l10n),
+          ),
+          
+          // 🔥 CREATE ROUTINE Button (Only in Routine Mode)
+          if (_isRoutineMode)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? kDarkBg : Colors.white,
+                border: Border(
+                  top: BorderSide(
+                    color: isDark 
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : const Color(0xFFE5E7EB),
+                    width: 1,
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'INITIATE SESSION',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.5,
-                      ),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: _createNewRoutine,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kPrimaryBlue,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF2979FF),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Icon(Icons.arrow_forward, size: 20),
-                      ],
+                  ),
+                  child: const Text(
+                    'Create New Routine',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
   
-  // 🔥 Exercise Search Bar
-  Widget _buildExerciseSearchBar(AppLocalizations l10n) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+  // 🔥 Exercise Search Bar (HomePage style)
+  Widget _buildExerciseSearchBar(AppLocalizations l10n, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Row(
         children: [
-          // Search Field
           Expanded(
             child: Container(
+              height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF111111),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                borderRadius: BorderRadius.circular(2),
+                color: isDark 
+                    ? kDarkCard
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isDark
+                      ? kDarkBorder
+                      : const Color(0xFFE2E8F0),
+                  width: 1,
+                ),
               ),
               child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: Icon(
-                      Icons.search,
-                      color: Colors.white.withValues(alpha: 0.3),
-                      size: 20,
-                    ),
+                  const SizedBox(width: 10),
+                  Icon(
+                    Icons.search,
+                    color: isDark 
+                        ? kTextMuted
+                        : const Color(0xFF94A3B8),
+                    size: 18,
                   ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        letterSpacing: 1.0,
-                      ),
                       decoration: InputDecoration(
-                        hintText: 'SEARCH ENTITIES...',
+                        hintText: 'Search exercises...',
                         hintStyle: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          fontSize: 14,
-                          letterSpacing: 1.0,
+                          fontSize: 13,
+                          color: isDark 
+                              ? const Color(0xFF475569)
+                              : const Color(0xFF94A3B8),
                         ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                        isDense: true,
+                      ),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0F172A),
                       ),
                     ),
                   ),
@@ -241,28 +244,31 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
               ),
             ),
           ),
-          
-          const SizedBox(width: 12),
-          
-          // Filter Button
+          const SizedBox(width: 6),
           Container(
-            width: 48,
-            height: 42,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFF111111),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-              borderRadius: BorderRadius.circular(2),
+              color: isDark 
+                  ? kDarkCard
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isDark
+                    ? kDarkBorder
+                    : const Color(0xFFE2E8F0),
+                width: 1,
+              ),
             ),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: _showFilterModal,
-                child: Center(
-                  child: Icon(
-                    Icons.filter_list,
-                    color: Colors.white.withValues(alpha: 0.7),
-                    size: 20,
-                  ),
+                borderRadius: BorderRadius.circular(10),
+                child: Icon(
+                  Icons.tune,
+                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                  size: 18,
                 ),
               ),
             ),
@@ -272,60 +278,51 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     );
   }
   
-  // 🔥 Add Button
-  Widget _buildAddButton(AppLocalizations l10n) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-      height: 44,
-      child: OutlinedButton(
-        onPressed: _showAddExerciseDialog,
-        style: ButtonStyle(
-          side: WidgetStateProperty.all(
-            BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-          ),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-          ),
-          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-            if (states.contains(WidgetState.pressed)) {
-              return Colors.white;
-            }
-            return Colors.transparent;
-          }),
-          foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-            if (states.contains(WidgetState.pressed)) {
-              return Colors.black;
-            }
-            return Colors.white;
-          }),
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.add, size: 18),
-            const SizedBox(width: 8),
-            Text(
-              'ADD NEW ENTITY',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-              ),
+  // 🔥 Add Button (HomePage style)
+  Widget _buildAddButton(AppLocalizations l10n, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      child: SizedBox(
+        width: double.infinity,
+        height: 40,
+        child: OutlinedButton.icon(
+          onPressed: _showAddExerciseDialog,
+          icon: const Icon(Icons.add, size: 18),
+          label: const Text(
+            'Add Exercise',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.2,
             ),
-          ],
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: kPrimaryBlue,
+            side: BorderSide(
+              color: isDark ? kDarkBorder : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
         ),
       ),
     );
   }
   
   // 🔥 TACTICAL TOGGLE SWITCH (3-way: Exercises / Routines / Programs)
-  Widget _buildTacticalSwitch(AppLocalizations l10n) {
+  Widget _buildTacticalSwitch(AppLocalizations l10n, bool isDark) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       decoration: BoxDecoration(
+        color: isDark ? kDarkBg : Colors.white,
         border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 1),
+          bottom: BorderSide(
+            color: isDark 
+                ? Colors.white.withValues(alpha: 0.05)
+                : const Color(0xFFE5E7EB),
+            width: 1,
+          ),
         ),
       ),
       child: Row(
@@ -335,20 +332,22 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             child: GestureDetector(
               onTap: () => setState(() => _isRoutineMode = false),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
                   border: !_isRoutineMode 
-                      ? const Border(bottom: BorderSide(color: Color(0xFF387FFA), width: 2))
+                      ? Border(bottom: BorderSide(color: kPrimaryBlue, width: 2))
                       : null,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'SPECIES',
                   style: TextStyle(
-                    color: !_isRoutineMode ? Colors.white : Colors.white.withValues(alpha: 0.4),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    letterSpacing: 1.5,
+                    color: !_isRoutineMode 
+                        ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                        : kTextMuted,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -359,20 +358,22 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
             child: GestureDetector(
               onTap: () => setState(() => _isRoutineMode = true),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
                   border: _isRoutineMode 
-                      ? const Border(bottom: BorderSide(color: Color(0xFF387FFA), width: 2))
+                      ? Border(bottom: BorderSide(color: kPrimaryBlue, width: 2))
                       : null,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'ROUTINES',
                   style: TextStyle(
-                    color: _isRoutineMode ? Colors.white : Colors.white.withValues(alpha: 0.4),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    letterSpacing: 1.5,
+                    color: _isRoutineMode 
+                        ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                        : kTextMuted,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -385,15 +386,15 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                 // TODO: Implement programs
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 alignment: Alignment.center,
                 child: Text(
                   'PROGRAMS',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    letterSpacing: 1.5,
+                    color: kTextMuted,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -561,7 +562,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
   }
 
   // Routines List Widget
-  Widget _buildRoutinesList(AppLocalizations l10n) {
+  Widget _buildRoutinesList(AppLocalizations l10n, bool isDark) {
     final routineRepo = getIt<RoutineRepo>();
     
     return ValueListenableBuilder<Box<Routine>>(
@@ -1758,34 +1759,44 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
   Widget build(BuildContext context) {
     final exerciseCount = widget.routine.exercises.length;
     final estimatedMin = _getEstimatedDuration();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return InkWell(
       onTap: widget.onLoad,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.white.withValues(alpha: 0.1),
-              width: 1,
-            ),
+          color: isDark ? kDarkCard : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? kDarkBorder : const Color(0xFFE2E8F0),
+            width: 1,
           ),
         ),
         child: Row(
           children: [
-            // Index Number
-            Text(
-              '${widget.index + 1}'.padLeft(2, '0'),
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.2),
-                fontFamily: 'Courier',
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                letterSpacing: -0.5,
+            // Index Badge
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: kPrimaryBlue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  '${widget.index + 1}',
+                  style: const TextStyle(
+                    color: kPrimaryBlue,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
             
-            const SizedBox(width: 24),
+            const SizedBox(width: 12),
             
             // Content
             Expanded(
@@ -1794,13 +1805,12 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
                 children: [
                   // Title
                   Text(
-                    widget.routine.name.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2.0,
-                      height: 1.2,
+                    widget.routine.name,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -1808,35 +1818,36 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
                   
                   const SizedBox(height: 4),
                   
-                  // "6 UNITS | 45M DURATION"
+                  // Info row
                   Row(
                     children: [
+                      Icon(
+                        Icons.fitness_center,
+                        size: 12,
+                        color: kTextMuted,
+                      ),
+                      const SizedBox(width: 4),
                       Text(
-                        '$exerciseCount UNITS',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.4),
-                          fontSize: 10,
-                          fontFamily: 'Courier',
-                          letterSpacing: 2.0,
+                        '$exerciseCount exercises',
+                        style: const TextStyle(
+                          color: kTextMuted,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          '|',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            fontSize: 10,
-                          ),
-                        ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.schedule,
+                        size: 12,
+                        color: kTextMuted,
                       ),
+                      const SizedBox(width: 4),
                       Text(
-                        '${estimatedMin}M DURATION',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.4),
-                          fontSize: 10,
-                          fontFamily: 'Courier',
-                          letterSpacing: 2.0,
+                        '~${estimatedMin}min',
+                        style: const TextStyle(
+                          color: kTextMuted,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -1845,13 +1856,11 @@ class _RoutineAccordionCardState extends State<_RoutineAccordionCard> {
               ),
             ),
             
-            // Right Indicator
-            Container(
-              width: 4,
-              height: 16,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2979FF).withValues(alpha: 0.2),
-              ),
+            // Arrow icon
+            Icon(
+              Icons.chevron_right,
+              color: kTextMuted,
+              size: 20,
             ),
           ],
         ),
