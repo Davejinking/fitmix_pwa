@@ -47,169 +47,100 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
   ];
 
   void _showWidgetSelector() {
-    showModalBottomSheet(
+    showMenu<ChartWidget>(
       context: context,
-      backgroundColor: const Color(0xFF1E1E1E),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      position: RelativeRect.fromLTRB(
+        MediaQuery.of(context).size.width - 280, // Right aligned
+        100, // Below header
+        20,
+        0,
       ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'CUSTOMIZE DASHBOARD',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF64748B),
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Select Widgets',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildWidgetOption(
-                    ChartWidget.consistency,
-                    'Yearly Consistency',
-                    'GitHub-style heatmap',
-                    Icons.calendar_today,
-                    setModalState,
-                  ),
-                  _buildWidgetOption(
-                    ChartWidget.bodyComposition,
-                    'Body Composition',
-                    'Weight, body fat, muscle mass',
-                    Icons.monitor_weight,
-                    setModalState,
-                  ),
-                  _buildWidgetOption(
-                    ChartWidget.strengthProgress,
-                    'Strength Progress',
-                    '1RM and volume tracking',
-                    Icons.trending_up,
-                    setModalState,
-                  ),
-                  _buildWidgetOption(
-                    ChartWidget.monthlyVolume,
-                    'Total Volume',
-                    'Progressive overload',
-                    Icons.bar_chart,
-                    setModalState,
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007AFF),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Done',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+      color: const Color(0xFF1E293B),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+      items: [
+        _buildPopupMenuItem(
+          ChartWidget.consistency,
+          'Yearly Consistency',
+          Icons.calendar_today,
+        ),
+        _buildPopupMenuItem(
+          ChartWidget.bodyComposition,
+          'Body Composition',
+          Icons.monitor_weight,
+        ),
+        _buildPopupMenuItem(
+          ChartWidget.strengthProgress,
+          'Strength Progress',
+          Icons.trending_up,
+        ),
+        _buildPopupMenuItem(
+          ChartWidget.monthlyVolume,
+          'Total Volume',
+          Icons.bar_chart,
+        ),
+      ],
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          if (_visibleWidgets.contains(value)) {
+            _visibleWidgets.remove(value);
+          } else {
+            _visibleWidgets.add(value);
+          }
+        });
+      }
+    });
   }
 
-  Widget _buildWidgetOption(
+  PopupMenuItem<ChartWidget> _buildPopupMenuItem(
     ChartWidget widget,
     String title,
-    String subtitle,
     IconData icon,
-    StateSetter setModalState,
   ) {
     final isVisible = _visibleWidgets.contains(widget);
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F172A),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isVisible 
-              ? const Color(0xFF007AFF)
-              : Colors.white.withValues(alpha: 0.05),
-          width: 2,
+    return PopupMenuItem<ChartWidget>(
+      value: widget,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: const Color(0xFF007AFF),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            Icon(
+              isVisible ? Icons.check_circle : Icons.circle_outlined,
+              color: isVisible ? const Color(0xFF007AFF) : const Color(0xFF64748B),
+              size: 20,
+            ),
+          ],
         ),
-      ),
-      child: CheckboxListTile(
-        value: isVisible,
-        onChanged: (value) {
-          setModalState(() {
-            setState(() {
-              if (value == true) {
-                _visibleWidgets.add(widget);
-              } else {
-                _visibleWidgets.remove(widget);
-              }
-            });
-          });
-        },
-        secondary: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: const Color(0xFF007AFF).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: const Color(0xFF007AFF), size: 24),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Color(0xFF64748B),
-          ),
-        ),
-        activeColor: const Color(0xFF007AFF),
-        checkColor: Colors.white,
       ),
     );
   }
