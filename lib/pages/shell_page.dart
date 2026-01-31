@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'calendar_page_new.dart';
 import 'home_page.dart';
-import 'search_screen.dart';
+import 'library_page_v2.dart';
 import 'character_page.dart';
 
 class ShellPage extends StatefulWidget {
@@ -38,7 +38,7 @@ class ShellPageState extends State<ShellPage> {
     super.initState();
     _pages = [
       HomePage(key: _homePageKey), // 0: Home
-      const SearchScreen(),        // 1: Search
+      const LibraryPageV2(),       // 1: Search (Library content)
       const CalendarPageNew(),     // 2: Log (Calendar)
       const CharacterPage(),       // 3: Profile
     ];
