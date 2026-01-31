@@ -75,6 +75,12 @@ class ShellPageState extends State<ShellPage> {
       HomePage(key: _homePageKey),     // 1: Search (Discovery feed)
       const CalendarPageNew(),         // 2: Log (Calendar)
       const ProfileAnalyticsScreen(),  // 3: Profile (Analytics Dashboard)
+      Scaffold(                         // 4: Library (Exercise library - accessed via Start button)
+        backgroundColor: const Color(0xFF121212),
+        body: SafeArea(
+          child: const LibraryPageV2(),
+        ),
+      ),
     ];
   }
 
@@ -110,18 +116,8 @@ class ShellPageState extends State<ShellPage> {
       child: InkWell(
         onTap: () {
           HapticFeedback.mediumImpact();
-          // Navigate to LibraryPageV2 (Exercise library)
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Scaffold(
-                backgroundColor: const Color(0xFF121212),
-                body: SafeArea(
-                  child: const LibraryPageV2(),
-                ),
-              ),
-            ),
-          );
+          // Navigate to Library tab (index 4)
+          setState(() => _currentIndex = 4);
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
