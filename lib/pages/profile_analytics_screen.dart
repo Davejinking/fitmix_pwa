@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math' as math;
 
+enum TimeRange { week, month, year }
+
 class ProfileAnalyticsScreen extends StatefulWidget {
   const ProfileAnalyticsScreen({super.key});
 
@@ -12,10 +14,15 @@ class ProfileAnalyticsScreen extends StatefulWidget {
 class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
   // Body Composition Tab State
   int _bodyCompTab = 0; // 0: Weight, 1: Body Fat, 2: Muscle Mass
+  TimeRange _bodyCompTimeRange = TimeRange.month;
   
   // Strength Progress State
   String _selectedExercise = 'Bench Press';
   bool _showEstimated1RM = true; // true: 1RM, false: Max Volume
+  TimeRange _strengthTimeRange = TimeRange.month;
+  
+  // Monthly Volume State
+  TimeRange _volumeTimeRange = TimeRange.month;
   
   final List<String> _exercises = [
     'Bench Press',
@@ -255,14 +262,22 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'BODY COMPOSITION',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF64748B),
-              letterSpacing: 2,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'BODY COMPOSITION',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF64748B),
+                  letterSpacing: 2,
+                ),
+              ),
+              _buildTimeRangeSelector(_bodyCompTimeRange, (range) {
+                setState(() => _bodyCompTimeRange = range);
+              }),
+            ],
           ),
           const SizedBox(height: 16),
           Row(
@@ -280,6 +295,50 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
             child: _buildBodyCompositionChart(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTimeRangeSelector(TimeRange currentRange, Function(TimeRange) onChanged) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTimeRangeButton('W', TimeRange.week, currentRange, onChanged),
+          _buildTimeRangeButton('M', TimeRange.month, currentRange, onChanged),
+          _buildTimeRangeButton('Y', TimeRange.year, currentRange, onChanged),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeRangeButton(
+    String label,
+    TimeRange range,
+    TimeRange currentRange,
+    Function(TimeRange) onChanged,
+  ) {
+    final isSelected = currentRange == range;
+    return GestureDetector(
+      onTap: () => onChanged(range),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF007AFF) : Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: isSelected ? Colors.white : const Color(0xFF64748B),
+          ),
+        ),
       ),
     );
   }
@@ -351,17 +410,13 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-                if (value.toInt() >= 0 && value.toInt() < months.length) {
-                  return Text(
-                    months[value.toInt()],
-                    style: const TextStyle(
-                      color: Color(0xFF64748B),
-                      fontSize: 10,
-                    ),
-                  );
-                }
-                return const Text('');
+                return Text(
+                  _getBodyCompXAxisLabel(value.toInt()),
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 10,
+                  ),
+                );
               },
             ),
           ),
@@ -400,42 +455,163 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
             ),
           ),
         ],
-        minY: 65,
-        maxY: 80,
+        minY: _getBodyCompMinY(),
+        maxY: _getBodyCompMaxY(),
       ),
     );
   }
 
+  String _getBodyCompXAxisLabel(int index) {
+    switch (_bodyCompTimeRange) {
+      case TimeRange.week:
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        return index >= 0 && index < days.length ? days[index] : '';
+      case TimeRange.month:
+        const weeks = ['W1', 'W2', 'W3', 'W4'];
+        return index >= 0 && index < weeks.length ? weeks[index] : '';
+      case TimeRange.year:
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return index >= 0 && index < months.length ? months[index] : '';
+    }
+  }
+
+  double _getBodyCompMinY() {
+    if (_bodyCompTab == 0) return 65; // Weight
+    if (_bodyCompTab == 1) return 10; // Body Fat
+    return 25; // Muscle Mass
+  }
+
+  double _getBodyCompMaxY() {
+    if (_bodyCompTab == 0) return 80; // Weight
+    if (_bodyCompTab == 1) return 25; // Body Fat
+    return 40; // Muscle Mass
+  }
+
   List<FlSpot> _getBodyCompositionData() {
+    // Generate data based on time range and selected metric
+    switch (_bodyCompTimeRange) {
+      case TimeRange.week:
+        return _getWeeklyBodyCompData();
+      case TimeRange.month:
+        return _getMonthlyBodyCompData();
+      case TimeRange.year:
+        return _getYearlyBodyCompData();
+    }
+  }
+
+  List<FlSpot> _getWeeklyBodyCompData() {
     if (_bodyCompTab == 0) {
-      // Weight data
+      // Weight - 7 days
       return [
-        const FlSpot(0, 75),
-        const FlSpot(1, 74.5),
-        const FlSpot(2, 73.8),
-        const FlSpot(3, 73.2),
-        const FlSpot(4, 72.5),
-        const FlSpot(5, 72),
+        const FlSpot(0, 72.5),
+        const FlSpot(1, 72.3),
+        const FlSpot(2, 72.4),
+        const FlSpot(3, 72.2),
+        const FlSpot(4, 72.1),
+        const FlSpot(5, 72.0),
+        const FlSpot(6, 71.9),
       ];
     } else if (_bodyCompTab == 1) {
       // Body Fat %
       return [
-        const FlSpot(0, 18),
-        const FlSpot(1, 17.5),
-        const FlSpot(2, 16.8),
-        const FlSpot(3, 16.2),
-        const FlSpot(4, 15.5),
-        const FlSpot(5, 15),
+        const FlSpot(0, 15.5),
+        const FlSpot(1, 15.4),
+        const FlSpot(2, 15.4),
+        const FlSpot(3, 15.3),
+        const FlSpot(4, 15.2),
+        const FlSpot(5, 15.2),
+        const FlSpot(6, 15.1),
       ];
     } else {
       // Muscle Mass
       return [
-        const FlSpot(0, 32),
-        const FlSpot(1, 32.5),
-        const FlSpot(2, 33.2),
-        const FlSpot(3, 33.8),
+        const FlSpot(0, 34.2),
+        const FlSpot(1, 34.3),
+        const FlSpot(2, 34.3),
+        const FlSpot(3, 34.4),
         const FlSpot(4, 34.5),
-        const FlSpot(5, 35),
+        const FlSpot(5, 34.5),
+        const FlSpot(6, 34.6),
+      ];
+    }
+  }
+
+  List<FlSpot> _getMonthlyBodyCompData() {
+    if (_bodyCompTab == 0) {
+      // Weight - 4 weeks
+      return [
+        const FlSpot(0, 73.5),
+        const FlSpot(1, 73.0),
+        const FlSpot(2, 72.5),
+        const FlSpot(3, 72.0),
+      ];
+    } else if (_bodyCompTab == 1) {
+      // Body Fat %
+      return [
+        const FlSpot(0, 16.0),
+        const FlSpot(1, 15.7),
+        const FlSpot(2, 15.4),
+        const FlSpot(3, 15.0),
+      ];
+    } else {
+      // Muscle Mass
+      return [
+        const FlSpot(0, 33.5),
+        const FlSpot(1, 34.0),
+        const FlSpot(2, 34.5),
+        const FlSpot(3, 35.0),
+      ];
+    }
+  }
+
+  List<FlSpot> _getYearlyBodyCompData() {
+    if (_bodyCompTab == 0) {
+      // Weight - 12 months
+      return [
+        const FlSpot(0, 78),
+        const FlSpot(1, 77),
+        const FlSpot(2, 76),
+        const FlSpot(3, 75.5),
+        const FlSpot(4, 75),
+        const FlSpot(5, 74.5),
+        const FlSpot(6, 74),
+        const FlSpot(7, 73.5),
+        const FlSpot(8, 73),
+        const FlSpot(9, 72.5),
+        const FlSpot(10, 72.2),
+        const FlSpot(11, 72),
+      ];
+    } else if (_bodyCompTab == 1) {
+      // Body Fat %
+      return [
+        const FlSpot(0, 20),
+        const FlSpot(1, 19.5),
+        const FlSpot(2, 19),
+        const FlSpot(3, 18.5),
+        const FlSpot(4, 18),
+        const FlSpot(5, 17.5),
+        const FlSpot(6, 17),
+        const FlSpot(7, 16.5),
+        const FlSpot(8, 16),
+        const FlSpot(9, 15.5),
+        const FlSpot(10, 15.2),
+        const FlSpot(11, 15),
+      ];
+    } else {
+      // Muscle Mass
+      return [
+        const FlSpot(0, 30),
+        const FlSpot(1, 30.5),
+        const FlSpot(2, 31),
+        const FlSpot(3, 31.5),
+        const FlSpot(4, 32),
+        const FlSpot(5, 32.5),
+        const FlSpot(6, 33),
+        const FlSpot(7, 33.5),
+        const FlSpot(8, 34),
+        const FlSpot(9, 34.5),
+        const FlSpot(10, 34.8),
+        const FlSpot(11, 35),
       ];
     }
   }
@@ -466,26 +642,34 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
                   letterSpacing: 2,
                 ),
               ),
-              DropdownButton<String>(
-                value: _selectedExercise,
-                dropdownColor: const Color(0xFF1E293B),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-                underline: Container(),
-                items: _exercises.map((exercise) {
-                  return DropdownMenuItem(
-                    value: exercise,
-                    child: Text(exercise),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _selectedExercise = value);
-                  }
-                },
+              Row(
+                children: [
+                  DropdownButton<String>(
+                    value: _selectedExercise,
+                    dropdownColor: const Color(0xFF1E293B),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    underline: Container(),
+                    items: _exercises.map((exercise) {
+                      return DropdownMenuItem(
+                        value: exercise,
+                        child: Text(exercise),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _selectedExercise = value);
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _buildTimeRangeSelector(_strengthTimeRange, (range) {
+                    setState(() => _strengthTimeRange = range);
+                  }),
+                ],
               ),
             ],
           ),
@@ -538,23 +722,7 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
   }
 
   Widget _buildStrengthProgressChart() {
-    final spots = _showEstimated1RM 
-        ? [
-            const FlSpot(0, 80),
-            const FlSpot(1, 82.5),
-            const FlSpot(2, 85),
-            const FlSpot(3, 87.5),
-            const FlSpot(4, 90),
-            const FlSpot(5, 92.5),
-          ]
-        : [
-            const FlSpot(0, 1200),
-            const FlSpot(1, 1350),
-            const FlSpot(2, 1500),
-            const FlSpot(3, 1650),
-            const FlSpot(4, 1800),
-            const FlSpot(5, 1950),
-          ];
+    final spots = _getStrengthProgressData();
     
     return LineChart(
       LineChartData(
@@ -590,17 +758,13 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-                if (value.toInt() >= 0 && value.toInt() < months.length) {
-                  return Text(
-                    months[value.toInt()],
-                    style: const TextStyle(
-                      color: Color(0xFF64748B),
-                      fontSize: 10,
-                    ),
-                  );
-                }
-                return const Text('');
+                return Text(
+                  _getStrengthXAxisLabel(value.toInt()),
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 10,
+                  ),
+                );
               },
             ),
           ),
@@ -649,6 +813,33 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
     );
   }
 
+  String _getStrengthXAxisLabel(int index) {
+    return _getBodyCompXAxisLabel(index); // Reuse same logic
+  }
+
+  List<FlSpot> _getStrengthProgressData() {
+    final base1RM = _selectedExercise == 'Bench Press' ? 80.0 : 
+                    _selectedExercise == 'Squat' ? 100.0 :
+                    _selectedExercise == 'Deadlift' ? 120.0 : 60.0;
+    
+    final baseVolume = base1RM * 15; // Rough volume calculation
+    
+    switch (_strengthTimeRange) {
+      case TimeRange.week:
+        return _showEstimated1RM
+            ? List.generate(7, (i) => FlSpot(i.toDouble(), base1RM + i * 0.5))
+            : List.generate(7, (i) => FlSpot(i.toDouble(), baseVolume + i * 50));
+      case TimeRange.month:
+        return _showEstimated1RM
+            ? List.generate(4, (i) => FlSpot(i.toDouble(), base1RM + i * 2.5))
+            : List.generate(4, (i) => FlSpot(i.toDouble(), baseVolume + i * 150));
+      case TimeRange.year:
+        return _showEstimated1RM
+            ? List.generate(12, (i) => FlSpot(i.toDouble(), base1RM + i * 1.0))
+            : List.generate(12, (i) => FlSpot(i.toDouble(), baseVolume + i * 60));
+    }
+  }
+
   Widget _buildMonthlyVolumeSection() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -663,23 +854,36 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'TOTAL VOLUME (TONNAGE)',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF64748B),
-              letterSpacing: 2,
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Progressive Overload',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'TOTAL VOLUME (TONNAGE)',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF64748B),
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Progressive Overload',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              _buildTimeRangeSelector(_volumeTimeRange, (range) {
+                setState(() => _volumeTimeRange = range);
+              }),
+            ],
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -692,6 +896,8 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
   }
 
   Widget _buildMonthlyVolumeChart() {
+    final barGroups = _getVolumeBarGroups();
+    
     return BarChart(
       BarChartData(
         gridData: FlGridData(
@@ -726,17 +932,13 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-                if (value.toInt() >= 0 && value.toInt() < months.length) {
-                  return Text(
-                    months[value.toInt()],
-                    style: const TextStyle(
-                      color: Color(0xFF64748B),
-                      fontSize: 10,
-                    ),
-                  );
-                }
-                return const Text('');
+                return Text(
+                  _getVolumeXAxisLabel(value.toInt()),
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 10,
+                  ),
+                );
               },
             ),
           ),
@@ -744,14 +946,7 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
-        barGroups: [
-          _buildBarGroup(0, 12000),
-          _buildBarGroup(1, 14500),
-          _buildBarGroup(2, 16800),
-          _buildBarGroup(3, 18200),
-          _buildBarGroup(4, 20500),
-          _buildBarGroup(5, 22800),
-        ],
+        barGroups: barGroups,
         barTouchData: BarTouchData(
           touchTooltipData: BarTouchTooltipData(
             tooltipBgColor: const Color(0xFF1E293B),
@@ -770,6 +965,21 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
         ),
       ),
     );
+  }
+
+  String _getVolumeXAxisLabel(int index) {
+    return _getBodyCompXAxisLabel(index); // Reuse same logic
+  }
+
+  List<BarChartGroupData> _getVolumeBarGroups() {
+    switch (_volumeTimeRange) {
+      case TimeRange.week:
+        return List.generate(7, (i) => _buildBarGroup(i, 3000.0 + i * 200));
+      case TimeRange.month:
+        return List.generate(4, (i) => _buildBarGroup(i, 12000.0 + i * 2500));
+      case TimeRange.year:
+        return List.generate(12, (i) => _buildBarGroup(i, 12000.0 + i * 900));
+    }
   }
 
   BarChartGroupData _buildBarGroup(int x, double y) {
