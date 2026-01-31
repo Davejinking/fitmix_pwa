@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../core/service_locator.dart';
 import '../data/session_repo.dart';
 import '../data/user_repo.dart';
+import 'routine_detail_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -535,81 +536,107 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildTopRatedCard(String title, String participants, String duration, double rating, bool isTrending, bool isDark) {
-    return Container(
-      width: 200,
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF182634) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark 
-              ? Colors.white.withValues(alpha: 0.05)
-              : const Color(0xFFF1F5F9),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    final imageUrl = isTrending 
+        ? 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop'
+        : (title.contains('Yoga')
+            ? 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop'
+            : 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop');
+    
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RoutineDetailScreen(
+              title: title,
+              imageUrl: imageUrl,
+              heroTag: 'routine_$title',
+              rating: rating,
+              duration: duration,
+              calories: '350 kcal',
+              level: 'Advanced',
+              instructor: 'Sarah Johnson',
+              price: '\$15',
+              isFree: true,
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image
-          Stack(
-            children: [
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  color: isDark 
-                      ? const Color(0xFF223649)
-                      : const Color(0xFFE2E8F0),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+        );
+      },
+      child: Container(
+        width: 200,
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF182634) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark 
+                ? Colors.white.withValues(alpha: 0.05)
+                : const Color(0xFFF1F5F9),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            Stack(
+              children: [
+                Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: isDark 
+                        ? const Color(0xFF223649)
+                        : const Color(0xFFE2E8F0),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: Hero(
+                      tag: 'routine_$title',
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: Icon(
+                              Icons.fitness_center,
+                              size: 36,
+                              color: isDark 
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : const Color(0xFFCBD5E1),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Icon(
+                              Icons.fitness_center,
+                              size: 36,
+                              color: isDark 
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : const Color(0xFFCBD5E1),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: Image.network(
-                    isTrending 
-                        ? 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop'
-                        : (title.contains('Yoga')
-                            ? 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop'
-                            : 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop'),
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: Icon(
-                          Icons.fitness_center,
-                          size: 36,
-                          color: isDark 
-                              ? Colors.white.withValues(alpha: 0.2)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Icon(
-                          Icons.fitness_center,
-                          size: 36,
-                          color: isDark 
-                              ? Colors.white.withValues(alpha: 0.2)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
               // Rating badge
               Positioned(
                 top: 8,
@@ -755,6 +782,7 @@ class HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -827,76 +855,100 @@ class HomePageState extends State<HomePage> {
       imageUrl = 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop';
     }
     
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF182634) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark 
-              ? Colors.white.withValues(alpha: 0.05)
-              : const Color(0xFFF1F5F9),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RoutineDetailScreen(
+              title: title,
+              imageUrl: imageUrl,
+              heroTag: 'quick_$title',
+              rating: 4.7,
+              duration: duration,
+              calories: '200 kcal',
+              level: 'Beginner',
+              instructor: 'Mike Chen',
+              price: '\$0',
+              isFree: true,
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image
-          Stack(
-            children: [
-              Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  color: isDark 
-                      ? const Color(0xFF223649)
-                      : const Color(0xFFE2E8F0),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF182634) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark 
+                ? Colors.white.withValues(alpha: 0.05)
+                : const Color(0xFFF1F5F9),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            Stack(
+              children: [
+                Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: isDark 
+                        ? const Color(0xFF223649)
+                        : const Color(0xFFE2E8F0),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: Hero(
+                      tag: 'quick_$title',
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: Icon(
+                              Icons.play_circle_outline,
+                              size: 36,
+                              color: isDark 
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : const Color(0xFFCBD5E1),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Icon(
+                              Icons.play_circle_outline,
+                              size: 36,
+                              color: isDark 
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : const Color(0xFFCBD5E1),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: Icon(
-                          Icons.play_circle_outline,
-                          size: 36,
-                          color: isDark 
-                              ? Colors.white.withValues(alpha: 0.2)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Icon(
-                          Icons.play_circle_outline,
-                          size: 36,
-                          color: isDark 
-                              ? Colors.white.withValues(alpha: 0.2)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
               Positioned(
                 top: 6,
                 left: 6,
@@ -973,6 +1025,7 @@ class HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    ),
     );
   }
 
