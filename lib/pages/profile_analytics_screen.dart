@@ -247,61 +247,8 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
                   child: chartWidget,
                 );
               }).toList(),
-              // Add Widget Button
-              _buildAddWidgetButton(),
               const SizedBox(height: 100), // Bottom nav space
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddWidgetButton() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _showWidgetSelector,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: const Color(0xFF007AFF).withValues(alpha: 0.3),
-                width: 2,
-                style: BorderStyle.solid,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF007AFF).withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Color(0xFF007AFF),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Add Widget',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF007AFF),
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -314,14 +261,57 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'IRON ANALYTICS',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF64748B),
-              letterSpacing: 2.5,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'IRON ANALYTICS',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF64748B),
+                  letterSpacing: 2.5,
+                ),
+              ),
+              // Add Widget button - small and simple
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _showWidgetSelector,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFF007AFF),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(
+                          Icons.add,
+                          color: Color(0xFF007AFF),
+                          size: 16,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'Widget',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF007AFF),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           const Text(
