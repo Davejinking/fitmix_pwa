@@ -4,6 +4,13 @@ import 'dart:math' as math;
 
 enum TimeRange { week, month, year }
 
+enum ChartWidget {
+  consistency,
+  bodyComposition,
+  strengthProgress,
+  monthlyVolume,
+}
+
 class ProfileAnalyticsScreen extends StatefulWidget {
   const ProfileAnalyticsScreen({super.key});
 
@@ -12,6 +19,14 @@ class ProfileAnalyticsScreen extends StatefulWidget {
 }
 
 class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
+  // Visible widgets state
+  List<ChartWidget> _visibleWidgets = [
+    ChartWidget.consistency,
+    ChartWidget.bodyComposition,
+    ChartWidget.strengthProgress,
+    ChartWidget.monthlyVolume,
+  ];
+  
   // Body Composition Tab State
   int _bodyCompTab = 0; // 0: Weight, 1: Body Fat, 2: Muscle Mass
   TimeRange _bodyCompTimeRange = TimeRange.month;
@@ -31,6 +46,174 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
     'Overhead Press',
   ];
 
+  void _showWidgetSelector() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'CUSTOMIZE DASHBOARD',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF64748B),
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Select Widgets',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildWidgetOption(
+                    ChartWidget.consistency,
+                    'Yearly Consistency',
+                    'GitHub-style heatmap',
+                    Icons.calendar_today,
+                    setModalState,
+                  ),
+                  _buildWidgetOption(
+                    ChartWidget.bodyComposition,
+                    'Body Composition',
+                    'Weight, body fat, muscle mass',
+                    Icons.monitor_weight,
+                    setModalState,
+                  ),
+                  _buildWidgetOption(
+                    ChartWidget.strengthProgress,
+                    'Strength Progress',
+                    '1RM and volume tracking',
+                    Icons.trending_up,
+                    setModalState,
+                  ),
+                  _buildWidgetOption(
+                    ChartWidget.monthlyVolume,
+                    'Total Volume',
+                    'Progressive overload',
+                    Icons.bar_chart,
+                    setModalState,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007AFF),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Done',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildWidgetOption(
+    ChartWidget widget,
+    String title,
+    String subtitle,
+    IconData icon,
+    StateSetter setModalState,
+  ) {
+    final isVisible = _visibleWidgets.contains(widget);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isVisible 
+              ? const Color(0xFF007AFF)
+              : Colors.white.withValues(alpha: 0.05),
+          width: 2,
+        ),
+      ),
+      child: CheckboxListTile(
+        value: isVisible,
+        onChanged: (value) {
+          setModalState(() {
+            setState(() {
+              if (value == true) {
+                _visibleWidgets.add(widget);
+              } else {
+                _visibleWidgets.remove(widget);
+              }
+            });
+          });
+        },
+        secondary: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: const Color(0xFF007AFF), size: 24),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Color(0xFF64748B),
+          ),
+        ),
+        activeColor: const Color(0xFF007AFF),
+        checkColor: Colors.white,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,15 +225,83 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
             children: [
               _buildHeader(),
               const SizedBox(height: 24),
-              _buildConsistencyHeatmap(),
-              const SizedBox(height: 16),
-              _buildBodyCompositionSection(),
-              const SizedBox(height: 16),
-              _buildStrengthProgressSection(),
-              const SizedBox(height: 16),
-              _buildMonthlyVolumeSection(),
+              // Dynamically render visible widgets
+              ..._visibleWidgets.map((widget) {
+                Widget chartWidget;
+                switch (widget) {
+                  case ChartWidget.consistency:
+                    chartWidget = _buildConsistencyHeatmap();
+                    break;
+                  case ChartWidget.bodyComposition:
+                    chartWidget = _buildBodyCompositionSection();
+                    break;
+                  case ChartWidget.strengthProgress:
+                    chartWidget = _buildStrengthProgressSection();
+                    break;
+                  case ChartWidget.monthlyVolume:
+                    chartWidget = _buildMonthlyVolumeSection();
+                    break;
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: chartWidget,
+                );
+              }).toList(),
+              // Add Widget Button
+              _buildAddWidgetButton(),
               const SizedBox(height: 100), // Bottom nav space
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddWidgetButton() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _showWidgetSelector,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFF007AFF).withValues(alpha: 0.3),
+                width: 2,
+                style: BorderStyle.solid,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.add,
+                    color: Color(0xFF007AFF),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Add Widget',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF007AFF),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
