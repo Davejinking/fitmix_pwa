@@ -37,10 +37,15 @@ class ShellPageState extends State<ShellPage> {
   void initState() {
     super.initState();
     _pages = [
-      HomePage(key: _homePageKey), // 0: Home
-      const LibraryPageV2(),       // 1: Search (Library content)
-      const CalendarPageNew(),     // 2: Log (Calendar)
-      const CharacterPage(),       // 3: Profile
+      HomePage(key: _homePageKey),     // 0: Home
+      Scaffold(                         // 1: Search (Library content)
+        backgroundColor: const Color(0xFF121212),
+        body: SafeArea(
+          child: const LibraryPageV2(),
+        ),
+      ),
+      const CalendarPageNew(),         // 2: Log (Calendar)
+      const CharacterPage(),           // 3: Profile
     ];
   }
 
