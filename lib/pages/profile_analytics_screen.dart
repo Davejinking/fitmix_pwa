@@ -381,15 +381,15 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 53, // ~52 weeks
-          mainAxisSpacing: 3,
-          crossAxisSpacing: 3,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
         ),
         itemCount: 365,
         itemBuilder: (context, index) {
           final intensity = random.nextDouble();
           Color color;
           if (intensity < 0.4) {
-            color = const Color(0xFF1E293B); // No workout
+            color = Colors.white.withValues(alpha: 0.05); // Darker inactive dots
           } else if (intensity < 0.6) {
             color = const Color(0xFF10B981).withValues(alpha: 0.3);
           } else if (intensity < 0.8) {
@@ -463,7 +463,7 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
           ),
           const SizedBox(height: 24),
           SizedBox(
-            height: 200,
+            height: 250,
             child: _buildBodyCompositionChart(),
           ),
         ],
@@ -648,15 +648,15 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
   }
 
   double _getBodyCompMinY() {
-    if (_bodyCompTab == 0) return 65; // Weight
-    if (_bodyCompTab == 1) return 10; // Body Fat
-    return 25; // Muscle Mass
+    if (_bodyCompTab == 0) return 64; // Weight - slightly lower
+    if (_bodyCompTab == 1) return 9; // Body Fat - slightly lower
+    return 24; // Muscle Mass - slightly lower
   }
 
   double _getBodyCompMaxY() {
-    if (_bodyCompTab == 0) return 80; // Weight
-    if (_bodyCompTab == 1) return 25; // Body Fat
-    return 40; // Muscle Mass
+    if (_bodyCompTab == 0) return 81; // Weight - slightly higher
+    if (_bodyCompTab == 1) return 26; // Body Fat - slightly higher
+    return 41; // Muscle Mass - slightly higher
   }
 
   List<FlSpot> _getBodyCompositionData() {
@@ -855,7 +855,7 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
           ),
           const SizedBox(height: 24),
           SizedBox(
-            height: 200,
+            height: 250,
             child: _buildStrengthProgressChart(),
           ),
         ],
@@ -1059,7 +1059,7 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
           ),
           const SizedBox(height: 24),
           SizedBox(
-            height: 200,
+            height: 250,
             child: _buildMonthlyVolumeChart(),
           ),
         ],
