@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'calendar_page_new.dart';
 import 'home_page.dart';
 import 'library_page_v2.dart';
-import 'character_page.dart';
+import 'profile_analytics_screen.dart';
 
 class ShellPage extends StatefulWidget {
   const ShellPage({super.key});
@@ -45,7 +45,7 @@ class ShellPageState extends State<ShellPage> {
         ),
       ),
       const CalendarPageNew(),         // 2: Log (Calendar)
-      const CharacterPage(),           // 3: Profile
+      const ProfileAnalyticsScreen(),  // 3: Profile (Analytics Dashboard)
     ];
   }
 
