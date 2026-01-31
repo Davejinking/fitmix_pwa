@@ -37,13 +37,42 @@ class ShellPageState extends State<ShellPage> {
   void initState() {
     super.initState();
     _pages = [
-      Scaffold(                         // 0: Home (Library content - was Search)
+      // 0: Home (Placeholder - will be replaced later)
+      Scaffold(
         backgroundColor: const Color(0xFF121212),
         body: SafeArea(
-          child: const LibraryPageV2(),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.home,
+                  size: 80,
+                  color: Color(0xFF334155),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Home Screen',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Coming Soon',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      HomePage(key: _homePageKey),     // 1: Search (Discovery feed - was Home)
+      HomePage(key: _homePageKey),     // 1: Search (Discovery feed)
       const CalendarPageNew(),         // 2: Log (Calendar)
       const ProfileAnalyticsScreen(),  // 3: Profile (Analytics Dashboard)
     ];
@@ -81,8 +110,18 @@ class ShellPageState extends State<ShellPage> {
       child: InkWell(
         onTap: () {
           HapticFeedback.mediumImpact();
-          // Navigate to Search tab (Discovery feed - index 1)
-          setState(() => _currentIndex = 1);
+          // Navigate to LibraryPageV2 (Exercise library)
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Scaffold(
+                backgroundColor: const Color(0xFF121212),
+                body: SafeArea(
+                  child: const LibraryPageV2(),
+                ),
+              ),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
