@@ -5,7 +5,8 @@ import '../data/session_repo.dart';
 import '../models/session.dart';
 import 'condition_modal.dart';
 import 'decision_review_modal.dart';
-import 'log_review_screen.dart';
+import 'date_range_selector.dart';
+import 'exercise_selector.dart';
 
 // 🎨 Theme Colors
 const Color kPrimaryBlue = Color(0xFF1E88E5);
@@ -177,14 +178,7 @@ class _LogScreenV2State extends State<LogScreenV2> {
                 color: isDark ? const Color(0xFF9CA3AF) : const Color(0xFF4B5563),
                 size: 20,
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LogReviewScreen(),
-                  ),
-                );
-              },
+              onPressed: () => _showReviewModal(context, isDark),
             ),
           ),
         ],
@@ -960,6 +954,226 @@ class _LogScreenV2State extends State<LogScreenV2> {
                 color: isDark ? const Color(0xFFE5E7EB) : const Color(0xFF1F2937),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showReviewModal(BuildContext context, bool isDark) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.4),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF141414) : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(
+                        Icons.close,
+                        size: 24,
+                        color: isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280),
+                      ),
+                    ),
+                    Text(
+                      'REVIEW BY',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2.0,
+                        color: kTextMuted,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    const SizedBox(width: 24), // Balance the close button
+                  ],
+                ),
+              ),
+              // Options
+              Material(
+                color: Colors.transparent,
+                child: Column(
+                  children: [
+                    _buildReviewOption(
+                      context: context,
+                      label: 'Date Range',
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final result = await showDialog(
+                          context: context,
+                          barrierColor: Colors.black.withValues(alpha: 0.6),
+                          builder: (context) => const DateRangeSelector(),
+                        );
+                        if (result != null && mounted) {
+                          // TODO: Apply date range filter
+                          final start = result['start'] as DateTime;
+                          final end = result['end'] as DateTime;
+                          print('Selected range: ${start.toString()} to ${end.toString()}');
+                        }
+                      },
+                      isDark: isDark,
+                    ),
+                    _buildReviewOption(
+                      context: context,
+                      label: 'Exercise',
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final result = await showDialog<Set<String>>(
+                          context: context,
+                          barrierColor: Colors.black.withValues(alpha: 0.6),
+                          builder: (context) => const ExerciseSelector(),
+                        );
+                        if (result != null && mounted) {
+                          // TODO: Apply exercise filter
+                          print('Selected exercises: $result');
+                        }
+                      },
+                      isDark: isDark,
+                    ),
+                    _buildReviewOption(
+                      context: context,
+                      label: 'Condition',
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withValues(alpha: 0.6),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEF4444).withValues(alpha: 0.6),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Navigate to condition picker
+                      },
+                      isDark: isDark,
+                    ),
+                    _buildReviewOption(
+                      context: context,
+                      label: 'Decision',
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '⭕',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: kTextMuted.withValues(alpha: 0.7),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '△',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: kTextMuted.withValues(alpha: 0.7),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '❌',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: kTextMuted.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Navigate to decision picker
+                      },
+                      isDark: isDark,
+                    ),
+                    _buildReviewOption(
+                      context: context,
+                      label: 'Notes',
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Filter by notes
+                      },
+                      isDark: isDark,
+                      isLast: true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewOption({
+    required BuildContext context,
+    required String label,
+    Widget? trailing,
+    required VoidCallback onTap,
+    required bool isDark,
+    bool isLast = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+        decoration: BoxDecoration(
+          border: isLast ? null : Border(
+            bottom: BorderSide(
+              color: isDark ? kBorderDark : const Color(0xFFE5E7EB),
+              width: 1,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : const Color(0xFF1F2937),
+                ),
+              ),
+            ),
+            if (trailing != null) trailing,
           ],
         ),
       ),
