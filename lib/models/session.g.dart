@@ -23,13 +23,17 @@ class SessionAdapter extends TypeAdapter<Session> {
       durationInSeconds: fields[3] as int,
       isCompleted: fields[4] as bool,
       routineName: fields[5] as String?,
+      condition: fields[6] as String?,
+      conditionTags: (fields[7] as List?)?.cast<String>(),
+      decisionReview: fields[8] as String?,
+      decisionReason: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Session obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.ymd)
       ..writeByte(1)
@@ -41,7 +45,15 @@ class SessionAdapter extends TypeAdapter<Session> {
       ..writeByte(4)
       ..write(obj.isCompleted)
       ..writeByte(5)
-      ..write(obj.routineName);
+      ..write(obj.routineName)
+      ..writeByte(6)
+      ..write(obj.condition)
+      ..writeByte(7)
+      ..write(obj.conditionTags)
+      ..writeByte(8)
+      ..write(obj.decisionReview)
+      ..writeByte(9)
+      ..write(obj.decisionReason);
   }
 
   @override

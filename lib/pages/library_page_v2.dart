@@ -311,7 +311,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
     );
   }
   
-  // 🔥 TACTICAL TOGGLE SWITCH (3-way: Exercises / Routines / Programs)
+  // 🔥 TACTICAL TOGGLE SWITCH (3-way: Singles / My Routines / Active Plan)
   Widget _buildTacticalSwitch(AppLocalizations l10n, bool isDark) {
     return Container(
       decoration: BoxDecoration(
@@ -327,7 +327,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
       ),
       child: Row(
         children: [
-          // SPECIES (Exercises)
+          // SINGLES (Single Exercises)
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => _isRoutineMode = false),
@@ -340,7 +340,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'SPECIES',
+                  'SINGLES',
                   style: TextStyle(
                     color: !_isRoutineMode 
                         ? (isDark ? Colors.white : const Color(0xFF0F172A))
@@ -353,7 +353,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
               ),
             ),
           ),
-          // ROUTINES
+          // MY ROUTINES
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => _isRoutineMode = true),
@@ -366,7 +366,7 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'ROUTINES',
+                  'MY ROUTINES',
                   style: TextStyle(
                     color: _isRoutineMode 
                         ? (isDark ? Colors.white : const Color(0xFF0F172A))
@@ -379,17 +379,17 @@ class _LibraryPageV2State extends State<LibraryPageV2> {
               ),
             ),
           ),
-          // PROGRAMS (Coming Soon)
+          // ACTIVE PLAN (Coming Soon)
           Expanded(
             child: GestureDetector(
               onTap: () {
-                // TODO: Implement programs
+                // TODO: Implement active plan
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 alignment: Alignment.center,
                 child: Text(
-                  'PROGRAMS',
+                  'ACTIVE PLAN',
                   style: TextStyle(
                     color: kTextMuted,
                     fontWeight: FontWeight.w700,

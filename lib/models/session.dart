@@ -24,6 +24,18 @@ class Session extends HiveObject {
   @HiveField(5)
   String? routineName; // 루틴 이름 (루틴에서 불러온 경우)
 
+  @HiveField(6)
+  String? condition; // Condition: 'good', 'okay', 'low'
+
+  @HiveField(7)
+  List<String>? conditionTags; // Condition tags: ['Fatigued', 'Focused', etc.]
+
+  @HiveField(8)
+  String? decisionReview; // Decision review: 'appropriate', 'borderline', 'tooMuch'
+
+  @HiveField(9)
+  String? decisionReason; // Decision reason
+
   Session({
     required this.ymd,
     List<Exercise>? exercises,
@@ -31,6 +43,10 @@ class Session extends HiveObject {
     this.durationInSeconds = 0,
     this.isCompleted = false,
     this.routineName,
+    this.condition,
+    this.conditionTags,
+    this.decisionReview,
+    this.decisionReason,
   }) : exercises = exercises ?? [];
 
   /// Session 객체를 복사하여 새로운 인스턴스를 생성합니다.
@@ -41,6 +57,10 @@ class Session extends HiveObject {
     int? durationInSeconds,
     bool? isCompleted,
     String? routineName,
+    String? condition,
+    List<String>? conditionTags,
+    String? decisionReview,
+    String? decisionReason,
   }) {
     return Session(
       ymd: ymd ?? this.ymd,
@@ -49,6 +69,10 @@ class Session extends HiveObject {
       durationInSeconds: durationInSeconds ?? this.durationInSeconds,
       isCompleted: isCompleted ?? this.isCompleted,
       routineName: routineName ?? this.routineName,
+      condition: condition ?? this.condition,
+      conditionTags: conditionTags ?? this.conditionTags,
+      decisionReview: decisionReview ?? this.decisionReview,
+      decisionReason: decisionReason ?? this.decisionReason,
     );
   }
 

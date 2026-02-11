@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'calendar_page_new.dart';
+import 'log_screen_v2.dart';
 import 'home_page.dart';
+import 'home_screen_v2.dart';
 import 'library_page_v2.dart';
 import 'profile_analytics_screen.dart';
 
@@ -26,7 +27,7 @@ class ShellPageState extends State<ShellPage> {
     setState(() => _currentIndex = 3); // 프로필은 인덱스 3
   }
 
-  // 캘린더 탭으로 이동하는 메서드
+  // 캘린더 탭으로 이동하는 메서드 (Log Screen V2)
   void navigateToCalendar() {
     setState(() => _currentIndex = 2); // 캘린더는 인덱스 2
     // 🔥 홈 화면 새로고침 (루틴 불러오기 후 홈으로 돌아올 때)
@@ -37,43 +38,10 @@ class ShellPageState extends State<ShellPage> {
   void initState() {
     super.initState();
     _pages = [
-      // 0: Home (Placeholder - will be replaced later)
-      Scaffold(
-        backgroundColor: const Color(0xFF121212),
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(
-                  Icons.home,
-                  size: 80,
-                  color: Color(0xFF334155),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Home Screen',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Coming Soon',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      // 0: Home (New Dashboard)
+      const HomeScreenV2(),
       HomePage(key: _homePageKey),     // 1: Search (Discovery feed)
-      const CalendarPageNew(),         // 2: Log (Calendar)
+      const LogScreenV2(),             // 2: Log (Tactical workout log)
       const ProfileAnalyticsScreen(),  // 3: Profile (Analytics Dashboard)
       Scaffold(                         // 4: Library (Exercise library - accessed via Start button)
         backgroundColor: const Color(0xFF121212),
